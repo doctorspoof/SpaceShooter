@@ -158,7 +158,7 @@ public class EnemyScript : MonoBehaviour
 	
 	public void SetMoveTarget(Vector2 target)
 	{
-		if (Vector3.Distance((Vector2)rigidbody.transform.position, target) < 0.8f)
+		if (Vector3.Distance((Vector2)transform.position, target) < 0.8f)
 		{
 			return;
 		}
@@ -326,7 +326,7 @@ public class EnemyScript : MonoBehaviour
 	public void NotifyEnemyUnderFire(GameObject attacker)
 	{
 		m_parentGroup.CancelAllOrders();
-		m_parentGroup.OrderAttack(attacker);
+		m_parentGroup.OrderAttack(attacker.transform.root.gameObject);
 	}
 	
 	bool isGoingLeft = false;
@@ -339,15 +339,6 @@ public class EnemyScript : MonoBehaviour
 		if (Network.isServer)
 		{
 			EnemyScript slowestShip = m_parentGroup.GetSlowestShip();
-			
-			//if (m_parentGroup.GroupReforming && Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position), rigidbody.transform.position) < 0.8f)
-			//{
-			//    SetShipSpeed(0);
-			//}
-			//else
-			//{
-			//    SetShipSpeed(slowestShip.ShipSpeed);
-			//}
 			
 			switch (m_currentOrder)
 			{
@@ -371,30 +362,10 @@ public class EnemyScript : MonoBehaviour
 			}
 			case Order.Move:
 			{
-				//Debug.DrawLine(rigidbody.transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
-				//if (!InFormation(2f))
-				//{
-				//    currentlyMovingToPosition = true;
-				//}
-				//else if (InFormation(0.8f))
-				//{
-				//    currentlyMovingToPosition = false;
-				//}
-				
-				//if (currentlyMovingToPosition)
-				//{
-				//    MoveToFormation();
-				//}
-				//else
-				//{
-				//    //Debug.DrawLine((Vector2)rigidbody.transform.position, m_moveTarget);
-				//    RotateTowards(m_moveTarget);
-				//    rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
-				//}
 				
 				MoveTowardTarget();
 				
-				if (Vector3.Distance((Vector2)rigidbody.transform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
+				if (Vector3.Distance((Vector2)transform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
 				{
 					m_currentOrder = Order.Idle;
 				}
@@ -409,8 +380,8 @@ public class EnemyScript : MonoBehaviour
 					break;
 				}
 				
-				Vector3 direction = Vector3.Normalize(m_target.rigidbody.transform.position - transform.rigidbody.position);
-				Ray ray = new Ray(rigidbody.transform.position, direction);
+				Vector3 direction = Vector3.Normalize(m_target.transform.position - transform.position);
+				Ray ray = new Ray(transform.position, direction);
 				
 				//Debug.DrawLine(transform.position, m_target.transform.position, Color.blue);
 				Debug.DrawRay(ray.origin, ray.direction, Color.blue);
@@ -624,18 +595,7 @@ public class EnemyScript : MonoBehaviour
 		Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
 		RotateTowards((Vector2)transform.position + directionToMove);
 		
-		//SetShipSpeed(speed);
-		
 		rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
-		
-		//Vector2 directionToFormationPosition = target - (Vector2)rigidbody.transform.position;
-		
-		//float angle = Vector3.Angle(rigidbody.transform.up, directionToFormationPosition);
-		
-		//if (angle < 5 && angle > -5)
-		//{
-		//    rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
-		//}
 	}
 	
 	/// <summary>
