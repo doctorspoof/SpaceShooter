@@ -1,6 +1,4 @@
-﻿HELLO
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class HealthScript : MonoBehaviour 
@@ -284,6 +282,15 @@ public class HealthScript : MonoBehaviour
 					}
 					m_currentShield = 0;
 				}
+
+				if(m_currentShield > 0)
+				{
+					if(m_shieldEffect != null && hitter != null)
+					{
+						GameObject effect = (GameObject)Instantiate(m_shieldEffect, hitter.transform.position, hitter.transform.rotation);
+						effect.transform.parent = this.transform;
+					}
+				}
 			}
 			else
 			{
@@ -410,6 +417,10 @@ public class HealthScript : MonoBehaviour
 		if(Network.isServer)
 			networkView.RPC ("PropagateShieldStatus", RPCMode.Others, false);
 	}*/
+
+	[SerializeField]
+	GameObject m_shieldEffect = null;
+
 	void OnMobDies (GameObject killer, GameObject hitter = null)
 	{
 		//Debug.Log ("Mob has died!");

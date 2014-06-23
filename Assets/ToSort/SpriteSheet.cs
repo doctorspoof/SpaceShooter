@@ -16,6 +16,9 @@ public class SpriteSheet : MonoBehaviour
 
 	public bool m_isForwards = true;
 
+	[SerializeField]
+	bool shouldDieAfterFirstRun = false;
+
 	void Start () 
 	{
 		_size = new Vector2 (1.0f / _uvTieX , 1.0f / _uvTieY);
@@ -55,10 +58,17 @@ public class SpriteSheet : MonoBehaviour
 				
 				_lastIndex = m_currentIndex;
 
-				if(m_shouldReverse && m_currentIndex > ((_uvTieX * _uvTieY) - 2))
+				if(m_currentIndex > ((_uvTieX * _uvTieY) - 2))
 				{
-					m_isForwards = false;
-					//m_currentIndex = m_currentIndex;
+					if(m_shouldReverse)
+					{
+						m_isForwards = false;
+						//m_currentIndex = m_currentIndex;
+					}
+					else if(shouldDieAfterFirstRun)
+					{
+						Destroy(this.gameObject);
+					}
 				}
 			}
 		}
