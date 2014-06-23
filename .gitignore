@@ -4,6 +4,7 @@
 !*.cs
 !*.prefab
 !*.unity
+!*.meta
 !*/
 !/Notes/*.txt
 !/ProjectSettings/*.asset
