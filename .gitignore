@@ -5,3 +5,4 @@
 !*.prefab
 !*/
 !/Notes/*.txt
+!/ProjectSettings/*.asset
