@@ -3,6 +3,7 @@
 !readme.md
 !*.cs
 !*.prefab
+!*.unity
 !*/
 !/Notes/*.txt
 !/ProjectSettings/*.asset
