@@ -1357,6 +1357,16 @@ public class GUIManager : MonoBehaviour
 				GUI.Label (new Rect(750, 500, 100, 50), System.Math.Round(outOfBoundsTimer, System.MidpointRounding.AwayFromZero).ToString());
 			}
 
+			if(m_shouldShowDisconnectedSplash)
+			{
+				GUI.Box (new Rect(600, 350, 400, 200), "");
+				GUI.Label (new Rect(650, 400, 300, 50), "The host has disconnected.");
+				if(GUI.Button (new Rect(750, 500, 100, 50), "Return to menu"))
+				{
+					Application.LoadLevel(0);
+				}
+			}
+
 			if(!Screen.showCursor)
 				DrawCursor();
 
@@ -2765,6 +2775,11 @@ public class GUIManager : MonoBehaviour
 		m_attackWarningTimer = 0;
 	}
 
+	bool m_shouldShowDisconnectedSplash = false;
+	public void ShowDisconnectedSplash()
+	{
+		m_shouldShowDisconnectedSplash = true;
+	}
 	public void ShowVictorySplash()
 	{
 		m_shouldShowVictorySplash = true;
@@ -2776,6 +2791,8 @@ public class GUIManager : MonoBehaviour
 		m_shouldShowWarningAttack = false;
 		m_isOnMap = false;
 		m_PlayerHasDockedAtCapital = false;
+
+		Screen.showCursor = true;
 
 		m_CShipHasDied = true;
 		m_shouldShowLossSplash = true;
