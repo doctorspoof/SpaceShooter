@@ -294,7 +294,7 @@ public class GUIManager : MonoBehaviour
 	{
 
 		if(Vector3.Distance(thisPlayerHP.transform.position, m_lastLockonTarget.transform.position) > 
-		   thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance())
+		   (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.33f))
 			return true;
 		else
 			return false;
@@ -306,7 +306,11 @@ public class GUIManager : MonoBehaviour
 	{
 		switch(m_currentGameState)
 		{
-
+			case GameState.MainMenu:
+			{
+				m_selectedButton = 4;
+				break;
+			}
 		}
 	}
 	void ActivateMenuControllerPress()
@@ -342,8 +346,24 @@ public class GUIManager : MonoBehaviour
 			}
 			case GameState.HostMenu:
 			{
-				m_selectedButton = 0;
-				m_maxButton = 2;
+				switch(m_selectedButton)
+				{
+					case 1:
+					{
+						HostMenuStartButtonActivate();
+						break;
+					}
+					case 2:
+					{
+						m_hostShouldStartSpec = !m_hostShouldStartSpec;
+						break;
+					}
+					case 3:
+					{
+						HostMenuBackActivate();
+						break;
+					}
+				}
 				break;
 			}
 			case GameState.AttemptingConnect:
@@ -755,8 +775,11 @@ public class GUIManager : MonoBehaviour
 
 		if(GUI.Button (new Rect(225, 600, 285, 100), "START", m_sharedGUIStyle))
 		{
-			GameStateController.GetComponent<GameStateController>().StartGameFromMenu(m_hostShouldStartSpec);
-			AskServerToBeginSpawns();
+			HostMenuStartButtonActivate();
+		}
+		if(m_selectedButton == 1)
+		{
+			GUI.DrawTexture(new Rect(225, 600, 285, 100), m_menuButtonHighlight);
 		}
 
 		if(!m_hostShouldStartSpec)
@@ -773,15 +796,33 @@ public class GUIManager : MonoBehaviour
 				m_hostShouldStartSpec = false;
 			}
 		}
+		if(m_selectedButton == 2)
+		{
+			GUI.DrawTexture(new Rect(225, 600, 140, 100), m_menuButtonHighlight);
+		}
 		//m_hostShouldStartSpec = GUI.Toggle(new Rect(600, 850, 75, 75), m_hostShouldStartSpec, "");
 
 		if(GUI.Button (new Rect(225, 698, 285, 50), "BACK", m_sharedGUIStyle))
 		{
-			GameStateController.GetComponent<GameStateController>().BackToMenu();
-			GameStateController.GetComponent<GameStateController>().WipeConnectionInfo();
-			Network.Disconnect();
-			Debug.Log ("Closed Server.");
+			HostMenuBackActivate();
 		}
+		if(m_selectedButton == 3)
+		{
+			GUI.DrawTexture(new Rect(225, 698, 285, 50), m_menuButtonHighlight);
+		}
+	}
+
+	void HostMenuStartButtonActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().StartGameFromMenu(m_hostShouldStartSpec);
+		AskServerToBeginSpawns();
+	}
+	void HostMenuBackActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().BackToMenu();
+		GameStateController.GetComponent<GameStateController>().WipeConnectionInfo();
+		Network.Disconnect();
+		Debug.Log ("Closed Server.");
 	}
 
 	//Spec functions
