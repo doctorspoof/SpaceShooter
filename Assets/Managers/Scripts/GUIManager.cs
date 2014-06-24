@@ -385,6 +385,7 @@ public class GUIManager : MonoBehaviour
 		m_lastLockonTarget = null;
 		lockonTime = 0.0f;
 		m_isLockingOn = false;
+		thisPlayerHP.GetComponent<PlayerControlScript>().UnsetTargetLock();
 	}
 
 	bool hasLockedTarget = false;
