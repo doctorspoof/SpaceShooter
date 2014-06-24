@@ -552,82 +552,22 @@ public class EnemyScript : MonoBehaviour
 	
 	private void MoveTowardTarget()
 	{
-		// ResetShipSpeed();
-        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-        //watch.Start();
-		//Vector2 distanceToClosestFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)transform.position;
-        Vector2 distanceToClosestFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)transform.position;// GetVectorDistanceFromClosestFormation();
-        Vector2 distanceToTargetPosition = m_moveTarget - (Vector2)shipTransform.position;
-        //watch.Stop();
-        //Debug.Log("time taken for distance calculation = " + watch.ElapsedTicks);
+        Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
+        Vector2 distanceToTargetPosition = (m_moveTarget - (Vector2)shipTransform.position);
 
-        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-        //watch.Reset();
-        //watch.Start();
 		float speed = m_parentGroup.GetSlowestShipSpeed();
-        //watch.Stop();
-        //Debug.Log("time taken to get slowestMember = " + watch.ElapsedTicks);
 
-		//EnemyScript shipFurthestOutOfPosition;
-		//if (!m_parentGroup.InFormation(out shipFurthestOutOfPosition))
-		//{
-		
-		//    if (!InFormation(1))// i am out of formation
-		//    {
-		//        float aheadOfGroup = Vector2.Dot((Vector2)transform.position - GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position),
-		//                        m_moveTarget - GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
-		
-		//        Debug.Log("Running out of formation");
-		//        if (aheadOfGroup >= 0)// do i need to slow down for others to catch up to me?
-		//        {
-		//            speed *= 0.1f;
-		//        }
-		//        else// do i need to speed up to catch up to others?
-		//        {
-		//            speed = m_shipSpeed;
-		//        }
-		//    }
-		//    else// i am not out of formation, but others in the group are
-		//    {
-		//        float furthestOutOfPositionAheadOfGroup = Vector2.Dot((Vector2)shipFurthestOutOfPosition.transform.position - shipFurthestOutOfPosition.GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position),
-		//                        shipFurthestOutOfPosition.m_moveTarget - shipFurthestOutOfPosition.GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
-		//        Debug.Log("Running in formation but others arnt");
-		//        if (furthestOutOfPositionAheadOfGroup >= 0)// is the furthest ship ahead of me?
-		//        {
-		//        }
-		//        else// is it behind?
-		//        {
-		//            speed *= 0.1f;
-		//        }
-		//    }
-		
-		//}
-
-        //watch.Reset();
-        //watch.Start();
-        float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 2) / 2.0f;
-        //Debug.Log("t = " + t);
-		Vector2 directionToMove = (distanceToTargetPosition * (1 - t)) + (distanceToClosestFormationPosition * t);
-        //Debug.Log("ShipID = " + shipID + " directionToMove = " + directionToMove);
-        //watch.Stop();
-        //Debug.Log("time taken to find direction to move = " + watch.ElapsedTicks);
+        float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
+		Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
 
         Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
         Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
         Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
         Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
 
-        //watch.Reset();
-        //watch.Start();
         RotateTowards((Vector2)shipTransform.position + directionToMove);
-        //watch.Stop();
-        //Debug.Log("time taken to rotate = " + watch.ElapsedTicks);
 
-        //watch.Reset();
-        //watch.Start();
         rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
-        //watch.Stop();
-        //Debug.Log("time taken to apply force = " + watch.ElapsedTicks);
 	}
 	
 	/// <summary>
@@ -638,22 +578,15 @@ public class EnemyScript : MonoBehaviour
     public Vector2 GetVectorDistanceFromClosestFormation()
     {
         Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position);
-        Vector2 directionFromTargetToGroupPosition = Vector3.Normalize(currentGroupFormationPosition - m_moveTarget);
+        Vector2 directionFromTargetToGroupPosition = currentGroupFormationPosition - m_moveTarget;
 
-        Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition);
+        Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition).normalized;
 
-        //float angle = Mathf.Deg2Rad * Vector2.Angle(normalOfGroupPosToTarget, (Vector2)shipTransform.position - currentGroupFormationPosition);
-        //float distanceAlongDirectionToParrallelIntersection = Mathf.Sin(angle) * Vector2.Distance(shipTransform.position, currentGroupFormationPosition);
+        float d = -Vector2.Dot(((Vector2)shipTransform.position - currentGroupFormationPosition), normalOfGroupPosToTarget);
 
-        //Vector2 targetFormationPosition = (-directionFromTargetToGroupPosition * distanceAlongDirectionToParrallelIntersection) + currentGroupFormationPosition;
+        //Debug.DrawLine(transform.position, (Vector2)transform.position + normalOfGroupPosToTarget, Color.red);
 
-        //Vector2 vectorToPosition = targetFormationPosition - (Vector2)shipTransform.position;
-
-        Debug.DrawLine(transform.position, (Vector2)transform.position + normalOfGroupPosToTarget, Color.red);
-
-        //Vector2 vectorToPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)shipTransform.position;
-
-        return normalOfGroupPosToTarget;
+        return normalOfGroupPosToTarget * d;
     }
 
     /// <summary>
