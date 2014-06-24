@@ -368,7 +368,12 @@ public class WeaponScript : MonoBehaviour
 			this.audio.Stop();
 		}
 	}
-	
+
+	public float GetBulletMaxDistance()
+	{
+		return m_bulletRef.GetComponent<BasicBulletScript>().CalculateMaxDistance();
+	}
+
 	public void ParentWeaponToOwner(string player)
 	{
 		//Debug.Log ("Passing name: " + player + " through to parent weapon process.");
