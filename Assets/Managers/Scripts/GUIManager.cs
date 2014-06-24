@@ -2015,6 +2015,8 @@ public class GUIManager : MonoBehaviour
 				}
 			}
 		}
+
+		GUI.matrix = oldGUIMat;
 	}
 
 	Vector2 WorldToMapPos(Vector3 worldPos)

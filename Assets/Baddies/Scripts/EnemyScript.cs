@@ -520,7 +520,8 @@ public class EnemyScript : MonoBehaviour
         //Debug.Log("ShipID = " + shipID + " position = " + position);
         Vector3 dir = Vector3.Normalize(position - this.transform.position);
         Quaternion lookRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime);
+        //transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime);
+		rigidbody.MoveRotation(Quaternion.Slerp(transform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime));
 	}
 	
 	public float GetMinimumWeaponRange()
