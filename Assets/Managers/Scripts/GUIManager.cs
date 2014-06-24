@@ -264,9 +264,20 @@ public class GUIManager : MonoBehaviour
 			}
 		}
 
-		if(m_beginLockBreak)
+		if(m_beginLockBreak && m_lastLockonTarget != null)
 		{
-			lockOffTime += Time.deltaTime;
+			//Distance-based lock break
+			if(CheckPlayerTargetDistanceOver())
+			{
+				hasLockedTarget = false;
+				m_lastLockonTarget = null;
+				thisPlayerHP.GetComponent<PlayerControlScript>().UnsetTargetLock();
+				lockonTime = 0.0f;
+				m_beginLockBreak = false;
+			}
+
+			//Time-base lock break
+			/*lockOffTime += Time.deltaTime;
 			if(lockOffTime > 2.0f)
 			{
 				hasLockedTarget = false;
@@ -275,8 +286,18 @@ public class GUIManager : MonoBehaviour
 				lockonTime = 0.0f;
 				lockOffTime = 0.0f;
 				m_beginLockBreak = false;
-			}
+			}*/
 		}
+	}
+
+	bool CheckPlayerTargetDistanceOver()
+	{
+
+		if(Vector3.Distance(thisPlayerHP.transform.position, m_lastLockonTarget.transform.position) > 
+		   thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance())
+			return true;
+		else
+			return false;
 	}
 
 	float m_dpadScrollPause = 0;
@@ -1074,146 +1095,6 @@ public class GUIManager : MonoBehaviour
 			return;
 		}
 
-		//Show gametime
-		GUI.DrawTexture(new Rect(690, 5, 10, 50), m_barEnd);
-		GUI.DrawTexture(new Rect(700, 5, 200, 50), m_barMid);
-		GUI.DrawTexture(new Rect(910, 5, -10, 50), m_barEnd);
-		int seconds2 = (int)m_gameTimer;
-		string displayedTime = string.Format("{0:00}:{1:00}", (seconds2/60)%60, seconds2%60);
-		GUI.Label (new Rect(710, 10, 180, 40), displayedTime, m_nonBoxStyle);
-
-		if(!m_PlayerHasDied && thisPlayerHP != null)
-		{
-			//HP
-			/*int maxHP = thisPlayerHP.GetMaxHP();
-			int numBlips = (maxHP / 5);
-			int totalHPWidth = (numBlips * 8) + ((numBlips + 1) * 4);
-
-			GUI.DrawTexture(new Rect(50, 50, 10, 50), m_barEnd);
-			GUI.DrawTexture(new Rect(60, 50, totalHPWidth - 15, 50), m_barMid);
-			GUI.DrawTexture(new Rect(52 + totalHPWidth, 50, -10, 50), m_barEnd);
-
-			int blips = thisPlayerHP.GetCurrHP() / 5;
-			for(int i = 0; i < blips; i++)
-			{
-				GUI.DrawTexture(new Rect(55 + (12 * i), 53, 8, 44), m_healthBlip);
-			}
-
-			//Shields
-			int maxS = thisPlayerHP.GetMaxShield();
-			int numBlipsS = (maxS / 5);
-			int totalSWidth = (numBlipsS * 8) + ((numBlipsS + 1) * 4);
-
-			GUI.DrawTexture(new Rect(50, 105, 10, 50), m_barEnd);
-			GUI.DrawTexture(new Rect(60, 105, totalSWidth - 15, 50), m_barMid);
-			GUI.DrawTexture(new Rect(52 + totalSWidth, 105, -10, 50), m_barEnd);
-
-			int blipsS = thisPlayerHP.GetCurrShield() / 5;
-			for(int i = 0; i < blipsS; i++)
-			{
-				GUI.DrawTexture(new Rect(55 + (12 * i), 108, 8, 44), m_shieldBlip);
-			}*/
-
-			//New HP Bar:
-			//health -> shield -> border
-			/*float healthPercent = thisPlayerHP.GetHPPercentage();
-			float shieldPercent = thisPlayerHP.GetShieldPercentage();
-
-			GUI.DrawTextureWithTexCoords(new Rect(50, 50, 291 * healthPercent, 80), m_playerBarHealth, new Rect(0, 0, healthPercent, 1));
-			GUI.DrawTextureWithTexCoords(new Rect(50, 50, 291 * shieldPercent, 80), m_playerBarShield, new Rect(0, 0, shieldPercent, 1));
-			GUI.DrawTexture (new Rect(50, 50, 291, 80), m_playerBarBorder);*/
-
-			//New New HP Bar
-			float healthPercent = thisPlayerHP.GetHPPercentage();
-			float shieldPercent = thisPlayerHP.GetShieldPercentage();
-
-			GUI.DrawTexture (new Rect(0, 0, 150, 150), m_iconBorder);
-			GUI.DrawTexture (new Rect(0, 0, 150, 150), m_playerIcon);
-
-			GUI.DrawTexture (new Rect(150, 0, 350, 50), m_healthBackground);
-			GUI.DrawTextureWithTexCoords (new Rect(150, 0, 350 * healthPercent, 50), m_healthBar, new Rect(0, 0, healthPercent, 1));
-			GUI.DrawTextureWithTexCoords (new Rect(150, 0, 350 * shieldPercent, 50), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
-
-			//Show spacebux
-			GUI.DrawTexture(new Rect(175, 80, 10, 50), m_barEnd);
-			GUI.DrawTexture(new Rect(185, 80, 200, 50), m_barMid);
-			GUI.DrawTexture(new Rect(395, 80, -10, 50), m_barEnd);
-			GUI.Label (new Rect(195, 85, 180, 44), "$ " + thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().GetSpaceBucks(), m_nonBoxStyle);
-		}
-		else
-		{
-			GUI.Label (new Rect(50, 50, 150, 50), "DESTROYED");
-		}
-
-
-
-
-		//Now show CShip HP
-		//GUI.Label (new Rect(1300, 600, 200, 80), "Capital Ship Status");
-		if(CShip == null)
-		{
-			GUI.Label(new Rect(1300, 700, 200, 80), "DESTROYED");
-		}
-		else
-		{
-			//HP
-			/*int cMaxHP = CShipHealth.GetMaxHP();
-			int cNumBlips = (cMaxHP / 10);
-			int cTotalHPWidth = (cNumBlips * 8) + ((cNumBlips + 1) * 4);
-
-			//We're drawing this one backwards marty
-			GUI.DrawTexture (new Rect(1550, 755, -10, 50), m_barEnd);
-			GUI.DrawTexture(new Rect(1540, 755, -cTotalHPWidth + 15, 50), m_barMid);
-			GUI.DrawTexture(new Rect(1548 - (cTotalHPWidth), 755, 10, 50), m_barEnd);
-
-			int cBlips = CShipHealth.GetCurrHP() / 10;
-			for(int i = 0; i < cBlips; i++)
-			{
-				GUI.DrawTexture(new Rect(1535 - (12 * i), 758, 8, 44), m_healthBlip);
-			}
-
-			//Shield
-			int cMaxShield = CShipHealth.GetMaxShield();
-			int cNumBlipsS = (cMaxShield / 10);
-			int cTotalShieldWidth = (cNumBlipsS * 8) + ((cNumBlipsS + 1) * 4);
-
-			GUI.DrawTexture (new Rect(1550, 700, -10, 50), m_barEnd);
-			GUI.DrawTexture(new Rect(1540, 700, -cTotalShieldWidth + 15, 50), m_barMid);
-			GUI.DrawTexture(new Rect(1548 - (cTotalShieldWidth), 700, 10, 50), m_barEnd);
-			
-			int cBlipsS = CShipHealth.GetCurrShield() / 10;
-			for(int i = 0; i < cBlipsS; i++)
-			{
-				GUI.DrawTexture(new Rect(1535 - (12 * i), 703, 8, 44), m_shieldBlip);
-			}*/
-
-			//New CShip health
-			//Health -> shield -> bar
-			/*float healthPercent = CShipHealth.GetHPPercentage();
-			float shieldPercent = CShipHealth.GetShieldPercentage();
-
-			GUI.DrawTextureWithTexCoords(new Rect(341, 755 * healthPercent, 918, 80), m_cShipBarHealth, new Rect(0, 0, healthPercent, 1));
-			GUI.DrawTextureWithTexCoords(new Rect(341, 755 * shieldPercent, 918, 80), m_cShipBarShield, new Rect(0, 0, shieldPercent, 1));
-			GUI.DrawTexture (new Rect(341, 755, 918, 80), m_cShipBarBorder);*/
-
-			//New New CShip Health
-			float healthPercent = CShipHealth.GetHPPercentage();
-			float shieldPercent = CShipHealth.GetShieldPercentage();
-
-			GUI.DrawTexture (new Rect(1450, 0, 150, 150), m_iconBorder);
-			GUI.DrawTexture (new Rect(1450, 0, 150, 150), m_CShipIcon);
-			
-			GUI.DrawTexture (new Rect(1100, 0, 350, 50), m_healthBackground);
-			GUI.DrawTextureWithTexCoords (new Rect(1450, 0, -350 * healthPercent, 50), m_healthBar, new Rect(0, 0, healthPercent, 1));
-			GUI.DrawTextureWithTexCoords (new Rect(1450, 0, -350 * shieldPercent, 50), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
-
-			//Show CShip moolah
-			GUI.DrawTexture(new Rect(1205, 80, 10, 50), m_barEnd);
-			GUI.DrawTexture(new Rect(1215, 80, 200, 50), m_barMid);
-			GUI.DrawTexture(new Rect(1425, 80, -10, 50), m_barEnd);
-			GUI.Label (new Rect(1225, 85, 180, 44), "$ " + CShip.GetComponent<CapitalShipScript>().GetBankedCash(), m_nonBoxStyle);
-		}
-
 		if(!m_PlayerHasDied && thisPlayerHP != null && thisPlayerHP.gameObject != null)
 		{
 			if(m_PlayerHasDockedAtCapital)
@@ -1560,7 +1441,144 @@ public class GUIManager : MonoBehaviour
 					}
 				}
 			}
+		}
 
+		//Show gametime
+		GUI.DrawTexture(new Rect(690, 5, 10, 50), m_barEnd);
+		GUI.DrawTexture(new Rect(700, 5, 200, 50), m_barMid);
+		GUI.DrawTexture(new Rect(910, 5, -10, 50), m_barEnd);
+		int seconds2 = (int)m_gameTimer;
+		string displayedTime = string.Format("{0:00}:{1:00}", (seconds2/60)%60, seconds2%60);
+		GUI.Label (new Rect(710, 10, 180, 40), displayedTime, m_nonBoxStyle);
+
+		//Now, finally, draw the hp/shield areas
+		if(!m_PlayerHasDied && thisPlayerHP != null)
+		{
+			//HP
+			/*int maxHP = thisPlayerHP.GetMaxHP();
+			int numBlips = (maxHP / 5);
+			int totalHPWidth = (numBlips * 8) + ((numBlips + 1) * 4);
+
+			GUI.DrawTexture(new Rect(50, 50, 10, 50), m_barEnd);
+			GUI.DrawTexture(new Rect(60, 50, totalHPWidth - 15, 50), m_barMid);
+			GUI.DrawTexture(new Rect(52 + totalHPWidth, 50, -10, 50), m_barEnd);
+
+			int blips = thisPlayerHP.GetCurrHP() / 5;
+			for(int i = 0; i < blips; i++)
+			{
+				GUI.DrawTexture(new Rect(55 + (12 * i), 53, 8, 44), m_healthBlip);
+			}
+
+			//Shields
+			int maxS = thisPlayerHP.GetMaxShield();
+			int numBlipsS = (maxS / 5);
+			int totalSWidth = (numBlipsS * 8) + ((numBlipsS + 1) * 4);
+
+			GUI.DrawTexture(new Rect(50, 105, 10, 50), m_barEnd);
+			GUI.DrawTexture(new Rect(60, 105, totalSWidth - 15, 50), m_barMid);
+			GUI.DrawTexture(new Rect(52 + totalSWidth, 105, -10, 50), m_barEnd);
+
+			int blipsS = thisPlayerHP.GetCurrShield() / 5;
+			for(int i = 0; i < blipsS; i++)
+			{
+				GUI.DrawTexture(new Rect(55 + (12 * i), 108, 8, 44), m_shieldBlip);
+			}*/
+			
+			//New HP Bar:
+			//health -> shield -> border
+			/*float healthPercent = thisPlayerHP.GetHPPercentage();
+			float shieldPercent = thisPlayerHP.GetShieldPercentage();
+
+			GUI.DrawTextureWithTexCoords(new Rect(50, 50, 291 * healthPercent, 80), m_playerBarHealth, new Rect(0, 0, healthPercent, 1));
+			GUI.DrawTextureWithTexCoords(new Rect(50, 50, 291 * shieldPercent, 80), m_playerBarShield, new Rect(0, 0, shieldPercent, 1));
+			GUI.DrawTexture (new Rect(50, 50, 291, 80), m_playerBarBorder);*/
+			
+			//New New HP Bar
+			float healthPercent = thisPlayerHP.GetHPPercentage();
+			float shieldPercent = thisPlayerHP.GetShieldPercentage();
+			
+			GUI.DrawTexture (new Rect(0, 0, 150, 150), m_iconBorder);
+			GUI.DrawTexture (new Rect(0, 0, 150, 150), m_playerIcon);
+			
+			GUI.DrawTexture (new Rect(150, 0, 350, 50), m_healthBackground);
+			GUI.DrawTextureWithTexCoords (new Rect(150, 0, 350 * healthPercent, 50), m_healthBar, new Rect(0, 0, healthPercent, 1));
+			GUI.DrawTextureWithTexCoords (new Rect(150, 0, 350 * shieldPercent, 50), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
+			
+			//Show spacebux
+			GUI.DrawTexture(new Rect(175, 80, 10, 50), m_barEnd);
+			GUI.DrawTexture(new Rect(185, 80, 200, 50), m_barMid);
+			GUI.DrawTexture(new Rect(395, 80, -10, 50), m_barEnd);
+			GUI.Label (new Rect(195, 85, 180, 44), "$ " + thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().GetSpaceBucks(), m_nonBoxStyle);
+		}
+		else
+		{
+			GUI.Label (new Rect(50, 50, 150, 50), "DESTROYED");
+		}
+
+		//Now show CShip HP
+		//GUI.Label (new Rect(1300, 600, 200, 80), "Capital Ship Status");
+		if(CShip == null)
+		{
+			GUI.Label(new Rect(1300, 700, 200, 80), "DESTROYED");
+		}
+		else
+		{
+			//HP
+			/*int cMaxHP = CShipHealth.GetMaxHP();
+			int cNumBlips = (cMaxHP / 10);
+			int cTotalHPWidth = (cNumBlips * 8) + ((cNumBlips + 1) * 4);
+
+			//We're drawing this one backwards marty
+			GUI.DrawTexture (new Rect(1550, 755, -10, 50), m_barEnd);
+			GUI.DrawTexture(new Rect(1540, 755, -cTotalHPWidth + 15, 50), m_barMid);
+			GUI.DrawTexture(new Rect(1548 - (cTotalHPWidth), 755, 10, 50), m_barEnd);
+
+			int cBlips = CShipHealth.GetCurrHP() / 10;
+			for(int i = 0; i < cBlips; i++)
+			{
+				GUI.DrawTexture(new Rect(1535 - (12 * i), 758, 8, 44), m_healthBlip);
+			}
+
+			//Shield
+			int cMaxShield = CShipHealth.GetMaxShield();
+			int cNumBlipsS = (cMaxShield / 10);
+			int cTotalShieldWidth = (cNumBlipsS * 8) + ((cNumBlipsS + 1) * 4);
+
+			GUI.DrawTexture (new Rect(1550, 700, -10, 50), m_barEnd);
+			GUI.DrawTexture(new Rect(1540, 700, -cTotalShieldWidth + 15, 50), m_barMid);
+			GUI.DrawTexture(new Rect(1548 - (cTotalShieldWidth), 700, 10, 50), m_barEnd);
+			
+			int cBlipsS = CShipHealth.GetCurrShield() / 10;
+			for(int i = 0; i < cBlipsS; i++)
+			{
+				GUI.DrawTexture(new Rect(1535 - (12 * i), 703, 8, 44), m_shieldBlip);
+			}*/
+			
+			//New CShip health
+			//Health -> shield -> bar
+			/*float healthPercent = CShipHealth.GetHPPercentage();
+			float shieldPercent = CShipHealth.GetShieldPercentage();
+
+			GUI.DrawTextureWithTexCoords(new Rect(341, 755 * healthPercent, 918, 80), m_cShipBarHealth, new Rect(0, 0, healthPercent, 1));
+			GUI.DrawTextureWithTexCoords(new Rect(341, 755 * shieldPercent, 918, 80), m_cShipBarShield, new Rect(0, 0, shieldPercent, 1));
+			GUI.DrawTexture (new Rect(341, 755, 918, 80), m_cShipBarBorder);*/
+			
+			//New New CShip Health
+			float healthPercent = CShipHealth.GetHPPercentage();
+			float shieldPercent = CShipHealth.GetShieldPercentage();
+			
+			GUI.DrawTexture (new Rect(1450, 0, 150, 150), m_iconBorder);
+			GUI.DrawTexture (new Rect(1450, 0, 150, 150), m_CShipIcon);
+			
+			GUI.DrawTexture (new Rect(1100, 0, 350, 50), m_healthBackground);
+			GUI.DrawTextureWithTexCoords (new Rect(1450, 0, -350 * healthPercent, 50), m_healthBar, new Rect(0, 0, healthPercent, 1));
+			GUI.DrawTextureWithTexCoords (new Rect(1450, 0, -350 * shieldPercent, 50), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
+			
+			//Show CShip moolah
+			GUI.DrawTexture(new Rect(1205, 80, 10, 50), m_barEnd);
+			GUI.DrawTexture(new Rect(1215, 80, 200, 50), m_barMid);
+			GUI.DrawTexture(new Rect(1425, 80, -10, 50), m_barEnd);
+			GUI.Label (new Rect(1225, 85, 180, 44), "$ " + CShip.GetComponent<CapitalShipScript>().GetBankedCash(), m_nonBoxStyle);
 		}
 	}
 
