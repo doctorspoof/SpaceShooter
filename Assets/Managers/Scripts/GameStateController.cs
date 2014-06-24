@@ -191,8 +191,11 @@ public class GameStateController : MonoBehaviour
 
 	void OnDisconnectedFromServer(NetworkDisconnection info)
 	{
-		Debug.Log ("Lost connection to host...");
-		m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
+		if(info == NetworkDisconnection.LostConnection)
+		{
+			Debug.Log ("Lost connection to host...");
+			m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
+		}
 	}
 
 	// Update is called once per frame
