@@ -101,8 +101,13 @@ public class EnemyGroup : MonoBehaviour
 		//groupReforming = !InFormation(out script);
 		
 		CheckAndAttackPlayersInRange(50);
+
+        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+        //watch.Start();
 		SetShipSpeeds();
-		
+        //watch.Stop();
+        //Debug.Log("time taken = " + watch.ElapsedMilliseconds);
+
 		if (orderQueue.Count == 0 && defaultOrders.Count > 0 && !GroupStillHasMembersWithOrder())
 		{
 			orderQueue.Add(defaultOrders[Random.Range(0, defaultOrders.Count)]);
@@ -364,6 +369,11 @@ public class EnemyGroup : MonoBehaviour
 		//enemyShip.transform.parent = transform;
 		m_shipCount++;
 		m_bountyTotal += enemyShip.BountyAmount;
+
+        if(slowestShip == null || enemyShip.ShipSpeed < slowestShip.ShipSpeed)
+        {
+            slowestShip = enemyShip;
+        }
 		
 		if (orderQueue.Count > 0)
 			orderQueue[0].Activate();
@@ -391,6 +401,11 @@ public class EnemyGroup : MonoBehaviour
 		enemyShip.transform.parent = null;
 		m_shipCount--;
 		m_bountyTotal -= enemyShip.BountyAmount;
+
+        if(enemyShip == slowestShip)
+        {
+            slowestShip = CalculateSlowestShip();
+        }
 		
 		if (orderQueue.Count > 0)
 			orderQueue[0].Activate();
@@ -482,48 +497,71 @@ public class EnemyGroup : MonoBehaviour
 		m_formation = formation;
 		ResetAllFormationsPositions();
 	}
-	
+
+	EnemyScript slowestShip = null;
+
 	/// <summary>
 	/// Returns the slowest ship in the group
 	/// </summary>
 	/// <returns>Speed of the slowest ship</returns>
 	public float GetSlowestShipSpeed()
 	{
-		float slowestSpeed = -1;
-		foreach (List<EnemyScript> shipTier in m_children)
-		{
-			foreach (EnemyScript enemy in shipTier)
-			{
-				if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
-				{
-					slowestSpeed = enemy.ShipSpeed;
-				}
-			}
-		}
-		return slowestSpeed;
+        return slowestShip.ShipSpeed;
+
+        //float slowestSpeed = -1;
+        //foreach (List<EnemyScript> shipTier in m_children)
+        //{
+        //    foreach (EnemyScript enemy in shipTier)
+        //    {
+        //        if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
+        //        {
+        //            slowestSpeed = enemy.ShipSpeed;
+        //        }
+        //    }
+        //}
+        //return slowestSpeed;
 	}
-	
+
 	/// <summary>
 	/// Returns the slowest ship of the group
 	/// </summary>
 	/// <returns></returns>
 	public EnemyScript GetSlowestShip()
 	{
-		float slowestSpeed = -1;
-		EnemyScript ship = null;
-		foreach (List<EnemyScript> shipTier in m_children)
-		{
-			foreach (EnemyScript enemy in shipTier)
-			{
-				if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
-				{
-					slowestSpeed = enemy.ShipSpeed;
-					ship = enemy;
-				}
-			}
-		}
-		return ship;
+        return slowestShip;
+        //float slowestSpeed = -1;
+        //EnemyScript ship = null;
+        //foreach (List<EnemyScript> shipTier in m_children)
+        //{
+        //    foreach (EnemyScript enemy in shipTier)
+        //    {
+        //        if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
+        //        {
+        //            slowestSpeed = enemy.ShipSpeed;
+        //            ship = enemy;
+        //        }
+        //    }
+        //}
+        //return ship;
 	}
+
+    public EnemyScript CalculateSlowestShip()
+    {
+        float slowestSpeed = -1;
+        EnemyScript ship = null;
+        foreach (List<EnemyScript> shipTier in m_children)
+        {
+            foreach (EnemyScript enemy in shipTier)
+            {
+                if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
+                {
+                    slowestSpeed = enemy.ShipSpeed;
+                    ship = enemy;
+                }
+            }
+        }
+        return ship;
+    }
 	
 	public void UpdateGroupCentre()
 	{
@@ -1163,7 +1201,6 @@ public class EnemyGroup : MonoBehaviour
 		
 		if (outOfFormation.Count > 0)
 		{
-			
 			
 			EnemyScript shipFurthestOutOfFormation;
 			InFormation(out shipFurthestOutOfFormation);

@@ -362,8 +362,11 @@ public class EnemyScript : MonoBehaviour
 			}
 			case Order.Move:
 			{
-				
+                //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+                //watch.Start();
 				MoveTowardTarget();
+                //watch.Stop();
+                //Debug.Log("time taken = " + watch.ElapsedTicks);
 				
 				if (Vector3.Distance((Vector2)transform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
 				{
@@ -514,9 +517,10 @@ public class EnemyScript : MonoBehaviour
 	
 	public void RotateTowards(Vector3 position)
 	{
-		Vector3 dir = position - this.transform.position;
-		Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-		this.transform.rotation = Quaternion.Slerp(transform.rotation, target, m_rotateSpeed * Time.deltaTime);
+        //Debug.Log("ShipID = " + shipID + " position = " + position);
+        Vector3 dir = Vector3.Normalize(position - this.transform.position);
+        Quaternion lookRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime);
 	}
 	
 	public float GetMinimumWeaponRange()
@@ -545,13 +549,21 @@ public class EnemyScript : MonoBehaviour
 	private void MoveTowardTarget()
 	{
 		// ResetShipSpeed();
-		
+        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+        //watch.Start();
 		//Vector2 distanceToClosestFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)transform.position;
 		Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
-		Vector2 distanceToTargetPosition = Vector3.Normalize(m_moveTarget - (Vector2)transform.position);
-		
+		Vector2 distanceToTargetPosition = m_moveTarget - (Vector2)transform.position;
+        //watch.Stop();
+        //Debug.Log("time taken for distance calculation = " + watch.ElapsedTicks);
+
+        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+        //watch.Reset();
+        //watch.Start();
 		float speed = m_parentGroup.GetSlowestShipSpeed();
-		
+        //watch.Stop();
+        //Debug.Log("time taken to get slowestMember = " + watch.ElapsedTicks);
+
 		//EnemyScript shipFurthestOutOfPosition;
 		//if (!m_parentGroup.InFormation(out shipFurthestOutOfPosition))
 		//{
@@ -586,16 +598,31 @@ public class EnemyScript : MonoBehaviour
 		//    }
 		
 		//}
-		
-		Vector2 directionToMove = (distanceToTargetPosition / Mathf.Pow(distanceToClosestFormationPosition.magnitude, 2)) + distanceToClosestFormationPosition;
-		
-		Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
-		Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
-		Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-		Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+
+        //watch.Reset();
+        //watch.Start();
+        float t = distanceToClosestFormationPosition.magnitude;
+		Vector2 directionToMove = (distanceToTargetPosition * Mathf.Pow(1 - t, 2)) + (distanceToClosestFormationPosition * Mathf.Pow(t, 2));
+        //Debug.Log("ShipID = " + shipID + " directionToMove = " + directionToMove);
+        //watch.Stop();
+        //Debug.Log("time taken to find direction to move = " + watch.ElapsedTicks);
+
+        //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
+        //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
+        //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
+        //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+
+        //watch.Reset();
+        //watch.Start();
 		RotateTowards((Vector2)transform.position + directionToMove);
-		
+        //watch.Stop();
+        //Debug.Log("time taken to rotate = " + watch.ElapsedTicks);
+
+        //watch.Reset();
+        //watch.Start();
 		rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+        //watch.Stop();
+        //Debug.Log("time taken to apply force = " + watch.ElapsedTicks);
 	}
 	
 	/// <summary>
@@ -617,7 +644,7 @@ public class EnemyScript : MonoBehaviour
 		
 		Vector2 vectorToPosition = targetFormationPosition - (Vector2)transform.position;
 		
-		Debug.DrawLine(transform.position, (Vector2)transform.position + vectorToPosition, Color.red);
+        //Debug.DrawLine(transform.position, (Vector2)transform.position + vectorToPosition, Color.red);
 		
 		return vectorToPosition;
 	}
