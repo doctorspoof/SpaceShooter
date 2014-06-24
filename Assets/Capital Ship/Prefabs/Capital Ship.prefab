@@ -31,7 +31,7 @@ GameObject:
   - 114: {fileID: 11400038}
   m_Layer: 13
   m_Name: Landing Deck
-  m_TagString: Capital
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -950,7 +950,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100012}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.79878521, y: 259.452118, z: 10.5}
+  m_LocalPosition: {x: 108.286522, y: 2.66513586, z: 10.5}
   m_LocalScale: {x: 24, y: 24, z: 1}
   m_Children:
   - {fileID: 400100}
@@ -2727,6 +2727,7 @@ MonoBehaviour:
   _fps: 8
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400038
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2743,6 +2744,7 @@ MonoBehaviour:
   _fps: 10
   m_shouldReverse: 0
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400040
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2759,6 +2761,7 @@ MonoBehaviour:
   _fps: 8
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2775,6 +2778,7 @@ MonoBehaviour:
   _fps: 8
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400044
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2791,6 +2795,7 @@ MonoBehaviour:
   _fps: 8
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2807,6 +2812,7 @@ MonoBehaviour:
   _fps: 8
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2823,6 +2829,7 @@ MonoBehaviour:
   _fps: 8
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400050
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2839,6 +2846,7 @@ MonoBehaviour:
   _fps: 8
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400052
 MonoBehaviour:
   m_ObjectHideFlags: 1
