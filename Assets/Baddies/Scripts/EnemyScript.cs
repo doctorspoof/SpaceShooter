@@ -21,6 +21,8 @@ public enum ShipSize
 [RequireComponent(typeof(MeshFilter))]
 public class EnemyScript : MonoBehaviour
 {
+    Transform shipTransform = null;
+
 	[SerializeField]
 	float m_ramDamageMultiplier = 2.5f;
 	public float GetRamDam()
@@ -317,8 +319,10 @@ public class EnemyScript : MonoBehaviour
 	{
 		shipID = ids;
 		ids++;
-		
-		lastFramePosition = transform.position;
+
+        shipTransform = transform;
+
+        lastFramePosition = shipTransform.position;
 		currentAttackType = AIAttackCollection.GetRandomAttack((int)shipSize);
 		SetShipSpeed(m_shipSpeed);
 	}
@@ -367,8 +371,8 @@ public class EnemyScript : MonoBehaviour
 				MoveTowardTarget();
                 //watch.Stop();
                 //Debug.Log("time taken = " + watch.ElapsedTicks);
-				
-				if (Vector3.Distance((Vector2)transform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
+
+                if (Vector3.Distance((Vector2)shipTransform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
 				{
 					m_currentOrder = Order.Idle;
 				}
@@ -382,9 +386,9 @@ public class EnemyScript : MonoBehaviour
 					m_currentOrder = Order.Idle;
 					break;
 				}
-				
-				Vector3 direction = Vector3.Normalize(m_target.transform.position - transform.position);
-				Ray ray = new Ray(transform.position, direction);
+
+                Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
+                Ray ray = new Ray(shipTransform.position, direction);
 				
 				//Debug.DrawLine(transform.position, m_target.transform.position, Color.blue);
 				Debug.DrawRay(ray.origin, ray.direction, Color.blue);
@@ -393,8 +397,8 @@ public class EnemyScript : MonoBehaviour
 				if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange() * 0.8f))
 				{
 					RotateTowards(m_target.transform.position);
-					
-					rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+
+                    rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
 				}
 				else
 				{
@@ -423,10 +427,10 @@ public class EnemyScript : MonoBehaviour
 		sendCounter++;
 		
 		//Handle positions manually
-		float posX = this.transform.position.x;
-		float posY = this.transform.position.y;
-		
-		float rotZ = this.transform.rotation.eulerAngles.z;
+        float posX = shipTransform.position.x;
+        float posY = shipTransform.position.y;
+
+        float rotZ = shipTransform.rotation.eulerAngles.z;
 		
 		Vector3 velocity = rigidbody.velocity;
 		
@@ -451,9 +455,9 @@ public class EnemyScript : MonoBehaviour
 			stream.Serialize(ref posY);
 			stream.Serialize(ref rotZ);
 			stream.Serialize(ref velocity);
-			
-			this.transform.position = new Vector3(posX, posY, 10.0f);
-			this.transform.rotation = Quaternion.Euler(0, 0, rotZ);
+
+            shipTransform.position = new Vector3(posX, posY, 10.0f);
+            shipTransform.rotation = Quaternion.Euler(0, 0, rotZ);
 			rigidbody.velocity = velocity;
 			
 			StartCoroutine(BeginInterp());
@@ -512,15 +516,15 @@ public class EnemyScript : MonoBehaviour
 	public Collider[] GetAlliesInRange(float range)
 	{
 		int layerMask = 1 << 11;
-		return Physics.OverlapSphere(this.transform.position, range, layerMask);
+        return Physics.OverlapSphere(shipTransform.position, range, layerMask);
 	}
 	
 	public void RotateTowards(Vector3 position)
 	{
         //Debug.Log("ShipID = " + shipID + " position = " + position);
-        Vector3 dir = Vector3.Normalize(position - this.transform.position);
+        Vector3 dir = Vector3.Normalize(position - shipTransform.position);
         Quaternion lookRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime);
+        rigidbody.MoveRotation(Quaternion.Slerp(shipTransform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime));
 	}
 	
 	public float GetMinimumWeaponRange()
@@ -553,7 +557,7 @@ public class EnemyScript : MonoBehaviour
         //watch.Start();
 		//Vector2 distanceToClosestFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)transform.position;
 		Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
-		Vector2 distanceToTargetPosition = m_moveTarget - (Vector2)transform.position;
+        Vector2 distanceToTargetPosition = m_moveTarget - (Vector2)shipTransform.position;
         //watch.Stop();
         //Debug.Log("time taken for distance calculation = " + watch.ElapsedTicks);
 
@@ -614,13 +618,13 @@ public class EnemyScript : MonoBehaviour
 
         //watch.Reset();
         //watch.Start();
-		RotateTowards((Vector2)transform.position + directionToMove);
+        RotateTowards((Vector2)shipTransform.position + directionToMove);
         //watch.Stop();
         //Debug.Log("time taken to rotate = " + watch.ElapsedTicks);
 
         //watch.Reset();
         //watch.Start();
-		rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+        rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
         //watch.Stop();
         //Debug.Log("time taken to apply force = " + watch.ElapsedTicks);
 	}
@@ -636,13 +640,13 @@ public class EnemyScript : MonoBehaviour
 		Vector2 directionFromTargetToGroupPosition = Vector3.Normalize(currentGroupFormationPosition - m_moveTarget);
 		
 		Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition);
-		
-		float angle = Mathf.Deg2Rad * Vector2.Angle(normalOfGroupPosToTarget, (Vector2)transform.position - currentGroupFormationPosition);
-		float distanceAlongDirectionToParrallelIntersection = Mathf.Sin(angle) * Vector2.Distance(transform.position, currentGroupFormationPosition);
+
+        float angle = Mathf.Deg2Rad * Vector2.Angle(normalOfGroupPosToTarget, (Vector2)shipTransform.position - currentGroupFormationPosition);
+        float distanceAlongDirectionToParrallelIntersection = Mathf.Sin(angle) * Vector2.Distance(shipTransform.position, currentGroupFormationPosition);
 		
 		Vector2 targetFormationPosition = (-directionFromTargetToGroupPosition * distanceAlongDirectionToParrallelIntersection) + currentGroupFormationPosition;
-		
-		Vector2 vectorToPosition = targetFormationPosition - (Vector2)transform.position;
+
+        Vector2 vectorToPosition = targetFormationPosition - (Vector2)shipTransform.position;
 		
         //Debug.DrawLine(transform.position, (Vector2)transform.position + vectorToPosition, Color.red);
 		
@@ -661,7 +665,7 @@ public class EnemyScript : MonoBehaviour
 	
 	public float GetDistanceFromFormation()
 	{
-		return Vector2.Distance(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+        return Vector2.Distance(shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
 	}
 	
 	public Vector2 GetNormal(Vector2 direction)
@@ -671,7 +675,7 @@ public class EnemyScript : MonoBehaviour
 	
 	public bool InFormation(float distance)
 	{
-		return Vector2.Distance(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position)) < distance;
+        return Vector2.Distance(shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position)) < distance;
 	}
 	
 	void OnDestroy()
@@ -686,8 +690,8 @@ public class EnemyScript : MonoBehaviour
 	public void BeginShaderCoroutine(Vector3 position)
 	{
 		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+        Vector3 pos = shipTransform.InverseTransformPoint(position);
+        pos = new Vector3(pos.x * shipTransform.localScale.x, pos.y * shipTransform.localScale.y, pos.z);
 		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
 		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
 		
@@ -739,13 +743,13 @@ public class EnemyScript : MonoBehaviour
 		if (!m_shieldCache || m_shieldCache.tag != "Shield")
 		{
 			// Search child objects for the shield.
-			Transform result = transform.Find(m_pathToShieldObject);
+            Transform result = shipTransform.Find(m_pathToShieldObject);
 			m_shieldCache = result ? result.gameObject : null;
 			
 			if (!m_shieldCache || m_shieldCache.tag != "Shield")
 			{
 				// Fall back to old method and search
-				foreach (Transform child in this.transform)
+                foreach (Transform child in shipTransform)
 				{
 					if (child.tag == "Shield")
 					{
