@@ -135,6 +135,11 @@ public class CameraScript : MonoBehaviour
 			{
 				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
 			}
+			if(Input.GetKeyDown (KeyCode.Z))
+			{
+				bool setting = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
+				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap  = !setting;
+			}
 
 			if(Input.GetKeyDown (KeyCode.Space))
 			{
@@ -173,28 +178,6 @@ public class CameraScript : MonoBehaviour
 				Vector3 pos = m_currentPlayer.transform.position;
 				pos.z = -10;
 				this.transform.position = pos;
-				
-				//Listen for camera input
-				if(!m_playerIsDocked)
-				{
-					float scroll = Input.GetAxis("Mouse ScrollWheel");
-					if(scroll > 0)
-					{
-						//camera.orthographicSize -= 0.5f * Time.deltaTime;
-						m_currentOrthoSize -= 0.5f;
-						if(m_currentOrthoSize < 1)
-							m_currentOrthoSize = 1;
-					}
-					else if(scroll < 0)
-					{
-						//camera.orthographicSize += 0.5f * Time.deltaTime;
-						m_currentOrthoSize += 0.5f;
-						if(m_currentOrthoSize > 15)
-							m_currentOrthoSize = 15;
-					}
-				}
-				
-				camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, m_currentOrthoSize, Time.deltaTime);
 			}
 			else
 			{
@@ -224,7 +207,34 @@ public class CameraScript : MonoBehaviour
 				{
 					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
 				}
+				if(Input.GetKeyDown (KeyCode.Z))
+				{
+					bool setting = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
+					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap  = !setting;
+				}
 			}
+
+			//Listen for camera input
+			if(!m_playerIsDocked)
+			{
+				float scroll = Input.GetAxis("Mouse ScrollWheel");
+				if(scroll > 0)
+				{
+					//camera.orthographicSize -= 0.5f * Time.deltaTime;
+					m_currentOrthoSize -= 0.5f;
+					if(m_currentOrthoSize < 1)
+						m_currentOrthoSize = 1;
+				}
+				else if(scroll < 0)
+				{
+					//camera.orthographicSize += 0.5f * Time.deltaTime;
+					m_currentOrthoSize += 0.5f;
+					if(m_currentOrthoSize > 15)
+						m_currentOrthoSize = 15;
+				}
+			}
+			
+			camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, m_currentOrthoSize, Time.deltaTime);
 		}
 
 		Vector3 endPos = transform.position;
