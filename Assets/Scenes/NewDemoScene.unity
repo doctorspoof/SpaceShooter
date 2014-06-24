@@ -6606,6 +6606,7 @@ MonoBehaviour:
   m_menuBackground: {fileID: 2800000, guid: 162597ee9b314254d960d0501e6f6d6a, type: 3}
   m_menuButtonHighlight: {fileID: 2800000, guid: 6480c2cab8f9424409cb30ef0fde0b74,
     type: 3}
+  m_selectedButton: 0
   m_gameTimer: 0
   m_barEnd: {fileID: 2800000, guid: 046bbc3d73d12bc40b569dfc9223a913, type: 3}
   m_barMid: {fileID: 2800000, guid: 0165ac27eb57f0449948f42e7446a8c8, type: 3}

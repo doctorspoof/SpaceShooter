@@ -366,13 +366,35 @@ public class GUIManager : MonoBehaviour
 				}
 				break;
 			}
-			case GameState.AttemptingConnect:
+			case GameState.ClientConnectingMenu:
+			{
+				switch(m_selectedButton)
+				{
+					case 1:
+					{
+						//Input keyboard field here
+						break;
+					}
+					case 2:
+					{
+						ClientConnectJoinActivate();
+						break;
+					}
+					case 3:
+					{
+						ClientConnectBackActivate();
+						break;
+					}
+				}
+				break;
+			}
+			case GameState.ClientMenu:
 			{
 				m_selectedButton = 0;
 				m_maxButton = 1;
 				break;
 			}
-			case GameState.ClientMenu:
+			case GameState.AttemptingConnect:
 			{
 				m_selectedButton = 0;
 				m_maxButton = 1;
@@ -395,8 +417,8 @@ public class GUIManager : MonoBehaviour
 	void ScrollDownMenu()
 	{
 		m_selectedButton++;
-		if(m_selectedButton >= m_maxButton)
-			m_selectedButton = 0;
+		if(m_selectedButton > m_maxButton)
+			m_selectedButton = 1;
 	}
 
 	public void RequestBreakLock()
@@ -674,7 +696,7 @@ public class GUIManager : MonoBehaviour
 	Texture m_menuBackground;
 	[SerializeField]
 	Texture m_menuButtonHighlight;
-	int m_selectedButton = 0;
+	public int m_selectedButton = 0;
 	int m_maxButton = 4;
 
 	void DrawMainMenu()
@@ -798,7 +820,7 @@ public class GUIManager : MonoBehaviour
 		}
 		if(m_selectedButton == 2)
 		{
-			GUI.DrawTexture(new Rect(225, 600, 140, 100), m_menuButtonHighlight);
+			GUI.DrawTexture(new Rect(510, 600, 140, 100), m_menuButtonHighlight);
 		}
 		//m_hostShouldStartSpec = GUI.Toggle(new Rect(600, 850, 75, 75), m_hostShouldStartSpec, "");
 
@@ -864,15 +886,23 @@ public class GUIManager : MonoBehaviour
 		if(GUI.Button (new Rect(222, 600, 290, 100), "CONNECT", m_sharedGUIStyle) || Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return)
 		{
 			//if(username != "Name")
-			GameStateController.GetComponent<GameStateController>().PlayerRequestsToJoinGame(IPField, username, 6677);
-			PlayerPrefs.SetString("LastIP", IPField);
-			Time.timeScale = 1.0f;
+			ClientConnectJoinActivate();
 		}
 
 		if(GUI.Button (new Rect(222, 698, 290, 50), "BACK", m_sharedGUIStyle))
 		{
-			GameStateController.GetComponent<GameStateController>().BackToMenu();
+			ClientConnectBackActivate();
 		}
+	}
+	void ClientConnectJoinActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().PlayerRequestsToJoinGame(IPField, username, 6677);
+		PlayerPrefs.SetString("LastIP", IPField);
+		Time.timeScale = 1.0f;
+	}
+	void ClientConnectBackActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().BackToMenu();
 	}
 	void DrawClientMenu()
 	{
@@ -2786,7 +2816,13 @@ public class GUIManager : MonoBehaviour
 			case GameState.HostMenu:
 			{
 				m_selectedButton = 0;
-				m_maxButton = 2;
+				m_maxButton = 3;
+				break;
+			}
+			case GameState.ClientConnectingMenu:
+			{
+				m_selectedButton = 0;
+				m_maxButton = 3;
 				break;
 			}
 			case GameState.AttemptingConnect:
