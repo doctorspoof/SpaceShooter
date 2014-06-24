@@ -556,7 +556,7 @@ public class EnemyScript : MonoBehaviour
         //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
         //watch.Start();
 		//Vector2 distanceToClosestFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)transform.position;
-		Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
+        Vector2 distanceToClosestFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)transform.position;// GetVectorDistanceFromClosestFormation();
         Vector2 distanceToTargetPosition = m_moveTarget - (Vector2)shipTransform.position;
         //watch.Stop();
         //Debug.Log("time taken for distance calculation = " + watch.ElapsedTicks);
@@ -605,16 +605,17 @@ public class EnemyScript : MonoBehaviour
 
         //watch.Reset();
         //watch.Start();
-        float t = distanceToClosestFormationPosition.magnitude;
-		Vector2 directionToMove = (distanceToTargetPosition * Mathf.Pow(1 - t, 2)) + (distanceToClosestFormationPosition * Mathf.Pow(t, 2));
+        float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 2) / 2.0f;
+        //Debug.Log("t = " + t);
+		Vector2 directionToMove = (distanceToTargetPosition * (1 - t)) + (distanceToClosestFormationPosition * t);
         //Debug.Log("ShipID = " + shipID + " directionToMove = " + directionToMove);
         //watch.Stop();
         //Debug.Log("time taken to find direction to move = " + watch.ElapsedTicks);
 
-        //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
-        //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
-        //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-        //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+        Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
+        Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
+        Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
+        Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
 
         //watch.Reset();
         //watch.Start();
@@ -634,34 +635,36 @@ public class EnemyScript : MonoBehaviour
 	/// the group to the target.
 	/// </summary>
 	/// <returns></returns>
-	public Vector2 GetVectorDistanceFromClosestFormation()
-	{
-		Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position);
-		Vector2 directionFromTargetToGroupPosition = Vector3.Normalize(currentGroupFormationPosition - m_moveTarget);
-		
-		Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition);
+    public Vector2 GetVectorDistanceFromClosestFormation()
+    {
+        Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position);
+        Vector2 directionFromTargetToGroupPosition = Vector3.Normalize(currentGroupFormationPosition - m_moveTarget);
 
-        float angle = Mathf.Deg2Rad * Vector2.Angle(normalOfGroupPosToTarget, (Vector2)shipTransform.position - currentGroupFormationPosition);
-        float distanceAlongDirectionToParrallelIntersection = Mathf.Sin(angle) * Vector2.Distance(shipTransform.position, currentGroupFormationPosition);
-		
-		Vector2 targetFormationPosition = (-directionFromTargetToGroupPosition * distanceAlongDirectionToParrallelIntersection) + currentGroupFormationPosition;
+        Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition);
 
-        Vector2 vectorToPosition = targetFormationPosition - (Vector2)shipTransform.position;
-		
-        //Debug.DrawLine(transform.position, (Vector2)transform.position + vectorToPosition, Color.red);
-		
-		return vectorToPosition;
-	}
-	
-	/// <summary>
-	/// Gets the closest distance from the current position to a valid formation position on the line from
-	/// the group to the target.
-	/// </summary>
-	/// <returns></returns>
-	public float GetDistanceFromClosestFormation()
-	{
-		return GetVectorDistanceFromClosestFormation().magnitude;
-	}
+        //float angle = Mathf.Deg2Rad * Vector2.Angle(normalOfGroupPosToTarget, (Vector2)shipTransform.position - currentGroupFormationPosition);
+        //float distanceAlongDirectionToParrallelIntersection = Mathf.Sin(angle) * Vector2.Distance(shipTransform.position, currentGroupFormationPosition);
+
+        //Vector2 targetFormationPosition = (-directionFromTargetToGroupPosition * distanceAlongDirectionToParrallelIntersection) + currentGroupFormationPosition;
+
+        //Vector2 vectorToPosition = targetFormationPosition - (Vector2)shipTransform.position;
+
+        Debug.DrawLine(transform.position, (Vector2)transform.position + normalOfGroupPosToTarget, Color.red);
+
+        //Vector2 vectorToPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)shipTransform.position;
+
+        return normalOfGroupPosToTarget;
+    }
+
+    /// <summary>
+    /// Gets the closest distance from the current position to a valid formation position on the line from
+    /// the group to the target.
+    /// </summary>
+    /// <returns></returns>
+    public float GetDistanceFromClosestFormation()
+    {
+        return GetVectorDistanceFromClosestFormation().magnitude;
+    }
 	
 	public float GetDistanceFromFormation()
 	{

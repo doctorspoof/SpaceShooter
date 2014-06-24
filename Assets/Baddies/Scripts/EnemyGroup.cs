@@ -1052,13 +1052,14 @@ public class EnemyGroup : MonoBehaviour
     public EnemyScript GetShipFurthestOutOfFormation()
     {
         EnemyScript shipFurthestOutOfFormation = null;
-        float shipFurthestFromFormationDistance = shipFurthestOutOfFormation.GetDistanceFromFormation();
+        float shipFurthestFromFormationDistance = 0;
         foreach (List<EnemyScript> shipTier in m_children)
         {
             foreach (EnemyScript enemy in shipTier)
             {
                 if (shipFurthestOutOfFormation == null || shipFurthestFromFormationDistance < enemy.GetDistanceFromFormation())
                 {
+                    shipFurthestFromFormationDistance = enemy.GetDistanceFromFormation();
                     shipFurthestOutOfFormation = enemy;
                 }
             }
