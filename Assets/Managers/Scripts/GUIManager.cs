@@ -327,6 +327,26 @@ public class GUIManager : MonoBehaviour
 				m_selectedButton = 4;
 				break;
 			}
+			case GameState.HostMenu:
+			{
+				HostMenuBackActivate();
+				break;
+			}
+			case GameState.AttemptingConnect:
+			{
+				ClientConnectingBackActivate();
+				break;
+			}
+			case GameState.ClientConnectingMenu:
+			{
+				ClientConnectBackActivate();
+				break;
+			}
+			case GameState.OptionMenu:
+			{
+				GameStateController.GetComponent<GameStateController>().CloseOptionMenu();
+				break;
+			}
 		}
 	}
 	void ActivateMenuControllerPress()
@@ -483,16 +503,16 @@ public class GUIManager : MonoBehaviour
 		{
 			if(m_selectedButton == 5)
 			{
-				float music =  PlayerPrefs.GetFloat("MusicVolume") - 5;
-				if(music < 0)
-					music = 0;
+				float music = PlayerPrefs.GetFloat("MusicVolume") - 0.05f;
+				if(music < 0.0f)
+					music = 0.0f;
 				PlayerPrefs.SetFloat("MusicVolume", music);
 			}
 			else if(m_selectedButton == 6)
 			{
-				float effect =  PlayerPrefs.GetFloat("EffectVolume") - 5;
-				if(effect < 0)
-					effect = 0;
+				float effect =  PlayerPrefs.GetFloat("EffectVolume") - 0.05f;
+				if(effect < 0.0f)
+					effect = 0.0f;
 				PlayerPrefs.SetFloat("EffectVolume", effect);
 			}
 		}
@@ -509,16 +529,16 @@ public class GUIManager : MonoBehaviour
 		{
 			if(m_selectedButton == 5)
 			{
-				float music =  PlayerPrefs.GetFloat("MusicVolume") + 5;
-				if(music > 100)
-					music = 100;
+				float music =  PlayerPrefs.GetFloat("MusicVolume") + 0.05f;
+				if(music > 1.0f)
+					music = 1.0f;
 				PlayerPrefs.SetFloat("MusicVolume", music);
 			}
 			else if(m_selectedButton == 6)
 			{
-				float effect =  PlayerPrefs.GetFloat("EffectVolume") + 5;
-				if(effect > 100)
-					effect = 100;
+				float effect =  PlayerPrefs.GetFloat("EffectVolume") + 0.05f;
+				if(effect > 1.0f)
+					effect = 1.0f;
 				PlayerPrefs.SetFloat("EffectVolume", effect);
 			}
 		}
@@ -687,6 +707,10 @@ public class GUIManager : MonoBehaviour
 		{
 			resoDropdown = !resoDropdown;
 		}
+		if(m_selectedButton == 1)
+		{
+			GUI.DrawTexture(new Rect(515, 220, 288, 50), m_menuButtonHighlight);
+		}
 
 		if(resoDropdown)
 		{
@@ -731,6 +755,10 @@ public class GUIManager : MonoBehaviour
 				shouldFullscreen = !shouldFullscreen;
 			}
 		}
+		if(m_selectedButton == 2)
+		{
+			GUI.DrawTexture(new Rect(540, 330, 238, 50), m_menuButtonHighlight);
+		}
 
 		//GUI.Label (new Rect(515, 330, 180, 50), "Fullscreen?", m_nonBoxStyle);
 		//shouldFullscreen = GUI.Toggle(new Rect(740, 345, 20, 20), shouldFullscreen, "");
@@ -738,6 +766,10 @@ public class GUIManager : MonoBehaviour
 		if(GUI.Button (new Rect(540, 390, 238, 50), "Apply Resolution Changes", m_sharedGUIStyle))
 		{
 			Screen.SetResolution(newResolution.width, newResolution.height, shouldFullscreen);
+		}
+		if(m_selectedButton == 3)
+		{
+			GUI.DrawTexture(new Rect(540, 390, 238, 50), m_menuButtonHighlight);
 		}
 
 		if(useController)
@@ -759,6 +791,10 @@ public class GUIManager : MonoBehaviour
 				}
 			}
 		}
+		if(m_selectedButton == 4)
+		{
+			GUI.DrawTexture(new Rect(540, 450, 238, 50), m_menuButtonHighlight);
+		}
 
 		//Quality settings
 
@@ -770,9 +806,17 @@ public class GUIManager : MonoBehaviour
 
 		GUI.Label (new Rect(515, 590, 288, 50), "Music", m_nonBoxStyle);
 		PlayerPrefs.SetFloat("MusicVolume", GUI.HorizontalSlider(new Rect(520, 640, 278, 20), PlayerPrefs.GetFloat("MusicVolume"), 0.0f, 1.0f));
+		if(m_selectedButton == 5)
+		{
+			GUI.DrawTexture(new Rect(515, 590, 288, 50), m_menuButtonHighlight);
+		}
 
 		GUI.Label (new Rect(515, 660, 288, 50), "Effects", m_nonBoxStyle);
 		PlayerPrefs.SetFloat("EffectVolume", GUI.HorizontalSlider(new Rect(520, 710, 278, 20), PlayerPrefs.GetFloat("EffectVolume"), 0.0f, 1.0f));
+		if(m_selectedButton == 6)
+		{
+			GUI.DrawTexture(new Rect(515, 660, 288, 50), m_menuButtonHighlight);
+		}
 
 		/* Control option */
 
