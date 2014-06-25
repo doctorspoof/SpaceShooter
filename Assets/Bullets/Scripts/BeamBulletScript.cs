@@ -119,16 +119,16 @@ public class BeamBulletScript : MonoBehaviour
 	// Damage the mob, apply impact force and sync its position over the network if it's an asteroid
 	void DamageHit (RaycastHit hit)
 	{
+		// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+		Rigidbody mob = hit.collider.attachedRigidbody;
+		
+		// Push the enemy away from the force of the beam
+		mob.AddForceAtPosition (transform.up * m_impactForce, hit.point);
+
+		// Only the host should cause damage
 		if (Network.isServer)
 		{
-			// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-			Rigidbody mob = hit.collider.attachedRigidbody;
 			HealthScript health = mob.GetComponent<HealthScript>();
-			
-			// Push the enemy away from the force of the beam
-			mob.AddForceAtPosition (transform.up * m_impactForce, hit.point);
-			
-			
 			if (health && m_overflow > 1f)
 			{
 				// Ensure the overflow is caught and stored for the next time damage will be dealt
