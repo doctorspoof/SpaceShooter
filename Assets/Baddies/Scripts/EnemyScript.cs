@@ -13,9 +13,10 @@ public enum Order
 
 public enum ShipSize
 {
-    Large = 0,
-    Medium = 1,
-    Small = 2
+    Utility = 0,
+    Large = 1,
+    Medium = 2,
+    Small = 3
 }
 
 [RequireComponent(typeof(MeshFilter))]

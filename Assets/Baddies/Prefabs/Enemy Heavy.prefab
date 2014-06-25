@@ -910,7 +910,6 @@ MonoBehaviour:
   m_timeToRechargeShield: 3
   m_shouldStop: 0
   m_isInvincible: 0
-  m_shieldEffect: {fileID: 100000, guid: 177544381f0f5804aaf72220296a5daf, type: 2}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -931,7 +930,7 @@ MonoBehaviour:
   m_shipWidth: 0
   m_shipHeight: 0
   m_currentOrder: 0
-  shipSize: 0
+  shipSize: 1
   shipID: -1
   m_pathToShieldObject: Composite Collider/Shield
 --- !u!114 &11400004

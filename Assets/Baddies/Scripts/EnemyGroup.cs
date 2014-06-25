@@ -63,7 +63,7 @@ public class EnemyGroup : MonoBehaviour
 
     void Awake()
     {
-        m_children = new List<EnemyScript>[3];
+        m_children = new List<EnemyScript>[4];
         for (int i = 0; i < m_children.Length; ++i)
         {
             m_children[i] = new List<EnemyScript>();

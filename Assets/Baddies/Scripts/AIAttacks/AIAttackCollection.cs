@@ -7,6 +7,10 @@ public class AIAttackCollection
 
     public static IAttack[][] attackLists = 
     {
+            new IAttack[] // Utility ships
+            {
+
+            },
             new IAttack[] //large ships
             {
                 new AttackCircleClockwise(),
