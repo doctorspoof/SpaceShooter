@@ -59,6 +59,7 @@ public class GUIManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		Time.timeScale = 1.0f;
 		int control = PlayerPrefs.GetInt("UseControl");
 		if(control == 1)
 			useController = true;
@@ -171,7 +172,7 @@ public class GUIManager : MonoBehaviour
 				AttemptGoBackControllerPress();
 			}
 
-			if(Input.GetAxis("X360DPADVertical") > 0)
+			if(Input.GetAxis("X360DPADVertical") > 0 || Input.GetAxis ("LeftStickVertical") > 0)
 			{
 				if(m_dpadScrollPause <= 0.0f)
 				{
@@ -179,11 +180,27 @@ public class GUIManager : MonoBehaviour
 					m_dpadScrollPause = 0.5f;
 				}
 			}
-			else if(Input.GetAxis("X360DPADVertical") < 0)
+			else if(Input.GetAxis("X360DPADVertical") < 0 || Input.GetAxis ("LeftStickVertical") < 0)
 			{
 				if(m_dpadScrollPause <= 0.0f)
 				{
 					ScrollDownMenu();
+					m_dpadScrollPause = 0.5f;
+				}
+			}
+			else if(Input.GetAxis("X360DPADHorizontal") > 0 || Input.GetAxis("LeftStickHorizontal") > 0)
+			{
+				if(m_dpadScrollPause <= 0.0f)
+				{
+					ScrollRightMenu();
+					m_dpadScrollPause = 0.5f;
+				}
+			}
+			else if(Input.GetAxis ("X360DPADHorizontal") < 0 || Input.GetAxis("LeftStickHorizontal") < 0)
+			{
+				if(m_dpadScrollPause <= 0.0f)
+				{
+					ScrollLeftMenu();
 					m_dpadScrollPause = 0.5f;
 				}
 			}
@@ -294,7 +311,7 @@ public class GUIManager : MonoBehaviour
 	{
 
 		if(Vector3.Distance(thisPlayerHP.transform.position, m_lastLockonTarget.transform.position) > 
-		   thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance())
+		   (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.5f))
 			return true;
 		else
 			return false;
@@ -306,7 +323,31 @@ public class GUIManager : MonoBehaviour
 	{
 		switch(m_currentGameState)
 		{
-
+			case GameState.MainMenu:
+			{
+				m_selectedButton = 4;
+				break;
+			}
+			case GameState.HostMenu:
+			{
+				HostMenuBackActivate();
+				break;
+			}
+			case GameState.AttemptingConnect:
+			{
+				ClientConnectingBackActivate();
+				break;
+			}
+			case GameState.ClientConnectingMenu:
+			{
+				ClientConnectBackActivate();
+				break;
+			}
+			case GameState.OptionMenu:
+			{
+				GameStateController.GetComponent<GameStateController>().CloseOptionMenu();
+				break;
+			}
 		}
 	}
 	void ActivateMenuControllerPress()
@@ -342,20 +383,99 @@ public class GUIManager : MonoBehaviour
 			}
 			case GameState.HostMenu:
 			{
-				m_selectedButton = 0;
-				m_maxButton = 2;
+				switch(m_selectedButton)
+				{
+					case 1:
+					{
+						if(m_selectedSubButton == 0)
+							HostMenuStartButtonActivate();
+						else
+							m_hostShouldStartSpec = !m_hostShouldStartSpec;	
+						break;
+					}
+					case 2:
+					{
+						HostMenuBackActivate();
+						break;
+					}
+				}
 				break;
 			}
-			case GameState.AttemptingConnect:
+			case GameState.OptionMenu:
 			{
-				m_selectedButton = 0;
-				m_maxButton = 1;
+				switch(m_selectedButton)
+				{
+					case 1:
+					{
+						//Resolution, ignore for now
+						break;
+					}
+					case 2:
+					{
+						//Fullscreen, ignore for now
+						break;
+					}
+					case 3:
+					{
+						//Apply, ignore for now
+						break;
+					}
+					case 4:
+					{
+						useController = !useController;
+						break;
+					}
+					case 5:
+					{
+						//Music, do nothing
+						break;
+					}
+					case 6:
+					{
+						//Sound, do nothing
+						break;
+					}
+				}
+				break;
+			}
+			case GameState.ClientConnectingMenu:
+			{
+				switch(m_selectedButton)
+				{
+					case 1:
+					{
+						//Input keyboard field here
+						break;
+					}
+					case 2:
+					{
+						ClientConnectJoinActivate();
+						break;
+					}
+					case 3:
+					{
+						ClientConnectBackActivate();
+						break;
+					}
+				}
 				break;
 			}
 			case GameState.ClientMenu:
 			{
 				m_selectedButton = 0;
 				m_maxButton = 1;
+				break;
+			}
+			case GameState.AttemptingConnect:
+			{
+				switch(m_selectedButton)
+				{
+					case 1:
+					{
+						ClientConnectingBackActivate();
+						break;
+					}
+				}
 				break;
 			}
 			case GameState.FailedConnectName:
@@ -375,8 +495,60 @@ public class GUIManager : MonoBehaviour
 	void ScrollDownMenu()
 	{
 		m_selectedButton++;
-		if(m_selectedButton >= m_maxButton)
-			m_selectedButton = 0;
+		if(m_selectedButton > m_maxButton)
+			m_selectedButton = 1;
+	}
+	void ScrollLeftMenu()
+	{
+		if(m_currentGameState == GameState.OptionMenu)
+		{
+			if(m_selectedButton == 5)
+			{
+				float music = PlayerPrefs.GetFloat("MusicVolume") - 0.05f;
+				if(music < 0.0f)
+					music = 0.0f;
+				PlayerPrefs.SetFloat("MusicVolume", music);
+			}
+			else if(m_selectedButton == 6)
+			{
+				float effect =  PlayerPrefs.GetFloat("EffectVolume") - 0.05f;
+				if(effect < 0.0f)
+					effect = 0.0f;
+				PlayerPrefs.SetFloat("EffectVolume", effect);
+			}
+		}
+		else
+		{
+			m_selectedSubButton--;
+			if(m_selectedSubButton < 0)
+				m_selectedSubButton = m_maxSubButton;
+		}
+	}
+	void ScrollRightMenu()
+	{
+		if(m_currentGameState == GameState.OptionMenu)
+		{
+			if(m_selectedButton == 5)
+			{
+				float music =  PlayerPrefs.GetFloat("MusicVolume") + 0.05f;
+				if(music > 1.0f)
+					music = 1.0f;
+				PlayerPrefs.SetFloat("MusicVolume", music);
+			}
+			else if(m_selectedButton == 6)
+			{
+				float effect =  PlayerPrefs.GetFloat("EffectVolume") + 0.05f;
+				if(effect > 1.0f)
+					effect = 1.0f;
+				PlayerPrefs.SetFloat("EffectVolume", effect);
+			}
+		}
+		else
+		{
+			m_selectedSubButton++;
+			if(m_selectedSubButton > m_maxSubButton)
+				m_selectedSubButton = 0;
+		}
 	}
 
 	public void RequestBreakLock()
@@ -512,6 +684,10 @@ public class GUIManager : MonoBehaviour
 		{
 			GameStateController.GetComponent<GameStateController>().PlayerCancelsConnect();
 		}
+		if(m_selectedButton == 1)
+		{
+			GUI.DrawTexture(new Rect(225, 698, 285, 50), m_menuButtonHighlight);
+		}
 	}
 
 	bool resoDropdown = false;
@@ -532,6 +708,10 @@ public class GUIManager : MonoBehaviour
 		if(GUI.Button (new Rect(513, 270, 288, 50), newResolution.width + "x" + newResolution.height, m_sharedGUIStyle))
 		{
 			resoDropdown = !resoDropdown;
+		}
+		if(m_selectedButton == 1)
+		{
+			GUI.DrawTexture(new Rect(515, 220, 288, 50), m_menuButtonHighlight);
 		}
 
 		if(resoDropdown)
@@ -577,6 +757,10 @@ public class GUIManager : MonoBehaviour
 				shouldFullscreen = !shouldFullscreen;
 			}
 		}
+		if(m_selectedButton == 2)
+		{
+			GUI.DrawTexture(new Rect(540, 330, 238, 50), m_menuButtonHighlight);
+		}
 
 		//GUI.Label (new Rect(515, 330, 180, 50), "Fullscreen?", m_nonBoxStyle);
 		//shouldFullscreen = GUI.Toggle(new Rect(740, 345, 20, 20), shouldFullscreen, "");
@@ -584,6 +768,10 @@ public class GUIManager : MonoBehaviour
 		if(GUI.Button (new Rect(540, 390, 238, 50), "Apply Resolution Changes", m_sharedGUIStyle))
 		{
 			Screen.SetResolution(newResolution.width, newResolution.height, shouldFullscreen);
+		}
+		if(m_selectedButton == 3)
+		{
+			GUI.DrawTexture(new Rect(540, 390, 238, 50), m_menuButtonHighlight);
 		}
 
 		if(useController)
@@ -605,6 +793,10 @@ public class GUIManager : MonoBehaviour
 				}
 			}
 		}
+		if(m_selectedButton == 4)
+		{
+			GUI.DrawTexture(new Rect(540, 450, 238, 50), m_menuButtonHighlight);
+		}
 
 		//Quality settings
 
@@ -616,9 +808,17 @@ public class GUIManager : MonoBehaviour
 
 		GUI.Label (new Rect(515, 590, 288, 50), "Music", m_nonBoxStyle);
 		PlayerPrefs.SetFloat("MusicVolume", GUI.HorizontalSlider(new Rect(520, 640, 278, 20), PlayerPrefs.GetFloat("MusicVolume"), 0.0f, 1.0f));
+		if(m_selectedButton == 5)
+		{
+			GUI.DrawTexture(new Rect(515, 590, 288, 50), m_menuButtonHighlight);
+		}
 
 		GUI.Label (new Rect(515, 660, 288, 50), "Effects", m_nonBoxStyle);
 		PlayerPrefs.SetFloat("EffectVolume", GUI.HorizontalSlider(new Rect(520, 710, 278, 20), PlayerPrefs.GetFloat("EffectVolume"), 0.0f, 1.0f));
+		if(m_selectedButton == 6)
+		{
+			GUI.DrawTexture(new Rect(515, 660, 288, 50), m_menuButtonHighlight);
+		}
 
 		/* Control option */
 
@@ -655,8 +855,10 @@ public class GUIManager : MonoBehaviour
 	Texture m_menuBackground;
 	[SerializeField]
 	Texture m_menuButtonHighlight;
-	int m_selectedButton = 0;
+	public int m_selectedButton = 0;
+	int m_selectedSubButton = 0;
 	int m_maxButton = 4;
+	int m_maxSubButton = 1;
 
 	void DrawMainMenu()
 	{
@@ -756,8 +958,11 @@ public class GUIManager : MonoBehaviour
 
 		if(GUI.Button (new Rect(225, 600, 285, 100), "START", m_sharedGUIStyle))
 		{
-			GameStateController.GetComponent<GameStateController>().StartGameFromMenu(m_hostShouldStartSpec);
-			AskServerToBeginSpawns();
+			HostMenuStartButtonActivate();
+		}
+		if(m_selectedButton == 1 && m_selectedSubButton == 0)
+		{
+			GUI.DrawTexture(new Rect(225, 600, 285, 100), m_menuButtonHighlight);
 		}
 
 		if(!m_hostShouldStartSpec)
@@ -774,15 +979,33 @@ public class GUIManager : MonoBehaviour
 				m_hostShouldStartSpec = false;
 			}
 		}
+		if(m_selectedButton == 1 && m_selectedSubButton == 1)
+		{
+			GUI.DrawTexture(new Rect(510, 600, 140, 100), m_menuButtonHighlight);
+		}
 		//m_hostShouldStartSpec = GUI.Toggle(new Rect(600, 850, 75, 75), m_hostShouldStartSpec, "");
 
 		if(GUI.Button (new Rect(225, 698, 285, 50), "BACK", m_sharedGUIStyle))
 		{
-			GameStateController.GetComponent<GameStateController>().BackToMenu();
-			GameStateController.GetComponent<GameStateController>().WipeConnectionInfo();
-			Network.Disconnect();
-			Debug.Log ("Closed Server.");
+			HostMenuBackActivate();
 		}
+		if(m_selectedButton == 2)
+		{
+			GUI.DrawTexture(new Rect(225, 698, 285, 50), m_menuButtonHighlight);
+		}
+	}
+
+	void HostMenuStartButtonActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().StartGameFromMenu(m_hostShouldStartSpec);
+		AskServerToBeginSpawns();
+	}
+	void HostMenuBackActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().BackToMenu();
+		GameStateController.GetComponent<GameStateController>().WipeConnectionInfo();
+		Network.Disconnect();
+		Debug.Log ("Closed Server.");
 	}
 
 	//Spec functions
@@ -817,6 +1040,10 @@ public class GUIManager : MonoBehaviour
 
 		GUI.Label (new Rect(222, 331, 290, 50), "IP Address:", m_nonBoxBigStyle);
 		IPField = GUI.TextField(new Rect(222, 380, 290, 50), IPField, m_sharedGUIStyle);
+		if(m_selectedButton == 1)
+		{
+			GUI.DrawTexture(new Rect(222, 380, 290, 50), m_menuButtonHighlight);
+		}
 
 		//GUI.Label (new Rect(200, 400, 300, 50), "I.P. Address:");
 		//IPField = GUI.TextField(new Rect(200, 475, 300, 50), IPField);
@@ -824,15 +1051,31 @@ public class GUIManager : MonoBehaviour
 		if(GUI.Button (new Rect(222, 600, 290, 100), "CONNECT", m_sharedGUIStyle) || Event.current.keyCode == KeyCode.KeypadEnter || Event.current.keyCode == KeyCode.Return)
 		{
 			//if(username != "Name")
-			GameStateController.GetComponent<GameStateController>().PlayerRequestsToJoinGame(IPField, username, 6677);
-			PlayerPrefs.SetString("LastIP", IPField);
-			Time.timeScale = 1.0f;
+			ClientConnectJoinActivate();
+		}
+		if(m_selectedButton == 2)
+		{
+			GUI.DrawTexture(new Rect(222, 600, 290, 100), m_menuButtonHighlight);
 		}
 
 		if(GUI.Button (new Rect(222, 698, 290, 50), "BACK", m_sharedGUIStyle))
 		{
-			GameStateController.GetComponent<GameStateController>().BackToMenu();
+			ClientConnectBackActivate();
 		}
+		if(m_selectedButton == 3)
+		{
+			GUI.DrawTexture(new Rect(222, 698, 290, 50), m_menuButtonHighlight);
+		}
+	}
+	void ClientConnectJoinActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().PlayerRequestsToJoinGame(IPField, username, 6677);
+		PlayerPrefs.SetString("LastIP", IPField);
+		Time.timeScale = 1.0f;
+	}
+	void ClientConnectBackActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().BackToMenu();
 	}
 	void DrawClientMenu()
 	{
@@ -847,10 +1090,14 @@ public class GUIManager : MonoBehaviour
 		
 		if(GUI.Button (new Rect(225, 698, 285, 50), "BACK", m_sharedGUIStyle))
 		{
-			GameStateController.GetComponent<GameStateController>().BackToMenu();
-			GameStateController.GetComponent<GameStateController>().WipeConnectionInfo();
-			Network.Disconnect();
+			ClientConnectingBackActivate();
 		}
+	}
+	void ClientConnectingBackActivate()
+	{
+		GameStateController.GetComponent<GameStateController>().BackToMenu();
+		GameStateController.GetComponent<GameStateController>().WipeConnectionInfo();
+		Network.Disconnect();
 	}
 	void DrawMapMenu()
 	{
@@ -2016,6 +2263,8 @@ public class GUIManager : MonoBehaviour
 				}
 			}
 		}
+
+		GUI.matrix = oldGUIMat;
 	}
 
 	Vector2 WorldToMapPos(Vector3 worldPos)
@@ -2733,35 +2982,55 @@ public class GUIManager : MonoBehaviour
 				m_gameTimer = 0.0f;
 				shops = GameObject.FindGameObjectsWithTag("Shop");
 				m_selectedButton = 0;
+				m_selectedSubButton = 0;
 				break;
 			}
 			case GameState.MainMenu:
 			{
 				m_selectedButton = 0;
+				m_selectedSubButton = 0;
 				m_maxButton = 4;
 				break;
 			}
 			case GameState.HostMenu:
 			{
 				m_selectedButton = 0;
-				m_maxButton = 2;
+				m_selectedSubButton = 0;
+				m_maxButton = 3;
+				break;
+			}
+			case GameState.OptionMenu:
+			{
+				m_selectedButton = 0;
+				m_selectedSubButton = 0;
+				m_maxButton = 6;
+				break;
+			}
+			case GameState.ClientConnectingMenu:
+			{
+				m_selectedButton = 0;
+				m_selectedSubButton = 0;
+				m_maxButton = 3;
 				break;
 			}
 			case GameState.AttemptingConnect:
 			{
 				m_selectedButton = 0;
+				m_selectedSubButton = 0;
 				m_maxButton = 1;
 				break;
 			}
 			case GameState.ClientMenu:
 			{
 				m_selectedButton = 0;
+				m_selectedSubButton = 0;
 				m_maxButton = 1;
 				break;
 			}
 			case GameState.FailedConnectName:
 			{
 				m_selectedButton = 0;
+				m_selectedSubButton = 0;
 				m_maxButton = 1;
 				break;
 			}

@@ -21,6 +21,8 @@ public enum ShipSize
 [RequireComponent(typeof(MeshFilter))]
 public class EnemyScript : MonoBehaviour
 {
+    Transform shipTransform = null;
+
 	[SerializeField]
 	float m_ramDamageMultiplier = 2.5f;
 	public float GetRamDam()
@@ -317,8 +319,10 @@ public class EnemyScript : MonoBehaviour
 	{
 		shipID = ids;
 		ids++;
-		
-		lastFramePosition = transform.position;
+
+        shipTransform = transform;
+
+        lastFramePosition = shipTransform.position;
 		currentAttackType = AIAttackCollection.GetRandomAttack((int)shipSize);
 		SetShipSpeed(m_shipSpeed);
 	}
@@ -362,10 +366,13 @@ public class EnemyScript : MonoBehaviour
 			}
 			case Order.Move:
 			{
-				
+                //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+                //watch.Start();
 				MoveTowardTarget();
-				
-				if (Vector3.Distance((Vector2)transform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
+                //watch.Stop();
+                //Debug.Log("time taken = " + watch.ElapsedTicks);
+
+                if (Vector3.Distance((Vector2)shipTransform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
 				{
 					m_currentOrder = Order.Idle;
 				}
@@ -379,9 +386,9 @@ public class EnemyScript : MonoBehaviour
 					m_currentOrder = Order.Idle;
 					break;
 				}
-				
-				Vector3 direction = Vector3.Normalize(m_target.transform.position - transform.position);
-				Ray ray = new Ray(transform.position, direction);
+
+                Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
+                Ray ray = new Ray(shipTransform.position, direction);
 				
 				//Debug.DrawLine(transform.position, m_target.transform.position, Color.blue);
 				Debug.DrawRay(ray.origin, ray.direction, Color.blue);
@@ -390,8 +397,8 @@ public class EnemyScript : MonoBehaviour
 				if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange() * 0.8f))
 				{
 					RotateTowards(m_target.transform.position);
-					
-					rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+
+                    rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
 				}
 				else
 				{
@@ -420,10 +427,10 @@ public class EnemyScript : MonoBehaviour
 		sendCounter++;
 		
 		//Handle positions manually
-		float posX = this.transform.position.x;
-		float posY = this.transform.position.y;
-		
-		float rotZ = this.transform.rotation.eulerAngles.z;
+        float posX = shipTransform.position.x;
+        float posY = shipTransform.position.y;
+
+        float rotZ = shipTransform.rotation.eulerAngles.z;
 		
 		Vector3 velocity = rigidbody.velocity;
 		
@@ -448,9 +455,9 @@ public class EnemyScript : MonoBehaviour
 			stream.Serialize(ref posY);
 			stream.Serialize(ref rotZ);
 			stream.Serialize(ref velocity);
-			
-			this.transform.position = new Vector3(posX, posY, 10.0f);
-			this.transform.rotation = Quaternion.Euler(0, 0, rotZ);
+
+            shipTransform.position = new Vector3(posX, posY, 10.0f);
+            shipTransform.rotation = Quaternion.Euler(0, 0, rotZ);
 			rigidbody.velocity = velocity;
 			
 			StartCoroutine(BeginInterp());
@@ -509,14 +516,15 @@ public class EnemyScript : MonoBehaviour
 	public Collider[] GetAlliesInRange(float range)
 	{
 		int layerMask = 1 << 11;
-		return Physics.OverlapSphere(this.transform.position, range, layerMask);
+        return Physics.OverlapSphere(shipTransform.position, range, layerMask);
 	}
 	
 	public void RotateTowards(Vector3 position)
 	{
-		Vector3 dir = position - this.transform.position;
-		Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-		this.transform.rotation = Quaternion.Slerp(transform.rotation, target, m_rotateSpeed * Time.deltaTime);
+        //Debug.Log("ShipID = " + shipID + " position = " + position);
+        Vector3 dir = Vector3.Normalize(position - shipTransform.position);
+        Quaternion lookRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
+        rigidbody.MoveRotation(Quaternion.Slerp(shipTransform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime));
 	}
 	
 	public float GetMinimumWeaponRange()
@@ -544,58 +552,22 @@ public class EnemyScript : MonoBehaviour
 	
 	private void MoveTowardTarget()
 	{
-		// ResetShipSpeed();
-		
-		//Vector2 distanceToClosestFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position) - (Vector2)transform.position;
-		Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
-		Vector2 distanceToTargetPosition = Vector3.Normalize(m_moveTarget - (Vector2)transform.position);
-		
+        Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
+        Vector2 distanceToTargetPosition = (m_moveTarget - (Vector2)shipTransform.position);
+
 		float speed = m_parentGroup.GetSlowestShipSpeed();
-		
-		//EnemyScript shipFurthestOutOfPosition;
-		//if (!m_parentGroup.InFormation(out shipFurthestOutOfPosition))
-		//{
-		
-		//    if (!InFormation(1))// i am out of formation
-		//    {
-		//        float aheadOfGroup = Vector2.Dot((Vector2)transform.position - GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position),
-		//                        m_moveTarget - GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
-		
-		//        Debug.Log("Running out of formation");
-		//        if (aheadOfGroup >= 0)// do i need to slow down for others to catch up to me?
-		//        {
-		//            speed *= 0.1f;
-		//        }
-		//        else// do i need to speed up to catch up to others?
-		//        {
-		//            speed = m_shipSpeed;
-		//        }
-		//    }
-		//    else// i am not out of formation, but others in the group are
-		//    {
-		//        float furthestOutOfPositionAheadOfGroup = Vector2.Dot((Vector2)shipFurthestOutOfPosition.transform.position - shipFurthestOutOfPosition.GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position),
-		//                        shipFurthestOutOfPosition.m_moveTarget - shipFurthestOutOfPosition.GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
-		//        Debug.Log("Running in formation but others arnt");
-		//        if (furthestOutOfPositionAheadOfGroup >= 0)// is the furthest ship ahead of me?
-		//        {
-		//        }
-		//        else// is it behind?
-		//        {
-		//            speed *= 0.1f;
-		//        }
-		//    }
-		
-		//}
-		
-		Vector2 directionToMove = (distanceToTargetPosition / Mathf.Pow(distanceToClosestFormationPosition.magnitude, 2)) + distanceToClosestFormationPosition;
-		
-		Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
-		Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
-		Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-		Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
-		RotateTowards((Vector2)transform.position + directionToMove);
-		
-		rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+
+        float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
+		Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
+
+        Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
+        Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
+        Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
+        Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+
+        RotateTowards((Vector2)shipTransform.position + directionToMove);
+
+        rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
 	}
 	
 	/// <summary>
@@ -603,38 +575,33 @@ public class EnemyScript : MonoBehaviour
 	/// the group to the target.
 	/// </summary>
 	/// <returns></returns>
-	public Vector2 GetVectorDistanceFromClosestFormation()
-	{
-		Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position);
-		Vector2 directionFromTargetToGroupPosition = Vector3.Normalize(currentGroupFormationPosition - m_moveTarget);
-		
-		Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition);
-		
-		float angle = Mathf.Deg2Rad * Vector2.Angle(normalOfGroupPosToTarget, (Vector2)transform.position - currentGroupFormationPosition);
-		float distanceAlongDirectionToParrallelIntersection = Mathf.Sin(angle) * Vector2.Distance(transform.position, currentGroupFormationPosition);
-		
-		Vector2 targetFormationPosition = (-directionFromTargetToGroupPosition * distanceAlongDirectionToParrallelIntersection) + currentGroupFormationPosition;
-		
-		Vector2 vectorToPosition = targetFormationPosition - (Vector2)transform.position;
-		
-		Debug.DrawLine(transform.position, (Vector2)transform.position + vectorToPosition, Color.red);
-		
-		return vectorToPosition;
-	}
-	
-	/// <summary>
-	/// Gets the closest distance from the current position to a valid formation position on the line from
-	/// the group to the target.
-	/// </summary>
-	/// <returns></returns>
-	public float GetDistanceFromClosestFormation()
-	{
-		return GetVectorDistanceFromClosestFormation().magnitude;
-	}
+    public Vector2 GetVectorDistanceFromClosestFormation()
+    {
+        Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position);
+        Vector2 directionFromTargetToGroupPosition = currentGroupFormationPosition - m_moveTarget;
+
+        Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition).normalized;
+
+        float d = -Vector2.Dot(((Vector2)shipTransform.position - currentGroupFormationPosition), normalOfGroupPosToTarget);
+
+        //Debug.DrawLine(transform.position, (Vector2)transform.position + normalOfGroupPosToTarget, Color.red);
+
+        return normalOfGroupPosToTarget * d;
+    }
+
+    /// <summary>
+    /// Gets the closest distance from the current position to a valid formation position on the line from
+    /// the group to the target.
+    /// </summary>
+    /// <returns></returns>
+    public float GetDistanceFromClosestFormation()
+    {
+        return GetVectorDistanceFromClosestFormation().magnitude;
+    }
 	
 	public float GetDistanceFromFormation()
 	{
-		return Vector2.Distance(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+        return Vector2.Distance(shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
 	}
 	
 	public Vector2 GetNormal(Vector2 direction)
@@ -644,7 +611,7 @@ public class EnemyScript : MonoBehaviour
 	
 	public bool InFormation(float distance)
 	{
-		return Vector2.Distance(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position)) < distance;
+        return Vector2.Distance(shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position)) < distance;
 	}
 	
 	void OnDestroy()
@@ -659,8 +626,8 @@ public class EnemyScript : MonoBehaviour
 	public void BeginShaderCoroutine(Vector3 position)
 	{
 		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+        Vector3 pos = shipTransform.InverseTransformPoint(position);
+        pos = new Vector3(pos.x * shipTransform.localScale.x, pos.y * shipTransform.localScale.y, pos.z);
 		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
 		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
 		
@@ -712,13 +679,13 @@ public class EnemyScript : MonoBehaviour
 		if (!m_shieldCache || m_shieldCache.tag != "Shield")
 		{
 			// Search child objects for the shield.
-			Transform result = transform.Find(m_pathToShieldObject);
+            Transform result = shipTransform.Find(m_pathToShieldObject);
 			m_shieldCache = result ? result.gameObject : null;
 			
 			if (!m_shieldCache || m_shieldCache.tag != "Shield")
 			{
 				// Fall back to old method and search
-				foreach (Transform child in this.transform)
+                foreach (Transform child in shipTransform)
 				{
 					if (child.tag == "Shield")
 					{

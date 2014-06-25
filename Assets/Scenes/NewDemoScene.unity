@@ -105,12 +105,12 @@ MonoBehaviour:
   m_waveInfos:
   - m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 5
+      m_numEnemy: 10
   - m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
       m_numEnemy: 6
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 2
+      m_numEnemy: 6
   - m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
       m_numEnemy: 5
@@ -119,32 +119,28 @@ MonoBehaviour:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 3
   - m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 8
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 3
+  - m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 5
+      m_numEnemy: 6
+    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
+      m_numEnemy: 2
   - m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 14
+      m_numEnemy: 4
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 5
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 8
-  - m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 20
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 20
+      m_numEnemy: 2
   test: []
   m_allSpawnPoints: []
-  currentWave: 0
   m_capitalShip: {fileID: 0}
+  healthModifierIncrement: 0
+  currentHealthModifier: 1
+  timeCountInMinutes: 25
+  multiplierAtTimeRequired: 5
   shouldStart: 0
   allDone: 1
+  lastTime: 0
 --- !u!4 &11740236
 Transform:
   m_ObjectHideFlags: 0
@@ -6606,6 +6602,7 @@ MonoBehaviour:
   m_menuBackground: {fileID: 2800000, guid: 162597ee9b314254d960d0501e6f6d6a, type: 3}
   m_menuButtonHighlight: {fileID: 2800000, guid: 6480c2cab8f9424409cb30ef0fde0b74,
     type: 3}
+  m_selectedButton: 0
   m_gameTimer: 0
   m_barEnd: {fileID: 2800000, guid: 046bbc3d73d12bc40b569dfc9223a913, type: 3}
   m_barMid: {fileID: 2800000, guid: 0165ac27eb57f0449948f42e7446a8c8, type: 3}
@@ -7018,10 +7015,14 @@ MonoBehaviour:
       m_numEnemy: 1
   test: []
   m_allSpawnPoints: []
-  currentWave: 0
   m_capitalShip: {fileID: 0}
+  healthModifierIncrement: 0
+  currentHealthModifier: 1
+  timeCountInMinutes: 0
+  multiplierAtTimeRequired: 0
   shouldStart: 0
   allDone: 1
+  lastTime: 0
 --- !u!4 &1744561043
 Transform:
   m_ObjectHideFlags: 0
@@ -8137,11 +8138,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[4].m_enemiesOnWave.Array.size
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[5].m_enemiesOnWave.Array.size
-      value: 3
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_waveInfos.Array.data[3].m_enemiesOnWave.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_LocalPosition.x
@@ -8178,10 +8183,10 @@ Prefab:
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[4].m_enemiesOnWave.Array.data[0].m_enemyRef
       value: 
-      objectReference: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+      objectReference: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[4].m_enemiesOnWave.Array.data[0].m_numEnemy
-      value: 14
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[4].m_enemiesOnWave.Array.data[1].m_enemyRef
@@ -8189,7 +8194,7 @@ Prefab:
       objectReference: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[4].m_enemiesOnWave.Array.data[1].m_numEnemy
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[4].m_enemiesOnWave.Array.data[2].m_enemyRef
@@ -8205,7 +8210,7 @@ Prefab:
       objectReference: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[5].m_enemiesOnWave.Array.data[0].m_numEnemy
-      value: 20
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[5].m_enemiesOnWave.Array.data[1].m_enemyRef
@@ -8213,7 +8218,7 @@ Prefab:
       objectReference: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[5].m_enemiesOnWave.Array.data[1].m_numEnemy
-      value: 8
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[5].m_enemiesOnWave.Array.data[2].m_enemyRef
@@ -8230,6 +8235,38 @@ Prefab:
     - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_waveInfos.Array.data[3].m_enemiesOnWave.Array.data[1].m_numEnemy
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_waveInfos.Array.data[0].m_enemiesOnWave.Array.data[0].m_numEnemy
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_waveInfos.Array.data[1].m_enemiesOnWave.Array.data[1].m_numEnemy
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_waveInfos.Array.data[3].m_enemiesOnWave.Array.data[0].m_numEnemy
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_waveInfos.Array.data[3].m_enemiesOnWave.Array.data[0].m_enemyRef
+      value: 
+      objectReference: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: percentAtTimeCount
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: timeCountInMinutes
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: percentAtTimeSpecified
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: multiplierAtTimeRequired
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}

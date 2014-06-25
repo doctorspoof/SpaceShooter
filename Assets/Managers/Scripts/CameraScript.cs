@@ -154,14 +154,14 @@ public class CameraScript : MonoBehaviour
 			}
 
 			float scroll = Input.GetAxis("Mouse ScrollWheel");
-			if(scroll > 0)
+			if(scroll > 0 || Input.GetButtonDown("X360LeftBumper"))
 			{
 				//camera.orthographicSize -= 0.5f * Time.deltaTime;
 				m_currentOrthoSize -= 0.5f;
 				if(m_currentOrthoSize < 1)
 					m_currentOrthoSize = 1;
 			}
-			else if(scroll < 0)
+			else if(scroll < 0 || Input.GetButtonDown("X360RightBumper"))
 			{
 				//camera.orthographicSize += 0.5f * Time.deltaTime;
 				m_currentOrthoSize += 0.5f;
@@ -218,14 +218,14 @@ public class CameraScript : MonoBehaviour
 			if(!m_playerIsDocked)
 			{
 				float scroll = Input.GetAxis("Mouse ScrollWheel");
-				if(scroll > 0)
+				if(scroll > 0 || Input.GetButton("X360LeftBumper"))
 				{
 					//camera.orthographicSize -= 0.5f * Time.deltaTime;
 					m_currentOrthoSize -= 0.5f;
 					if(m_currentOrthoSize < 1)
 						m_currentOrthoSize = 1;
 				}
-				else if(scroll < 0)
+				else if(scroll < 0 || Input.GetButton("X360RightBumper"))
 				{
 					//camera.orthographicSize += 0.5f * Time.deltaTime;
 					m_currentOrthoSize += 0.5f;
