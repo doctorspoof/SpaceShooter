@@ -50,7 +50,7 @@ public class HealthScript : MonoBehaviour
 	public void EquipNewShield(int capacity, int rechargeRate, float rechargeDelay)
 	{
 		m_maximumShield = capacity;
-		m_currentShield = m_maximumShield;
+		m_currentShield = GetMaxShield();
 		m_shieldRechargeRate = rechargeRate;
 		m_timeToRechargeShield = rechargeDelay;
 		
@@ -77,7 +77,7 @@ public class HealthScript : MonoBehaviour
 	void Start () 
 	{
 		m_currentHealth = m_maximumHealth;
-		m_currentShield = m_maximumShield;
+        m_currentShield = GetMaxShield();
 	}
 	
 	// Update is called once per frame
@@ -92,8 +92,8 @@ public class HealthScript : MonoBehaviour
 				ShieldOnOff (true);
 			}
 		}
-		
-		if(isRegenerating && m_currentShield < m_maximumShield && !m_shouldStop)
+
+        if (isRegenerating && m_currentShield < GetMaxShield() && !m_shouldStop)
 		{
 			regenFloatCatch += Time.deltaTime * m_shieldRechargeRate;
 			if(Mathf.FloorToInt(regenFloatCatch) > 0)
@@ -193,7 +193,7 @@ public class HealthScript : MonoBehaviour
 	}
 	public float GetShieldPercentage()
 	{
-		float output = (float)m_currentShield / (float)m_maximumShield;
+        float output = (float)m_currentShield / (float)GetMaxShield();
 		return output;
 	}
 	public int GetMaxShield()
@@ -488,7 +488,7 @@ public class HealthScript : MonoBehaviour
 	
 	public void ResetHPOnRespawn()
 	{
-		m_currentShield = m_maximumShield;
+        m_currentShield = GetMaxShield();
 		m_currentHealth = (int)(m_maximumHealth * 0.25f);
 	}
 	
@@ -520,4 +520,17 @@ public class HealthScript : MonoBehaviour
 		
 		return m_shieldCache;
 	}
+
+    public void SetModifier(float modifier_)
+    {
+        m_maximumHealth = (int)(m_maximumHealth * modifier_);
+        m_maximumShield = (int)(m_maximumShield * modifier_);
+        m_shieldRechargeRate = (int)(m_shieldRechargeRate * modifier_);
+        if (Network.isServer)
+        {
+            networkView.RPC("PropagateDamageAndMaxs", RPCMode.Others, m_currentHealth, m_maximumHealth, m_currentShield, m_maximumShield);
+            networkView.RPC("PropagateShieldRechargeStats", RPCMode.Others, m_shieldRechargeRate, m_timeToRechargeShield);
+        }
+    }
+
 }
