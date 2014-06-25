@@ -49,7 +49,10 @@ public class WaveInfo
 public class EnemySpawnManagerScript : MonoBehaviour
 {
     [SerializeField]
-    WaveInfo[] m_waveInfos;
+    WaveInfo[] smallMultipleWaves;
+
+    [SerializeField]
+    WaveInfo[] singleLargeWave;
 
     [SerializeField]
     GameObject[] test;
@@ -122,7 +125,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         {
             lastTime = (int)Time.time;
             currentHealthModifier *= healthModifierIncrement;
-            foreach(GameObject spawn in m_allSpawnPoints)
+            foreach (GameObject spawn in m_allSpawnPoints)
             {
                 EnemySpawnPointScript spawnPoint = spawn.GetComponent<EnemySpawnPointScript>();
                 spawnPoint.SetModifier(currentHealthModifier);
@@ -158,7 +161,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             m_allSpawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
 
             //Debug.Log ("WaveInfo is of size: " + m_waveInfos.Length);
-            if (m_waveInfos.Length != 0)
+            if (smallMultipleWaves.Length != 0)
             {
                 //Debug.Log ("Sending first wave to spawners");
                 //Send the first wave over
@@ -167,34 +170,52 @@ public class EnemySpawnManagerScript : MonoBehaviour
                     EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
 
                     List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-                    waveToBePassed.Add(m_waveInfos[Random.Range(0, m_waveInfos.Length)]);
+                    waveToBePassed.Add(smallMultipleWaves[Random.Range(0, smallMultipleWaves.Length)]);
 
                     spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
                 }
                 //currentWave++;
             }
+            waveCount++;
         }
     }
 
+    int waveCount = 0;
+
     void SendNextWaveToPoints()
     {
+        waveCount++;
         //if (currentWave < m_waveInfos.Length)
         //{
-
-        foreach (GameObject spawner in m_allSpawnPoints)
+        if (waveCount % 4 == 0 && waveCount > 0)
         {
-            EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
+
+            EnemySpawnPointScript spawnPoint = m_allSpawnPoints[Random.Range(0, m_allSpawnPoints.Length)].GetComponent<EnemySpawnPointScript>();
 
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(m_waveInfos[Random.Range(0, m_waveInfos.Length)]);
+            waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
 
-            spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
+            spawnPoint.SetSpawnList(waveToBePassed, 25.0f);
         }
+        else
+        {
+            foreach (GameObject spawner in m_allSpawnPoints)
+            {
+                EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
+
+                List<WaveInfo> waveToBePassed = new List<WaveInfo>();
+                waveToBePassed.Add(smallMultipleWaves[Random.Range(0, smallMultipleWaves.Length)]);
+
+                spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
+            }
+        }
+
+
         GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertAllClientsNextWaveReady();
         //currentWave++;
         //}
 
-
+        
     }
 
     public void TellAllSpawnersBegin()
@@ -207,24 +228,24 @@ public class EnemySpawnManagerScript : MonoBehaviour
         }
     }
 
-    GameObject[] GetAllRawWavesTogether()
-    {
-        int size = 0;
-        foreach (WaveInfo info in m_waveInfos)
-        {
-            size += info.GetTotalSize();
-        }
+    //GameObject[] GetAllRawWavesTogether()
+    //{
+    //    int size = 0;
+    //    foreach (WaveInfo info in smallMultipleWaves)
+    //    {
+    //        size += info.GetTotalSize();
+    //    }
 
-        GameObject[] output = new GameObject[size];
-        int endMark = 0;
-        foreach (WaveInfo info in m_waveInfos)
-        {
-            info.GetRawWave().CopyTo(output, endMark);
-            endMark += info.GetTotalSize();
-        }
+    //    GameObject[] output = new GameObject[size];
+    //    int endMark = 0;
+    //    foreach (WaveInfo info in smallMultipleWaves)
+    //    {
+    //        info.GetRawWave().CopyTo(output, endMark);
+    //        endMark += info.GetTotalSize();
+    //    }
 
-        return output;
-    }
+    //    return output;
+    //}
 
     public void PauseSpawners(bool pauseStatus)
     {

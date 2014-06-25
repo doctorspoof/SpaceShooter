@@ -394,7 +394,7 @@ public class EnemyScript : MonoBehaviour
 				Debug.DrawRay(ray.origin, ray.direction, Color.blue);
 				
 				RaycastHit hit;
-				if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange() * 0.8f))
+				if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange()))
 				{
 					RotateTowards(m_target.transform.position);
 
