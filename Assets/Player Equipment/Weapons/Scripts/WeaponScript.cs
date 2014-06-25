@@ -86,11 +86,16 @@ public class WeaponScript : MonoBehaviour
 	public void SetTarget(GameObject target)
 	{
 		currTarget = target;
+		networkView.RPC ("PropagateTarget", RPCMode.Others, target.networkView.viewID, false);
 	}
+
 	public void UnsetTarget()
 	{
-		currTarget = null;
+		currTarget = null;		
+		networkView.RPC ("PropagateTarget", RPCMode.Others, null, true);
 	}
+
+
 	public float GetReloadPercentage()
 	{
 		return m_currentRecoil / m_recoilTime;
@@ -343,6 +348,24 @@ public class WeaponScript : MonoBehaviour
 		float timeToRecoil = m_recoilTime * m_barrels.Length;
 		m_barrels[barrelID].GetComponent<PlayerWeaponRecoilableScript>().RecoilThisBarrel(timeToRecoil);
 	}
+	
+	
+	[RPC]
+	void PropagateTarget (NetworkViewID id, bool unset)
+	{
+		if (!unset)
+		{
+			// Search for the target based on NetworkViewID's
+			NetworkView found = NetworkView.Find (id);
+			currTarget = found ? found.gameObject : null;
+		}
+		
+		else
+		{
+			currTarget = null;
+		}
+	}
+
 	
 	[RPC]
 	void PlaySoundOverNetwork()
