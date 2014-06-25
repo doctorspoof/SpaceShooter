@@ -757,6 +757,11 @@ public class PlayerControlScript : MonoBehaviour
 		bool recievedInput = false;
 		if(m_shouldRecieveInput && owner != null && owner == Network.player)
 		{
+			if(useController && Input.GetJoystickNames().Length < 1)
+			{
+				useController = false;
+			}
+
 			if(m_isAnimating)
 			{
 				//If for any reason CShip is not set, find it
@@ -948,91 +953,251 @@ public class PlayerControlScript : MonoBehaviour
 				}
 
 				//In here, player should respond to any input
-				if((useController && (Input.GetAxis("LeftStickVertical")) > 0) || (!useController && Input.GetKey(KeyCode.W)))
+				if(!useController)
 				{
-					//Move forwards
-					//this.transform.position += this.transform.up * 2.5f * Time.deltaTime;
-					//m_currentVelocity += this.transform.up * 0.15f * Time.deltaTime;
-					this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
-
-					//Play sound + particles
-					if(!shouldPlaySound)
+					if(Input.GetKey(KeyCode.W))
 					{
-						shouldPlaySound = true;
-						this.audio.volume = volumeHolder;
-						this.audio.Play();
-						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
+						
+						//Play sound + particles
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
 					}
-					recievedInput = true;
+
+					if(Input.GetKey (KeyCode.S))
+					{
+						this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
+						
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;							
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
+					}
+
+					if(Input.GetKey (KeyCode.A))
+					{
+						this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+						
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
+					}
+
+					if(Input.GetKey (KeyCode.D))
+					{
+						this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+						
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
+					}
+
+					if(Input.GetKeyDown(KeyCode.Tab))
+					{
+						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
+					}
+					
+					if(Input.GetKeyDown(KeyCode.Z))
+					{
+						bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
+						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap = !mapVal;
+					}
 				}
-
-				if((useController && (Input.GetAxis("LeftStickVertical")) < 0) || (!useController && Input.GetKey (KeyCode.S)))
+				else
 				{
-					//Move backwards
-					//this.transform.position -= this.transform.up * 2.5f * Time.deltaTime;
-					//m_currentVelocity -= this.transform.up * 0.15f * Time.deltaTime;
-					this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
-
-					if(!shouldPlaySound)
+					if(Input.GetAxis("LeftStickVertical") > 0)
 					{
-						shouldPlaySound = true;
-						this.audio.volume = volumeHolder;							
-						this.audio.Play();
-						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						//Forward
+						float v = Input.GetAxis("LeftStickVertical");
+						float h = Input.GetAxis("LeftStickHorizontal");
+
+						Vector3 inputVec = new Vector3(h, v, 0);
+						if(inputVec.sqrMagnitude > 1.0f)
+						{
+							inputVec.Normalize();
+							inputVec *= 0.7071067f;
+						}
+						Vector3 forward = this.transform.up;
+
+						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+
+						float speed = 0;
+						if(forwardSpeedFac > 0.95f)
+						{
+							//Apply forward speed
+							speed = m_playerMoveSpeed;
+						}
+						else
+						{
+							//Apply side speed
+							speed = m_playerMoveSpeed * m_playerStrafeMod;
+						}
+
+						//float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
+						//float speed = (forwardSpeedFac * m_playerMoveSpeed) + (sideSpeedFac * (m_playerMoveSpeed * m_playerStrafeMod));
+
+						Vector3 moveFac = inputVec * speed;
+
+						this.rigidbody.AddForce(moveFac * Time.deltaTime);
+
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
 					}
-					recievedInput = true;
 
-				}
-
-				if((useController && (Input.GetAxis("LeftStickHorizontal")) < 0) || (!useController && Input.GetKey (KeyCode.A)))
-				{
-					//m_currentVelocity -= this.transform.right * 0.1f * Time.deltaTime;
-					this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-
-					if(!shouldPlaySound)
+					if(Input.GetAxis("LeftStickVertical") < 0)
 					{
-						shouldPlaySound = true;
-						this.audio.volume = volumeHolder;
-						this.audio.Play();
-						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						//Back
+						float v = Input.GetAxis("LeftStickVertical");
+						float h = Input.GetAxis("LeftStickHorizontal");
+						
+						Vector3 inputVec = new Vector3(h, v, 0);
+						if(inputVec.sqrMagnitude > 1.0f)
+						{
+							inputVec.Normalize();
+							inputVec *= 0.7071067f;
+						}
+						Vector3 forward = this.transform.up;
+						
+						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+						float speed = 0;
+						if(forwardSpeedFac > 0.95f)
+						{
+							//Apply forward speed
+							speed = m_playerMoveSpeed;
+						}
+						else
+						{
+							//Apply side speed
+							speed = m_playerMoveSpeed * m_playerStrafeMod;
+						}
+
+						Vector3 moveFac = inputVec * speed;
+						
+						this.rigidbody.AddForce(moveFac * Time.deltaTime);
+						
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
 					}
-					recievedInput = true;
-				}
 
-				if((useController && (Input.GetAxis("LeftStickHorizontal")) > 0) || (!useController && Input.GetKey (KeyCode.D)))
-				{
-					//m_currentVelocity += this.transform.right * 0.1f * Time.deltaTime;
-					this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-
-					if(!shouldPlaySound)
+					if(Input.GetAxis("LeftStickHorizontal") < 0)
 					{
-						shouldPlaySound = true;
-						this.audio.volume = volumeHolder;
-						this.audio.Play();
-						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-					}
-					recievedInput = true;
-				}
+						//Left
+						float v = Input.GetAxis("LeftStickVertical");
+						float h = Input.GetAxis("LeftStickHorizontal");
+						
+						Vector3 inputVec = new Vector3(h, v, 0);
+						if(inputVec.sqrMagnitude > 1.0f)
+						{
+							inputVec.Normalize();
+							inputVec *= 0.7071067f;
+						}
+						Vector3 forward = this.transform.up;
+						
+						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+						float speed = 0;
+						if(forwardSpeedFac > 0.95f)
+						{
+							//Apply forward speed
+							speed = m_playerMoveSpeed;
+						}
+						else
+						{
+							//Apply side speed
+							speed = m_playerMoveSpeed * m_playerStrafeMod;
+						}
 
-				/*if(Input.GetKeyDown(KeyCode.T))
-				{
-					Collider[] colliders = Physics.OverlapSphere(this.transform.position, 5.0f);
-					Debug.Log ("Found " + colliders.Length + " colliders.");
-					for(int i = 0; i < colliders.Length; i++)
+						Vector3 moveFac = inputVec * speed;
+						
+						this.rigidbody.AddForce(moveFac * Time.deltaTime);
+						
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
+					}
+
+					if(Input.GetAxis("LeftStickHorizontal") > 0)
 					{
-						Debug.Log ("Collider #" + i + " RB: " + colliders[i].attachedRigidbody);
-						if(i > 0)
-							Debug.Log ("Is this equal to previous? " + (colliders[i].attachedRigidbody == colliders[i-1].attachedRigidbody));
-					}
-				}*/
+						//Right
+						float v = Input.GetAxis("LeftStickVertical");
+						float h = Input.GetAxis("LeftStickHorizontal");
+						
+						Vector3 inputVec = new Vector3(h, v, 0);
+						if(inputVec.sqrMagnitude > 1.0f)
+						{
+							inputVec.Normalize();
+							inputVec *= 0.7071067f;
+						}
+						Vector3 forward = this.transform.up;
+						
+						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+						float speed = 0;
+						if(forwardSpeedFac > 0.95f)
+						{
+							//Apply forward speed
+							speed = m_playerMoveSpeed;
+						}
+						else
+						{
+							//Apply side speed
+							speed = m_playerMoveSpeed * m_playerStrafeMod;
+						}
 
-				if(useController)
-				{
+						Vector3 moveFac = inputVec * speed * Time.deltaTime;
+						
+						this.rigidbody.AddForce(moveFac);
+						
+						if(!shouldPlaySound)
+						{
+							shouldPlaySound = true;
+							this.audio.volume = volumeHolder;
+							this.audio.Play();
+							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+						}
+						recievedInput = true;
+					}
+
 					if(Input.GetButtonDown("X360Back"))
 					{
 						GUIManager gui = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>();
 						int status = gui.GetMapStatus();
-
+						
 						if(status == 0)
 						{
 							//Go from follow map to non-follow map
@@ -1049,19 +1214,6 @@ public class PlayerControlScript : MonoBehaviour
 							//Go from fullscreen to follow
 							gui.ToggleMap();
 						}
-					}
-				}
-				else
-				{
-					if(Input.GetKeyDown(KeyCode.Tab))
-					{
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
-					}
-
-					if(Input.GetKeyDown(KeyCode.Z))
-					{
-						bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap = !mapVal;
 					}
 				}
 
