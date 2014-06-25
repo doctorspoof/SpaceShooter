@@ -525,11 +525,9 @@ public class HealthScript : MonoBehaviour
     {
         m_maximumHealth = (int)(m_maximumHealth * modifier_);
         m_maximumShield = (int)(m_maximumShield * modifier_);
-        m_shieldRechargeRate = (int)(m_shieldRechargeRate * modifier_);
         if (Network.isServer)
         {
             networkView.RPC("PropagateDamageAndMaxs", RPCMode.Others, m_currentHealth, m_maximumHealth, m_currentShield, m_maximumShield);
-            networkView.RPC("PropagateShieldRechargeStats", RPCMode.Others, m_shieldRechargeRate, m_timeToRechargeShield);
         }
     }
 
