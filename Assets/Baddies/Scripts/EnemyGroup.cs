@@ -292,7 +292,7 @@ public class EnemyGroup : MonoBehaviour
 
         order.AttachCondition(delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
                               {
-                                  return (objectOfInterest == null) && (Vector2.Distance(objectOfInterest.transform.position, group.transform.position) < 50);
+                                  return (objectOfInterest == null) || (Vector2.Distance(objectOfInterest.transform.position, group.transform.position) > 50);
                               });
 
         AddOrder(order);
