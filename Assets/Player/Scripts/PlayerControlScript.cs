@@ -1537,4 +1537,19 @@ public class PlayerControlScript : MonoBehaviour
 		Debug.LogWarning ("No shield found for mob " + this.name);
 		return null;
 	}
+
+
+	[RPC]
+	void PropagateExplosiveForce (float x, float y, float range, float minForce, float maxForce, int mode = (int) ForceMode.Force)
+	{
+		// Use the players z position to stop the force causing players to move upwards all the time
+		Vector3 position = new Vector3 (x, y, transform.position.z);
+		rigidbody.AddCustomExplosionForce (position, range, minForce, maxForce, (ForceMode) mode);
+	}
+
+
+	public void ApplyExplosiveForceOverNetwork (float x, float y, float range, float minForce, float maxForce, ForceMode mode = ForceMode.Force)
+	{
+		networkView.RPC ("PropagateExplosiveForce", RPCMode.Others, x, y, range, minForce, maxForce, (int) mode);
+	}
 }
