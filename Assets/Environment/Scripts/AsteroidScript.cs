@@ -334,7 +334,24 @@ public class AsteroidScript : MonoBehaviour
 	}
 
 
-	public void SyncVelocityOverNetwork()
+	public void DelayedVelocitySync (float delay = 0f)
+	{
+		if (Network.isServer)
+		{			
+			if (delay > 0f)
+			{
+				Invoke ("SyncVelocityWithOthers", delay);
+			}
+
+			else
+			{
+				SyncVelocityWithOthers();
+			}
+		}
+	}
+
+
+	void SyncVelocityWithOthers()
 	{
 		networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, transform.position.x, transform.position.y);
 	}

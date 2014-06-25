@@ -180,34 +180,34 @@ public class BasicBulletScript : MonoBehaviour
 			switch (other.gameObject.layer)
 			{
 				// Do nothing is layer isn't applicable
-			default:
-				break;
-				
+				default:
+					break;
+					
 				// Bullets only need to interact with HealthScript containing GameObject's
-			case Layers.player:
-			case Layers.capital:
-			case Layers.enemy:
-			case Layers.asteroid:
-			{
-				if (m_isAOE)
+				case Layers.player:
+				case Layers.capital:
+				case Layers.enemy:
+				case Layers.asteroid:
 				{
-					DamageAOE();
+					if (m_isAOE)
+					{
+						DamageAOE();
+					}
+					
+					else
+					{
+						// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+						DamageMob (other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);					
+					}
+					
+					// Piercing bullets continue until the end of their lifetime.
+					if (!m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
+					{
+						Network.Destroy (gameObject);
+					}
+					
+					break;
 				}
-				
-				else
-				{
-					// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-					DamageMob (other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);					
-				}
-				
-				// Piercing bullets continue until the end of their lifetime.
-				if (!m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
-				{
-					Network.Destroy (gameObject);
-				}
-				
-				break;
-			}
 			}
 		}
 		
@@ -237,26 +237,26 @@ public class BasicBulletScript : MonoBehaviour
 	void LayerMaskSetup()
 	{
 		const int 	player = (1 << Layers.player), 
-		capital = (1 << Layers.capital), 
-		enemy = (1 << Layers.enemy), 
-		asteroid = (1 << Layers.asteroid);
-		
+					capital = (1 << Layers.capital), 
+					enemy = (1 << Layers.enemy), 
+					asteroid = (1 << Layers.asteroid);
+					
 		switch (this.gameObject.layer)
 		{
-		case Layers.playerBullet:
-			m_homingMask = enemy;
-			m_aoeMask = m_homingMask | player | asteroid;
-			break;
-			
-		case Layers.capitalBullet:
-			m_homingMask = enemy;
-			m_aoeMask = m_homingMask | asteroid;
-			break;
-			
-		case Layers.enemyBullet:
-			m_homingMask = player | capital;
-			m_aoeMask = m_homingMask | enemy | asteroid;
-			break;
+			case Layers.playerBullet:
+				m_homingMask = enemy;
+				m_aoeMask = m_homingMask | player | asteroid;
+				break;
+				
+			case Layers.capitalBullet:
+				m_homingMask = enemy;
+				m_aoeMask = m_homingMask | asteroid;
+				break;
+				
+			case Layers.enemyBullet:
+				m_homingMask = player | capital;
+				m_aoeMask = m_homingMask | enemy | asteroid;
+				break;
 		}
 	}
 	
@@ -363,14 +363,14 @@ public class BasicBulletScript : MonoBehaviour
 	{
 		switch (m_aoeDamageAccuracy)
 		{
-		case Accuracy.High:
-			HighAccuracyAOE();
-			break;
-			
-		case Accuracy.Low:
-		case Accuracy.Off:
-			LowAccuracyAOE (m_aoeDamageAccuracy == Accuracy.Low);
-			break;
+			case Accuracy.High:
+				HighAccuracyAOE();
+				break;
+				
+			case Accuracy.Low:
+			case Accuracy.Off:
+				LowAccuracyAOE (m_aoeDamageAccuracy == Accuracy.Low);
+				break;
 		}
 		
 		if (m_isPiercing)
@@ -424,6 +424,7 @@ public class BasicBulletScript : MonoBehaviour
 				// Ensure the distance will equate to 0f - 1f for the Lerp function
 				distance = Mathf.Clamp (Vector3.Distance (transform.position, mob.position) - m_aoeMaxDamageRange, 0f, maxDistance);
 				damage = Mathf.Lerp (m_bulletDamage, m_bulletMinDamage, distance / maxDistance);
+
 				//Debug.Log ("Hitting " + mob.name + " (" + distance + ") for " + ((int) damage) + " damage");
 			}
 			
@@ -449,7 +450,8 @@ public class BasicBulletScript : MonoBehaviour
 			
 			if (script)
 			{
-				script.SyncVelocityOverNetwork();
+				// Wait one FixedUpdate frame to sync the asteroids
+				script.DelayedVelocitySync (Time.fixedDeltaTime);
 			}
 		}
 	}
