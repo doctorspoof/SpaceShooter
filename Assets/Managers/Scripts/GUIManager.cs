@@ -59,6 +59,7 @@ public class GUIManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+		Time.timeScale = 1.0f;
 		int control = PlayerPrefs.GetInt("UseControl");
 		if(control == 1)
 			useController = true;
@@ -310,7 +311,7 @@ public class GUIManager : MonoBehaviour
 	{
 
 		if(Vector3.Distance(thisPlayerHP.transform.position, m_lastLockonTarget.transform.position) > 
-		   (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.33f))
+		   (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.5f))
 			return true;
 		else
 			return false;
