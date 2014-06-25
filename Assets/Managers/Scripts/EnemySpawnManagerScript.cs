@@ -57,13 +57,23 @@ public class EnemySpawnManagerScript : MonoBehaviour
     [SerializeField]
     GameObject[] m_allSpawnPoints;
 
-    [SerializeField]
-    int currentWave = 0;
+    //[SerializeField]
+    //int currentWave = 0;
 
     [SerializeField]
     GameObject m_capitalShip;
 
-    bool shouldPause = false;
+    [SerializeField]
+    float healthModifierIncrement;
+    [SerializeField]
+    float currentHealthModifier = 1.0f;
+    [SerializeField]
+    float timeCountInMinutes;
+
+    [SerializeField]
+    float multiplierAtTimeRequired;
+
+    bool shouldPause = false, hasBegan = false;
 
     public void RecieveInGameCapitalShip(GameObject ship)
     {
@@ -80,24 +90,45 @@ public class EnemySpawnManagerScript : MonoBehaviour
     {
         //test = m_waveInfos[0].GetRawWave();
         //test = GetAllRawWavesTogether();
+
+        float increaseInPercentRequired = multiplierAtTimeRequired - 1;
+        healthModifierIncrement = Mathf.Exp((Mathf.Log(increaseInPercentRequired) / (timeCountInMinutes * 60)));
+
         InitSpawnPoints();
+
+
     }
 
     public void BeginSpawning()
     {
         shouldStart = true;
-        if (currentWave == 0)
-        {
-            //Spawners haven't been initialised, try again:
-            InitSpawnPoints();
-        }
+        //if (currentWave == 0)
+        //{
+        //Spawners haven't been initialised, try again:
+        InitSpawnPoints();
+        //}
     }
 
     // Update is called once per frame
     public bool shouldStart = false;
     public bool allDone = true;
+
+    [SerializeField]
+    int lastTime = 0;
     void Update()
     {
+        //-60 seconds so updates once per minute
+        if (Time.time - lastTime >= 1 && hasBegan)
+        {
+            lastTime = (int)Time.time;
+            currentHealthModifier *= healthModifierIncrement;
+            foreach(GameObject spawn in m_allSpawnPoints)
+            {
+                EnemySpawnPointScript spawnPoint = spawn.GetComponent<EnemySpawnPointScript>();
+                spawnPoint.SetModifier(currentHealthModifier);
+            }
+        }
+
         if (Network.isServer && m_allSpawnPoints.Length != 0 && !shouldPause && shouldStart)
         {
             allDone = true;
@@ -136,36 +167,39 @@ public class EnemySpawnManagerScript : MonoBehaviour
                     EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
 
                     List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-                    waveToBePassed.Add(m_waveInfos[currentWave]);
+                    waveToBePassed.Add(m_waveInfos[Random.Range(0, m_waveInfos.Length)]);
 
                     spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
                 }
-                currentWave++;
+                //currentWave++;
             }
         }
     }
 
     void SendNextWaveToPoints()
     {
-        if (currentWave < m_waveInfos.Length)
+        //if (currentWave < m_waveInfos.Length)
+        //{
+
+        foreach (GameObject spawner in m_allSpawnPoints)
         {
+            EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
 
-            foreach (GameObject spawner in m_allSpawnPoints)
-            {
-                EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
+            List<WaveInfo> waveToBePassed = new List<WaveInfo>();
+            waveToBePassed.Add(m_waveInfos[Random.Range(0, m_waveInfos.Length)]);
 
-                List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-                waveToBePassed.Add(m_waveInfos[currentWave]);
-
-                spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
-            }
-            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertAllClientsNextWaveReady();
-            currentWave++;
+            spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
         }
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertAllClientsNextWaveReady();
+        //currentWave++;
+        //}
+
+
     }
 
     public void TellAllSpawnersBegin()
     {
+        hasBegan = true;
         foreach (GameObject spawner in m_allSpawnPoints)
         {
             //Debug.Log("Telling spawner: " + spawner.name + " to begin spawning wave #" + currentWave);

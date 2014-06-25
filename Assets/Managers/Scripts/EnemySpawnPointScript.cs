@@ -16,6 +16,8 @@ public class EnemySpawnPointScript : MonoBehaviour
 	public bool m_spawnerHasFinished = false;
 	
 	public bool m_shouldPause = false;
+
+    float modifier = 1.0f;
 	
 	// Use this for initialization
 	void Start()
@@ -54,6 +56,8 @@ public class EnemySpawnPointScript : MonoBehaviour
 				GameObject enemy = (GameObject)Network.Instantiate(enemyType.m_enemyRef, this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0), this.transform.rotation, 0);
 				EnemyScript script = enemy.GetComponent<EnemyScript>();
 				spawnedGroup.AddEnemyToGroup(script);
+                HealthScript health = enemy.GetComponent<HealthScript>();
+                health.SetModifier(modifier);
 			}
 		}
 		
@@ -94,4 +98,9 @@ public class EnemySpawnPointScript : MonoBehaviour
 		m_timeBetweenReleases = relayTime;
 		m_wavesToBeSpawned = waves;
 	}
+
+    public void SetModifier(float modifier_)
+    {
+        modifier = modifier_;
+    }
 }
