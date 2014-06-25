@@ -10,6 +10,93 @@ using System.Collections.Generic;
 public static class UnityLibraryExtensions
 {
 	/// <summary>
+	/// Returns the squared value.
+	/// </summary>
+	/// <param name="value">The value to square.</param>
+	public static int Squared (this int value)
+	{
+		return value * value;
+	}
+	
+	
+	/// <summary>
+	/// Returns the squared value.
+	/// </summary>
+	/// <param name="value">The value to square.</param>
+	public static float Squared (this float value)
+	{
+		return value * value;
+	}
+	
+
+
+	/// <summary>
+	/// A simple generic swap function which will swap the values/pointers of two objects.
+	/// </summary>
+	/// <param name="lhs">The left hand value to swap with the right hand value.</param>
+	/// <param name="rhs">The right hand value to swap with the left hand value.</param>
+	/// <typeparam name="T">Ensures that the function applies to all types.</typeparam>
+	public static void Swap<T> (this T t, ref T lhs, ref T rhs)
+	{
+		T temp = lhs;
+		lhs = rhs;
+		rhs = temp;
+	}
+	
+	
+	/// <summary>
+	/// Returns whether the array contains the item passed using .Equals().
+	/// </summary>
+	/// <param name="array">The array of data.</param>
+	/// <param name="check">The item to look for.</param>
+	/// <typeparam name="T">Applies to any type</typeparam>
+	public static bool Contains<T> (this T[] array, T check)
+	{
+		foreach (T item in array)
+		{
+			if (item.Equals (check))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	/// <summary>
+	/// Filters the duplicates from the array and returns each unique values.
+	/// </summary>
+	/// <param name="duplicates">The array which contains duplicate items.</param>
+	/// <typeparam name="T">Used in extending any array.</typeparam>
+	public static T[] GetUniqueOnly<T> (this T[] duplicates)
+	{
+		// Pre-condition: "objects" can't be empty
+		if (duplicates != null && duplicates.Length > 0)
+		{
+			// Create a temporary list 
+			List<T> unique = new List<T>();
+			
+			// Loop through each item and check if it is already contained in "unique"
+			foreach (T t in duplicates)
+			{
+				// Throw away null values
+				if (t != null && !unique.Contains (t))
+				{
+					unique.Add (t);
+				}
+			}
+			
+			// Finally convert the unique to an array
+			return unique.ToArray();
+		}
+		
+		return new T[0];
+	}
+
+
+
+	/// <summary>
 	/// Returns an array of GameObject objects which is gained through calling ".gameObject" on each Component.
 	/// </summary>
 	/// <returns>The results of ".gameObject" on each Component object.</returns>
@@ -31,6 +118,23 @@ public static class UnityLibraryExtensions
 		}
 		
 		return new GameObject[0];
+	}
+
+
+
+	public static void AddCustomExplosionForce (this Rigidbody self, Vector3 position, float range, float minForce, float maxForce, ForceMode mode = ForceMode.Force)
+	{
+		if (self)
+		{
+			// Get the difference/direciton
+			Vector3 difference = self.position - position;
+
+			// Use the magnitude to linearly reduce the force to apply
+			float force = Mathf.Lerp (maxForce, minForce, difference.sqrMagnitude / range.Squared());
+
+			// Apply the force to the rigidbody based on the direction from position to self
+			self.AddForceAtPosition (difference.normalized * force, position);
+		}
 	}
 	
 	
@@ -133,70 +237,5 @@ public static class UnityLibraryExtensions
 		}
 		
 		return new Rigidbody[0];
-	}
-	
-	
-	/// <summary>
-	/// Filters the duplicates from the array and returns each unique values.
-	/// </summary>
-	/// <param name="duplicates">The array which contains duplicate items.</param>
-	/// <typeparam name="T">Used in extending any array.</typeparam>
-	public static T[] GetUniqueOnly<T> (this T[] duplicates)
-	{
-		// Pre-condition: "objects" can't be empty
-		if (duplicates != null && duplicates.Length > 0)
-		{
-			// Create a temporary list 
-			List<T> unique = new List<T>();
-			
-			// Loop through each item and check if it is already contained in "unique"
-			foreach (T t in duplicates)
-			{
-				// Throw away null values
-				if (t != null && !unique.Contains (t))
-				{
-					unique.Add (t);
-				}
-			}
-			
-			// Finally convert the unique to an array
-			return unique.ToArray();
-		}
-		
-		return new T[0];
-	}
-	
-	
-	/// <summary>
-	/// A simple generic swap function which will swap the values/pointers of two objects.
-	/// </summary>
-	/// <param name="lhs">The left hand value to swap with the right hand value.</param>
-	/// <param name="rhs">The right hand value to swap with the left hand value.</param>
-	/// <typeparam name="T">Ensures that the function applies to all types.</typeparam>
-	public static void Swap<T> (this T t, ref T lhs, ref T rhs)
-	{
-		T temp = lhs;
-		lhs = rhs;
-		rhs = temp;
-	}
-	
-	
-	/// <summary>
-	/// Returns whether the array contains the item passed using .Equals().
-	/// </summary>
-	/// <param name="array">The array of data.</param>
-	/// <param name="check">The item to look for.</param>
-	/// <typeparam name="T">Applies to any type</typeparam>
-	public static bool Contains<T> (this T[] array, T check)
-	{
-		foreach (T item in array)
-		{
-			if (item.Equals (check))
-			{
-				return true;
-			}
-		}
-		
-		return false;
 	}
 }
