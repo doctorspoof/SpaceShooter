@@ -259,7 +259,7 @@ public class AsteroidScript : MonoBehaviour
 																shotDirection * hitter.rigidbody.velocity.magnitude :
 																shotDirection * m_fragmentSplitForce;
 
-						impactForce += spawnModifier * m_fragmentSplitForce;
+						impactForce += spawnModifier.normalized * m_fragmentSplitForce;
 						
 						// Finally spawn the asteroid
 						SpawnAsteroid (spawnModifier, impactForce);
@@ -281,17 +281,18 @@ public class AsteroidScript : MonoBehaviour
 			// Instantiate the asteroid
 			asteroid = (GameObject) Network.Instantiate (asteroid, transform.position + spawnModifier, transform.rotation, 0);
 			
+			// Add the impact force to keep the asteroid moving
+			asteroid.rigidbody.velocity = rigidbody.velocity * m_velocityToMaintain;
+			asteroid.rigidbody.AddForce (impactForce);
+			
 			// Scale the asteroid correctly
 			AsteroidScript script = asteroid.GetComponent<AsteroidScript>();
 			if (script)
 			{
-				script.TellToPropagateScaleAndMass (transform.localScale / m_splittingFragments, rigidbody.mass / m_splittingFragments);
 				script.isFirstAsteroid = false;
+				script.TellToPropagateScaleAndMass (transform.localScale / m_splittingFragments, rigidbody.mass / m_splittingFragments);
+				script.DelayedVelocitySync (Time.fixedDeltaTime);
 			}
-			
-			// Add the impact force to keep the asteroid moving
-			asteroid.rigidbody.velocity = rigidbody.velocity * m_velocityToMaintain;
-			asteroid.rigidbody.AddForce (impactForce);
 		}
 		
 		else
