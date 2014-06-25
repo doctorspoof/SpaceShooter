@@ -61,6 +61,8 @@ public class EnemyScript : MonoBehaviour
 	
 	[SerializeField]
 	bool m_hasTurrets = false;
+	[SerializeField]
+	bool m_hasNoWeapons = false;
 	
 	[SerializeField]
 	float m_shipWidth;
@@ -381,30 +383,32 @@ public class EnemyScript : MonoBehaviour
 			}
 			case Order.Attack:
 			{
-				if (m_target == null)
+				if(!m_hasNoWeapons)
 				{
-					m_currentOrder = Order.Idle;
-					break;
-				}
+					if (m_target == null)
+					{
+						m_currentOrder = Order.Idle;
+						break;
+					}
 
-                Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
-                Ray ray = new Ray(shipTransform.position, direction);
-				
-				//Debug.DrawLine(transform.position, m_target.transform.position, Color.blue);
-				Debug.DrawRay(ray.origin, ray.direction, Color.blue);
-				
-				RaycastHit hit;
-				if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange() * 0.8f))
-				{
-					RotateTowards(m_target.transform.position);
+	                Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
+	                Ray ray = new Ray(shipTransform.position, direction);
+					
+					//Debug.DrawLine(transform.position, m_target.transform.position, Color.blue);
+					Debug.DrawRay(ray.origin, ray.direction, Color.blue);
+					
+					RaycastHit hit;
+					if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange() * 0.8f))
+					{
+						RotateTowards(m_target.transform.position);
 
-                    rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
+	                    rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
+					}
+					else
+					{
+						currentAttackType.Attack(this, m_target);
+					}
 				}
-				else
-				{
-					currentAttackType.Attack(this, m_target);
-				}
-				
 				break;
 			}
 			case Order.Explore:
@@ -674,7 +678,7 @@ public class EnemyScript : MonoBehaviour
 	[SerializeField]
 	string m_pathToShieldObject = "Composite Collider/Shield";
 	
-	GameObject GetShield()
+	public GameObject GetShield()
 	{
 		if (!m_shieldCache || m_shieldCache.tag != "Shield")
 		{

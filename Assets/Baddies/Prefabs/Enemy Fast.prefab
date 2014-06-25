@@ -153,7 +153,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.64014244, y: 258.090637, z: 10}
+  m_LocalPosition: {x: 75.6157303, y: 13.8807545, z: 10}
   m_LocalScale: {x: .5, y: 1.20000005, z: 1}
   m_Children:
   - {fileID: 400016}
@@ -242,7 +242,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: a4bcb34314c1ff049bfa3461734557dd, type: 2}
+  - {fileID: 2100000, guid: 02faaf440a1354343ab9141cd45ffd10, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -383,7 +383,6 @@ MonoBehaviour:
   m_timeToRechargeShield: 3
   m_shouldStop: 0
   m_isInvincible: 0
-  m_shieldEffect: {fileID: 100000, guid: 177544381f0f5804aaf72220296a5daf, type: 2}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -401,6 +400,7 @@ MonoBehaviour:
   m_rotateSpeed: 2
   m_bountyAmount: 15
   m_hasTurrets: 0
+  m_hasNoWeapons: 0
   m_shipWidth: 0
   m_shipHeight: 0
   m_currentOrder: 0
