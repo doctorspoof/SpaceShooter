@@ -276,22 +276,22 @@ public class CapitalWeaponScript : MonoBehaviour
                     SetTarget(newTarget);
                 }
             }
-            //else if (enemyOverEnemy && m_enemyScript && enemyTarget && enemyTarget.tag != "Capital")
-            //{
-            //    //If we're aiming for an enemy, see if a closer enemy is present
-            //    EnemyScript copy = m_enemyScript;
-            //    GameObject newTarget = FindClosestTarget(out m_enemyScript, true, true);
+            else if (enemyOverEnemy && m_enemyScript && enemyTarget && enemyTarget.tag != "Capital")
+            {
+                //If we're aiming for an enemy, see if a closer enemy is present
+                EnemyScript copy = m_enemyScript;
+                GameObject newTarget = FindClosestTarget(out m_enemyScript, true, true);
 
-            //    // Check if a new target has been found
-            //    if (newTarget)
-            //    {
-            //        SetTarget(newTarget);
-            //    }
-            //    else
-            //    {
-            //        m_enemyScript = copy;
-            //    }
-            //}
+                // Check if a new target has been found
+                if (newTarget && (Vector3.SqrMagnitude(newTarget.transform.position - transform.position) < Vector3.SqrMagnitude(target.transform.position - transform.position)))
+                {
+                    SetTarget(newTarget);
+                }
+                else
+                {
+                    m_enemyScript = copy;
+                }
+            }
 		}
 		else
 		{

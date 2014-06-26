@@ -645,8 +645,6 @@ public class CapitalShipScript : MonoBehaviour
             }
         }
 
-        Debug.Log("potentialTargets = " + potentialTargets.Count + " alreadyBeingTargetted = " + alreadyBeingTargetted.Count);
-
         //foreach (GameObject obj in objects)
         //{
         //    if (!potentialTargets.Contains(obj) && !alreadyBeingTargetted.Contains(obj))
