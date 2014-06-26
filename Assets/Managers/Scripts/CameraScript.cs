@@ -10,6 +10,10 @@ public class CameraScript : MonoBehaviour
 
 	bool m_allowDirectCameraControl = false;
 	bool m_shouldParallax = false;
+	
+	// Cache
+	GameStateController m_gameController; 	// A reference to the GameStateController
+	GUIManager m_gui;						// A reference to the GUIManager
 
 	public void InitPlayer(GameObject player)
 	{
@@ -26,6 +30,22 @@ public class CameraScript : MonoBehaviour
 	void Start () 
 	{
 		m_currentOrthoSize = camera.orthographicSize;
+
+		// Assign a reference to the GameStateController
+		GameObject gameController = GameObject.FindGameObjectWithTag ("GameController");
+
+		if (!gameController || !(m_gameController = gameController.GetComponent<GameStateController>()))
+		{
+			Debug.LogError ("Unable to find GameStateController in CameraScript.");
+		}
+
+		GameObject guiManager = GameObject.FindGameObjectWithTag ("GUIManager");
+
+		if (!guiManager || !(m_gui = guiManager.GetComponent<GUIManager>()))
+		{
+			Debug.LogError ("Unable to find GUIManager in CameraScript.");
+		}
+
 	}
 
 	public void TellCameraPlayerIsDocked()
@@ -46,7 +66,6 @@ public class CameraScript : MonoBehaviour
 	int m_trackedPlayerID = -1;
 	[SerializeField]
 	GameObject[] m_players;
-	GUIManager guiRef;
 
 	public void TellCameraBeginSpectatorMode()
 	{
@@ -55,18 +74,16 @@ public class CameraScript : MonoBehaviour
 
 		//Init player array
 		//instead of trying to find them in the scene, get them from GSC, then they are ordered
-		GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
-		gsc.RemovePlayerFromConnectedList(Network.player);
-		List<Player> players = gsc.m_connectedPlayers;
+		m_gameController.RemovePlayerFromConnectedList(Network.player);
+		List<Player> players = m_gameController.m_connectedPlayers;
 		m_players = new GameObject[players.Count];
 		for(int i = 0; i < players.Count; i++)
 		{
-			m_players[i] = gsc.GetPlayerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(i));
+			m_players[i] = m_gameController.GetPlayerFromNetworkPlayer (m_gameController.GetNetworkPlayerFromID(i));
 		}
 
 		//Alert gui we're in specmode
-		guiRef = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>();
-		guiRef.BeginSpecModeGameTimer();
+		m_gui.BeginSpecModeGameTimer();
 
 		m_shouldParallax = true;
 
@@ -90,8 +107,7 @@ public class CameraScript : MonoBehaviour
 				if(m_players[m_trackedPlayerID] == null)
 				{
 					//If this player is null, try to find it in the scene again
-					GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
-					m_players[m_trackedPlayerID] = gsc.GetPlayerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(m_trackedPlayerID));
+					m_players[m_trackedPlayerID] = m_gameController.GetPlayerFromNetworkPlayer (m_gameController.GetNetworkPlayerFromID (m_trackedPlayerID));
 				}
 
 				//NOTE: Do NOT make else if!
@@ -107,7 +123,7 @@ public class CameraScript : MonoBehaviour
 				{
 					m_isInFollowMode = false;
 					m_trackedPlayerID = -1;
-					guiRef.RecieveActivePlayerSpec(m_trackedPlayerID);	
+					m_gui.RecieveActivePlayerSpec(m_trackedPlayerID);	
 				}
 			}
 			else
@@ -133,12 +149,12 @@ public class CameraScript : MonoBehaviour
 
 			if(Input.GetKeyDown(KeyCode.Tab))
 			{
-				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
+				m_gui.ToggleMap();
 			}
 			if(Input.GetKeyDown (KeyCode.Z))
 			{
-				bool setting = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
-				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap  = !setting;
+				// Toggle the map type
+				m_gui.m_isOnFollowMap  = !m_gui.m_isOnFollowMap;
 			}
 
 			if(Input.GetKeyDown (KeyCode.Space))
@@ -150,24 +166,29 @@ public class CameraScript : MonoBehaviour
 				else if(m_trackedPlayerID < 0)
 					m_trackedPlayerID = 0;
 
-				guiRef.RecieveActivePlayerSpec(m_trackedPlayerID);
+				m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
 			}
 
-			float scroll = Input.GetAxis("Mouse ScrollWheel");
-			if(scroll > 0 || Input.GetButtonDown("X360LeftBumper"))
+			if (m_gameController.m_currentGameState == GameState.InGame)
 			{
-				//camera.orthographicSize -= 0.5f * Time.deltaTime;
-				m_currentOrthoSize -= 0.5f;
-				if(m_currentOrthoSize < 1)
-					m_currentOrthoSize = 1;
+				
+				float scroll = Input.GetAxis("Mouse ScrollWheel");
+				if(scroll > 0 || Input.GetButtonDown("X360LeftBumper"))
+				{
+					//camera.orthographicSize -= 0.5f * Time.deltaTime;
+					m_currentOrthoSize -= 0.5f;
+					if(m_currentOrthoSize < 1)
+						m_currentOrthoSize = 1;
+				}
+				else if(scroll < 0 || Input.GetButtonDown("X360RightBumper"))
+				{
+					//camera.orthographicSize += 0.5f * Time.deltaTime;
+					m_currentOrthoSize += 0.5f;
+					if(m_currentOrthoSize > 15)
+						m_currentOrthoSize = 15;
+				}
 			}
-			else if(scroll < 0 || Input.GetButtonDown("X360RightBumper"))
-			{
-				//camera.orthographicSize += 0.5f * Time.deltaTime;
-				m_currentOrthoSize += 0.5f;
-				if(m_currentOrthoSize > 15)
-					m_currentOrthoSize = 15;
-			}
+
 			camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, m_currentOrthoSize, Time.deltaTime);
 		}
 		else
@@ -205,17 +226,17 @@ public class CameraScript : MonoBehaviour
 
 				if(Input.GetKeyDown(KeyCode.Tab))
 				{
-					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
+					m_gui.ToggleMap();
 				}
 				if(Input.GetKeyDown (KeyCode.Z))
 				{
-					bool setting = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
-					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap  = !setting;
+					// Toggle the map type
+					m_gui.m_isOnFollowMap  = !m_gui.m_isOnFollowMap;
 				}
 			}
 
 			//Listen for camera input
-			if(!m_playerIsDocked)
+			if(!m_playerIsDocked && m_gameController.m_currentGameState == GameState.InGame)
 			{
 				float scroll = Input.GetAxis("Mouse ScrollWheel");
 				if(scroll > 0 || Input.GetButton("X360LeftBumper"))

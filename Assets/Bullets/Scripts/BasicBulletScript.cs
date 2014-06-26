@@ -44,7 +44,9 @@ public class BasicBulletScript : MonoBehaviour
 	[SerializeField] Accuracy m_aoeDamageAccuracy = Accuracy.Low;			// How accurate the AoE damage should be
 	[SerializeField, Range (0f, 100f)] float m_aoeRange = 2f;				// How far away the enemies can be from the explosion
 	[SerializeField, Range (0f, 100f)] float m_aoeMaxDamageRange = 0.25f;	// The margin between the explosion and the target for them to receive maximum damage
-	[SerializeField, Range (0f, 1000f)] float m_explosiveAOEForce = 15f;	// How much force should be applied to nearby rigidbodies
+	[SerializeField, Range (0f, 1000f)] float m_aoeMaxExplosiveForce = 15f;	// How much force can be applied
+	[SerializeField, Range (0f, 1000f)] float m_aoeMinExplosiveForce = 5f;	// The minimum amount of force which must be applied
+
 	
 	
 	/// Internal data
@@ -388,20 +390,24 @@ public class BasicBulletScript : MonoBehaviour
 	{
 		Collider[] colliders = Physics.OverlapSphere (transform.position, m_aoeRange, m_aoeMask);
 		Rigidbody[] unique = colliders.GetAttachedRigidbodies().GetUniqueOnly();
-		
-		float distance, damage, maxDistance = m_aoeRange - m_aoeMaxDamageRange;
+
+
+		// Cache values for the sake of efficiency, also avoid Vector3.Distance by squaring ranges
+		float 	distance = 0f, damage = 0f, 
+				aoeMaxDamageRange = m_aoeMaxDamageRange.Squared(), 
+				maxDistance = m_aoeRange.Squared() - aoeMaxDamageRange;
+
 		foreach (Rigidbody mob in unique)
 		{
-			distance = Vector3.Distance (transform.position, colliders.GetClosestPointFromRigidbody (mob, transform.position)) - m_aoeMaxDamageRange;
+			// Ensure the distance will equate to 0f - 1f for the Lerp function
+			distance = (transform.position - colliders.GetClosestPointFromRigidbody (mob, transform.position)).sqrMagnitude - aoeMaxDamageRange;
 			distance = Mathf.Clamp (distance, 0f, maxDistance);
 			
 			damage = Mathf.Lerp (m_bulletDamage, m_bulletMinDamage, distance / maxDistance);
-			//Debug.Log ("Hitting " + mob.name + " (" + distance + ") for " + ((int) damage) + " damage");
+			// Debug.Log ("Hitting " + mob.name + " (" + distance + ") for " + ((int) damage) + " damage");
 			
 			DamageMob (mob.gameObject, (int) damage);
-			
-			mob.AddExplosionForce (m_explosiveAOEForce, transform.position, m_aoeRange);
-			SyncAsteroid (mob.gameObject);
+			AddExplosiveForce (mob);
 		}
 	}
 	
@@ -416,16 +422,19 @@ public class BasicBulletScript : MonoBehaviour
 		Rigidbody[] effected = Physics.OverlapSphere (transform.position, m_aoeRange, m_aoeMask).GetAttachedRigidbodies().GetUniqueOnly();
 		
 		// Attempt to optimise speed by declaring variables outside of the loop
-		float distance, damage, maxDistance = m_aoeRange - m_aoeMaxDamageRange;
+		float 	distance = 0f, damage = 0f, 
+				aoeMaxDamageRange = m_aoeMaxDamageRange.Squared(), 
+				maxDistance = m_aoeRange.Squared() - aoeMaxDamageRange;
+
 		foreach (Rigidbody mob in effected)
 		{
 			if (damageByDistance)
 			{
 				// Ensure the distance will equate to 0f - 1f for the Lerp function
-				distance = Mathf.Clamp (Vector3.Distance (transform.position, mob.position) - m_aoeMaxDamageRange, 0f, maxDistance);
+				distance = (transform.position - mob.position).sqrMagnitude - aoeMaxDamageRange;
+				distance = Mathf.Clamp (distance, 0f, maxDistance);
 				damage = Mathf.Lerp (m_bulletDamage, m_bulletMinDamage, distance / maxDistance);
-
-				//Debug.Log ("Hitting " + mob.name + " (" + distance + ") for " + ((int) damage) + " damage");
+				// Debug.Log ("Hitting " + mob.name + " (" + distance + ") for " + ((int) damage) + " damage");
 			}
 			
 			else
@@ -434,25 +443,53 @@ public class BasicBulletScript : MonoBehaviour
 			}
 			
 			DamageMob (mob.gameObject, (int) damage);
-			
-			mob.AddExplosionForce (m_explosiveAOEForce, transform.position, m_aoeRange);
-			SyncAsteroid (mob.gameObject);
+			AddExplosiveForce (mob);
 		}
 	}
 	
 	
-	// Asteroids need to be synced over the network otherwise the force will only happen for the host
-	void SyncAsteroid (GameObject asteroid)
+	// Peforms any special force synchronisation required for different types of objects
+	void AddExplosiveForce (Rigidbody mob)
 	{
-		if (asteroid.layer == Layers.asteroid)
+		// Use the mobs z position to stop the force causing enemies to move upwards all the time
+		Vector3 position = new Vector3 (transform.position.x, transform.position.y, mob.transform.position.z);
+		mob.AddCustomExplosionForce (position, m_aoeRange, m_aoeMinExplosiveForce, m_aoeMaxExplosiveForce);
+
+		switch (mob.gameObject.layer)
 		{
-			AsteroidScript script = asteroid.GetComponent<AsteroidScript>();
-			
-			if (script)
-			{
-				// Wait one FixedUpdate frame to sync the asteroids
-				script.DelayedVelocitySync (Time.fixedDeltaTime);
-			}
+			case Layers.asteroid:
+				SyncAsteroid (mob);
+				break;
+
+			case Layers.player:
+				SyncPlayer (mob);
+				break;
+		}
+	}
+
+
+	// Asteroids need to sync their velocity over the network after waiting for a FixedUpdate() call
+	void SyncAsteroid (Rigidbody asteroid)
+	{
+		AsteroidScript script = asteroid.GetComponent<AsteroidScript>();
+		
+		if (script)
+		{
+			// Wait one FixedUpdate frame to sync the asteroids
+			script.DelayedVelocitySync (Time.fixedDeltaTime);
+		}
+	}
+
+
+	// Players need to be told to apply their own explosive force to ensure they get knocked back
+	void SyncPlayer (Rigidbody player)
+	{
+		PlayerControlScript script = player.GetComponent<PlayerControlScript>();
+
+		if (script)
+		{
+			// Make the player apply it's own explosive force to ensure it reacts accordingly
+			script.ApplyExplosiveForceOverNetwork (transform.position.x, transform.position.y, m_aoeRange, m_aoeMinExplosiveForce, m_aoeMaxExplosiveForce);
 		}
 	}
 }
