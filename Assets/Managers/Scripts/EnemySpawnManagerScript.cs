@@ -76,6 +76,9 @@ public class EnemySpawnManagerScript : MonoBehaviour
     [SerializeField]
     float multiplierAtTimeRequired;
 
+    [SerializeField]
+    int secondsBetweenWaves = 40;
+
     bool shouldPause = false, hasBegan = false;
 
     public void RecieveInGameCapitalShip(GameObject ship)
@@ -172,7 +175,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
                     List<WaveInfo> waveToBePassed = new List<WaveInfo>();
                     waveToBePassed.Add(smallMultipleWaves[Random.Range(0, smallMultipleWaves.Length)]);
 
-                    spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
+                    spawnPointScript.SetSpawnList(waveToBePassed, secondsBetweenWaves);
                 }
                 //currentWave++;
             }
@@ -195,7 +198,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
             waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
 
-            spawnPoint.SetSpawnList(waveToBePassed, 25.0f);
+            spawnPoint.SetSpawnList(waveToBePassed, secondsBetweenWaves);
         }
         else
         {
@@ -206,7 +209,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
                 List<WaveInfo> waveToBePassed = new List<WaveInfo>();
                 waveToBePassed.Add(smallMultipleWaves[Random.Range(0, smallMultipleWaves.Length)]);
 
-                spawnPointScript.SetSpawnList(waveToBePassed, 25.0f);
+                spawnPointScript.SetSpawnList(waveToBePassed, secondsBetweenWaves);
             }
         }
 
