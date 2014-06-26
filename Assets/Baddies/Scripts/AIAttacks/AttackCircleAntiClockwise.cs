@@ -29,7 +29,11 @@ public class AttackCircleAntiClockwise : IAttack
 
             float targetAngle = currentAngle + 10;// (clockwise ? 10 : -10);
 
-            Vector2 newPosition = ((Quaternion.AngleAxis(targetAngle, -Vector3.forward) * Vector2.up) * weaponRange * 0.8f) + target.transform.position;
+            float distanceToTarget = Vector2.Distance(ship.transform.position, target.transform.position);
+
+            float rangeToCircleAt = Mathf.Clamp(distanceToTarget, weaponRange / 2, weaponRange);
+
+            Vector2 newPosition = ((Quaternion.AngleAxis(targetAngle, -Vector3.forward) * Vector2.up) * rangeToCircleAt * 0.8f) + target.transform.position;
 
             ship.RotateTowards(newPosition);
             ship.rigidbody.AddForce(ship.transform.up * ship.GetCurrentMomentum() * Time.deltaTime);
