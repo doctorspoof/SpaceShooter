@@ -93,4 +93,5 @@ public class CShipTurretHolder : MonoBehaviour
 			this.transform.rotation = Quaternion.Euler(0, 0, zRot);
 		}
 	}
+
 }

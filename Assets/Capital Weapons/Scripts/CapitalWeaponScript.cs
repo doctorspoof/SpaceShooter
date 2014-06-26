@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public enum AimingStyle
 {
-	None =0,
+	None = 0,
 	Basic = 1,
 	Leading = 2,
 	EdgeExplode = 3,
@@ -118,7 +118,7 @@ public class CapitalWeaponScript : MonoBehaviour
 				
 				//Look for enemy
 				//Only look for enemy layer
-				target = FindClosestTarget (out m_enemyScript);
+				SetTarget(FindClosestTarget (out m_enemyScript));
 			}
 			else
 			{
@@ -265,38 +265,38 @@ public class CapitalWeaponScript : MonoBehaviour
 			}
 			
 			// If we're aiming at an asteroid, see if any enemies have approached
-			GameObject enemyTarget = m_enemyScript ? m_enemyScript.GetTarget() : null; 
-			if (target.tag == "Asteroid")
-			{
-				GameObject newTarget = FindClosestTarget (out m_enemyScript, true);
-				
-				// Check if a new target has been found
-				if (newTarget)
-				{
-					target = newTarget;
-				}
-			}
-			else if (enemyOverEnemy && m_enemyScript && enemyTarget && enemyTarget.tag != "Capital")
-			{
-				//If we're aiming for an enemy, see if a closer enemy is present
-				EnemyScript copy = m_enemyScript;
-				GameObject newTarget = FindClosestTarget (out m_enemyScript, true, true);
-				
-				// Check if a new target has been found
-				if (newTarget)
-				{
-					target = newTarget;
-				}
-				else
-				{
-					m_enemyScript = copy;
-				}
-			}
+            GameObject enemyTarget = m_enemyScript ? m_enemyScript.GetTarget() : null; 
+            if (target.tag == "Asteroid")
+            {
+                GameObject newTarget = FindClosestTarget(out m_enemyScript, true);
+
+                // Check if a new target has been found
+                if (newTarget)
+                {
+                    SetTarget(newTarget);
+                }
+            }
+            //else if (enemyOverEnemy && m_enemyScript && enemyTarget && enemyTarget.tag != "Capital")
+            //{
+            //    //If we're aiming for an enemy, see if a closer enemy is present
+            //    EnemyScript copy = m_enemyScript;
+            //    GameObject newTarget = FindClosestTarget(out m_enemyScript, true, true);
+
+            //    // Check if a new target has been found
+            //    if (newTarget)
+            //    {
+            //        SetTarget(newTarget);
+            //    }
+            //    else
+            //    {
+            //        m_enemyScript = copy;
+            //    }
+            //}
 		}
 		else
 		{
 			//If target is out of range, see if there's a closer target
-			target = FindClosestTarget (out m_enemyScript);
+			SetTarget(FindClosestTarget (out m_enemyScript));
 		}
 	}
 	
@@ -565,54 +565,77 @@ public class CapitalWeaponScript : MonoBehaviour
 	{
 		int layerMask = enemyOnly ? (1 << Layers.enemy) : (1 << Layers.enemy) | (1 << Layers.asteroid);
 		//Debug.Log ("[CWeapon]: Checking on layermask " + layerMask.ToString() + ".");
-		Collider[] colliders = Physics.OverlapSphere(this.transform.position, 20, layerMask);
+		//Collider[] colliders = Physics.OverlapSphere(this.transform.position, 20, layerMask);
 		//Debug.Log ("[CWeapon]: Overlap Sphere returned " + colliders.Length + " colliders.");
-		GameObject[] enemies = colliders.GetAttachedRigidbodies().GetUniqueOnly().GetGameObjects();
+		//GameObject[] enemies = colliders.GetAttachedRigidbodies().GetUniqueOnly().GetGameObjects();
 		//Debug.Log ("[CWeapon]: Relating to " + enemies.Length + " unique enemies.");
 
-		float shortestDist = 999;
-		GameObject closestNME = null;
-		bool closestEnemyTargettingShip = false;
-		
-		foreach (GameObject enemy in enemies)
-		{
-			// Calculate distance
-			float dist = Vector3.Distance (enemy.transform.position, this.transform.position);
-			
-			// Prioritise enemies over asteroids
-			if (!closestNME || dist < shortestDist || (closestNME.layer == Layers.asteroid && enemy.layer == Layers.enemy))
-			{
-				// Replace only if the ship requests a target which is attacking them
-				if (closestNME && targettingShipOnly)
-				{
-					if (enemy.layer == Layers.enemy)
-					{
-						EnemyScript script = enemy.GetComponent<EnemyScript>();
-						GameObject enemyTarget = script.GetTarget();
-						if ((enemyTarget && enemyTarget.layer == Layers.capital) || !closestEnemyTargettingShip)
-						{
-							shortestDist = dist;
-							closestNME = enemy;
-							closestEnemyTargettingShip = true;
-						}
-					}
-				}
-				
-				// Nothing special needs to be done here
-				else
-				{
-					shortestDist = dist;
-					closestNME = enemy;
-				}
-			}
-		}
-		
-		if(closestNME)
-			enemyScript = closestNME.GetComponent<EnemyScript>();
+        //Debug.Log("parent = " + (transform.parent != null));
+
+        //GameObject enemy = transform.root.GetComponent<CapitalShipScript>().RequestTarget();//transform.position, layerMask);
+        GameObject[] enemies = transform.root.GetComponent<CapitalShipScript>().RequestTargets(layerMask).ToArray();
+        float shortestDist = Mathf.Pow(999, 2);
+        GameObject closestNME = null;
+        bool closestEnemyTargettingShip = false;
+
+        foreach (GameObject enemy in enemies)
+        {
+            // Calculate distance
+            float dist = Vector3.SqrMagnitude(enemy.transform.position - this.transform.position);
+
+            // Prioritise enemies over asteroids
+            if (!closestNME || dist < shortestDist || (closestNME.layer == Layers.asteroid && enemy.layer == Layers.enemy))
+            {
+                // Replace only if the ship requests a target which is attacking them
+                if (closestNME && targettingShipOnly)
+                {
+                    if (enemy.layer == Layers.enemy)
+                    {
+                        EnemyScript script = enemy.GetComponent<EnemyScript>();
+                        GameObject enemyTarget = script.GetTarget();
+                        if ((enemyTarget && enemyTarget.layer == Layers.capital) || !closestEnemyTargettingShip)
+                        {
+                            shortestDist = dist;
+                            closestNME = enemy;
+                            closestEnemyTargettingShip = true;
+                        }
+                    }
+                }
+
+                // Nothing special needs to be done here
+                else
+                {
+                    shortestDist = dist;
+                    closestNME = enemy;
+                }
+            }
+        }
+
+        
+
+
+        if (closestNME)
+            enemyScript = closestNME.GetComponent<EnemyScript>();
 		else
 			enemyScript = null;
-		return closestNME;
+        return closestNME;
 	}
+
+    public void SetTarget(GameObject target_)
+    {
+        CapitalShipScript CShip = transform.root.GetComponent<CapitalShipScript>();
+        if(target != null)
+        {
+            CShip.UnclaimTarget(target);
+        }
+
+        if(target_ != null)
+        {
+            CShip.ClaimTarget(target_);
+        }
+        
+        target = target_;
+    }
 	
 	public void ParentThisWeaponToCShip(int location)
 	{
@@ -644,4 +667,5 @@ public class CapitalWeaponScript : MonoBehaviour
 			this.transform.rotation = Quaternion.Euler(0, 0, zRot);
 		}
 	}
+
 }
