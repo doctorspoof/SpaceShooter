@@ -16,5 +16,6 @@ public sealed class Layers
 						shop = 18,
 						events = 19,
 						environmentalDamage = 20,
-						planets3D = 21;
+						planets3D = 21,
+						enemySupportShield = 22;
 }

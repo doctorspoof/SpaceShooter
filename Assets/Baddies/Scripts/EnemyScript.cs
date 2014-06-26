@@ -682,7 +682,7 @@ public class EnemyScript : MonoBehaviour
     [SerializeField]
     string m_pathToShieldObject = "Composite Collider/Shield";
 
-    GameObject GetShield()
+    public GameObject GetShield()
     {
         if (!m_shieldCache || m_shieldCache.tag != "Shield")
         {

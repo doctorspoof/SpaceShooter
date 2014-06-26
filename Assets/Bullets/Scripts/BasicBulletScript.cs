@@ -233,7 +233,23 @@ public class BasicBulletScript : MonoBehaviour
 			}
 		}
 	}
-	
+
+	public void DetonateBullet()
+	{
+		if (m_isAOE)
+		{
+			DamageAOE();
+		}
+
+		if(Network.isServer)
+		{
+			Network.Destroy (gameObject);
+		}
+	}
+	public int GetDamage()
+	{
+		return m_bulletDamage;
+	}
 	
 	// This should be called at Awake() or Start() otherwise AoE and homing functionality won't work correctly
 	void LayerMaskSetup()
@@ -241,18 +257,19 @@ public class BasicBulletScript : MonoBehaviour
 		const int 	player = (1 << Layers.player), 
 					capital = (1 << Layers.capital), 
 					enemy = (1 << Layers.enemy), 
+					enemySupportShield = (1 << Layers.enemySupportShield),
 					asteroid = (1 << Layers.asteroid);
 					
 		switch (this.gameObject.layer)
 		{
 			case Layers.playerBullet:
 				m_homingMask = enemy;
-				m_aoeMask = m_homingMask | player | asteroid;
+				m_aoeMask = m_homingMask | player | asteroid | enemySupportShield;
 				break;
 				
 			case Layers.capitalBullet:
 				m_homingMask = enemy;
-				m_aoeMask = m_homingMask | asteroid;
+				m_aoeMask = m_homingMask | asteroid | enemySupportShield;
 				break;
 				
 			case Layers.enemyBullet:
