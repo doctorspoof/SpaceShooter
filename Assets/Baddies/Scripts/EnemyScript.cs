@@ -124,6 +124,7 @@ public class EnemyScript : MonoBehaviour
     }
 
     IAttack currentAttackType = null;
+    float randomOffsetFromTarget = 0;
 
     //[SerializeField]
     //List<IAttack> attackVariations;
@@ -400,6 +401,7 @@ public class EnemyScript : MonoBehaviour
                             RotateTowards(m_target.transform.position);
 
                             rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
+                            //MoveTowardTarget();
                         }
                         else
                         {
