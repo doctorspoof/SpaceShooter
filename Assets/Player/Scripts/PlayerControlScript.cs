@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 public enum DockingState
 {
-	NOTDOCKING = 0,
-	OnApproach = 1,
-	OnEntry = 2,
-	Docked = 3,
-	Exiting = 4
+    NOTDOCKING = 0,
+    OnApproach = 1,
+    OnEntry = 2,
+    Docked = 3,
+    Exiting = 4
 }
 
-public class PlayerControlScript : MonoBehaviour 
+public class PlayerControlScript : MonoBehaviour
 {
 	[SerializeField]
 	float m_ramDamageMultiplier = 5.0f;
@@ -1257,9 +1257,9 @@ public class PlayerControlScript : MonoBehaviour
 					{
 						//Here, it should rotate to face the mouse cursor
 						var objectPos = Camera.main.WorldToScreenPoint(transform.position);
-						var dir = Input.mousePosition - objectPos;
-						Quaternion target = Quaternion.Euler (new Vector3(0,0,(Mathf.Atan2 (dir.y,dir.x) - Mathf.PI/2) * Mathf.Rad2Deg));
-						transform.rotation = Quaternion.Slerp(transform.rotation, target, m_playerRotateSpeed * Time.deltaTime);
+                        var dir = Input.mousePosition - objectPos;
+
+                        RotateTowards(transform.position + dir);
 
 						if(Input.GetMouseButton(0))
 						{
@@ -1323,6 +1323,27 @@ public class PlayerControlScript : MonoBehaviour
 
 		}
 	}
+
+    void RotateTowards(Vector3 targetPosition)
+    {
+        Vector2 targetDirection = targetPosition - transform.position;
+        float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
+        float currentAngle = transform.rotation.eulerAngles.z;
+
+        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 20f && true) /// turn to false to use old rotation movement
+        {
+            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, m_playerRotateSpeed);
+            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
+        }
+        else
+        {
+            Quaternion rotate = Quaternion.LookRotation(targetDirection, Vector3.back);
+            rotate.x = 0;
+            rotate.y = 0;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, m_playerRotateSpeed * Time.deltaTime);
+        }
+    }
 
 	void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
 	{
@@ -1563,4 +1584,5 @@ public class PlayerControlScript : MonoBehaviour
 	{
 		networkView.RPC ("PropagateExplosiveForce", RPCMode.Others, x, y, range, minForce, maxForce, (int) mode);
 	}
+
 }
