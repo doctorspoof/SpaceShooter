@@ -6,35 +6,139 @@ public class CapitalShipScript : MonoBehaviour
 {
     [SerializeField]
     Transform targetPoint;
+
+	ItemIDHolder m_itemIDs;
+
     public void SetTargetPoint(Transform newTarget)
     {
         targetPoint = newTarget;
     }
 
     public List<GameObject> m_cShipInventory;
-    public void RemoveItemFromInventory(GameObject item)
-    {
-        m_cShipInventory.Remove(item);
+	List<bool> m_requestedItem = new List<bool>(0);
+	bool m_hadItemResponse = false;
+	bool m_itemRequestResponse = false;
 
-        //Propagate inventory after change
-        networkView.RPC("AlertCShipInventoryHasChanged", RPCMode.Others);
-        for (int i = 0; i < m_cShipInventory.Count; i++)
-        {
-            networkView.RPC("PropagateCShipInventory", RPCMode.Others, i, m_cShipInventory[i].GetComponent<ItemScript>().m_equipmentID);
-        }
+
+	public void RequestItemFromServer (GameObject requested)
+	{
+		ItemScript itemScript = requested.GetComponent<ItemScript>();
+		int id = itemScript ? itemScript.m_equipmentID : -1;
+
+		if (m_cShipInventory.Contains (requested) && id != -1)
+		{
+			networkView.RPC ("RequestItem", RPCMode.Server, id);
+		}
+
+		// No point querying the server as it doesn't exist
+		else
+		{
+			m_hadItemResponse = true;
+			m_itemRequestResponse = false;
+		}
+	}
+
+
+	[RPC]
+	void RequestItem (NetworkMessageInfo message, int itemID)
+	{
+		bool reply = false;
+		ItemScript itemScript = null;
+
+		for (int i = 0; i < m_cShipInventory.Count; ++i)
+		{
+			// Get the ItemScript
+			itemScript = m_cShipInventory[i].GetComponent<ItemScript>();
+
+			// If itemScript is valid, the itemID is the same as requests and the item hasn't been requested before
+			if (itemScript && itemScript.m_equipmentID == itemID && !m_requestedItem[i])
+			{
+				m_requestedItem[i] = true;
+				reply = true;
+				break;
+			}
+		}
+
+		networkView.RPC ("RequestItemReply", message.sender, reply);
+	}
+
+	[RPC]
+	void RequestItemReply (bool reply)
+	{
+		m_hadItemResponse = true;
+		m_itemRequestResponse = reply;
+	}
+
+	public bool GetRequestResponse (ref bool reponse)
+	{
+		reponse = m_itemRequestResponse;
+		return m_hadItemResponse;
+	}
+
+    public void RemoveItemFromInventory (GameObject item)
+	{
+		m_hadItemResponse = false;
+		m_itemRequestResponse = false;
+
+		ItemScript itemScript = item.GetComponent<ItemScript>();
+		int id = itemScript ? itemScript.m_equipmentID : -1;
+
+		if (id != -1)
+		{
+			networkView.RPC ("AlertServerInventoryRemoval", RPCMode.Server, id);
+		}
     }
+
+
     public void AddItemToInventory(GameObject item)
-    {
-        m_cShipInventory.Add(item);
+	{
+		ItemScript itemScript = item.GetComponent<ItemScript>();
+		int id = itemScript ? itemScript.m_equipmentID : -1;
+		
+		if (id != -1)
+		{
+			networkView.RPC ("AlertServerInventoryAddition", RPCMode.Server, id);
+		}
+	}
 
-        //Propagate inventory after change
-        networkView.RPC("AlertCShipInventoryHasChanged", RPCMode.Others);
-        for (int i = 0; i < m_cShipInventory.Count; i++)
-        {
-            networkView.RPC("PropagateCShipInventory", RPCMode.Others, i, m_cShipInventory[i].GetComponent<ItemScript>().m_equipmentID);
-        }
-        //networkView.RPC ("AlertInventoryPropagateHasFinished", RPCMode.Others);
-    }
+	[RPC] 
+	void AlertServerInventoryRemoval (int itemID)
+	{
+		// Determine the GameObject and index
+		GameObject toRemove = m_itemIDs.GetItemWithID (itemID);
+		int index = m_cShipInventory.IndexOf (toRemove);
+
+		// Remove the item
+		m_cShipInventory.RemoveAt (index);
+		m_requestedItem.RemoveAt (index);
+
+		//Propagate inventory after change
+		networkView.RPC("AlertCShipInventoryHasChanged", RPCMode.Others);
+		for (int i = 0; i < m_cShipInventory.Count; i++)
+		{
+			networkView.RPC("PropagateCShipInventory", RPCMode.Others, i, m_cShipInventory[i].GetComponent<ItemScript>().m_equipmentID);
+		}
+	}
+	
+	[RPC] 
+	void AlertServerInventoryAddition (int itemID)
+	{
+		// Find the GameObject
+		GameObject toAdd = m_itemIDs.GetItemWithID (itemID);
+
+		// Add it to the lists
+		m_cShipInventory.Add (toAdd);
+		m_requestedItem.Add (false);
+		
+		//Propagate inventory after change
+		networkView.RPC("AlertCShipInventoryHasChanged", RPCMode.Others);
+		for (int i = 0; i < m_cShipInventory.Count; i++)
+		{
+			networkView.RPC("PropagateCShipInventory", RPCMode.Others, i, m_cShipInventory[i].GetComponent<ItemScript>().m_equipmentID);
+		}
+	}
+
+
     [RPC]
     void AlertCShipInventoryHasChanged()
     {
@@ -42,6 +146,8 @@ public class CapitalShipScript : MonoBehaviour
         m_cShipInventory.Clear();
         tempList = new GameObject[20];
     }
+
+	/*
     [RPC]
     void AlertInventoryPropagateHasFinished()
     {
@@ -49,13 +155,14 @@ public class CapitalShipScript : MonoBehaviour
         {
             m_cShipInventory.Add(tempList[i]);
         }
-    }
+    }*/
+    
     GameObject[] tempList;
     [RPC]
     void PropagateCShipInventory(int position, int itemID)
     {
-        GameObject itemToPlace = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID);
-        Debug.Log("Requesting that CShip get item: " + itemToPlace.GetComponent<ItemScript>().GetItemName() + " at position " + position);
+        GameObject itemToPlace = m_itemIDs.GetItemWithID(itemID);
+        Debug.Log ("Requesting that CShip get item: " + itemToPlace.GetComponent<ItemScript>().GetItemName() + " at position " + position);
         m_cShipInventory.Add(itemToPlace);
         //tempList[position] = itemToPlace;
     }
@@ -199,6 +306,18 @@ public class CapitalShipScript : MonoBehaviour
         {
             this.rigidbody.isKinematic = true;
         }
+
+
+		GameObject itemManager = GameObject.FindGameObjectWithTag ("Item Manager");
+		if (itemManager)
+		{
+			m_itemIDs = itemManager.GetComponent<ItemIDHolder>();
+		}
+
+		else
+		{
+			Debug.LogError ("Unable to find ItemManager from CapitalShipScript.");
+		}
 
         //coroutineIsRunning = new bool[5];
     }
