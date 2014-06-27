@@ -158,6 +158,7 @@ MonoBehaviour:
   currentHealthModifier: 1
   timeCountInMinutes: 25
   multiplierAtTimeRequired: 5
+  secondsBetweenWaves: 40
   shouldStart: 0
   allDone: 1
   lastTime: 0
@@ -7058,6 +7059,7 @@ MonoBehaviour:
   currentHealthModifier: 1
   timeCountInMinutes: 0
   multiplierAtTimeRequired: 0
+  secondsBetweenWaves: 40
   shouldStart: 0
   allDone: 1
   lastTime: 0

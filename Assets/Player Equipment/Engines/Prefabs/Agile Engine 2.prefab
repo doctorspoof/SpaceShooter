@@ -71,7 +71,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_requiredOffset: {x: .00300000003, y: -.0654999986, z: -.00999999978}
   m_engineMoveSpeed: 55
-  m_engineTurnSpeed: 6.19999981
+  m_engineTurnSpeed: 1
   m_engineStrafeModifier: 1.20000005
 --- !u!148 &14800000
 NetworkView:

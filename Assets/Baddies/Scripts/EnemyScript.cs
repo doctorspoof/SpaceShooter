@@ -124,6 +124,7 @@ public class EnemyScript : MonoBehaviour
     }
 
     IAttack currentAttackType = null;
+    float randomOffsetFromTarget = 0;
 
     //[SerializeField]
     //List<IAttack> attackVariations;
@@ -325,6 +326,7 @@ public class EnemyScript : MonoBehaviour
 
         lastFramePosition = shipTransform.position;
         currentAttackType = AIAttackCollection.GetRandomAttack((int)shipSize);
+        randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
         SetShipSpeed(m_shipSpeed);
     }
 
@@ -397,9 +399,12 @@ public class EnemyScript : MonoBehaviour
                         RaycastHit hit;
                         if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange()))
                         {
-                            RotateTowards(m_target.transform.position);
+                            Vector2 normalOfDirection = GetNormal(direction);
+
+                            RotateTowards((Vector2)m_target.transform.position + (randomOffsetFromTarget * normalOfDirection));
 
                             rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
+                            //MoveTowardTarget();
                         }
                         else
                         {
@@ -563,10 +568,10 @@ public class EnemyScript : MonoBehaviour
             float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
             Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
 
-            Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
-            Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
-            Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-            Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+            //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
+            //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
+            //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
+            //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
 
             RotateTowards((Vector2)shipTransform.position + directionToMove);
         }

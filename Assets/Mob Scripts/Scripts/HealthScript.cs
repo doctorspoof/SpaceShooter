@@ -282,6 +282,48 @@ public class HealthScript : MonoBehaviour
 					}
 					m_currentShield = 0;
 				}
+
+				bool isLaser = false;
+				if(hitter != null)
+					isLaser = hitter.GetComponent<BeamBulletScript>() != null ? true : false;
+
+				//Shield should now wibble
+				if(hitter != null)
+				{
+					if(this.GetComponent<CapitalShipScript>())
+					{
+						if(!isLaser)
+							this.GetComponent<CapitalShipScript>().BeginShaderCoroutine(hitter.transform.position);
+						else
+						{
+							Vector3 impactPos = GetLaserImpactPoint(hitter);
+							if(impactPos != Vector3.zero)
+								this.GetComponent<CapitalShipScript>().BeginShaderCoroutine(impactPos);
+						}
+					}
+					else if(this.GetComponent<PlayerControlScript>())
+					{
+						if(!isLaser)
+							this.GetComponent<PlayerControlScript>().BeginShaderCoroutine(hitter.transform.position);
+						else
+						{
+							Vector3 impactPos = GetLaserImpactPoint(hitter);
+							if(impactPos != Vector3.zero)
+								this.GetComponent<PlayerControlScript>().BeginShaderCoroutine(impactPos);
+						}
+					}
+					else if(this.GetComponent<EnemyScript>())
+					{
+						if(!isLaser)
+							this.GetComponent<EnemyScript>().BeginShaderCoroutine(hitter.transform.position);
+						else
+						{
+							Vector3 impactPos = GetLaserImpactPoint(hitter);
+							if(impactPos != Vector3.zero)
+								this.GetComponent<EnemyScript>().BeginShaderCoroutine(impactPos);
+						}
+					}
+				}
 			}
 			else
 			{
@@ -365,7 +407,19 @@ public class HealthScript : MonoBehaviour
 	{
 		ShieldOnOff (isUp);
 	}
-	
+
+	Vector3 GetLaserImpactPoint(GameObject laser)
+	{
+		Vector3 output = Vector3.zero;
+		RaycastHit info;
+		if(Physics.Raycast(laser.transform.position, laser.transform.up, out info))
+		{
+			output = info.point;
+		}
+
+		Debug.Log ("Returned position: " + output);
+		return output;
+	}
 	void ShieldOnOff (bool isUp)
 	{
 		GameObject shield = GetShield();

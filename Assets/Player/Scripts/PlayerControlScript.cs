@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 public enum DockingState
 {
-	NOTDOCKING = 0,
-	OnApproach = 1,
-	OnEntry = 2,
-	Docked = 3,
-	Exiting = 4
+    NOTDOCKING = 0,
+    OnApproach = 1,
+    OnEntry = 2,
+    Docked = 3,
+    Exiting = 4
 }
 
-public class PlayerControlScript : MonoBehaviour 
+public class PlayerControlScript : MonoBehaviour
 {
 	[SerializeField]
 	float m_ramDamageMultiplier = 5.0f;
@@ -755,11 +755,11 @@ public class PlayerControlScript : MonoBehaviour
 	{
 		ownerSt = owner.ToString();
 		bool recievedInput = false;
-		if(m_shouldRecieveInput && owner != null && owner == Network.player)
+		if(owner != null && owner == Network.player)
 		{
-			if(useController && Input.GetJoystickNames().Length < 1)
+			if((useController && Input.GetButtonDown("X360Start")) || (!useController && Input.GetKeyDown(KeyCode.Escape)))
 			{
-				useController = false;
+				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMenuState();
 			}
 
 			if(m_isAnimating)
@@ -769,502 +769,508 @@ public class PlayerControlScript : MonoBehaviour
 				{
 					CShip = GameObject.FindGameObjectWithTag("Capital");
 				}
-
+				
 				//If still on the entrance phases, allow cancelling with 'X'
 				/*if(Input.GetKey (KeyCode.X))
-				{
-					if(m_currentDockingState == DockingState.OnApproach || m_currentDockingState == DockingState.OnEntry)
 					{
-						//Cancel the animation
-						m_isAnimating = false;
-					}
-				}*/
-
+						if(m_currentDockingState == DockingState.OnApproach || m_currentDockingState == DockingState.OnEntry)
+						{
+							//Cancel the animation
+							m_isAnimating = false;
+						}
+					}*/
+				
 				//Now animate based on state
 				switch(m_currentDockingState)
 				{
-					case DockingState.NOTDOCKING:
+				case DockingState.NOTDOCKING:
+				{
+					//We shouldn't even be here man
+					//We shouln't even BE here!
+					m_isAnimating = false;
+					break;
+				}
+				case DockingState.OnApproach:
+				{
+					// Make sure targetPoint is up to date
+					targetPoint = CShip.transform.position + (CShip.transform.right * 7.0f);
+					
+					// Move towards entrance point
+					Vector3 direction = targetPoint - transform.position;
+					Vector3 rotation = -CShip.transform.right;
+					MoveToDockPoint (direction, rotation);
+					
+					// If we're near, switch to onEntry
+					if(direction.magnitude <= 1.35f)
 					{
-						//We shouldn't even be here man
-						//We shouln't even BE here!
-						m_isAnimating = false;
-						break;
-					}
-					case DockingState.OnApproach:
-					{
-						// Make sure targetPoint is up to date
-						targetPoint = CShip.transform.position + (CShip.transform.right * 7.0f);
+						m_dockingTime += Time.deltaTime;
 						
-						// Move towards entrance point
-						Vector3 direction = targetPoint - transform.position;
-						Vector3 rotation = -CShip.transform.right;
-						MoveToDockPoint (direction, rotation);
-						
-						// If we're near, switch to onEntry
-						if(direction.magnitude <= 1.35f)
-						{
-							m_dockingTime += Time.deltaTime;
-							
-							if (m_dockingTime >= 0.36f)
-							{
-								// Reset the docking time
-								m_dockingTime = 0f;
-								
-								// Kill our speed temporarily
-								rigidbody.isKinematic = true;
-								m_currentDockingState = DockingState.OnEntry;
-								targetPoint = CShip.transform.position + (CShip.transform.up * 1.5f);
-								rigidbody.isKinematic = false;
-								this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
-							}
-						}
-						
-						else
-						{
-							m_dockingTime = 0f;
-						}
-						
-						//Play sounds
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-						break;
-					}
-					case DockingState.OnEntry:
-					{
-						//Make sure targetPoint is up to date
-						targetPoint = CShip.transform.position;
-						
-						//Rotate towards entrance point
-						Vector3 direction = targetPoint - transform.position;
-						Vector3 rotation = -CShip.transform.right;
-						MoveToDockPoint (direction, rotation);
-						
-						//If we're near, switch to docked and cut input. Then alert GUI we've docked
-						if (direction.magnitude <= 1.5f)
-						{
-							m_dockingTime += Time.deltaTime;
-							
-							if (m_dockingTime >= 0.25f)
-							{
-								// Reset the docking time
-								m_dockingTime = 0f;
-								
-								// Perform docking process
-								m_currentDockingState = DockingState.Docked;
-								transform.rotation = CShip.transform.rotation;
-								GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
-								transform.parent = CShip.transform;
-								rigidbody.isKinematic = true;
-								GetComponent<HealthScript>().m_isInvincible = true;
-							}
-						}
-						
-						else
+						if (m_dockingTime >= 0.36f)
 						{
 							// Reset the docking time
 							m_dockingTime = 0f;
+							
+							// Kill our speed temporarily
+							rigidbody.isKinematic = true;
+							m_currentDockingState = DockingState.OnEntry;
+							targetPoint = CShip.transform.position + (CShip.transform.up * 1.5f);
+							rigidbody.isKinematic = false;
+							this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
 						}
-						
-						//Play sounds
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-						break;
-					}
-					case DockingState.Docked:
-					{
-						//We shouldn't need to do anything. Await GUI telling us we're done
-
-						//Ensure rotation matches CShip
-						transform.rotation = CShip.transform.rotation;
-
-						//Also position
-						float oldZ = transform.position.z;
-						transform.position = new Vector3(CShip.transform.position.x, CShip.transform.position.y, oldZ);
-						break;
-					}
-					case DockingState.Exiting:
-					{
-						//Accelerate forwards
-						this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
-
-						//If we're far enough away, stop animating
-						Vector3 dir = CShip.transform.position - transform.position;
-						if(dir.magnitude >= 12.0f)
-						{
-							//Fly free!
-							m_currentDockingState = DockingState.NOTDOCKING;
-							m_isAnimating = false;
-							this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
-							GetComponent<HealthScript>().m_isInvincible = false;
-						}
-
-						//Play the sound
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-						break;
-					}
-				}
-			}
-			else
-			{
-				if((useController && Input.GetButtonDown("X360X")) || (!useController && Input.GetKey (KeyCode.X)))
-				{
-					if(m_isInRangeOfCapitalDock)
-					{
-						//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_PlayerHasDockedAtCapital = true;
-						/*GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
-						transform.parent = GameObject.FindGameObjectWithTag("Capital").transform;
-						rigidbody.isKinematic = true;
-						m_shouldRecieveInput = false;*/
-
-						//Begin the animation sequence
-						CShip = GameObject.FindGameObjectWithTag("Capital");
-						targetPoint = CShip.transform.position + (CShip.transform.right * 7.0f) + (CShip.transform.up * 1.5f);
-						m_currentDockingState = DockingState.OnApproach;
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
-						m_isAnimating = true;
-					}
-					else if(m_isInRangeOfTradingDock && nearbyShop != null)
-					{
-						GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtShop(nearbyShop);
-						transform.parent = nearbyShop.transform;
-						rigidbody.isKinematic = true;
-						m_shouldRecieveInput = false;
-						
-					}
-				}
-
-				//In here, player should respond to any input
-				if(!useController)
-				{
-					if(Input.GetKey(KeyCode.W))
-					{
-						this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
-						
-						//Play sound + particles
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetKey (KeyCode.S))
-					{
-						this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
-						
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;							
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetKey (KeyCode.A))
-					{
-						this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-						
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetKey (KeyCode.D))
-					{
-						this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-						
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetKeyDown(KeyCode.Tab))
-					{
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
 					}
 					
-					if(Input.GetKeyDown(KeyCode.Z))
+					else
 					{
-						bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap = !mapVal;
+						m_dockingTime = 0f;
 					}
+					
+					//Play sounds
+					if(!shouldPlaySound)
+					{
+						shouldPlaySound = true;
+						this.audio.volume = volumeHolder;
+						this.audio.Play();
+						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+					}
+					recievedInput = true;
+					break;
 				}
-				else
+				case DockingState.OnEntry:
 				{
-					if(Input.GetAxis("LeftStickVertical") > 0)
+					//Make sure targetPoint is up to date
+					targetPoint = CShip.transform.position;
+					
+					//Rotate towards entrance point
+					Vector3 direction = targetPoint - transform.position;
+					Vector3 rotation = -CShip.transform.right;
+					MoveToDockPoint (direction, rotation);
+					
+					//If we're near, switch to docked and cut input. Then alert GUI we've docked
+					if (direction.magnitude <= 1.5f)
 					{
-						//Forward
-						float v = Input.GetAxis("LeftStickVertical");
-						float h = Input.GetAxis("LeftStickHorizontal");
-
-						Vector3 inputVec = new Vector3(h, v, 0);
-						if(inputVec.sqrMagnitude > 1.0f)
-						{
-							inputVec.Normalize();
-							inputVec *= 0.7071067f;
-						}
-						Vector3 forward = this.transform.up;
-
-						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-
-						float speed = 0;
-						if(forwardSpeedFac > 0.95f)
-						{
-							//Apply forward speed
-							speed = m_playerMoveSpeed;
-						}
-						else
-						{
-							//Apply side speed
-							speed = m_playerMoveSpeed * m_playerStrafeMod;
-						}
-
-						//float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
-						//float speed = (forwardSpeedFac * m_playerMoveSpeed) + (sideSpeedFac * (m_playerMoveSpeed * m_playerStrafeMod));
-
-						Vector3 moveFac = inputVec * speed;
-
-						this.rigidbody.AddForce(moveFac * Time.deltaTime);
-
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetAxis("LeftStickVertical") < 0)
-					{
-						//Back
-						float v = Input.GetAxis("LeftStickVertical");
-						float h = Input.GetAxis("LeftStickHorizontal");
+						m_dockingTime += Time.deltaTime;
 						
-						Vector3 inputVec = new Vector3(h, v, 0);
-						if(inputVec.sqrMagnitude > 1.0f)
+						if (m_dockingTime >= 0.25f)
 						{
-							inputVec.Normalize();
-							inputVec *= 0.7071067f;
-						}
-						Vector3 forward = this.transform.up;
-						
-						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-						float speed = 0;
-						if(forwardSpeedFac > 0.95f)
-						{
-							//Apply forward speed
-							speed = m_playerMoveSpeed;
-						}
-						else
-						{
-							//Apply side speed
-							speed = m_playerMoveSpeed * m_playerStrafeMod;
-						}
-
-						Vector3 moveFac = inputVec * speed;
-						
-						this.rigidbody.AddForce(moveFac * Time.deltaTime);
-						
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetAxis("LeftStickHorizontal") < 0)
-					{
-						//Left
-						float v = Input.GetAxis("LeftStickVertical");
-						float h = Input.GetAxis("LeftStickHorizontal");
-						
-						Vector3 inputVec = new Vector3(h, v, 0);
-						if(inputVec.sqrMagnitude > 1.0f)
-						{
-							inputVec.Normalize();
-							inputVec *= 0.7071067f;
-						}
-						Vector3 forward = this.transform.up;
-						
-						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-						float speed = 0;
-						if(forwardSpeedFac > 0.95f)
-						{
-							//Apply forward speed
-							speed = m_playerMoveSpeed;
-						}
-						else
-						{
-							//Apply side speed
-							speed = m_playerMoveSpeed * m_playerStrafeMod;
-						}
-
-						Vector3 moveFac = inputVec * speed;
-						
-						this.rigidbody.AddForce(moveFac * Time.deltaTime);
-						
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetAxis("LeftStickHorizontal") > 0)
-					{
-						//Right
-						float v = Input.GetAxis("LeftStickVertical");
-						float h = Input.GetAxis("LeftStickHorizontal");
-						
-						Vector3 inputVec = new Vector3(h, v, 0);
-						if(inputVec.sqrMagnitude > 1.0f)
-						{
-							inputVec.Normalize();
-							inputVec *= 0.7071067f;
-						}
-						Vector3 forward = this.transform.up;
-						
-						float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-						float speed = 0;
-						if(forwardSpeedFac > 0.95f)
-						{
-							//Apply forward speed
-							speed = m_playerMoveSpeed;
-						}
-						else
-						{
-							//Apply side speed
-							speed = m_playerMoveSpeed * m_playerStrafeMod;
-						}
-
-						Vector3 moveFac = inputVec * speed * Time.deltaTime;
-						
-						this.rigidbody.AddForce(moveFac);
-						
-						if(!shouldPlaySound)
-						{
-							shouldPlaySound = true;
-							this.audio.volume = volumeHolder;
-							this.audio.Play();
-							networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-						}
-						recievedInput = true;
-					}
-
-					if(Input.GetButtonDown("X360Back"))
-					{
-						GUIManager gui = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>();
-						int status = gui.GetMapStatus();
-						
-						if(status == 0)
-						{
-							//Go from follow map to non-follow map
-							gui.m_isOnFollowMap = false;
-						}
-						else if(status == 1)
-						{
-							//Go from non-follow to fullscreen
-							gui.m_isOnFollowMap = true;
-							gui.ToggleMap();
-						}
-						else
-						{
-							//Go from fullscreen to follow
-							gui.ToggleMap();
+							// Reset the docking time
+							m_dockingTime = 0f;
+							
+							// Perform docking process
+							m_currentDockingState = DockingState.Docked;
+							transform.rotation = CShip.transform.rotation;
+							GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
+							transform.parent = CShip.transform;
+							rigidbody.isKinematic = true;
+							GetComponent<HealthScript>().m_isInvincible = true;
 						}
 					}
+					
+					else
+					{
+						// Reset the docking time
+						m_dockingTime = 0f;
+					}
+					
+					//Play sounds
+					if(!shouldPlaySound)
+					{
+						shouldPlaySound = true;
+						this.audio.volume = volumeHolder;
+						this.audio.Play();
+						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+					}
+					recievedInput = true;
+					break;
 				}
-
-				if((useController && Input.GetButtonDown("X360Start")) || (!useController && Input.GetKeyDown(KeyCode.Escape)))
+				case DockingState.Docked:
 				{
-					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMenuState();
+					//We shouldn't need to do anything. Await GUI telling us we're done
+					
+					//Ensure rotation matches CShip
+					transform.rotation = CShip.transform.rotation;
+					
+					//Also position
+					float oldZ = transform.position.z;
+					transform.position = new Vector3(CShip.transform.position.x, CShip.transform.position.y, oldZ);
+					break;
 				}
-
-				if((useController && Input.GetButtonDown("X360B")) || (!useController && Input.GetMouseButtonDown (2)))
+				case DockingState.Exiting:
 				{
-					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RequestBreakLock();
-				}
-
-				if(useController)
-				{
-					//Don't rotate to face cursor, instead, listen for right stick input
-					float v = Input.GetAxis("RightStickVertical");
-					float h = Input.GetAxis("RightStickHorizontal");
-
-					if(v != 0 || h != 0)
+					//Accelerate forwards
+					this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
+					
+					//If we're far enough away, stop animating
+					Vector3 dir = CShip.transform.position - transform.position;
+					if(dir.magnitude >= 12.0f)
 					{
-						float angle = (Mathf.Atan2 (v,h) - Mathf.PI/2) * Mathf.Rad2Deg;
-						Quaternion target = Quaternion.Euler(new Vector3(0, 0, angle));
-						targetAngle = target;
+						//Fly free!
+						m_currentDockingState = DockingState.NOTDOCKING;
+						m_isAnimating = false;
+						this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
+						GetComponent<HealthScript>().m_isInvincible = false;
+					}
+					
+					//Play the sound
+					if(!shouldPlaySound)
+					{
+						shouldPlaySound = true;
+						this.audio.volume = volumeHolder;
+						this.audio.Play();
+						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+					}
+					recievedInput = true;
+					break;
+				}
+				}
+			}
+
+			if(m_shouldRecieveInput)
+			{
+				if(useController && Input.GetJoystickNames().Length < 1)
+				{
+					useController = false;
+				}
+
+
+				if(!m_isAnimating)
+				{
+					if((useController && Input.GetButtonDown("X360X")) || (!useController && Input.GetKey (KeyCode.X)))
+					{
+						if(m_isInRangeOfCapitalDock)
+						{
+							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_PlayerHasDockedAtCapital = true;
+							/*GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
+							transform.parent = GameObject.FindGameObjectWithTag("Capital").transform;
+							rigidbody.isKinematic = true;
+							m_shouldRecieveInput = false;*/
+
+							//Begin the animation sequence
+							CShip = GameObject.FindGameObjectWithTag("Capital");
+							targetPoint = CShip.transform.position + (CShip.transform.right * 7.0f) + (CShip.transform.up * 1.5f);
+							m_currentDockingState = DockingState.OnApproach;
+							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
+							m_isAnimating = true;
+						}
+						else if(m_isInRangeOfTradingDock && nearbyShop != null)
+						{
+							GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtShop(nearbyShop);
+							transform.parent = nearbyShop.transform;
+							rigidbody.isKinematic = true;
+							m_shouldRecieveInput = false;
+							
+						}
 					}
 
-					transform.rotation = Quaternion.Slerp(transform.rotation, targetAngle, m_playerRotateSpeed * Time.deltaTime);
-
-					if(Input.GetAxis("X360Triggers") < 0)
-						this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
-					else if(Input.GetAxis ("X360Triggers") == 0)
-						this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
-				}
-				else
-				{
-					//Here, it should rotate to face the mouse cursor
-					var objectPos = Camera.main.WorldToScreenPoint(transform.position);
-					var dir = Input.mousePosition - objectPos;
-					Quaternion target = Quaternion.Euler (new Vector3(0,0,(Mathf.Atan2 (dir.y,dir.x) - Mathf.PI/2) * Mathf.Rad2Deg));
-					transform.rotation = Quaternion.Slerp(transform.rotation, target, m_playerRotateSpeed * Time.deltaTime);
-
-					if(Input.GetMouseButton(0))
+					//In here, player should respond to any input
+					if(!useController)
 					{
-						this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+						if(Input.GetKey(KeyCode.W))
+						{
+							this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
+							
+							//Play sound + particles
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetKey (KeyCode.S))
+						{
+							this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
+							
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;							
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetKey (KeyCode.A))
+						{
+							this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+							
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetKey (KeyCode.D))
+						{
+							this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+							
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetKeyDown(KeyCode.Tab))
+						{
+							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
+						}
+						
+						if(Input.GetKeyDown(KeyCode.Z))
+						{
+							bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
+							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap = !mapVal;
+						}
+					}
+					else
+					{
+						if(Input.GetAxis("LeftStickVertical") > 0)
+						{
+							//Forward
+							float v = Input.GetAxis("LeftStickVertical");
+							float h = Input.GetAxis("LeftStickHorizontal");
+
+							Vector3 inputVec = new Vector3(h, v, 0);
+							if(inputVec.sqrMagnitude > 1.0f)
+							{
+								inputVec.Normalize();
+								inputVec *= 0.7071067f;
+							}
+							Vector3 forward = this.transform.up;
+
+							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+
+							float speed = 0;
+							if(forwardSpeedFac > 0.95f)
+							{
+								//Apply forward speed
+								speed = m_playerMoveSpeed;
+							}
+							else
+							{
+								//Apply side speed
+								speed = m_playerMoveSpeed * m_playerStrafeMod;
+							}
+
+							//float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
+							//float speed = (forwardSpeedFac * m_playerMoveSpeed) + (sideSpeedFac * (m_playerMoveSpeed * m_playerStrafeMod));
+
+							Vector3 moveFac = inputVec * speed;
+
+							this.rigidbody.AddForce(moveFac * Time.deltaTime);
+
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetAxis("LeftStickVertical") < 0)
+						{
+							//Back
+							float v = Input.GetAxis("LeftStickVertical");
+							float h = Input.GetAxis("LeftStickHorizontal");
+							
+							Vector3 inputVec = new Vector3(h, v, 0);
+							if(inputVec.sqrMagnitude > 1.0f)
+							{
+								inputVec.Normalize();
+								inputVec *= 0.7071067f;
+							}
+							Vector3 forward = this.transform.up;
+							
+							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+							float speed = 0;
+							if(forwardSpeedFac > 0.95f)
+							{
+								//Apply forward speed
+								speed = m_playerMoveSpeed;
+							}
+							else
+							{
+								//Apply side speed
+								speed = m_playerMoveSpeed * m_playerStrafeMod;
+							}
+
+							Vector3 moveFac = inputVec * speed;
+							
+							this.rigidbody.AddForce(moveFac * Time.deltaTime);
+							
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetAxis("LeftStickHorizontal") < 0)
+						{
+							//Left
+							float v = Input.GetAxis("LeftStickVertical");
+							float h = Input.GetAxis("LeftStickHorizontal");
+							
+							Vector3 inputVec = new Vector3(h, v, 0);
+							if(inputVec.sqrMagnitude > 1.0f)
+							{
+								inputVec.Normalize();
+								inputVec *= 0.7071067f;
+							}
+							Vector3 forward = this.transform.up;
+							
+							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+							float speed = 0;
+							if(forwardSpeedFac > 0.95f)
+							{
+								//Apply forward speed
+								speed = m_playerMoveSpeed;
+							}
+							else
+							{
+								//Apply side speed
+								speed = m_playerMoveSpeed * m_playerStrafeMod;
+							}
+
+							Vector3 moveFac = inputVec * speed;
+							
+							this.rigidbody.AddForce(moveFac * Time.deltaTime);
+							
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetAxis("LeftStickHorizontal") > 0)
+						{
+							//Right
+							float v = Input.GetAxis("LeftStickVertical");
+							float h = Input.GetAxis("LeftStickHorizontal");
+							
+							Vector3 inputVec = new Vector3(h, v, 0);
+							if(inputVec.sqrMagnitude > 1.0f)
+							{
+								inputVec.Normalize();
+								inputVec *= 0.7071067f;
+							}
+							Vector3 forward = this.transform.up;
+							
+							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+							float speed = 0;
+							if(forwardSpeedFac > 0.95f)
+							{
+								//Apply forward speed
+								speed = m_playerMoveSpeed;
+							}
+							else
+							{
+								//Apply side speed
+								speed = m_playerMoveSpeed * m_playerStrafeMod;
+							}
+
+							Vector3 moveFac = inputVec * speed * Time.deltaTime;
+							
+							this.rigidbody.AddForce(moveFac);
+							
+							if(!shouldPlaySound)
+							{
+								shouldPlaySound = true;
+								this.audio.volume = volumeHolder;
+								this.audio.Play();
+								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+							}
+							recievedInput = true;
+						}
+
+						if(Input.GetButtonDown("X360Back"))
+						{
+							GUIManager gui = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>();
+							int status = gui.GetMapStatus();
+							
+							if(status == 0)
+							{
+								//Go from follow map to non-follow map
+								gui.m_isOnFollowMap = false;
+							}
+							else if(status == 1)
+							{
+								//Go from non-follow to fullscreen
+								gui.m_isOnFollowMap = true;
+								gui.ToggleMap();
+							}
+							else
+							{
+								//Go from fullscreen to follow
+								gui.ToggleMap();
+							}
+						}
 					}
 
-					if(Input.GetMouseButtonUp(0))
+
+
+					if((useController && Input.GetButtonDown("X360B")) || (!useController && Input.GetMouseButtonDown (2)))
 					{
-						this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RequestBreakLock();
 					}
-				}
+
+					if(useController)
+					{
+						//Don't rotate to face cursor, instead, listen for right stick input
+						float v = Input.GetAxis("RightStickVertical");
+						float h = Input.GetAxis("RightStickHorizontal");
+
+						if(v != 0 || h != 0)
+						{
+							float angle = (Mathf.Atan2 (v,h) - Mathf.PI/2) * Mathf.Rad2Deg;
+							Quaternion target = Quaternion.Euler(new Vector3(0, 0, angle));
+							targetAngle = target;
+						}
+
+						transform.rotation = Quaternion.Slerp(transform.rotation, targetAngle, m_playerRotateSpeed * Time.deltaTime);
+
+						if(Input.GetAxis("X360Triggers") < 0)
+							this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+						else if(Input.GetAxis ("X360Triggers") == 0)
+							this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+					}
+					else
+					{
+						//Here, it should rotate to face the mouse cursor
+						var objectPos = Camera.main.WorldToScreenPoint(transform.position);
+                        var dir = Input.mousePosition - objectPos;
+
+                        RotateTowards(transform.position + dir);
+
+						if(Input.GetMouseButton(0))
+						{
+							this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+						}
+
+						if(Input.GetMouseButtonUp(0))
+						{
+							this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+						}
+					}
 
 				//Listen for combat input
 				/*if((useController && Input.GetAxis("X360Triggers") < 0) || (!useController && Input.GetMouseButton(0)))
@@ -1275,7 +1281,7 @@ public class PlayerControlScript : MonoBehaviour
 				if((useController && Input.GetAxis("X360Triggers") == 0) || (!useController && Input.GetMouseButtonUp(0)))
 					this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();*/
 
-
+				}
 			}
 			//Now finish up by applying vevlocity + momentum
 			//this.transform.position += m_currentVelocity;
@@ -1317,6 +1323,27 @@ public class PlayerControlScript : MonoBehaviour
 
 		}
 	}
+
+    void RotateTowards(Vector3 targetPosition)
+    {
+        Vector2 targetDirection = targetPosition - transform.position;
+        float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
+        float currentAngle = transform.rotation.eulerAngles.z;
+
+        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 20f && true) /// turn to false to use old rotation movement
+        {
+            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, m_playerRotateSpeed);
+            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
+        }
+        else
+        {
+            Quaternion rotate = Quaternion.LookRotation(targetDirection, Vector3.back);
+            rotate.x = 0;
+            rotate.y = 0;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, m_playerRotateSpeed * Time.deltaTime);
+        }
+    }
 
 	void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
 	{
@@ -1475,6 +1502,11 @@ public class PlayerControlScript : MonoBehaviour
 		return null;
 	}
 
+	void OnDestroy()
+	{
+		Screen.showCursor = true;
+	}
+
 	//Do shield fizzle wizzle
 	int shaderCounter = 0;
 	public void BeginShaderCoroutine(Vector3 position)
@@ -1552,4 +1584,5 @@ public class PlayerControlScript : MonoBehaviour
 	{
 		networkView.RPC ("PropagateExplosiveForce", RPCMode.Others, x, y, range, minForce, maxForce, (int) mode);
 	}
+
 }

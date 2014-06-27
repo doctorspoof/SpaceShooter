@@ -233,6 +233,11 @@ public class CameraScript : MonoBehaviour
 					// Toggle the map type
 					m_gui.m_isOnFollowMap  = !m_gui.m_isOnFollowMap;
 				}
+
+				if(Input.GetButtonDown("X360Start") || Input.GetKeyDown(KeyCode.Escape))
+				{
+					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMenuState();
+				}
 			}
 
 			//Listen for camera input
@@ -254,6 +259,8 @@ public class CameraScript : MonoBehaviour
 						m_currentOrthoSize = 15;
 				}
 			}
+
+
 			
 			camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, m_currentOrthoSize, Time.deltaTime);
 		}
