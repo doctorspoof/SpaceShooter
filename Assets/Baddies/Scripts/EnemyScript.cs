@@ -326,6 +326,7 @@ public class EnemyScript : MonoBehaviour
 
         lastFramePosition = shipTransform.position;
         currentAttackType = AIAttackCollection.GetRandomAttack((int)shipSize);
+        randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
         SetShipSpeed(m_shipSpeed);
     }
 
@@ -398,7 +399,9 @@ public class EnemyScript : MonoBehaviour
                         RaycastHit hit;
                         if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange()))
                         {
-                            RotateTowards(m_target.transform.position);
+                            Vector2 normalOfDirection = GetNormal(direction);
+
+                            RotateTowards((Vector2)m_target.transform.position + (randomOffsetFromTarget * normalOfDirection));
 
                             rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
                             //MoveTowardTarget();
