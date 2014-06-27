@@ -231,7 +231,7 @@ public class BasicBulletScript : MonoBehaviour
 		}
 		
 		// TODO: Move shield wibble into HealthScript
-		if(!other.isTrigger)
+		/*if(!other.isTrigger)
 		{
 			if(other.tag == "Shield")
 			{
@@ -248,7 +248,7 @@ public class BasicBulletScript : MonoBehaviour
 					other.transform.root.GetComponent<EnemyScript>().BeginShaderCoroutine(this.transform.position);
 				}
 			}
-		}
+		}*/
 	}
 
 	public void DetonateBullet()

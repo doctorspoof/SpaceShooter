@@ -1847,14 +1847,16 @@ public class GUIManager : MonoBehaviour
 		if(m_inGameMenuIsOpen)
 		{
 			Screen.showCursor = true;
-			thisPlayerHP.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
+			if(thisPlayerHP != null)
+				thisPlayerHP.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
 		}
 		else
 		{
 			if(!m_PlayerHasDockedAtCapital && !m_PlayerHasDockedAtShop)
 			{
 				Screen.showCursor = false;
-				thisPlayerHP.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
+				if(thisPlayerHP != null)
+					thisPlayerHP.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
 			}
 
 		}
@@ -1899,39 +1901,42 @@ public class GUIManager : MonoBehaviour
 
 	void DrawCursor()
 	{
-		//Cursor
-		Matrix4x4 oldMat = GUI.matrix;
-		GUI.matrix = Matrix4x4.identity;
-		Vector3 mousePos = Input.mousePosition;
-		if(hasLockedTarget)
+		if(thisPlayerHP != null)
 		{
-			GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursorLocked);
-			
-			//Draw locked target over the enemy
-			if(m_lastLockonTarget != null)
+			//Cursor
+			Matrix4x4 oldMat = GUI.matrix;
+			GUI.matrix = Matrix4x4.identity;
+			Vector3 mousePos = Input.mousePosition;
+			if(hasLockedTarget)
 			{
-				Vector2 pos = Camera.main.WorldToScreenPoint(m_lastLockonTarget.transform.position);
-				pos.y = Screen.height - pos.y;
-				GUI.DrawTexture (new Rect((pos.x - 15), (pos.y - 15), 30, 30), m_enemyLocked);
+				GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursorLocked);
+				
+				//Draw locked target over the enemy
+				if(m_lastLockonTarget != null)
+				{
+					Vector2 pos = Camera.main.WorldToScreenPoint(m_lastLockonTarget.transform.position);
+					pos.y = Screen.height - pos.y;
+					GUI.DrawTexture (new Rect((pos.x - 15), (pos.y - 15), 30, 30), m_enemyLocked);
+				}
+				else
+					hasLockedTarget = false;
 			}
+			else if(m_isLockingOn)
+				GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursorLocking);
 			else
-				hasLockedTarget = false;
+				GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursor);
+			
+			//Reload on cursor
+			Rect reloadBoxPos = new Rect(mousePos.x + 12, (Screen.height - mousePos.y), 11, 18);
+			GUI.DrawTexture (reloadBoxPos, m_reloadBackground);
+			
+			//Draw reload percentage
+			float reloadPercent = thisPlayerHP.GetComponent<PlayerControlScript>().GetReloadPercentage();
+			reloadBoxPos.width *= reloadPercent;
+			GUI.DrawTextureWithTexCoords(reloadBoxPos, m_reloadBar, new Rect(0, 0, reloadPercent, 1.0f));
+			
+			GUI.matrix = oldMat;
 		}
-		else if(m_isLockingOn)
-			GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursorLocking);
-		else
-			GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursor);
-		
-		//Reload on cursor
-		Rect reloadBoxPos = new Rect(mousePos.x + 12, (Screen.height - mousePos.y), 11, 18);
-		GUI.DrawTexture (reloadBoxPos, m_reloadBackground);
-		
-		//Draw reload percentage
-		float reloadPercent = thisPlayerHP.GetComponent<PlayerControlScript>().GetReloadPercentage();
-		reloadBoxPos.width *= reloadPercent;
-		GUI.DrawTextureWithTexCoords(reloadBoxPos, m_reloadBar, new Rect(0, 0, reloadPercent, 1.0f));
-		
-		GUI.matrix = oldMat;
 	}
 
 	bool m_beginLockBreak = false;
@@ -2086,7 +2091,11 @@ public class GUIManager : MonoBehaviour
 	
 		GUI.DrawTexture (new Rect((Screen.height * 0.125f) - (m_blobSize * 0.5f), ((Screen.height * 0.125f) * 7.0f) - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_selfPBlob);
 
-		Vector2 playerNormalDrawPos = WorldToSmallMapPos(thisPlayerHP.transform.position);
+		Vector2 playerNormalDrawPos = Vector2.zero;
+		if(thisPlayerHP)
+			playerNormalDrawPos = WorldToSmallMapPos(thisPlayerHP.transform.position);
+		else
+			playerNormalDrawPos = WorldToSmallMapPos(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 10.0f));
 
 		//Step three: draw CShip blob
 		if(CShip != null)
@@ -2255,11 +2264,11 @@ public class GUIManager : MonoBehaviour
 				if(enemy != null)
 				{
 					//Check if enemy is in viewable range
-					if(IsEnemyInViewableRange(enemy.transform.position))
-					{
+					//if(IsEnemyInViewableRange(enemy.transform.position))
+					//{
 						Vector2 pingPos = WorldToSmallMapPos(enemy.transform.position);
 						GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_enemyBlob);
-					}
+					//}
 				}
 			}
 		}
