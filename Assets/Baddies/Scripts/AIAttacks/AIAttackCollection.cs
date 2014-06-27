@@ -24,7 +24,8 @@ public class AIAttackCollection
             new IAttack[] //small ships
             { 
                 new AttackStrafeLeft(),
-                new AttackStrafeRight()
+                new AttackStrafeRight(),
+                new AttackFromBehind()
             } 
     };
 

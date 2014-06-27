@@ -252,7 +252,7 @@ public class EnemyGroup : MonoBehaviour
         returnee[0] = (rotation * returnee[0]) + objectToAvoid.transform.position;
         returnee[1] = (rotation * returnee[1]) + objectToAvoid.transform.position;
 
-        if (Vector2.Distance(transform.position, returnee[0]) < Vector2.Distance(transform.position, returnee[1]))
+        if (Vector2.SqrMagnitude((Vector2)transform.position - returnee[0]) < Vector2.SqrMagnitude((Vector2)transform.position - returnee[1]))
         {
             return returnee[0];
         }

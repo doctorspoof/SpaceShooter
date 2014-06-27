@@ -563,10 +563,10 @@ public class EnemyScript : MonoBehaviour
             float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
             Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
 
-            Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
-            Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
-            Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-            Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+            //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
+            //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
+            //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
+            //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
 
             RotateTowards((Vector2)shipTransform.position + directionToMove);
         }
