@@ -308,7 +308,7 @@ public class CapitalShipScript : MonoBehaviour
         }
 
 
-		GameObject itemManager = GameObject.FindGameObjectWithTag ("Item Manager");
+		GameObject itemManager = GameObject.FindGameObjectWithTag ("ItemManager");
 		if (itemManager)
 		{
 			m_itemIDs = itemManager.GetComponent<ItemIDHolder>();

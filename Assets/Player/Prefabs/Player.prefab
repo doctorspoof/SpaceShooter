@@ -629,7 +629,6 @@ MonoBehaviour:
   m_timeToRechargeShield: 3
   m_shouldStop: 0
   m_isInvincible: 0
-  m_shieldEffect: {fileID: 0}
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
