@@ -41,7 +41,7 @@ public class BasicBulletScript : MonoBehaviour
 	
 	// Area of effect attributes
 	[SerializeField] bool m_isAOE = false;									// Whether the bullet should damage an area or not
-	[SerializeField] Accuracy m_aoeDamageAccuracy = Accuracy.Low;			// How accurate the AoE damage should be
+	[SerializeField] Accuracy m_aoeDamageAccuracy = Accuracy.High;			// How accurate the AoE damage should be
 	[SerializeField, Range (0f, 100f)] float m_aoeRange = 2f;				// How far away the enemies can be from the explosion
 	[SerializeField, Range (0f, 100f)] float m_aoeMaxDamageRange = 0.25f;	// The margin between the explosion and the target for them to receive maximum damage
 	[SerializeField, Range (0f, 1000f)] float m_aoeMaxExplosiveForce = 15f;	// How much force can be applied
@@ -191,21 +191,38 @@ public class BasicBulletScript : MonoBehaviour
 				case Layers.enemy:
 				case Layers.asteroid:
 				{
-					if (m_isAOE)
+					try
 					{
-						DamageAOE();
+						if (m_isAOE)
+						{
+							DamageAOE();
+						}
+						
+						else
+						{
+							// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+							DamageMob (other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);					
+						}
+					}	
+
+					catch (UnityException error) 
+					{
+						Debug.LogError ("Exception Occurred in BasicBulletScript: " + error.Message);
 					}
-					
-					else
+
+					// This should absolutely always run and should never ever not run ever, literally ever.
+					finally 
 					{
-						// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-						DamageMob (other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);					
-					}
-					
-					// Piercing bullets continue until the end of their lifetime.
-					if (!m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
-					{
-						Network.Destroy (gameObject);
+						// Piercing bullets continue until the end of their lifetime.
+						if (!m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
+						{
+							Network.Destroy (gameObject);
+						}
+
+						else
+						{
+							Debug.Log ("Didn't destroy " + gameObject.name);
+						}
 					}
 					
 					break;
@@ -332,7 +349,7 @@ public class BasicBulletScript : MonoBehaviour
 	// Attempts to damage the passed GameObject whilst managing the piercing state of the bullet
 	void DamageMob (GameObject mob, int damage, bool incrementPierceCounter = false)
 	{
-		if (mob)
+		if (Network.isServer && mob)
 		{
 			if (!m_isPiercing || !m_pastHits.Contains (mob))
 			{			
