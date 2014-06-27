@@ -282,6 +282,20 @@ public class HealthScript : MonoBehaviour
 					}
 					m_currentShield = 0;
 				}
+
+				//Shield should now wibble
+				if(this.GetComponent<CapitalShipScript>())
+				{
+					this.GetComponent<CapitalShipScript>().BeginShaderCoroutine(this.transform.position);
+				}
+				else if(this.GetComponent<PlayerControlScript>())
+				{
+					this.GetComponent<PlayerControlScript>().BeginShaderCoroutine(this.transform.position);
+				}
+				else if(this.GetComponent<EnemyScript>())
+				{
+					this.GetComponent<EnemyScript>().BeginShaderCoroutine(this.transform.position);
+				}
 			}
 			else
 			{
