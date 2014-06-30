@@ -1335,7 +1335,7 @@ public class PlayerControlScript : MonoBehaviour
         float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
         float currentAngle = transform.rotation.eulerAngles.z;
 
-        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 20f && false) /// turn to false to use old rotation movement
+        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
         {
             float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, m_playerRotateSpeed);
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
