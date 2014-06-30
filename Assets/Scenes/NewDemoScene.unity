@@ -176,7 +176,7 @@ MonoBehaviour:
   healthModifierIncrement: 0
   currentHealthModifier: 1
   timeCountInMinutes: 25
-  multiplierAtTimeRequired: 5
+  multiplierAtTimeRequired: 15
   secondsBetweenWaves: 60
   shouldStart: 0
   allDone: 1
@@ -7221,7 +7221,7 @@ MonoBehaviour:
   healthModifierIncrement: 0
   currentHealthModifier: 1
   timeCountInMinutes: 25
-  multiplierAtTimeRequired: 5
+  multiplierAtTimeRequired: 15
   secondsBetweenWaves: 60
   shouldStart: 0
   allDone: 1
