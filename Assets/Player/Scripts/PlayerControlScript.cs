@@ -1509,7 +1509,8 @@ public class PlayerControlScript : MonoBehaviour
 
 	void OnDestroy()
 	{
-		Screen.showCursor = true;
+		if(Network.player == owner)
+			Screen.showCursor = true;
 	}
 
 	//Do shield fizzle wizzle
