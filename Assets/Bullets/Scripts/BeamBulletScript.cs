@@ -123,7 +123,7 @@ public class BeamBulletScript : MonoBehaviour
 		Rigidbody mob = hit.collider.attachedRigidbody;
 		
 		// Push the enemy away from the force of the beam
-		mob.AddForceAtPosition (transform.up * m_impactForce, hit.point);
+		mob.AddForceAtPosition (transform.up * m_impactForce * Time.deltaTime, hit.point);
 
 		// Only the host should cause damage
 		if (Network.isServer)
