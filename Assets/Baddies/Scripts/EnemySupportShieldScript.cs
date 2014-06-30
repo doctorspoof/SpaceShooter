@@ -59,6 +59,7 @@ public class EnemySupportShieldScript : MonoBehaviour
 			{
 				GameObject bullet = other.gameObject;
 
+				Debug.Log ("Object: " + other.name + " entered shield trigger");
 				DamageShield(bullet.GetComponent<BasicBulletScript>().GetDamage());
 
 				bullet.GetComponent<BasicBulletScript>().DetonateBullet();
@@ -98,7 +99,7 @@ public class EnemySupportShieldScript : MonoBehaviour
 	{
 		//Debug.Log ("Bullet collision, beginning shader coroutine");
 		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * this.transform.localScale.x, pos.y * this.transform.localScale.y, pos.z);
+		pos = new Vector3(pos.x * this.transform.localScale.x * 6.0f, pos.y * this.transform.localScale.y * 6.0f, pos.z);
 		this.renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
 		this.renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
 		

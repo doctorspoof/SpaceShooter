@@ -895,9 +895,9 @@ public class PlayerControlScript : MonoBehaviour
 						//Also position
 						float oldZ = transform.position.z;
 						transform.position = new Vector3(CShip.transform.position.x, CShip.transform.position.y, oldZ);
-						break;
-					}
 
+					}
+					break;
 				}
 				case DockingState.Exiting:
 				{

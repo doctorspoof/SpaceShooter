@@ -18,9 +18,12 @@ public class EnemyShieldShipScript : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
-		if(!this.GetComponent<EnemyScript>().GetShield().GetComponent<EnemySupportShieldScript>().OnTriggerEnter(other))
+		if(other.gameObject.layer == Layers.playerBullet || other.gameObject.layer == Layers.capitalBullet)
 		{
-			//Call trigger enter on enemyScript
+			if(!this.GetComponent<EnemyScript>().GetShield().GetComponent<EnemySupportShieldScript>().OnTriggerEnter(other))
+			{
+				//Call trigger enter on enemyScript
+			}
 		}
 	}
 }
