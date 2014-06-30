@@ -12,19 +12,33 @@ public class StarScript : MonoBehaviour
 	
 	void OnTriggerStay(Collider other)
 	{
-		switch (other.attachedRigidbody.gameObject.layer)
+		if (other.attachedRigidbody && other.attachedRigidbody.gameObject)
 		{
+			switch (other.attachedRigidbody.gameObject.layer)
+			{
 			case Layers.capital:
 			case Layers.enemy:
 			case Layers.asteroid:
 				m_damageDelay += Time.deltaTime;
 				if(m_damageDelay >= m_tickTime)
 				{
-					other.gameObject.GetComponent<HealthScript>().DamageMobHullDirectly(m_damagePerTick);
+					HealthScript script = other.attachedRigidbody.gameObject.GetComponent<HealthScript>();
+
+					if (script)
+					{
+						script.DamageMobHullDirectly (m_damagePerTick);
+					}
+
+					else
+					{
+						Debug.LogError ("Unable to find HealthScript on " + other.attachedRigidbody.name);
+					}
+
 					m_damageDelay = 0.0f;
 				}
 				
 				break;
+			}
 		}
 	}
 }

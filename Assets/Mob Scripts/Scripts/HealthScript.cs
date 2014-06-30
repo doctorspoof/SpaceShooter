@@ -506,8 +506,11 @@ public class HealthScript : MonoBehaviour
 		}
 		else if(this.tag == "Asteroid")
 		{
-			//If it's an asteroid, tell it to split			
-			this.GetComponent<AsteroidScript>().SplitAsteroid(hitter.transform);
+			Transform hit = hitter ? hitter.transform : transform;
+
+			//If it's an asteroid, tell it to split	
+
+			this.GetComponent<AsteroidScript>().SplitAsteroid(hit);
 		}
 	}
 	[RPC]
