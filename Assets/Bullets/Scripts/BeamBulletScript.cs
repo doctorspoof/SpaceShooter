@@ -129,13 +129,16 @@ public class BeamBulletScript : MonoBehaviour
 		if (Network.isServer)
 		{
 			HealthScript health = mob.GetComponent<HealthScript>();
-			if (health && m_overflow > 1f)
+			if (health)
 			{
-				// Ensure the overflow is caught and stored for the next time damage will be dealt
-				int damage = (int) m_overflow;
-				m_overflow -= damage;
-				
-				health.DamageMob (damage, firer, gameObject);
+				if (m_overflow > 1f)
+				{
+					// Ensure the overflow is caught and stored for the next time damage will be dealt
+					int damage = (int) m_overflow;
+					m_overflow -= damage;
+					
+					health.DamageMob (damage, firer, gameObject);
+				}
 			}
 			
 			else
