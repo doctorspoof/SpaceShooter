@@ -1,32 +1,18 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
-public class AIAttackCollection
+public class AIAttackCollection : MonoBehaviour
 {
-    //public static AIAttackCollection instance = new AIAttackCollection();
 
-    public static IAttack[][] attackLists = 
+    static Dictionary<string, IAttack> attackCollection = new Dictionary<string, IAttack>()
     {
-            new IAttack[] // Utility ships
-            {
-
-            },
-            new IAttack[] //large ships
-            {
-                new AttackCircleClockwise(),
-                new AttackCircleAntiClockwise()
-            }, 
-            new IAttack[] //medium ships
-            { 
-                new AttackStrafeLeft(),
-                new AttackStrafeRight()
-            }, 
-            new IAttack[] //small ships
-            { 
-                new AttackStrafeLeft(),
-                new AttackStrafeRight(),
-                new AttackFromBehind()
-            } 
+        {"AttackCircleClockwise", new AttackCircleClockwise()},
+        {"AttackCircleAntiClockwise", new AttackCircleAntiClockwise()},
+        {"AttackStrafeLeft", new AttackStrafeLeft()},
+        {"AttackStrafeRight", new AttackStrafeRight()},
+        {"AttackFromBehind", new AttackFromBehind()},
+        {"AttackShieldShipCircleClockwise", new AttackShieldShipCircleClockwise()},
+        {"AttackShieldShipCircleAntiClockwise", new AttackShieldShipCircleAntiClockwise()}
     };
 
     public AIAttackCollection()
@@ -34,9 +20,11 @@ public class AIAttackCollection
 
     }
 
-    public static IAttack GetRandomAttack(int shipSize)
+    public static IAttack GetAttack(string name_)
     {
-        return attackLists[shipSize][UnityEngine.Random.Range(0, attackLists[shipSize].Length)];
+        IAttack returnee;
+        attackCollection.TryGetValue(name_, out returnee);
+        return returnee;
     }
 
 }
