@@ -123,6 +123,8 @@ public class EnemyScript : MonoBehaviour
         return m_parentGroup.transform.rotation * formationPosition;
     }
 
+    [SerializeField]
+    string[] allowedAttacksForShip;
     IAttack currentAttackType = null;
     float randomOffsetFromTarget = 0;
 
@@ -325,7 +327,7 @@ public class EnemyScript : MonoBehaviour
         shipTransform = transform;
 
         lastFramePosition = shipTransform.position;
-        currentAttackType = AIAttackCollection.GetRandomAttack((int)shipSize);
+        currentAttackType = AIAttackCollection.GetAttack(allowedAttacksForShip[Random.Range(0, allowedAttacksForShip.Length)]);
         randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
         SetShipSpeed(m_shipSpeed);
     }
@@ -544,15 +546,25 @@ public class EnemyScript : MonoBehaviour
         }
         else
         {
-            foreach (GameObject turret in GetAttachedTurrets())
+            GameObject[] turrets = GetAttachedTurrets();
+
+            if (turrets != null)
             {
-                EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
-                if (turretScript != null && (weaponRange == 0 || turretScript.GetRange() < weaponRange))
+                foreach (GameObject turret in GetAttachedTurrets())
                 {
-                    weaponRange = turretScript.GetRange();
+                    EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
+                    if (turretScript != null && (weaponRange == 0 || turretScript.GetRange() < weaponRange))
+                    {
+                        weaponRange = turretScript.GetRange();
+                    }
                 }
+                return weaponRange;
             }
-            return weaponRange;
+            else
+            {
+                return 0;
+            }
+
         }
     }
 

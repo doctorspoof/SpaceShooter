@@ -190,7 +190,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         waveCount++;
         //if (currentWave < m_waveInfos.Length)
         //{
-        if (waveCount % 4 == 0 && waveCount > 0)
+        if (waveCount % 1 == 0 && waveCount > 0)
         {
 
             EnemySpawnPointScript spawnPoint = m_allSpawnPoints[Random.Range(0, m_allSpawnPoints.Length)].GetComponent<EnemySpawnPointScript>();
