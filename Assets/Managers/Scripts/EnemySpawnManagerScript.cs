@@ -196,7 +196,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             EnemySpawnPointScript spawnPoint = m_allSpawnPoints[Random.Range(0, m_allSpawnPoints.Length)].GetComponent<EnemySpawnPointScript>();
 
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(singleLargeWave[4]);//Random.Range(0, singleLargeWave.Length)]);
+            waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
 
             spawnPoint.SetSpawnList(waveToBePassed, secondsBetweenWaves);
         }
