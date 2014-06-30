@@ -52,6 +52,8 @@ public class GUIManager : MonoBehaviour
 	GameObject GameStateController;
 	GameState m_currentGameState = GameState.MainMenu;
 
+	bool m_isRequestingItem = false;
+
 	//Chat Vars
 	List<string> chatMessages;
 
@@ -2353,7 +2355,7 @@ public class GUIManager : MonoBehaviour
 		return false;
 	}
 
-	int selectedTurretInvLocation;
+	GameObject m_selectedTurretItem;
 	void DrawCTurretSelect()
 	{
 		GUI.Box (new Rect(400, 100, 800, 700), "");
@@ -2367,13 +2369,16 @@ public class GUIManager : MonoBehaviour
 			int columnNum = i % 2;
 			if(GUI.Button (new Rect(440 + (i * 200), 450, 150, 50), turrets[i].GetComponent<ItemScript>().GetItemName()))
 			{
-				CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(i + 1, selectedTurretInvLocation);
+				CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(i + 1, m_selectedTurretItem);
 				m_playerIsSelectingCShipTurret = false;
 			}
 		}
 
 		if(GUI.Button(new Rect(440, 720, 150, 60), "Cancel"))
+		{
+			CShip.GetComponent<CapitalShipScript>().CancelItemRequestFromServer (m_selectedTurretItem);
 			m_playerIsSelectingCShipTurret = false;
+		}
 	}
 
 	CShipScreen m_currentCShipPanel = CShipScreen.StatusPanel;
@@ -2499,24 +2504,14 @@ public class GUIManager : MonoBehaviour
 				{
 					int rowNum = (int)(i / 2);
 					int columnNum = i % 2;
-					if(GUI.Button (new Rect(800 + (columnNum * 200), 275 + (rowNum * 75), 150, 50), cshipInv[i].GetComponent<ItemScript>().GetItemName()))
+					if(GUI.Button (new Rect(800 + (columnNum * 200), 275 + (rowNum * 75), 150, 50), cshipInv[i].GetComponent<ItemScript>().GetItemName()) && !m_isRequestingItem)
 					{
-						//If this item is a CShip weapon, try to equip it
-						if(cshipInv[i].GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+						//If this item is a CShip weapon or the players inventory isn't full
+						if(cshipInv[i].GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon || 
+					   	   !thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
 						{
-							//TODO: Open a dialog box to change with turret to replace
-							//CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(1, i);
-							selectedTurretInvLocation = i;	
-							m_playerIsSelectingCShipTurret = true;
-						}
-						else
-						{
-							//Try to place this item inside the player's inventory
-							if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
-							{
-								thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory(cshipInv[i]);
-								CShip.GetComponent<CapitalShipScript>().RemoveItemFromInventory(cshipInv[i]);
-							}
+							CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[i]);
+							StartCoroutine (WaitForItemRequestReply (cshipInv[i]));
 						}
 					}
 				}
@@ -2588,6 +2583,38 @@ public class GUIManager : MonoBehaviour
 			m_currentCShipPanel = CShipScreen.StatusPanel;
 		}
 	}
+
+
+	IEnumerator WaitForItemRequestReply (GameObject item)
+	{
+		CapitalShipScript script = CShip.GetComponent<CapitalShipScript>();
+		bool response = false;
+		m_isRequestingItem = true;
+
+		// Wait until the server has responded
+		while (!script.GetRequestResponse (out response))
+		{
+			yield return null;
+		}
+
+		if (response)
+		{
+			if (item.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+			{
+				m_selectedTurretItem = item;
+				m_playerIsSelectingCShipTurret = true;
+			}
+
+			else
+			{
+				thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
+				script.RemoveItemFromInventory (item);
+			}
+		}
+
+		m_isRequestingItem = false;
+	}
+
 
 	void RequestServerRespawnPlayer(NetworkPlayer player)
 	{

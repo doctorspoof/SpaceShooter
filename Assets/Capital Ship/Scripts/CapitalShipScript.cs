@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 
 public class CapitalShipScript : MonoBehaviour
 {
@@ -25,9 +27,17 @@ public class CapitalShipScript : MonoBehaviour
 		ItemScript itemScript = requested.GetComponent<ItemScript>();
 		int id = itemScript ? itemScript.m_equipmentID : -1;
 
-		if (m_cShipInventory.Contains (requested) && id != -1)
+		if (id != -1 && m_cShipInventory.Contains (requested))
 		{
-			networkView.RPC ("RequestItem", RPCMode.Server, id);
+			if (Network.isServer)
+			{
+				RequestItem (id, new NetworkMessageInfo());
+			}
+
+			else
+			{
+				networkView.RPC ("RequestItem", RPCMode.Server, id);
+			}
 		}
 
 		// No point querying the server as it doesn't exist
@@ -39,8 +49,51 @@ public class CapitalShipScript : MonoBehaviour
 	}
 
 
+	public void CancelItemRequestFromServer (GameObject cancellation)
+	{
+		ItemScript itemScript = cancellation.GetComponent<ItemScript>();
+		int id = itemScript ? itemScript.m_equipmentID : -1;
+
+		if (id != -1 && m_cShipInventory.Contains (cancellation))
+		{
+			if (Network.isServer)
+			{
+				CancelItem (id);
+			}
+
+			else
+			{
+				networkView.RPC ("CancelItem", RPCMode.Server, id);
+			}
+		}
+
+		m_hadItemResponse = false;
+		m_itemRequestResponse = false;
+	}
+
+
 	[RPC]
-	void RequestItem (NetworkMessageInfo message, int itemID)
+	void CancelItem (int itemID)
+	{
+		ItemScript itemScript = null;
+
+		for (int i = 0; i < m_cShipInventory.Count; ++i)
+		{
+			// Get the ItemScript
+			itemScript = m_cShipInventory[i].GetComponent<ItemScript>();
+			
+			// If itemScript is valid, the itemID is the same as requests and the item hasn't been requested before
+			if (itemScript && itemScript.m_equipmentID == itemID && !m_requestedItem[i])
+			{
+				m_requestedItem[i] = false;
+				break;
+			}
+		}
+	}
+
+
+	[RPC]
+	void RequestItem (int itemID, NetworkMessageInfo message)
 	{
 		bool reply = false;
 		ItemScript itemScript = null;
@@ -59,7 +112,17 @@ public class CapitalShipScript : MonoBehaviour
 			}
 		}
 
-		networkView.RPC ("RequestItemReply", message.sender, reply);
+		// Server requesting
+		if (message.sender == (new NetworkPlayer()))
+		{
+			// Silly unity can't send an RPC from server to itself
+			RequestItemReply (reply);
+		}
+
+		else
+		{
+			networkView.RPC ("RequestItemReply", message.sender, reply);
+		}
 	}
 
 	[RPC]
@@ -69,7 +132,7 @@ public class CapitalShipScript : MonoBehaviour
 		m_itemRequestResponse = reply;
 	}
 
-	public bool GetRequestResponse (ref bool reponse)
+	public bool GetRequestResponse (out bool reponse)
 	{
 		reponse = m_itemRequestResponse;
 		return m_hadItemResponse;
@@ -85,7 +148,15 @@ public class CapitalShipScript : MonoBehaviour
 
 		if (id != -1)
 		{
-			networkView.RPC ("AlertServerInventoryRemoval", RPCMode.Server, id);
+			if (Network.isServer)
+			{
+				AlertServerInventoryRemoval (id);
+			}
+
+			else
+			{
+				networkView.RPC ("AlertServerInventoryRemoval", RPCMode.Server, id);
+			}
 		}
     }
 
@@ -97,7 +168,15 @@ public class CapitalShipScript : MonoBehaviour
 		
 		if (id != -1)
 		{
-			networkView.RPC ("AlertServerInventoryAddition", RPCMode.Server, id);
+			if (Network.isServer)
+			{
+				AlertServerInventoryAddition (id);
+			}
+
+			else
+			{
+				networkView.RPC ("AlertServerInventoryAddition", RPCMode.Server, id);
+			}
 		}
 	}
 
@@ -232,19 +311,23 @@ public class CapitalShipScript : MonoBehaviour
         }
     }
 
-    public void TellServerEquipTurret(int turretHolderID, int inventoryLocation)
+    public void TellServerEquipTurret(int turretHolderID, GameObject item)
     {
-        if (Network.isServer)
-            ReplaceTurretAtPosition(turretHolderID, inventoryLocation);
-        else
-            networkView.RPC("ReplaceTurretAtPosition", RPCMode.Server, turretHolderID, inventoryLocation);
+        ItemScript script = item.GetComponent<ItemScript>();
+		int itemID = script ? script.m_equipmentID : -1;
+
+		if (itemID != -1)
+		{
+			networkView.RPC("ReplaceTurretAtPosition", RPCMode.Server, turretHolderID, itemID);
+		}
     }
 
     [RPC]
-    void ReplaceTurretAtPosition(int id, int inventoryLocation)
+    void ReplaceTurretAtPosition(int id, int itemID)
     {
         //We should create a temp to store the previously equipped turret, note id-1 for turretId -> array
         GameObject previousTurr = m_attachedTurretsItemWrappers[id - 1];
+		GameObject newTurr = m_itemIDs.GetItemWithID (itemID);
 
         /*GameObject newWeapon = m_playerInventory[slot];
                     m_equippedWeaponItem = newWeapon;
@@ -253,13 +336,17 @@ public class CapitalShipScript : MonoBehaviour
                     this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);*/
 
         //Put the new turret into the item wrapper list
-        m_attachedTurretsItemWrappers[id - 1] = m_cShipInventory[inventoryLocation];
+        m_attachedTurretsItemWrappers[id - 1] = newTurr;
+
+
 
         //Tell the turret holder to spawn the new turret
         GetCTurretHolderWithId(id).GetComponent<CShipTurretHolder>().ReplaceAttachedTurret(m_attachedTurretsItemWrappers[id - 1].GetComponent<ItemScript>().GetEquipmentReference());
 
-        //Replace inventory slot with old turret
-        m_cShipInventory[inventoryLocation] = previousTurr;
+		//Replace inventory slot with old turret
+		int index = m_cShipInventory.IndexOf (newTurr);
+        m_cShipInventory[index] = previousTurr;
+		m_requestedItem[index] = false;
 
         //Propagate inventory after change
         networkView.RPC("AlertCShipInventoryHasChanged", RPCMode.Others);
@@ -277,10 +364,8 @@ public class CapitalShipScript : MonoBehaviour
     [RPC]
     void PropagateAttachTurretItemWrappers(int position, int turretID)
     {
-        ItemIDHolder holder = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>();
-        GameObject item = holder.GetItemWithID(turretID);
+        GameObject item = m_itemIDs.GetItemWithID(turretID);
         m_attachedTurretsItemWrappers[position] = item;
-
     }
 
     [SerializeField]
@@ -302,13 +387,18 @@ public class CapitalShipScript : MonoBehaviour
             m_cShipInventory = new List<GameObject>();
         }
 
+		else
+		{
+			m_requestedItem = Enumerable.Repeat (false, m_cShipInventory.Count).ToList();
+		}
+
         if (m_shouldAnchor)
         {
             this.rigidbody.isKinematic = true;
         }
 
 
-		GameObject itemManager = GameObject.FindGameObjectWithTag ("Item Manager");
+		GameObject itemManager = GameObject.FindGameObjectWithTag ("ItemManager");
 		if (itemManager)
 		{
 			m_itemIDs = itemManager.GetComponent<ItemIDHolder>();
