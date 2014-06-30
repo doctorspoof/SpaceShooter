@@ -886,13 +886,18 @@ public class PlayerControlScript : MonoBehaviour
 				{
 					//We shouldn't need to do anything. Await GUI telling us we're done
 					
-					//Ensure rotation matches CShip
-					transform.rotation = CShip.transform.rotation;
-					
-					//Also position
-					float oldZ = transform.position.z;
-					transform.position = new Vector3(CShip.transform.position.x, CShip.transform.position.y, oldZ);
-					break;
+					// Stop exception spam by ensuring the CShip is alive
+					if (CShip)
+					{
+						//Ensure rotation matches CShip
+						transform.rotation = CShip.transform.rotation;
+						
+						//Also position
+						float oldZ = transform.position.z;
+						transform.position = new Vector3(CShip.transform.position.x, CShip.transform.position.y, oldZ);
+						break;
+					}
+
 				}
 				case DockingState.Exiting:
 				{
