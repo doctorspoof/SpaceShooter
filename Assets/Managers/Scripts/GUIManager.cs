@@ -2378,6 +2378,7 @@ public class GUIManager : MonoBehaviour
 		{
 			CShip.GetComponent<CapitalShipScript>().CancelItemRequestFromServer (m_selectedTurretItem);
 			m_playerIsSelectingCShipTurret = false;
+			Debug.Log ("Cancelled request");
 		}
 	}
 
@@ -2506,9 +2507,8 @@ public class GUIManager : MonoBehaviour
 					int columnNum = i % 2;
 					if(GUI.Button (new Rect(800 + (columnNum * 200), 275 + (rowNum * 75), 150, 50), cshipInv[i].GetComponent<ItemScript>().GetItemName()) && !m_isRequestingItem)
 					{
-						//If this item is a CShip weapon or the players inventory isn't full
-						if(cshipInv[i].GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon || 
-					   	   !thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
+						// If this item is a CShip weapon or the players inventory isn't full
+						if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull() || cshipInv[i].GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
 						{
 							CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[i]);
 							StartCoroutine (WaitForItemRequestReply (cshipInv[i]));
@@ -2610,6 +2610,11 @@ public class GUIManager : MonoBehaviour
 				thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
 				script.RemoveItemFromInventory (item);
 			}
+		}
+
+		else
+		{
+			Debug.Log (item.name + " has already been requested by another.");
 		}
 
 		m_isRequestingItem = false;

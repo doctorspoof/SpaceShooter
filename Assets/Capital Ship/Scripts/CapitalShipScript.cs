@@ -83,7 +83,7 @@ public class CapitalShipScript : MonoBehaviour
 			itemScript = m_cShipInventory[i].GetComponent<ItemScript>();
 			
 			// If itemScript is valid, the itemID is the same as requests and the item hasn't been requested before
-			if (itemScript && itemScript.m_equipmentID == itemID && !m_requestedItem[i])
+			if (itemScript && itemScript.m_equipmentID == itemID && m_requestedItem[i])
 			{
 				m_requestedItem[i] = false;
 				break;
@@ -313,12 +313,24 @@ public class CapitalShipScript : MonoBehaviour
 
     public void TellServerEquipTurret(int turretHolderID, GameObject item)
     {
+		// Reset the response variables
+		m_hadItemResponse = false;
+		m_itemRequestResponse = false;
+
         ItemScript script = item.GetComponent<ItemScript>();
 		int itemID = script ? script.m_equipmentID : -1;
 
 		if (itemID != -1)
 		{
-			networkView.RPC("ReplaceTurretAtPosition", RPCMode.Server, turretHolderID, itemID);
+			if (Network.isServer)
+			{
+				ReplaceTurretAtPosition (turretHolderID, itemID);
+			}
+
+			else
+			{
+				networkView.RPC("ReplaceTurretAtPosition", RPCMode.Server, turretHolderID, itemID);
+			}
 		}
     }
 
@@ -326,7 +338,7 @@ public class CapitalShipScript : MonoBehaviour
     void ReplaceTurretAtPosition(int id, int itemID)
     {
         //We should create a temp to store the previously equipped turret, note id-1 for turretId -> array
-        GameObject previousTurr = m_attachedTurretsItemWrappers[id - 1];
+        GameObject previousTurr = m_itemIDs.GetItemWithID (m_attachedTurretsItemWrappers[id - 1].GetComponent<ItemScript>().m_equipmentID);
 		GameObject newTurr = m_itemIDs.GetItemWithID (itemID);
 
         /*GameObject newWeapon = m_playerInventory[slot];
@@ -338,15 +350,14 @@ public class CapitalShipScript : MonoBehaviour
         //Put the new turret into the item wrapper list
         m_attachedTurretsItemWrappers[id - 1] = newTurr;
 
-
+		
+		//Replace inventory slot with old turret
+		int index = m_cShipInventory.IndexOf (newTurr);
+		m_cShipInventory[index] = previousTurr;
+		m_requestedItem[index] = false;
 
         //Tell the turret holder to spawn the new turret
         GetCTurretHolderWithId(id).GetComponent<CShipTurretHolder>().ReplaceAttachedTurret(m_attachedTurretsItemWrappers[id - 1].GetComponent<ItemScript>().GetEquipmentReference());
-
-		//Replace inventory slot with old turret
-		int index = m_cShipInventory.IndexOf (newTurr);
-        m_cShipInventory[index] = previousTurr;
-		m_requestedItem[index] = false;
 
         //Propagate inventory after change
         networkView.RPC("AlertCShipInventoryHasChanged", RPCMode.Others);
