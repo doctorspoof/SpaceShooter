@@ -16,28 +16,28 @@ public class StarScript : MonoBehaviour
 		{
 			switch (other.attachedRigidbody.gameObject.layer)
 			{
-			case Layers.capital:
-			case Layers.enemy:
-			case Layers.asteroid:
-				m_damageDelay += Time.deltaTime;
-				if(m_damageDelay >= m_tickTime)
-				{
-					HealthScript script = other.attachedRigidbody.gameObject.GetComponent<HealthScript>();
-
-					if (script)
+				case Layers.capital:
+				case Layers.enemy:
+				case Layers.asteroid:
+					m_damageDelay += Time.deltaTime;
+					if(m_damageDelay >= m_tickTime)
 					{
-						script.DamageMobHullDirectly (m_damagePerTick);
-					}
+						HealthScript script = other.attachedRigidbody.gameObject.GetComponent<HealthScript>();
 
-					else
-					{
-						Debug.LogError ("Unable to find HealthScript on " + other.attachedRigidbody.name);
-					}
+						if (script)
+						{
+							script.DamageMobHullDirectly (m_damagePerTick);
+						}
 
-					m_damageDelay = 0.0f;
-				}
-				
-				break;
+						else
+						{
+							Debug.LogError ("Unable to find HealthScript on " + other.attachedRigidbody.name);
+						}
+
+						m_damageDelay = 0.0f;
+					}
+					
+					break;
 			}
 		}
 	}
