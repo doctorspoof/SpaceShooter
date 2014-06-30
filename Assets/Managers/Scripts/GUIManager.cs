@@ -2036,7 +2036,7 @@ public class GUIManager : MonoBehaviour
 		{
 			foreach(GameObject enemy in m_pingedEnemies)
 			{
-				if(enemy != null && IsEnemyInViewableRange(enemy.transform.position))
+				if(enemy != null)// && )IsEnemyInViewableRange(enemy.transform.position))
 				{
 					Vector2 pingPos = WorldToMapPos(enemy.transform.position);
 					GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.5f), pingPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_enemyBlob);
