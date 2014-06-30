@@ -697,6 +697,9 @@ MonoBehaviour:
   m_shipWidth: 0
   m_shipHeight: 0
   m_currentOrder: 0
+  allowedAttacksForShip:
+  - AttackShieldShipCircleClockwise
+  - AttackShieldShipCircleAntiClockwise
   shipSize: 0
   shipID: -1
   m_pathToShieldObject: Composite Collider/Shield

@@ -400,10 +400,13 @@ MonoBehaviour:
   m_rotateSpeed: 2
   m_bountyAmount: 15
   m_hasTurrets: 0
-  m_hasNoWeapons: 0
   m_shipWidth: 0
   m_shipHeight: 0
   m_currentOrder: 0
+  allowedAttacksForShip:
+  - AttackStrafeRight
+  - AttackStrafeLeft
+  - AttackFromBehind
   shipSize: 3
   shipID: -1
   m_pathToShieldObject: Composite Collider/Shield

@@ -927,10 +927,12 @@ MonoBehaviour:
   m_rotateSpeed: .75
   m_bountyAmount: 40
   m_hasTurrets: 1
-  m_hasNoWeapons: 0
   m_shipWidth: 0
   m_shipHeight: 0
   m_currentOrder: 0
+  allowedAttacksForShip:
+  - AttackCircleClockwise
+  - AttackCircleAntiClockwise
   shipSize: 1
   shipID: -1
   m_pathToShieldObject: Composite Collider/Shield
