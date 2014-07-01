@@ -394,14 +394,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61226d5b1d62304d909df1c10b142f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ramDamageMultiplier: 3
-  m_shipSpeed: 480
+  m_maxShipSpeed: 480
   m_currentShipSpeed: 0
   m_rotateSpeed: 2
-  m_bountyAmount: 15
-  m_hasTurrets: 0
+  m_ramDamageMultiplier: 3
+  maunuallySetWidthAndHeight: 0
   m_shipWidth: 0
   m_shipHeight: 0
+  m_bountyAmount: 15
+  m_hasTurrets: 0
   m_currentOrder: 0
   allowedAttacksForShip:
   - AttackStrafeRight

@@ -19,39 +19,8 @@ public enum ShipSize
     Small = 3
 }
 
-[RequireComponent(typeof(MeshFilter))]
-public class EnemyScript : MonoBehaviour
+public class EnemyScript : Ship
 {
-    Transform shipTransform = null;
-
-    [SerializeField]
-    float m_ramDamageMultiplier = 2.5f;
-    public float GetRamDam()
-    {
-        return m_ramDamageMultiplier;
-    }
-
-    [SerializeField]
-    float m_shipSpeed;
-    public float ShipSpeed
-    {
-        get { return m_shipSpeed; }
-    }
-    public float GetMaxMomentum()
-    {
-        return m_shipSpeed * rigidbody.mass;
-    }
-
-    public float GetCurrentMomentum()
-    {
-        return m_currentShipSpeed * rigidbody.mass;
-    }
-
-    [SerializeField]
-    float m_currentShipSpeed = 0.0f;
-
-    [SerializeField]
-    float m_rotateSpeed = 5.0f;
 
     [SerializeField]
     int m_bountyAmount = 1;
@@ -63,28 +32,7 @@ public class EnemyScript : MonoBehaviour
     [SerializeField]
     bool m_hasTurrets = false;
 
-    [SerializeField]
-    float m_shipWidth;
-    public float ShipWidth
-    {
-        get { return m_shipWidth; }
-    }
-
-    [SerializeField]
-    float m_shipHeight;
-    public float ShipHeight
-    {
-        get { return m_shipHeight; }
-    }
-
-    /// <summary>
-    /// Gets the max distance by pythagorean theorem
-    /// </summary>
-    /// <returns></returns>
-    public float GetMaxSize()
-    {
-        return Mathf.Sqrt(Mathf.Pow(ShipWidth, 2) + Mathf.Pow(ShipHeight, 2));
-    }
+    
 
     EnemyGroup m_parentGroup;
 
@@ -178,21 +126,6 @@ public class EnemyScript : MonoBehaviour
         return m_moveTarget;
     }
 
-    public void SetShipMomentum(float currentSpeed)
-    {
-        m_currentShipSpeed = Mathf.Min(m_shipSpeed, currentSpeed / rigidbody.mass);
-    }
-
-    public void SetShipSpeed(float currentSpeed)
-    {
-        m_currentShipSpeed = Mathf.Clamp(currentSpeed, 0, m_shipSpeed);
-    }
-
-    public void ResetShipSpeed()
-    {
-        m_currentShipSpeed = m_shipSpeed;
-    }
-
     public void SetTarget(GameObject target)
     {
         m_target = target;
@@ -275,44 +208,10 @@ public class EnemyScript : MonoBehaviour
 
     void Awake()
     {
-        SetShipSizes();
+        Init();
     }
 
-    private void SetShipSizes()
-    {
-        MeshFilter filter = GetComponent<MeshFilter>();
-        Mesh mesh = filter.mesh;
-
-        bool bTop = false, bBottom = false, bLeft = false, bRight = false;
-        Vector2 top = new Vector2(), bottom = new Vector2(), left = new Vector2(), right = new Vector2();
-
-        foreach (Vector3 vertex in mesh.vertices)
-        {
-            if (bTop == false || vertex.y > top.y)
-            {
-                top = vertex;
-                bTop = true;
-            }
-            if (bBottom == false || vertex.y < bottom.y)
-            {
-                bottom = vertex;
-                bBottom = true;
-            }
-            if (bLeft == false || vertex.x < left.x)
-            {
-                left = vertex;
-                bLeft = true;
-            }
-            if (bRight == false || vertex.x > right.x)
-            {
-                right = vertex;
-                bRight = true;
-            }
-        }
-
-        m_shipWidth = (right.x - left.x) * transform.localScale.x;
-        m_shipHeight = (top.y - bottom.y) * transform.localScale.y;
-    }
+    
 
     [SerializeField]
     public int shipID = -1;
@@ -329,7 +228,7 @@ public class EnemyScript : MonoBehaviour
         lastFramePosition = shipTransform.position;
         currentAttackType = AIAttackCollection.GetAttack(allowedAttacksForShip[Random.Range(0, allowedAttacksForShip.Length)]);
         randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
-        SetShipSpeed(m_shipSpeed);
+        ResetShipSpeed();
     }
 
     public void NotifyEnemyUnderFire(GameObject attacker)
@@ -527,13 +426,7 @@ public class EnemyScript : MonoBehaviour
         return Physics.OverlapSphere(shipTransform.position, range, layerMask);
     }
 
-    public void RotateTowards(Vector3 position)
-    {
-        //Debug.Log("ShipID = " + shipID + " position = " + position);
-        Vector3 dir = Vector3.Normalize(position - shipTransform.position);
-        Quaternion lookRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-        rigidbody.MoveRotation(Quaternion.Slerp(shipTransform.rotation, lookRotation, m_rotateSpeed * Time.deltaTime));
-    }
+    
 
     public float GetMinimumWeaponRange()
     {

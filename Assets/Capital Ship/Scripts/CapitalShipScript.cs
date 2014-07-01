@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-public class CapitalShipScript : MonoBehaviour
+public class CapitalShipScript : Ship
 {
     [SerializeField]
     Transform targetPoint;
@@ -21,6 +21,10 @@ public class CapitalShipScript : MonoBehaviour
 	bool m_hadItemResponse = false;
 	bool m_itemRequestResponse = false;
 
+    void Awake()
+    {
+        Init();
+    }
 
 	public void RequestItemFromServer (GameObject requested)
 	{
