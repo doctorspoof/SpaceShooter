@@ -10,6 +10,8 @@ public class CapitalShipScript : MonoBehaviour
 	GameObject m_buildUpExplodeRef;
 	[SerializeField]
 	GameObject m_finalExplodeRef;
+	[SerializeField]
+	GameObject m_shatteredShip;
 
     [SerializeField]
     Transform targetPoint;
@@ -770,27 +772,31 @@ public class CapitalShipScript : MonoBehaviour
 	GameObject bigExplo;
 	public void BeginDeathBuildUpAnim()
 	{
-		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position, this.transform.rotation);
-		explodeObj1.transform.parent = transform;
-		explodeObj1.transform.localPosition = new Vector3(0, 0, -1.0f);
+		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position + new Vector3(0, 0, -1.0f), this.transform.rotation);
+		explodeObj1.transform.parent = this.transform;
 		buildUpExplo = explodeObj1;
 	}
 	public void BeginDeathFinalAnim()
 	{
-		GameObject explodeObj2 = (GameObject)Instantiate(m_finalExplodeRef, this.transform.position, this.transform.rotation);
-		explodeObj2.transform.parent = transform;
-		explodeObj2.transform.localPosition = new Vector3(0, 0, -1.5f);
+		GameObject explodeObj2 = (GameObject)Instantiate(m_finalExplodeRef, this.transform.position + new Vector3(0, 0, -1.5f), this.transform.rotation);
 		bigExplo = explodeObj2;
 
 		//Begin a timer here, and then split the cship into fragments
+		StartCoroutine(SplitCShipDelay());
 	}
 
-	public void FinalExplodeCompleted()
+	IEnumerator SplitCShipDelay()
 	{
-		Destroy (buildUpExplo);
+		float t = 0;
 
-		//Tell gui to dispaly loss popup
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ShowLossSplash();
+		while(t < 2.75f)
+		{
+			t += Time.deltaTime;
+			yield return 0;
+		}
+
+		//Spawn shattered bits
+		GameObject ship = (GameObject)Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
 
 		//Destroy self
 		Destroy (this.gameObject);

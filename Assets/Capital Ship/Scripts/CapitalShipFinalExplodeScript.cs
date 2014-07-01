@@ -4,7 +4,8 @@ using System.Collections;
 public class CapitalShipFinalExplodeScript : MonoBehaviour {
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+	{
 	
 	}
 	
@@ -15,6 +16,8 @@ public class CapitalShipFinalExplodeScript : MonoBehaviour {
 
 	void OnDestroy()
 	{
-		this.transform.root.GetComponent<CapitalShipScript>().FinalExplodeCompleted();
+		//Tell gui to dispaly loss popup
+		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ShowLossSplash();
+		Destroy (this.gameObject);
 	}
 }

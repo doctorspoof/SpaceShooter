@@ -2411,6 +2411,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_buildUpExplodeRef: {fileID: 100014, guid: 697f6e534d5ab7148a3bf48bdb26c81d, type: 2}
   m_finalExplodeRef: {fileID: 100000, guid: 5563a7198eaee104f8914633f124840e, type: 2}
+  m_shatteredShip: {fileID: 100018, guid: f2187e9cf94fbb947b5a55afb04a90c9, type: 2}
   targetPoint: {fileID: 0}
   m_cShipInventory:
   - {fileID: 100000, guid: 4a2edc6e9d340c248a2c2bfde990a7d0, type: 2}
