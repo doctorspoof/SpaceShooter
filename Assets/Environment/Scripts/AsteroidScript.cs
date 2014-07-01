@@ -211,19 +211,53 @@ public class AsteroidScript : MonoBehaviour
 	}
 
 
-	bool m_hasSplit = false;
 	public void SplitAsteroid (Transform hitter)
 	{
 		if (!m_hasSplit)
 		{
-			m_hasSplit = true;
+			Vector3 shotDirection, impactForce;
+			
+			shotDirection = hitter ?
+								(transform.position - hitter.position).normalized :
+								Vector3.forward;
+			
+			impactForce = hitter && hitter.rigidbody ? 
+								shotDirection * hitter.rigidbody.velocity.magnitude :
+								shotDirection * m_fragmentSplitForce;
 
+			PerformSplit (shotDirection, impactForce);
+		}
+	}
+
+
+	public void SplitAsteroid (Vector3 hitterPosition)
+	{
+		if (!m_hasSplit)
+		{
+			Vector3 shotDirection, impactForce;
+
+			shotDirection = (transform.position - hitterPosition).normalized;
+
+			impactForce = shotDirection * m_fragmentSplitForce;
+
+			PerformSplit (shotDirection, impactForce);
+		}
+	}
+
+
+	
+	bool m_hasSplit = false;
+	void PerformSplit (Vector3 shotDirection, Vector3 impactForce)
+	{
+		if (!m_hasSplit)
+		{
+			m_hasSplit = true;
+			
 			if (rigidbody.mass / m_splittingFragments > m_minimumMass)
 			{
 				// Create a smooth semi-circle spray based on the number of splits to perform
 				if (m_splittingFragments > 1)
 				{
-					Vector3 shotDirection = hitter ? (transform.position - hitter.position).normalized : Vector3.forward;
 					// Fixes an issue with the sun causing asteroids to spawn on top of each other
 					if (shotDirection == transform.forward)
 					{
@@ -246,19 +280,14 @@ public class AsteroidScript : MonoBehaviour
 						{
 							forwardMultiplier = 0.5f - (forwardMultiplier - 0.5f);
 						}
-
+						
 						forwardMultiplier *= 2f;
 						
 						
 						// The distance away from the initial position to spawn
 						Vector3 spawnModifier = (right * rightMultiplier + shotDirection * forwardMultiplier) * (m_fragmentDistance * transform.localScale.x);
 						spawnModifier.z = 0f;
-
-
-						Vector3 impactForce = hitter.rigidbody ? 
-																shotDirection * hitter.rigidbody.velocity.magnitude :
-																shotDirection * m_fragmentSplitForce;
-
+						
 						impactForce += spawnModifier.normalized * m_fragmentSplitForce;
 						
 						// Finally spawn the asteroid
@@ -270,7 +299,6 @@ public class AsteroidScript : MonoBehaviour
 			Network.Destroy (gameObject);
 		}
 	}
-	
 	
 	void SpawnAsteroid (Vector3 spawnModifier, Vector3 impactForce)
 	{
