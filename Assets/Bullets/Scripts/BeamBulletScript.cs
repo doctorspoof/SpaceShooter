@@ -6,21 +6,21 @@ public class BeamBulletScript : MonoBehaviour
 {
 	/// Unity modifiable values
 	// Damage
-	[SerializeField] int m_beamDamage; 				// The beam damage dealt per second
-	public float m_beamLength;						// How long the beam should be in localScale.y
+	[SerializeField] int m_beamDamage = 30; 		// The beam damage dealt per second
+	public float m_beamLength = 5;					// How long the beam should be in localScale.y
 	
 	// Impact attributes
 	[SerializeField] float m_impactForce = 2.5f;	// The amount of force to be applied when hitting a target
 	
 	
 	/// Internal data
-	float m_overflow = 0f;								// Simply keeps a reference of any damage overflow for the sake of accurate DPS
+	float m_overflow = 0f;											// Simply keeps a reference of any damage overflow for the sake of accurate DPS
+	int m_damageMask;												// A layermask used in raycasting against valid enemy targets
 	
-	int m_damageMask;									// A layermask used in raycasting against valid enemy targets
-	
-	Vector3 m_offset = Vector3.zero;					// The position offset used to make the beam reach from the firer to the target
-	
-	[HideInInspector] public GameObject firer = null;	// The parent object which fires the beam
+	Vector3 m_offset = Vector3.zero;								// The position offset used to make the beam reach from the firer to the target
+
+	[HideInInspector] public RaycastHit beamHit = new RaycastHit();	// The point at which the beam has hit an object 	
+	[HideInInspector] public GameObject firer = null;				// The parent object which fires the beam
 	
 	
 	
@@ -45,29 +45,31 @@ public class BeamBulletScript : MonoBehaviour
 	// Update is called once per frame
 	void Update() 
 	{
-		// Increase the overflow by deltaTime to ensure correct damage is being applied
-		m_overflow += m_beamDamage * Time.deltaTime;
-		
-		// Check if the beam is hitting anything
-		RaycastHit hit;
-		if (Physics.Raycast (firer.transform.position, firer.transform.up, out hit, m_beamLength, m_damageMask))
+		if (firer)
 		{
-			// Reset the distance according to the RaycastHit
-			ResetOffset (hit.distance);
+			// Increase the overflow by deltaTime to ensure correct damage is being applied
+			m_overflow += m_beamDamage * Time.deltaTime;
 			
-			// Only the host should apply damage and only if damage can be dealt
-			if (hit.collider && hit.collider.attachedRigidbody)
-			{				
-				DamageHit (hit);
+			// Check if the beam is hitting anything
+			if (Physics.Raycast (firer.transform.position, firer.transform.up, out beamHit, m_beamLength, m_damageMask))
+			{
+				// Reset the distance according to the RaycastHit
+				ResetOffset (beamHit.distance);
+
+
+				// Only the host should apply damage and only if damage can be dealt
+				if (beamHit.collider && beamHit.collider.attachedRigidbody)
+				{
+					DamageHit (beamHit);
+				}
+			}
+			
+			// Raycast found nothing
+			else
+			{
+				ResetOffset ();
 			}
 		}
-		
-		// Raycast found nothing
-		else
-		{
-			ResetOffset ();
-		}
-		
 	}
 	
 	
@@ -75,20 +77,21 @@ public class BeamBulletScript : MonoBehaviour
 	void LayerMaskSetup()
 	{
 		const int 	player = (1 << Layers.player), 
-		capital = (1 << Layers.capital), 
-		enemy = (1 << Layers.enemy), 
-		asteroid = (1 << Layers.asteroid);
+					capital = (1 << Layers.capital), 
+					enemy = (1 << Layers.enemy), 
+					enemySupportShield = (1 << Layers.enemySupportShield),
+					asteroid = (1 << Layers.asteroid);
 		
 		switch (gameObject.layer)
 		{
-		case Layers.playerBullet:
-		case Layers.capitalBullet:
-			m_damageMask = enemy | asteroid;
-			break;
-			
-		case Layers.enemyBullet:
-			m_damageMask = player | capital | asteroid;
-			break;
+			case Layers.playerBullet:
+			case Layers.capitalBullet:
+				m_damageMask = enemy | asteroid | enemySupportShield;
+				break;
+				
+			case Layers.enemyBullet:
+				m_damageMask = player | capital | asteroid;
+				break;
 		}
 	}
 	
@@ -97,13 +100,7 @@ public class BeamBulletScript : MonoBehaviour
 	void ResetOffset (float distance = -1f)
 	{
 		// Calculate the scale modifier based on the parents scale
-		float scaleModifier = firer.transform.localScale.x * firer.transform.localScale.y;
-		
-		// Avoid divide by zero errors
-		if (scaleModifier == 0f)
-		{
-			scaleModifier = 1f;
-		}
+		float scaleModifier = Mathf.Max (firer.transform.localScale.x * firer.transform.localScale.y, 0.1f);
 		
 		float newPositionY = distance >= 0f && distance <= m_beamLength ? distance / scaleModifier : m_beamLength / scaleModifier;
 		
@@ -121,29 +118,39 @@ public class BeamBulletScript : MonoBehaviour
 	{
 		// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
 		Rigidbody mob = hit.collider.attachedRigidbody;
-		
-		// Push the enemy away from the force of the beam
-		mob.AddForceAtPosition (transform.up * m_impactForce * Time.deltaTime, hit.point);
+
+		if (hit.collider.tag != "Shield")
+		{
+			// Push the enemy away from the force of the beam
+			mob.AddForceAtPosition (transform.up * m_impactForce * Time.deltaTime, hit.point);
+		}
 
 		// Only the host should cause damage
 		if (Network.isServer)
 		{
-			HealthScript health = mob.GetComponent<HealthScript>();
-			if (health)
+			if (m_overflow > 1f)
 			{
-				if (m_overflow > 1f)
+				int damage = (int) m_overflow;
+				m_overflow -= damage;
+
+				if (hit.collider.gameObject.layer == Layers.enemySupportShield)
 				{
-					// Ensure the overflow is caught and stored for the next time damage will be dealt
-					int damage = (int) m_overflow;
-					m_overflow -= damage;
-					
-					health.DamageMob (damage, firer, gameObject);
+					EnemySupportShieldScript script = hit.collider.gameObject.GetComponent<EnemySupportShieldScript>();
+					if (script)
+					{
+						script.DamageShield (damage);
+						script.BeginShaderCoroutine (hit.point);
+					}
 				}
-			}
-			
-			else
-			{
-				Debug.LogError ("Unable to find HealthScript on: " + hit.collider.attachedRigidbody.name);
+
+				else
+				{
+					HealthScript health = mob.GetComponent<HealthScript>();
+					if (health)
+					{
+						health.DamageMob (damage, firer, gameObject);
+					}
+				}
 			}
 		}
 	}
@@ -156,6 +163,7 @@ public class BeamBulletScript : MonoBehaviour
 		
 		GameObject playerGO = gsc.GetPlayerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(gsc.GetIDFromName(playerName)));
 		Debug.Log ("Attaching beam: " + this.name + " to gameObject: " + playerGO.name + ".");
+
 		this.transform.parent = playerGO.transform;
 		firer = playerGO;
 	}
