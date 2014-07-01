@@ -1365,8 +1365,8 @@ public class PlayerControlScript : Ship
 	void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
 	{
 		float magnitude = moveTo.magnitude;
-		float playerSpeedMargin = 20f;
-		float dockSpeedMargin = 8f;
+        float playerSpeedMargin = 200f;
+		float dockSpeedMargin = 80f;
 		float desiredDockSpeed = 0f;
 		
 		if (GetCurrentShipSpeed() > m_maxDockingSpeed)
@@ -1388,17 +1388,16 @@ public class PlayerControlScript : Ship
 				desiredDockSpeed = m_maxDockingSpeed;
 			}
 		}
-		
 		else
 		{
             desiredDockSpeed = GetCurrentShipSpeed();
 		}
-		
+
 		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * Time.deltaTime);
 		
 		// Rotate towards point
-		Quaternion target = Quaternion.Euler (new Vector3 (0, 0, (Mathf.Atan2 (rotateTo.y, rotateTo.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-		transform.rotation = Quaternion.Slerp (transform.rotation, target, m_dockRotateSpeed * Time.deltaTime);
+        Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(rotateTo.y, rotateTo.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
+        transform.rotation = Quaternion.Slerp(transform.rotation, target, m_dockRotateSpeed * Time.deltaTime);
 	}
 
 	bool m_playerIsOoB = false;
