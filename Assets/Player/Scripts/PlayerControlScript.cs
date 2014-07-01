@@ -11,14 +11,8 @@ public enum DockingState
     Exiting = 4
 }
 
-public class PlayerControlScript : MonoBehaviour
+public class PlayerControlScript : Ship
 {
-	[SerializeField]
-	float m_ramDamageMultiplier = 5.0f;
-	public float GetRamDam()
-	{
-		return m_ramDamageMultiplier;
-	}
 
 	[SerializeField]
 	bool m_shouldRecieveInput = true;
@@ -43,12 +37,12 @@ public class PlayerControlScript : MonoBehaviour
 	float m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
 	float m_dockingTime = 0.0f;				//Used to determine if the player should continue the docking attempt
 
-	[SerializeField]
-	float m_playerMoveSpeed = 50.0f;
-	[SerializeField]
-	float m_playerRotateSpeed = 5.0f;
-	[SerializeField]
-	float m_playerStrafeMod = 0.6f;
+    //[SerializeField]
+    //float m_playerMoveSpeed = 50.0f;
+    //[SerializeField]
+    //float m_playerRotateSpeed = 5.0f;
+    [SerializeField]
+    float m_playerStrafeMod = 0.6f;
 
 	//Spacebux
 	[SerializeField]
@@ -91,6 +85,11 @@ public class PlayerControlScript : MonoBehaviour
 			return false;
 	}
 
+    void Awake()
+    {
+        Init();
+    }
+
 	//Sounds
 	bool shouldPlaySound = false;
 	[RPC]
@@ -111,8 +110,12 @@ public class PlayerControlScript : MonoBehaviour
 
 	public void EquipEngineStats(float moveSpeed, float turnSpeed, float strafeMod)
 	{
-		m_playerMoveSpeed = m_baseEngineSpeed + moveSpeed;
-		m_playerRotateSpeed = m_baseEngineTurnSpeed + turnSpeed;
+        SetMaxShipSpeed(m_baseEngineSpeed + moveSpeed);
+        SetCurrentShipSpeed(m_baseEngineSpeed + moveSpeed);
+        SetRotateSpeed(m_baseEngineTurnSpeed + turnSpeed);
+        m_playerStrafeMod = strafeMod;
+        //m_playerMoveSpeed = m_baseEngineSpeed + moveSpeed;
+        //m_playerRotateSpeed = m_baseEngineTurnSpeed + turnSpeed;
 	}
 
 	//Inventory
@@ -165,9 +168,13 @@ public class PlayerControlScript : MonoBehaviour
 		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
 		esc.ParentToPlayer(name);
 
-		m_playerMoveSpeed = m_baseEngineSpeed + esc.GetMoveSpeed();
-		m_playerRotateSpeed = m_baseEngineTurnSpeed + esc.GetTurnSpeed();
-		m_playerStrafeMod = esc.GetStrafeModifier();
+        //m_playerMoveSpeed = m_baseEngineSpeed + esc.GetMoveSpeed();
+        //m_playerRotateSpeed = m_baseEngineTurnSpeed + esc.GetTurnSpeed();
+        m_playerStrafeMod = esc.GetStrafeModifier();
+        SetMaxShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
+        SetCurrentShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
+        SetRotateSpeed(m_baseEngineTurnSpeed + esc.GetTurnSpeed());
+
 	}
 
 	public GameObject m_equippedPlatingItem;
@@ -384,8 +391,9 @@ public class PlayerControlScript : MonoBehaviour
 					esc.ParentToPlayer(name);
 
 					//Change our move stats
-					m_playerMoveSpeed = m_baseEngineSpeed + esc.GetMoveSpeed();
-					m_playerRotateSpeed = m_baseEngineTurnSpeed + esc.GetTurnSpeed();	
+					SetMaxShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
+                    SetCurrentShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
+					SetRotateSpeed(m_baseEngineTurnSpeed + esc.GetTurnSpeed());	
 
 					//Remove new engine from inv
 					RemoveItemFromInventory(m_playerInventory[slot]);
@@ -902,7 +910,7 @@ public class PlayerControlScript : MonoBehaviour
 				case DockingState.Exiting:
 				{
 					//Accelerate forwards
-					this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
+					this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
 					
 					//If we're far enough away, stop animating
 					Vector3 dir = CShip.transform.position - transform.position;
@@ -971,7 +979,8 @@ public class PlayerControlScript : MonoBehaviour
 					{
 						if(Input.GetKey(KeyCode.W))
 						{
-							this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
+							//this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
+                            this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
 							
 							//Play sound + particles
 							if(!shouldPlaySound)
@@ -986,7 +995,8 @@ public class PlayerControlScript : MonoBehaviour
 
 						if(Input.GetKey (KeyCode.S))
 						{
-							this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
+							//this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
+                            this.rigidbody.AddForce(this.transform.up * -GetCurrentMomentum() * Time.deltaTime);
 							
 							if(!shouldPlaySound)
 							{
@@ -1000,7 +1010,8 @@ public class PlayerControlScript : MonoBehaviour
 
 						if(Input.GetKey (KeyCode.A))
 						{
-							this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+							//this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+                            this.rigidbody.AddForce(this.transform.right * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
 							
 							if(!shouldPlaySound)
 							{
@@ -1014,7 +1025,8 @@ public class PlayerControlScript : MonoBehaviour
 
 						if(Input.GetKey (KeyCode.D))
 						{
-							this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+							//this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+                            this.rigidbody.AddForce(this.transform.right * (GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
 							
 							if(!shouldPlaySound)
 							{
@@ -1059,12 +1071,12 @@ public class PlayerControlScript : MonoBehaviour
 							if(forwardSpeedFac > 0.95f)
 							{
 								//Apply forward speed
-								speed = m_playerMoveSpeed;
+								speed = GetCurrentShipSpeed();
 							}
 							else
 							{
 								//Apply side speed
-								speed = m_playerMoveSpeed * m_playerStrafeMod;
+								speed = GetCurrentShipSpeed() * m_playerStrafeMod;
 							}
 
 							//float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
@@ -1103,12 +1115,12 @@ public class PlayerControlScript : MonoBehaviour
 							if(forwardSpeedFac > 0.95f)
 							{
 								//Apply forward speed
-								speed = m_playerMoveSpeed;
+                                speed = GetCurrentShipSpeed();
 							}
 							else
 							{
 								//Apply side speed
-								speed = m_playerMoveSpeed * m_playerStrafeMod;
+								speed = GetCurrentShipSpeed() * m_playerStrafeMod;
 							}
 
 							Vector3 moveFac = inputVec * speed;
@@ -1144,12 +1156,12 @@ public class PlayerControlScript : MonoBehaviour
 							if(forwardSpeedFac > 0.95f)
 							{
 								//Apply forward speed
-								speed = m_playerMoveSpeed;
+								speed = GetCurrentShipSpeed();
 							}
 							else
 							{
 								//Apply side speed
-								speed = m_playerMoveSpeed * m_playerStrafeMod;
+								speed = GetCurrentShipSpeed() * m_playerStrafeMod;
 							}
 
 							Vector3 moveFac = inputVec * speed;
@@ -1185,12 +1197,12 @@ public class PlayerControlScript : MonoBehaviour
 							if(forwardSpeedFac > 0.95f)
 							{
 								//Apply forward speed
-								speed = m_playerMoveSpeed;
+                                speed = GetCurrentShipSpeed();
 							}
 							else
 							{
 								//Apply side speed
-								speed = m_playerMoveSpeed * m_playerStrafeMod;
+                                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
 							}
 
 							Vector3 moveFac = inputVec * speed * Time.deltaTime;
@@ -1251,7 +1263,7 @@ public class PlayerControlScript : MonoBehaviour
 							targetAngle = target;
 						}
 
-						transform.rotation = Quaternion.Slerp(transform.rotation, targetAngle, m_playerRotateSpeed * Time.deltaTime);
+						transform.rotation = Quaternion.Slerp(transform.rotation, targetAngle, GetRotateSpeed() * Time.deltaTime);
 
 						if(Input.GetAxis("X360Triggers") < 0)
 							this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
@@ -1329,7 +1341,7 @@ public class PlayerControlScript : MonoBehaviour
 		}
 	}
 
-    void RotateTowards(Vector3 targetPosition)
+    public override void RotateTowards(Vector3 targetPosition)
     {
         Vector2 targetDirection = targetPosition - transform.position;
         float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
@@ -1337,7 +1349,7 @@ public class PlayerControlScript : MonoBehaviour
 
         if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
         {
-            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, m_playerRotateSpeed);
+            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed());
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
         }
         else
@@ -1346,7 +1358,7 @@ public class PlayerControlScript : MonoBehaviour
             rotate.x = 0;
             rotate.y = 0;
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, m_playerRotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() * Time.deltaTime);
         }
     }
 
@@ -1357,18 +1369,18 @@ public class PlayerControlScript : MonoBehaviour
 		float dockSpeedMargin = 8f;
 		float desiredDockSpeed = 0f;
 		
-		if (m_playerMoveSpeed > m_maxDockingSpeed)
+		if (GetCurrentShipSpeed() > m_maxDockingSpeed)
 		{
 			// Use the players speed
 			if (magnitude > playerSpeedMargin)
 			{
-				desiredDockSpeed = m_playerMoveSpeed;
+                desiredDockSpeed = GetCurrentShipSpeed();
 			}
 			
 			// Lerp between the players movement speed and the max docking speed
 			else if (magnitude > dockSpeedMargin)
 			{
-				desiredDockSpeed = Mathf.Lerp (m_playerMoveSpeed, m_maxDockingSpeed, (magnitude - dockSpeedMargin) / (playerSpeedMargin - dockSpeedMargin));
+                desiredDockSpeed = Mathf.Lerp(GetCurrentShipSpeed(), m_maxDockingSpeed, (magnitude - dockSpeedMargin) / (playerSpeedMargin - dockSpeedMargin));
 			}
 			
 			else
@@ -1379,7 +1391,7 @@ public class PlayerControlScript : MonoBehaviour
 		
 		else
 		{
-			desiredDockSpeed = m_playerMoveSpeed;
+            desiredDockSpeed = GetCurrentShipSpeed();
 		}
 		
 		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * Time.deltaTime);

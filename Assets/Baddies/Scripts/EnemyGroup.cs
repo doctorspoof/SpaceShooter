@@ -370,7 +370,7 @@ public class EnemyGroup : MonoBehaviour
         m_shipCount++;
         m_bountyTotal += enemyShip.BountyAmount;
 
-        if (slowestShip == null || enemyShip.ShipSpeed < slowestShip.ShipSpeed)
+        if (slowestShip == null || enemyShip.GetMaxShipSpeed() < slowestShip.GetMaxShipSpeed())
         {
             slowestShip = enemyShip;
         }
@@ -506,7 +506,7 @@ public class EnemyGroup : MonoBehaviour
     /// <returns>Speed of the slowest ship</returns>
     public float GetSlowestShipSpeed()
     {
-        return slowestShip.ShipSpeed;
+        return slowestShip.GetMaxShipSpeed();
 
         //float slowestSpeed = -1;
         //foreach (List<EnemyScript> shipTier in m_children)
@@ -553,9 +553,9 @@ public class EnemyGroup : MonoBehaviour
         {
             foreach (EnemyScript enemy in shipTier)
             {
-                if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
+                if (-1 == slowestSpeed || enemy.GetMaxShipSpeed() < slowestSpeed)
                 {
-                    slowestSpeed = enemy.ShipSpeed;
+                    slowestSpeed = enemy.GetMaxShipSpeed();
                     ship = enemy;
                 }
             }
@@ -794,7 +794,7 @@ public class EnemyGroup : MonoBehaviour
                     if (largestShipInLastLayer != null)
                     {
                         //Debug.Log("added height");
-                        height += ((largestShipInLayer.ShipHeight + largestShipInLastLayer.ShipHeight) / 2.0f) + 1;
+                        height += ((largestShipInLayer.GetShipHeight() + largestShipInLastLayer.GetShipHeight()) / 2.0f) + 1;
                     }
 
 
@@ -802,7 +802,7 @@ public class EnemyGroup : MonoBehaviour
                     float layerWidth = 0;
                     foreach (EnemyScript ship in m_children[i])
                     {
-                        layerWidth += ship.ShipWidth + 1;
+                        layerWidth += ship.GetShipWidth() + 1;
                     }
                     if (layerWidth > width)
                     {
@@ -836,7 +836,7 @@ public class EnemyGroup : MonoBehaviour
 
                     if (largestShipInLastLayer)
                     {
-                        spacingBetweenLayers += ((largestShipInLayer.ShipHeight + largestShipInLastLayer.ShipHeight) / 2.0f) + 1.0f;
+                        spacingBetweenLayers += ((largestShipInLayer.GetShipHeight() + largestShipInLastLayer.GetShipHeight()) / 2.0f) + 1.0f;
                     }
 
                     //float layerY = spacingBetweenLayers;// -(height / 2) + (spacingBetweenLayers / 2);
@@ -900,7 +900,7 @@ public class EnemyGroup : MonoBehaviour
             int splitCount = Mathf.FloorToInt(shipTierCount / 2.0f);
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                widthOfLine += m_children[i][j].ShipWidth + 1.0f;
+                widthOfLine += m_children[i][j].GetShipWidth() + 1.0f;
 
                 //since we are going from smallest -> largest, we split the line into two seperate lists which we will merga later
                 //we add the ships to the end of the front list, or the front of the end list
@@ -930,7 +930,7 @@ public class EnemyGroup : MonoBehaviour
 
             if (i > 0)
             {
-                currentX += ((firstHalf[i].ShipWidth + firstHalf[i - 1].ShipWidth) / 2.0f) + 0.5f;
+                currentX += ((firstHalf[i].GetShipWidth() + firstHalf[i - 1].GetShipWidth()) / 2.0f) + 0.5f;
             }
 
             ship.FormationPosition = new Vector2(currentX - (widthOfLine / 2.0f), 0);
@@ -1142,10 +1142,10 @@ public class EnemyGroup : MonoBehaviour
 
         foreach (EnemyScript ship in list)
         {
-            if (returnee == null || ship.ShipWidth > size)
+            if (returnee == null || ship.GetShipWidth() > size)
             {
                 returnee = ship;
-                size = ship.ShipWidth;
+                size = ship.GetShipWidth();
             }
         }
 
@@ -1162,10 +1162,10 @@ public class EnemyGroup : MonoBehaviour
 
         foreach (EnemyScript ship in list)
         {
-            if (returnee == null || ship.ShipHeight > size)
+            if (returnee == null || ship.GetShipHeight() > size)
             {
                 returnee = ship;
-                size = ship.ShipHeight;
+                size = ship.GetShipHeight();
             }
         }
 
@@ -1199,7 +1199,7 @@ public class EnemyGroup : MonoBehaviour
 
         // grab the slowest ship so we can find the maximum speed of the group when inFormation
         EnemyScript slowestShip = GetSlowestShip();
-        float maxSpeedOfShipsInFormation = slowestShip.ShipSpeed;
+        float maxSpeedOfShipsInFormation = slowestShip.GetMaxShipSpeed();
 
         if (outOfFormation.Count > 0)
         {
@@ -1215,7 +1215,7 @@ public class EnemyGroup : MonoBehaviour
                 if (dotAheadOfGroup <= 0 && ship.GetDistanceFromClosestFormation() < 1.0f)
                 {
                     shipsAhead.Add(ship);
-                    ship.SetShipSpeed(ship.ShipSpeed * 0.1f);
+                    ship.SetCurrentShipSpeed(ship.GetMaxShipSpeed() * 0.1f);
                 }
                 else
                 {
@@ -1232,7 +1232,7 @@ public class EnemyGroup : MonoBehaviour
 
         foreach (EnemyScript ship in inFormation)
         {
-            ship.SetShipSpeed(maxSpeedOfShipsInFormation);
+            ship.SetCurrentShipSpeed(maxSpeedOfShipsInFormation);
         }
 
     }
