@@ -85,14 +85,22 @@ public class WeaponScript : MonoBehaviour
 	GameObject currTarget = null;
 	public void SetTarget(GameObject target)
 	{
-		currTarget = target;
-		networkView.RPC ("PropagateTarget", RPCMode.Others, target.networkView.viewID, false);
+		if (target)
+		{
+			currTarget = target;
+			networkView.RPC ("PropagateTarget", RPCMode.Others, target.networkView.viewID, false);
+		}
+
+		else
+		{
+			UnsetTarget();
+		}
 	}
 
 	public void UnsetTarget()
 	{
 		currTarget = null;		
-		networkView.RPC ("PropagateTarget", RPCMode.Others, null, true);
+		networkView.RPC ("PropagateTarget", RPCMode.Others, networkView.viewID, true);
 	}
 
 
