@@ -766,17 +766,34 @@ public class CapitalShipScript : MonoBehaviour
         m_maxResourceMass = massMax;
     }
 
+	GameObject buildUpExplo;
+	GameObject bigExplo;
 	public void BeginDeathBuildUpAnim()
 	{
 		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position, this.transform.rotation);
 		explodeObj1.transform.parent = transform;
 		explodeObj1.transform.localPosition = new Vector3(0, 0, -1.0f);
+		buildUpExplo = explodeObj1;
 	}
 	public void BeginDeathFinalAnim()
 	{
 		GameObject explodeObj2 = (GameObject)Instantiate(m_finalExplodeRef, this.transform.position, this.transform.rotation);
 		explodeObj2.transform.parent = transform;
-		explodeObj2.transform.localPosition = new Vector3(0, 0, -1.0f);
+		explodeObj2.transform.localPosition = new Vector3(0, 0, -1.5f);
+		bigExplo = explodeObj2;
+
+		//Begin a timer here, and then split the cship into fragments
+	}
+
+	public void FinalExplodeCompleted()
+	{
+		Destroy (buildUpExplo);
+
+		//Tell gui to dispaly loss popup
+		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ShowLossSplash();
+
+		//Destroy self
+		Destroy (this.gameObject);
 	}
 
 
