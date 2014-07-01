@@ -41,7 +41,7 @@ public class BasicBulletScript : MonoBehaviour
 	
 	// Area of effect attributes
 	[SerializeField] bool m_isAOE = false;									// Whether the bullet should damage an area or not
-	[SerializeField] Accuracy m_aoeDamageAccuracy = Accuracy.High;			// How accurate the AoE damage should be
+	[SerializeField] Accuracy m_aoeDamageAccuracy = Accuracy.High;			// How accurate the AoE damage should be based on the enemies distance
 	[SerializeField, Range (0f, 100f)] float m_aoeRange = 2f;				// How far away the enemies can be from the explosion
 	[SerializeField, Range (0f, 100f)] float m_aoeMaxDamageRange = 0.25f;	// The margin between the explosion and the target for them to receive maximum damage
 	[SerializeField, Range (0f, 1000f)] float m_aoeMaxExplosiveForce = 15f;	// How much force can be applied
@@ -84,6 +84,12 @@ public class BasicBulletScript : MonoBehaviour
 	}
 	
 	
+	public int GetDamage()
+	{
+		return m_bulletDamage;
+	}
+
+
 	public float GetBulletSpeed()
 	{
 		return m_bulletSpeed;
@@ -105,7 +111,7 @@ public class BasicBulletScript : MonoBehaviour
 	
 	/// Functions
 	// Set up the bullet
-	void Start () 
+	void Start() 
 	{
 		if (m_bulletDamage < m_bulletMinDamage)
 		{
@@ -129,7 +135,7 @@ public class BasicBulletScript : MonoBehaviour
 	
 	
 	// Follow the target if homing and manage the lifetime of the bullet
-	void FixedUpdate () 
+	void FixedUpdate() 
 	{
 		if (m_isHoming)
 		{
@@ -160,22 +166,14 @@ public class BasicBulletScript : MonoBehaviour
 			m_currentLifetime += Time.deltaTime;
 			if (m_currentLifetime >= m_bulletMaxLifetime)
 			{
-				if (m_isAOE)
-				{
-					DamageAOE();
-				}
-				
-				if (Network.isServer)
-				{
-					Network.Destroy (gameObject);
-				}
+				DetonateBullet();
 			}
 		}
 	}
 	
 	
 	// Handle bullet collision including all of its intricacies
-	void OnTriggerEnter(Collider other)
+	void OnTriggerEnter (Collider other)
 	{
 		if (Network.isServer && !other.isTrigger)
 		{
@@ -205,9 +203,9 @@ public class BasicBulletScript : MonoBehaviour
 						}
 					}	
 
-					catch (UnityException error) 
+					catch (System.Exception error)
 					{
-						Debug.LogError ("Exception Occurred in BasicBulletScript: " + error.Message);
+						Debug.LogError ("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
 					}
 
 					// This should absolutely always run and should never ever not run ever, literally ever.
@@ -229,43 +227,6 @@ public class BasicBulletScript : MonoBehaviour
 				}
 			}
 		}
-		
-		// TODO: Move shield wibble into HealthScript
-		/*if(!other.isTrigger)
-		{
-			if(other.tag == "Shield")
-			{
-				if(other.transform.root.GetComponent<CapitalShipScript>())
-				{
-					other.transform.root.GetComponent<CapitalShipScript>().BeginShaderCoroutine(this.transform.position);
-				}
-				else if(other.transform.root.GetComponent<PlayerControlScript>())
-				{
-					other.transform.root.GetComponent<PlayerControlScript>().BeginShaderCoroutine(this.transform.position);
-				}
-				else if(other.transform.root.GetComponent<EnemyScript>())
-				{
-					other.transform.root.GetComponent<EnemyScript>().BeginShaderCoroutine(this.transform.position);
-				}
-			}
-		}*/
-	}
-
-	public void DetonateBullet()
-	{
-		if (m_isAOE)
-		{
-			DamageAOE();
-		}
-
-		if(Network.isServer)
-		{
-			Network.Destroy (gameObject);
-		}
-	}
-	public int GetDamage()
-	{
-		return m_bulletDamage;
 	}
 	
 	// This should be called at Awake() or Start() otherwise AoE and homing functionality won't work correctly
@@ -274,19 +235,18 @@ public class BasicBulletScript : MonoBehaviour
 		const int 	player = (1 << Layers.player), 
 					capital = (1 << Layers.capital), 
 					enemy = (1 << Layers.enemy), 
-					enemySupportShield = (1 << Layers.enemySupportShield),
 					asteroid = (1 << Layers.asteroid);
 					
 		switch (this.gameObject.layer)
 		{
 			case Layers.playerBullet:
 				m_homingMask = enemy;
-				m_aoeMask = m_homingMask | player | asteroid | enemySupportShield;
+				m_aoeMask = m_homingMask | player | asteroid;
 				break;
 				
 			case Layers.capitalBullet:
 				m_homingMask = enemy;
-				m_aoeMask = m_homingMask | asteroid | enemySupportShield;
+				m_aoeMask = m_homingMask | asteroid;
 				break;
 				
 			case Layers.enemyBullet:
@@ -334,15 +294,29 @@ public class BasicBulletScript : MonoBehaviour
 	//Uses MovePosition() to move the rigidbody forwards by the bullet speed
 	void MoveForwards()
 	{
-		if(m_isSelfPropelled)
+		if (m_isSelfPropelled)
 		{
-			if(m_currentLifetime > 0.4f)
+			if (m_currentLifetime > 0.4f)
 			{
 				m_bulletSpeedModifier *= 0.95f;
 			}
 		}
 		
 		rigidbody.MovePosition(rigidbody.position + transform.up * (m_bulletSpeed + m_bulletSpeedModifier) * Time.deltaTime);
+	}
+
+	
+	public void DetonateBullet()
+	{
+		if (m_isAOE)
+		{
+			DamageAOE();
+		}
+		
+		if (Network.isServer)
+		{
+			Network.Destroy (gameObject);
+		}
 	}
 	
 	

@@ -3,9 +3,9 @@ using System.Collections;
 
 public class StarScript : MonoBehaviour 
 {
-	[SerializeField] int m_damagePerTick = 1;
+	[SerializeField, Range (0, 100)] int m_damagePerTick = 1;
 	
-	[SerializeField] float m_tickTime = 0.05f;
+	[SerializeField, Range (0f, 100f)] float m_tickTime = 0.05f;
 	
 	float m_damageDelay = 0.0f;
 	
@@ -16,6 +16,7 @@ public class StarScript : MonoBehaviour
 		{
 			switch (other.attachedRigidbody.gameObject.layer)
 			{
+				case Layers.player:
 				case Layers.capital:
 				case Layers.enemy:
 				case Layers.asteroid:
