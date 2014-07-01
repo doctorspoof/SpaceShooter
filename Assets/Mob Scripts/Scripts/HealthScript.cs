@@ -283,18 +283,14 @@ public class HealthScript : MonoBehaviour
 					m_currentShield = 0;
 				}
 
-				bool isLaser = false;
-				if(hitter != null)
-					isLaser = hitter.GetComponent<BeamBulletScript>() != null ? true : false;
-
-				//Shield should now wibble
-				if(hitter != null)
+				if (hitter)
 				{
-					Vector3 position = hitter.transform.position;
-					if(isLaser)
-						position = GetLaserImpactPoint(hitter);
+					BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
 
-					networkView.RPC ("PropagateShieldWibble", RPCMode.All, position);
+					if (beam)
+					{
+						networkView.RPC ("PropagateShieldWibble", RPCMode.All, beam.beamHit.point);
+					}
 				}
 			}
 			else
@@ -397,6 +393,7 @@ public class HealthScript : MonoBehaviour
 		ShieldOnOff (isUp);
 	}
 
+	// Shouldn't be necessary anymore, consider deletion
 	Vector3 GetLaserImpactPoint(GameObject laser)
 	{
 		Vector3 output = Vector3.zero;
@@ -425,32 +422,7 @@ public class HealthScript : MonoBehaviour
 			networkView.RPC ("PropagateShieldStatus", RPCMode.Others, isUp);
 	}
 	
-	
-	/*void OnShieldRaises()
-	{
-		GameObject shield = GetShield();
-		if (shield)
-		{
-			shield.renderer.enabled = true;
-			shield.collider.enabled = true;
-		}
 
-		if(Network.isServer)
-			networkView.RPC ("PropagateShieldStatus", RPCMode.Others, true);
-	}
-	void OnShieldFalls()
-	{
-		//Debug.Log ("Shield falls!");
-		GameObject shield = GetShield();
-		if (shield)
-		{
-			shield.renderer.enabled = false;
-			shield.collider.enabled = false;
-		}
-
-		if(Network.isServer)
-			networkView.RPC ("PropagateShieldStatus", RPCMode.Others, false);
-	}*/
 	void OnMobDies (GameObject killer, GameObject hitter = null)
 	{
 		//Debug.Log ("Mob has died!");
