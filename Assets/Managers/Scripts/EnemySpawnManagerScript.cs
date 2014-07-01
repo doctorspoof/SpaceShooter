@@ -12,6 +12,13 @@ public class WaveEnemyType
 [System.Serializable]
 public class WaveInfo
 {
+    [SerializeField]
+    public string defaultOrderTargetTag = "Capital";
+    public string GetDefaultOrderTargetTag()
+    {
+        return defaultOrderTargetTag;
+    }
+
     public WaveEnemyType[] m_enemiesOnWave;
 
     public int GetTotalSize()
@@ -44,6 +51,15 @@ public class WaveInfo
 
         return output;
     }
+
+    public WaveInfo Clone()
+    {
+        WaveInfo returnee = new WaveInfo();
+        returnee.defaultOrderTargetTag = this.defaultOrderTargetTag;
+        returnee.m_enemiesOnWave = (WaveEnemyType[])this.m_enemiesOnWave.Clone();
+
+        return returnee;
+    }
 }
 
 public class EnemySpawnManagerScript : MonoBehaviour
@@ -53,6 +69,9 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     [SerializeField]
     WaveInfo[] singleLargeWave;
+
+    [SerializeField]
+    WaveInfo[] specialWaves;
 
     [SerializeField]
     GameObject[] test;
@@ -190,26 +209,52 @@ public class EnemySpawnManagerScript : MonoBehaviour
         waveCount++;
         //if (currentWave < m_waveInfos.Length)
         //{
+        
+        List<GameObject> spawnersToBeSpawnedAt = null;
+
+        // decide if this is a large or small wave
         if (waveCount % 5 == 0 && waveCount > 0)
         {
-            EnemySpawnPointScript spawnPoint = m_allSpawnPoints[Random.Range(0, m_allSpawnPoints.Length)].GetComponent<EnemySpawnPointScript>();
-
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-			waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
+            waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
 
-            spawnPoint.SetSpawnList(waveToBePassed, secondsBetweenWaves);
+            spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
+
+            EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[0].GetComponent<EnemySpawnPointScript>();
+            spawnPoint.AddToSpawnList(waveToBePassed, secondsBetweenWaves);
+
         }
         else
         {
-            foreach (GameObject spawner in m_allSpawnPoints)
+            List<WaveInfo> waveToBePassed = new List<WaveInfo>();
+            WaveInfo newWave = smallMultipleWaves[Random.Range(0, smallMultipleWaves.Length)].Clone();
+
+            waveToBePassed.Add(newWave);
+
+            spawnersToBeSpawnedAt = GetRandomSpawnPoints(2, m_allSpawnPoints.Length);
+int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count),
+    shipsCount - a * Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count));
+            
+            
+
+            foreach(GameObject obj in spawnersToBeSpawnedAt)
             {
-                EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
+                WaveInfo adjustedWave = newWave.Clone();
 
-                List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-                waveToBePassed.Add(smallMultipleWaves[Random.Range(0, smallMultipleWaves.Length)]);
+                for(int i = 0; i < adjustedWave.m_enemiesOnWave.Length; ++i)
+                {
+                    
+                }
 
-                spawnPointScript.SetSpawnList(waveToBePassed, secondsBetweenWaves);
+                EnemySpawnPointScript spawnPoint = obj.GetComponent<EnemySpawnPointScript>();
+                spawnPoint.AddToSpawnList(waveToBePassed, secondsBetweenWaves);
             }
+        }
+
+        // will a special wave spawn in addition?
+        if(waveCount % 4 == 0)
+        {
+            waveToBePassed.Add(specialWaves[Random.Range(0, specialWaves.Length)]);
         }
 
 
@@ -217,7 +262,26 @@ public class EnemySpawnManagerScript : MonoBehaviour
         //currentWave++;
         //}
 
-        
+
+    }
+
+    public List<GameObject> GetRandomSpawnPoints(int min_, int max_)
+    {
+        List<GameObject> tempListForSpawning = new List<GameObject>();
+        tempListForSpawning.AddRange((GameObject[])m_allSpawnPoints.Clone());
+
+        List<GameObject> pointsToBeSpawnedAt = new List<GameObject>();
+
+        int amountOfPointsToSpawnAt = Random.Range(min_, max_ + 1);
+
+        for (int i = 0; i < amountOfPointsToSpawnAt; ++i)
+        {
+            int index = Random.Range(0, m_allSpawnPoints.Length);
+            pointsToBeSpawnedAt.Add(tempListForSpawning[index]);
+            tempListForSpawning.RemoveAt(index);
+        }
+
+        return pointsToBeSpawnedAt;
     }
 
     public void TellAllSpawnersBegin()
