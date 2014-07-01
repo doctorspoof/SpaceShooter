@@ -11,12 +11,21 @@ public class AttackShieldShipCircleClockwise : IAttack
     {
         float distance = 10.0f;
 
+        float shipDimension = 0;
+        Ship targetShip = target.GetComponent<Ship>();
+        if (targetShip != null)
+        {
+            shipDimension = targetShip.GetMaxSize();
+        }
+
+        float totalRange = distance + shipDimension;
+
         Vector2 direction = Vector3.Normalize(target.transform.position - ship.transform.position);
 
         Ray ray = new Ray(ship.transform.position, direction);
 
         RaycastHit hit;
-        if (target.collider.Raycast(ray, out hit, distance))
+        if (target.collider.Raycast(ray, out hit, totalRange))
         {
             Vector2 directionFromTargetToShip = Vector3.Normalize(ship.transform.position - target.transform.position);
 
@@ -31,7 +40,7 @@ public class AttackShieldShipCircleClockwise : IAttack
 
             float distanceToTarget = Vector2.Distance(ship.transform.position, target.transform.position);
 
-            float rangeToCircleAt = distance;
+            float rangeToCircleAt = totalRange;
 
             Vector2 newPosition = ((Quaternion.AngleAxis(targetAngle, -Vector3.forward) * Vector2.up) * rangeToCircleAt * 0.8f) + target.transform.position;
 

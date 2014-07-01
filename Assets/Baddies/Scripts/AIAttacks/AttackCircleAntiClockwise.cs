@@ -45,8 +45,6 @@ public class AttackCircleAntiClockwise : IAttack
 
             Vector2 newPosition = ((Quaternion.AngleAxis(targetAngle, -Vector3.forward) * Vector2.up) * rangeToCircleAt * 0.8f) + target.transform.position;
 
-            Debug.DrawLine(ship.transform.position, newPosition);
-
             ship.RotateTowards(newPosition);
             ship.rigidbody.AddForce(ship.transform.up * ship.GetCurrentMomentum() * Time.deltaTime);
         }

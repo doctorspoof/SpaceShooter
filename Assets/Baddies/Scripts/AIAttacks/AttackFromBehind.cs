@@ -11,7 +11,15 @@ public class AttackFromBehind : IAttack
     {
 
         float weaponRange = ship.GetMinimumWeaponRange();
-        Vector2 positionBehindTarget = (-target.transform.up * (weaponRange / 2)) + target.transform.position;
+
+        float shipDimension = 0;
+        Ship targetShip = target.GetComponent<Ship>();
+        if (targetShip != null)
+        {
+            shipDimension = targetShip.GetMaxSize();
+        }
+
+        Vector2 positionBehindTarget = (-target.transform.up * ((weaponRange / 2) + shipDimension)) + target.transform.position;
 
         float sqrDirectionToBehindTarget = Vector2.SqrMagnitude(positionBehindTarget - (Vector2)ship.transform.position);
         float sqrDirectionToTarget = Vector2.SqrMagnitude(target.transform.position - ship.transform.position);
@@ -42,50 +50,6 @@ public class AttackFromBehind : IAttack
             weaponScript.MobRequestsFire();
         }
 
-
-        //Vector2 vectorToGetToPosition = positionBehindTarget - (Vector2)ship.transform.position;
-
-        //float t = Mathf.Clamp(positionBehindTarget.magnitude, 0, 5) / 5.0f;
-        //Vector2 directionToMove = ((Vector2)target.transform.position.normalized * (1 - t)) + (vectorToGetToPosition.normalized * t);
-
-        ////Vector2 direction = Vector3.Normalize(target.transform.position - ship.transform.position);
-
-        //Ray ray = new Ray(ship.transform.position, (target.transform.position - ship.transform.position).normalized);
-        //Debug.DrawLine(ship.transform.position, positionBehindTarget, Color.yellow);
-
-        //ship.RotateTowards((Vector2)ship.transform.position + directionToMove);
-
-        //if (Vector2.SqrMagnitude(vectorToGetToPosition) < Vector2.SqrMagnitude(target.transform.position - ship.transform.position))
-        //{
-        //    ship.rigidbody.AddForce(ship.transform.up * ship.GetCurrentMomentum() * Time.deltaTime);
-        //}
-
-
-
-
-        //RaycastHit hit;
-        //if (target.collider.Raycast(ray, out hit, weaponRange))
-        //{
-            //    Vector2 directionFromTargetToShip = Vector3.Normalize(ship.transform.position - target.transform.position);
-
-            //    float currentAngle = Vector2.Angle(Vector2.up, directionFromTargetToShip);
-
-            //    Vector3 cross = Vector3.Cross(Vector2.up, directionFromTargetToShip);
-
-            //    if (cross.z > 0)
-            //        currentAngle = 360 - currentAngle;
-
-            //    float targetAngle = currentAngle - 10;// (clockwise ? 10 : -10);
-
-            //    float distanceToTarget = Vector2.Distance(ship.transform.position, target.transform.position);
-
-            //    float rangeToCircleAt = Mathf.Clamp(distanceToTarget, weaponRange / 2, weaponRange);
-
-            //    Vector2 newPosition = ((Quaternion.AngleAxis(targetAngle, -Vector3.forward) * Vector2.up) * rangeToCircleAt * 0.8f) + target.transform.position;
-
-            //    ship.RotateTowards(newPosition);
-            //    ship.rigidbody.AddForce(ship.transform.up * ship.GetCurrentMomentum() * Time.deltaTime);
-        //}
     }
 
     Vector2 GetPositionForAvoidance(EnemyScript ship, GameObject objectToAvoid, Vector2 targetLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)

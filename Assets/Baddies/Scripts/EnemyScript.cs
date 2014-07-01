@@ -294,11 +294,15 @@ public class EnemyScript : Ship
                         Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
                         Ray ray = new Ray(shipTransform.position, direction);
 
-                        //Debug.DrawLine(transform.position, m_target.transform.position, Color.blue);
-                        Debug.DrawRay(ray.origin, ray.direction, Color.blue);
+                        float shipDimension = 0;
+                        Ship targetShip = m_target.GetComponent<Ship>();
+                        if (targetShip != null)
+                        {
+                            shipDimension = targetShip.GetMaxSize();
+                        }
 
                         RaycastHit hit;
-                        if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange()))
+                        if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange() + shipDimension))
                         {
                             Vector2 normalOfDirection = GetNormal(direction);
 
