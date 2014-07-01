@@ -6,6 +6,11 @@ using System.Linq;
 
 public class CapitalShipScript : MonoBehaviour
 {
+	[SerializeField]
+	GameObject m_buildUpExplodeRef;
+	[SerializeField]
+	GameObject m_finalExplodeRef;
+
     [SerializeField]
     Transform targetPoint;
 
@@ -760,6 +765,20 @@ public class CapitalShipScript : MonoBehaviour
         m_maxResourceFuel = fuelMax;
         m_maxResourceMass = massMax;
     }
+
+	public void BeginDeathBuildUpAnim()
+	{
+		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position, this.transform.rotation);
+		explodeObj1.transform.parent = transform;
+		explodeObj1.transform.localPosition = new Vector3(0, 0, -1.0f);
+	}
+	public void BeginDeathFinalAnim()
+	{
+		GameObject explodeObj2 = (GameObject)Instantiate(m_finalExplodeRef, this.transform.position, this.transform.rotation);
+		explodeObj2.transform.parent = transform;
+		explodeObj2.transform.localPosition = new Vector3(0, 0, -1.0f);
+	}
+
 
     GameObject GetCTurretWithID(int id)
     {

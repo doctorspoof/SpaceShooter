@@ -771,6 +771,14 @@ public class GameStateController : MonoBehaviour
 
 	List<LossConfirmation> m_lossConfirmList;
 
+	class LossCamConfirmation
+	{
+		public NetworkPlayer player;
+		public bool camInPositionConfirmed;
+	}
+
+	List<LossCamConfirmation> m_lossCameraConfirmList;
+
 	void ResendLossState()
 	{
 		for(int i = 0; i < m_lossConfirmList.Count; i++)
@@ -791,20 +799,26 @@ public class GameStateController : MonoBehaviour
 		lossTimer = 0.0f;
 		m_lossTimerBegin = true;
 		m_lossConfirmList = new List<LossConfirmation>();
+		m_lossCameraConfirmList = new List<LossCamConfirmation>();
 		for(int i = 0; i < m_connectedPlayers.Count; i++)
 		{
 			m_lossConfirmList.Add(new LossConfirmation());
+			m_lossCameraConfirmList.Add (new LossCamConfirmation());
 		}
 
 		for(int i = 0; i < m_connectedPlayers.Count; i++)
 		{
 			m_lossConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
 			m_lossConfirmList[i].confirmed = false;
+
+			m_lossCameraConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
+			m_lossCameraConfirmList[i].camInPositionConfirmed = false;
 		}
 
 		networkView.RPC ("CapitalShipHasBeenDestroyed", RPCMode.All);
 		float timer = m_GUIManager.GetComponent<GUIManager>().m_gameTimer;
 		networkView.RPC("SendTimerToClients", RPCMode.Others, timer);
+		BeginBuildupDestructionSequence();
 	}
 	[RPC]
 	void SendTimerToClients(float time)
@@ -820,27 +834,40 @@ public class GameStateController : MonoBehaviour
 
 
 		//Stop all enemies
-		if(Network.isServer)
+		/*if(Network.isServer)
 		{
 			GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 			foreach(GameObject enemy in enemies)
 			{
 				enemy.GetComponent<EnemyScript>().OnPlayerLoss();
 			}
-		}
+		}*/
 
 		//CShip is gone, don't worry about that
 
 		//Stop player input
-		GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+		/*GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 		foreach(GameObject player in players)
-			player.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
+			player.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();*/
 
 		//Tell GUI to show loss splash
-		m_GUIManager.GetComponent<GUIManager>().ShowLossSplash();
+		//m_GUIManager.GetComponent<GUIManager>().ShowLossSplash();
 
-		//Notify server we've recieved the gameOver request
-		networkView.RPC ("PlayerConfirmsGameOver", RPCMode.Server);
+		//New CShip death procedure:
+
+		//Tell the gui what's happening.
+		//This will handle freezing all enemies, stopping input, and alerting the camera
+		m_GUIManager.GetComponent<GUIManager>().AlertGUIDeathSequenceBegins();
+
+		if(Network.isServer)
+		{
+			HostConfirmsGameOver();
+		}
+		else
+		{
+			//Notify server we've recieved the gameOver request
+			networkView.RPC ("PlayerConfirmsGameOver", RPCMode.Server);
+		}
 
 		m_gameStopped = true;
 	}
@@ -856,6 +883,87 @@ public class GameStateController : MonoBehaviour
 				return;
 			}
 		}
+	}
+	void HostConfirmsGameOver()
+	{
+		for(int i = 0; i < m_lossConfirmList.Count; i++)
+		{
+			if(m_lossConfirmList[i].player == Network.player)
+			{
+				m_lossConfirmList[i].confirmed = true;
+				return;
+			}
+		}
+	}
+
+	public void TellServerCameraInCorrectPosition()
+	{
+		if(Network.isClient)
+			networkView.RPC ("PlayerConfirmsCameraInCorrectPosition", RPCMode.Server);
+		else
+			HostConfirmsCameraInCorrectPosition();
+	}
+	[RPC]
+	void PlayerConfirmsCameraInCorrectPosition(NetworkMessageInfo info)
+	{
+		for(int i = 0; i < m_lossCameraConfirmList.Count; i++)
+		{
+			if(m_lossCameraConfirmList[i].player == info.sender)
+			{
+				m_lossCameraConfirmList[i].camInPositionConfirmed = true;
+				break;
+			}
+		}
+
+		CheckAllPlayersInPosition();
+	}
+	void HostConfirmsCameraInCorrectPosition()
+	{
+		for(int i = 0; i < m_lossCameraConfirmList.Count; i++)
+		{
+			if(m_lossCameraConfirmList[i].player == Network.player)
+			{
+				Debug.Log ("Set own confirm state to true.");
+				m_lossCameraConfirmList[i].camInPositionConfirmed = true;
+				break;
+			}
+		}
+
+		CheckAllPlayersInPosition();
+	}
+	void CheckAllPlayersInPosition()
+	{
+		Debug.Log ("Checking if all players are in position...");
+		for(int i = 0; i < m_lossCameraConfirmList.Count; i++)
+		{
+			if(!m_lossCameraConfirmList[i].camInPositionConfirmed)
+			{
+				Debug.Log ("Player: " + m_lossCameraConfirmList[i].player + " is not in position.");
+				return;
+			}
+		}
+
+		Debug.Log ("All players in position for destruction, activating...");
+		BeginFinalDestructSequence();
+	}
+
+	void BeginBuildupDestructionSequence()
+	{
+		networkView.RPC ("PropagateBuildupDestruct", RPCMode.All);
+	}
+	[RPC]
+	void PropagateBuildupDestruct()
+	{
+		m_ingameCapitalShip.GetComponent<CapitalShipScript>().BeginDeathBuildUpAnim();
+	}
+	void BeginFinalDestructSequence()
+	{
+		networkView.RPC ("PropagateFinalDestruct", RPCMode.All);
+	}
+	[RPC]
+	void PropagateFinalDestruct()
+	{
+		m_ingameCapitalShip.GetComponent<CapitalShipScript>().BeginDeathFinalAnim();
 	}
 
 	public void NotifyLocalPlayerHasDockedAtCShip()
