@@ -287,10 +287,9 @@ public class HealthScript : MonoBehaviour
 				{
 					BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
 
-					if (beam)
-					{
-						networkView.RPC ("PropagateShieldWibble", RPCMode.All, beam.beamHit.point);
-					}
+					Vector3 position = beam ? beam.beamHit.point : hitter.transform.position;
+
+					networkView.RPC ("PropagateShieldWibble", RPCMode.All, position);
 				}
 			}
 			else
