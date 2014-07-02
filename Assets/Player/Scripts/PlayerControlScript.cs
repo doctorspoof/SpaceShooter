@@ -32,7 +32,7 @@ public class PlayerControlScript : Ship
 	float m_baseShipWeight = 0.05f;
 
 	[SerializeField]
-	float m_maxDockingSpeed = 22.5f;		//Maxmium docking speed for players
+	float m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
 	[SerializeField]
 	float m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
 	float m_dockingTime = 0.0f;				//Used to determine if the player should continue the docking attempt
@@ -1398,7 +1398,7 @@ public class PlayerControlScript : Ship
             desiredDockSpeed = GetCurrentShipSpeed();
 		}
 
-        Debug.LogError("desiredDockSpeed = " + desiredDockSpeed);
+        //Debug.LogError("desiredDockSpeed = " + desiredDockSpeed);
 
 		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * Time.deltaTime);
 		
