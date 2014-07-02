@@ -9,18 +9,24 @@ public class CapitalShipFragmentScript : MonoBehaviour
 	[SerializeField]
 	bool m_clockwiseSpin;
 
+	float rotationAmount;
+	Vector3 direction;
+	float speed;
+
 	// Use this for initialization
 	void Start () 
 	{
-	
+		rotationAmount = m_clockwiseSpin ? Random.Range(0.0f, 2.5f) : Random.Range (-2.5f, 0.0f);
+		Debug.Log ("Rotationamount: " + rotationAmount);
+		speed = Random.Range(0.0f, 0.1f);
+		direction = new Vector3(Random.Range(m_travelDirection.x - 0.025f, m_travelDirection.x + 0.025f), Random.Range(m_travelDirection.y - 0.025f, m_travelDirection.y + 0.025f), 0);
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () 
 	{
-		this.transform.localPosition += m_travelDirection * Time.deltaTime * 0.1f;
-
-		float amount = m_clockwiseSpin ? Random.Range(0.0f, 0.05f) : Random.Range (-0.05f, 0.0f);
-		this.transform.RotateAround(this.transform.position, this.transform.forward, amount * Time.deltaTime);
+		this.transform.localPosition += direction * Time.deltaTime * speed;
+		
+		this.transform.RotateAround(this.transform.position, this.transform.forward, rotationAmount * Time.deltaTime);
 	}
 }
