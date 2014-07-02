@@ -148,7 +148,7 @@ public class GUIManager : MonoBehaviour
 				playerShips = GameObject.FindGameObjectsWithTag("Player");
 			}
 
-			if(!m_CShipHasDied && (CShip == null || CShip.GetComponent<HealthScript>() == null))
+			if(!m_CShipHasDied && !m_cshipDying && (CShip == null || CShip.GetComponent<HealthScript>() == null))
 			{
 				Debug.Log ("No capital ship attached! Finding in game cship...");
 				GameObject cship = GameObject.FindGameObjectWithTag("Capital");
@@ -3179,8 +3179,11 @@ public class GUIManager : MonoBehaviour
 		isOoBCountingDown = false;
 	}
 
+	bool m_cshipDying = false;
 	public void AlertGUIDeathSequenceBegins()
 	{
+		m_cshipDying = true;
+
 		//Make sure we unset all popup bools
 		m_isOnMap = false;
 		m_PlayerHasDockedAtShop = false;
