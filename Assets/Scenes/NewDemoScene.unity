@@ -103,58 +103,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smallMultipleWaves:
-  - defaultOrderTargetTag: Player
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+      m_numEnemy: 48
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+      m_numEnemy: 32
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 12
-  - defaultOrderTargetTag: Player
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 8
-  - defaultOrderTargetTag: Player
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 3
-  - defaultOrderTargetTag: Player
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 6
+      m_numEnemy: 24
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+      m_numEnemy: 16
+    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 4
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 1
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 8
+      m_numEnemy: 32
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 6
-  - defaultOrderTargetTag: 
+      m_numEnemy: 24
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 8
+      m_numEnemy: 32
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 2
-  - defaultOrderTargetTag: 
+      m_numEnemy: 8
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 6
+      m_numEnemy: 24
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 2
+      m_numEnemy: 8
   singleLargeWave:
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 40
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
       m_numEnemy: 25
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 10
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 25
@@ -162,7 +162,7 @@ MonoBehaviour:
       m_numEnemy: 15
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 5
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 15
@@ -172,18 +172,23 @@ MonoBehaviour:
       m_numEnemy: 3
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 8
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
       m_numEnemy: 20
+  specialWaves:
+  - defaultOrderTargetTag: Player
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+      m_numEnemy: 3
   test: []
   m_allSpawnPoints: []
   m_capitalShip: {fileID: 0}
@@ -7295,58 +7300,58 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   smallMultipleWaves:
-  - defaultOrderTargetTag: Player
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+      m_numEnemy: 48
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+      m_numEnemy: 32
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 12
-  - defaultOrderTargetTag: Player
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 8
-  - defaultOrderTargetTag: Player
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 3
-  - defaultOrderTargetTag: Player
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 6
+      m_numEnemy: 24
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+      m_numEnemy: 16
+    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 4
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 1
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 8
+      m_numEnemy: 32
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 6
-  - defaultOrderTargetTag: 
+      m_numEnemy: 24
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 8
+      m_numEnemy: 32
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 2
-  - defaultOrderTargetTag: 
+      m_numEnemy: 8
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 6
+      m_numEnemy: 24
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 2
+      m_numEnemy: 8
   singleLargeWave:
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 40
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
       m_numEnemy: 25
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 10
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 25
@@ -7354,7 +7359,7 @@ MonoBehaviour:
       m_numEnemy: 15
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 5
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 15
@@ -7364,18 +7369,23 @@ MonoBehaviour:
       m_numEnemy: 3
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
       m_numEnemy: 8
-  - defaultOrderTargetTag: 
+  - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
       m_numEnemy: 20
+  specialWaves:
+  - defaultOrderTargetTag: Player
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+      m_numEnemy: 3
   test: []
   m_allSpawnPoints: []
   m_capitalShip: {fileID: 0}

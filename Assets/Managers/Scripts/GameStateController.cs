@@ -300,7 +300,6 @@ public class GameStateController : MonoBehaviour
 	public void AlertGameControllerBeginSpawning()
 	{
 		m_SpawnManager.GetComponent<EnemySpawnManagerScript>().BeginSpawning();
-		m_SpawnManager.GetComponent<EnemySpawnManagerScript>().TellAllSpawnersBegin();
 		m_ingameCapitalShip.GetComponent<CapitalShipScript>().shouldStart = true;
 	}
 	public void StartGameFromMenu(bool isSpecMode)
@@ -542,7 +541,7 @@ public class GameStateController : MonoBehaviour
 		networkView.RPC ("TellLocalGSCGameHasBegun", RPCMode.Others);
 		Debug.Log ("Player has requested round start.");
 		//networkView.RPC ("TellHostBeginSpawns", RPCMode.Server);
-		networkView.RPC ("TellHostBeginSpawns", RPCMode.All);
+		//networkView.RPC ("TellHostBeginSpawns", RPCMode.All);
 
 		networkView.RPC ("TellAllClientsRoundHasStarted", RPCMode.Others, true);
 
@@ -555,12 +554,12 @@ public class GameStateController : MonoBehaviour
 	{
 		m_gameStopped = false;
 	}
-	[RPC]
-	void TellHostBeginSpawns()
-	{
-		if(Network.isServer)
-			m_SpawnManager.GetComponent<EnemySpawnManagerScript>().TellAllSpawnersBegin();
-	}
+    //[RPC]
+    //void TellHostBeginSpawns()
+    //{
+    //    if(Network.isServer)
+    //        m_SpawnManager.GetComponent<EnemySpawnManagerScript>().TellAllSpawnersBegin();
+    //}
 	[RPC]
 	void TellAllClientsRoundHasStarted(bool started)
 	{

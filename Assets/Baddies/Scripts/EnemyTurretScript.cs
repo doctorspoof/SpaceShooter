@@ -45,8 +45,16 @@ public class EnemyTurretScript : MonoBehaviour
 			if(Network.isServer)
 			{
 				//Try to fire
-				float distance = Vector3.Distance(target.transform.position, transform.position);
-				if(distance < GetRange())
+				//float distance = Vector3.Distance(target.transform.position, transform.position);
+                float dist = Vector3.SqrMagnitude(target.transform.position - transform.position);
+
+                Ship targetShip = target.GetComponent<Ship>();
+                if(targetShip != null)
+                {
+                    dist -= targetShip.GetMaxSize();
+                }
+
+                if (dist < GetRange() * GetRange())
 				{
 					if(m_currentRecoilTime >= m_recoilTime)
 						AttemptFire();

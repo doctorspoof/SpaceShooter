@@ -12,9 +12,6 @@ public class EnemySpawnPointScript : MonoBehaviour
     float m_timeBetweenReleases;
     float m_timeSinceLastRelease;
 
-    public bool m_shouldStartSpawning = false;
-    public bool m_spawnerHasFinished = false;
-
     public bool m_shouldPause = false;
 
     float modifier = 1.0f;
@@ -28,11 +25,11 @@ public class EnemySpawnPointScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Network.isServer && m_shouldStartSpawning && !m_shouldPause)
+        if (Network.isServer && !m_shouldPause)
         {
-            m_timeSinceLastRelease += Time.deltaTime;
-            if (m_timeSinceLastRelease >= m_timeBetweenReleases && m_wavesToBeSpawned.Count != 0)
-                ReleaseEnemy();
+            // m_timeSinceLastRelease += Time.deltaTime;
+            //if (m_timeSinceLastRelease >= m_timeBetweenReleases && m_wavesToBeSpawned.Count != 0)
+            ReleaseEnemy();
         }
     }
 
@@ -69,14 +66,15 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             /// find the closest target to this spawn point out of all potential targets with the tag specified
             GameObject[] defaultTargets = GameObject.FindGameObjectsWithTag(info.GetDefaultOrderTargetTag());
+            Debug.Log("Adding default order attack at " + info.GetDefaultOrderTargetTag());
             float closest = 0;
             GameObject closestTarget = null;
-            foreach(GameObject potentialTarget in defaultTargets)
+            foreach (GameObject potentialTarget in defaultTargets)
             {
-                if(closestTarget == null || Vector2.SqrMagnitude(transform.position - closestTarget.transform.position) < closest)
+                if (closestTarget == null || Vector2.SqrMagnitude(transform.position - closestTarget.transform.position) < closest)
                 {
-                    closest = Vector2.SqrMagnitude(transform.position - closestTarget.transform.position);
                     closestTarget = potentialTarget;
+                    closest = Vector2.SqrMagnitude(transform.position - closestTarget.transform.position);
                 }
             }
 
@@ -100,24 +98,21 @@ public class EnemySpawnPointScript : MonoBehaviour
 
         m_wavesToBeSpawned.Clear();
 
-        m_spawnerHasFinished = true;
     }
 
-    public void SetSpawnList(List<WaveInfo> waves, float relayTime)
-    {
-        m_spawnerHasFinished = false;
-        m_shouldStartSpawning = false;
+    //public void SetSpawnList(List<WaveInfo> waves, float relayTime)
+    //{
+    //    m_spawnerHasFinished = false;
+    //    m_shouldStartSpawning = false;
 
-        m_timeBetweenReleases = relayTime;
+    //    m_timeBetweenReleases = relayTime;
 
-        m_wavesToBeSpawned.Clear();
-        m_wavesToBeSpawned.AddRange(waves);
-    }
+    //    m_wavesToBeSpawned.Clear();
+    //    m_wavesToBeSpawned.AddRange(waves);
+    //}
 
     public void AddToSpawnList(List<WaveInfo> waves_, float relayTime_)
     {
-        m_spawnerHasFinished = false;
-        m_shouldStartSpawning = false;
 
         m_timeBetweenReleases = relayTime_;
 
