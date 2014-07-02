@@ -84,16 +84,18 @@ public class BeamBulletScript : MonoBehaviour
 					capital = (1 << Layers.capital), 
 					enemy = (1 << Layers.enemy), 
 					enemySupportShield = (1 << Layers.enemySupportShield),
+					enemyDestructibleBullet = (1 << Layers.enemyDestructibleBullet),
 					asteroid = (1 << Layers.asteroid);
 		
 		switch (gameObject.layer)
 		{
 			case Layers.playerBullet:
 			case Layers.capitalBullet:
-				m_damageMask = enemy | asteroid | enemySupportShield;
+				m_damageMask = enemy | enemyDestructibleBullet | asteroid | enemySupportShield;
 				break;
 				
 			case Layers.enemyBullet:
+			case Layers.enemyDestructibleBullet:
 				m_damageMask = player | capital | asteroid;
 				break;
 		}

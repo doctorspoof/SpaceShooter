@@ -145,7 +145,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 1, z: 3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &11400000
 MonoBehaviour:
@@ -160,7 +160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_bulletDamage: 40
   m_bulletMinDamage: 1
-  m_bulletSpeed: 8
+  m_bulletSpeed: 6
   m_bulletMinimumSpeed: .25
   m_bulletMaxLifetime: 16.1000004
   m_isSelfPropelled: 1
@@ -168,13 +168,13 @@ MonoBehaviour:
   m_maxPierceHits: 5
   m_pierceDamageModifier: .400000006
   m_pierceSpeedModifier: .699999988
-  m_isHoming: 0
+  m_isHoming: 1
   m_homingRange: 50
-  m_homingRotateSpeed: 1.5
+  m_homingRotateSpeed: .5
   m_isAOE: 1
   m_aoeDamageAccuracy: 0
-  m_aoeRange: 10
-  m_aoeMaxDamageRange: 3.5999999
+  m_aoeRange: 2
+  m_aoeMaxDamageRange: 1
   m_aoeMaxExplosiveForce: 15
   m_aoeMinExplosiveForce: 5
   firer: {fileID: 0}
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
-  m_maximumHealth: 40
+  m_maximumHealth: 15
   m_currentHealth: 0
   m_pathToShieldObject: 
   m_maximumShield: 0

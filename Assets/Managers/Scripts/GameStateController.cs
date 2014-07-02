@@ -793,31 +793,38 @@ public class GameStateController : MonoBehaviour
 
 	bool m_lossTimerBegin = false;
 	float lossTimer = 0.0f;
+	bool m_cshipIsDying = false;
+
 	public void TellAllClientsCapitalShipHasBeenDestroyed()
 	{
-		lossTimer = 0.0f;
-		m_lossTimerBegin = true;
-		m_lossConfirmList = new List<LossConfirmation>();
-		m_lossCameraConfirmList = new List<LossCamConfirmation>();
-		for(int i = 0; i < m_connectedPlayers.Count; i++)
+		if(!m_cshipIsDying)
 		{
-			m_lossConfirmList.Add(new LossConfirmation());
-			m_lossCameraConfirmList.Add (new LossCamConfirmation());
+			lossTimer = 0.0f;
+			m_lossTimerBegin = true;
+			m_lossConfirmList = new List<LossConfirmation>();
+			m_lossCameraConfirmList = new List<LossCamConfirmation>();
+			for(int i = 0; i < m_connectedPlayers.Count; i++)
+			{
+				m_lossConfirmList.Add(new LossConfirmation());
+				m_lossCameraConfirmList.Add (new LossCamConfirmation());
+			}
+
+			for(int i = 0; i < m_connectedPlayers.Count; i++)
+			{
+				m_lossConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
+				m_lossConfirmList[i].confirmed = false;
+
+				m_lossCameraConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
+				m_lossCameraConfirmList[i].camInPositionConfirmed = false;
+			}
+
+			networkView.RPC ("CapitalShipHasBeenDestroyed", RPCMode.All);
+			float timer = m_GUIManager.GetComponent<GUIManager>().m_gameTimer;
+			networkView.RPC("SendTimerToClients", RPCMode.Others, timer);
+			BeginBuildupDestructionSequence();
+
+			m_cshipIsDying = true;
 		}
-
-		for(int i = 0; i < m_connectedPlayers.Count; i++)
-		{
-			m_lossConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
-			m_lossConfirmList[i].confirmed = false;
-
-			m_lossCameraConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
-			m_lossCameraConfirmList[i].camInPositionConfirmed = false;
-		}
-
-		networkView.RPC ("CapitalShipHasBeenDestroyed", RPCMode.All);
-		float timer = m_GUIManager.GetComponent<GUIManager>().m_gameTimer;
-		networkView.RPC("SendTimerToClients", RPCMode.Others, timer);
-		BeginBuildupDestructionSequence();
 	}
 	[RPC]
 	void SendTimerToClients(float time)

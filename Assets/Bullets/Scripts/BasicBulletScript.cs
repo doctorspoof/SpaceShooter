@@ -61,8 +61,7 @@ public class BasicBulletScript : MonoBehaviour
 	[HideInInspector] public GameObject firer = null;		// A reference to which GameObject fired the bullet
 	public GameObject m_homingTarget = null;				// A reference to the targetted enemy for homing purposes
 	List<GameObject> m_pastHits = new List<GameObject>();	// Keeps a reference to GameObject's that have been damaged previously, solves composite collider issues
-	
-	
+
 	
 	/// Properties, getters and setters
 	public float bulletSpeedModifier

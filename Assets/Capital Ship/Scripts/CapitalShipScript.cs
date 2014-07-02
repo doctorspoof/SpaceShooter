@@ -774,6 +774,7 @@ public class CapitalShipScript : Ship
 
 	GameObject buildUpExplo;
 	GameObject bigExplo;
+	
 	public void BeginDeathBuildUpAnim()
 	{
 		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position + new Vector3(0, 0, -1.0f), this.transform.rotation);

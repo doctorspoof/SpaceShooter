@@ -581,6 +581,9 @@ public class PlayerControlScript : Ship
 
 		previousPacketPosition = this.transform.position;
 		predictedPacketPosition = this.transform.position;
+
+		GetComponent<HealthScript>().m_isInvincible = true;
+		rigidbody.isKinematic = true;
 	}
 
 	float timeSinceLastPacket;
