@@ -17,5 +17,6 @@ public sealed class Layers
 						events = 19,
 						environmentalDamage = 20,
 						planets3D = 21,
-						enemySupportShield = 22;
+						enemySupportShield = 22,
+						enemyDestructibleBullet = 23;
 }

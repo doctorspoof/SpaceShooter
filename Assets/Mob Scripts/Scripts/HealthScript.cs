@@ -497,6 +497,11 @@ public class HealthScript : MonoBehaviour
 				GetComponent<AsteroidScript>().SplitAsteroid (transform);
 			}
 		}
+		else if(this.tag == "Bullet")
+		{
+			//Tell the bullet to explode if it has AoE
+			this.GetComponent<BasicBulletScript>().DetonateBullet();
+		}
 	}
 	[RPC]
 	void PropagatePlayerHasJustDied()

@@ -175,7 +175,7 @@ public class BasicBulletScript : MonoBehaviour
 	// Handle bullet collision including all of its intricacies
 	void OnTriggerEnter (Collider other)
 	{
-		if (Network.isServer && !other.isTrigger)
+		if (Network.isServer && (!other.isTrigger || (other.gameObject.layer == Layers.enemyDestructibleBullet)))
 		{
 			switch (other.gameObject.layer)
 			{
@@ -187,6 +187,7 @@ public class BasicBulletScript : MonoBehaviour
 				case Layers.player:
 				case Layers.capital:
 				case Layers.enemy:
+				case Layers.enemyDestructibleBullet:
 				case Layers.asteroid:
 				{
 					try
@@ -250,6 +251,7 @@ public class BasicBulletScript : MonoBehaviour
 				break;
 				
 			case Layers.enemyBullet:
+			case Layers.enemyDestructibleBullet:
 				m_homingMask = player | capital;
 				m_aoeMask = m_homingMask | enemy | asteroid;
 				break;
@@ -327,6 +329,7 @@ public class BasicBulletScript : MonoBehaviour
 		{
 			if (!m_isPiercing || !m_pastHits.Contains (mob))
 			{			
+				Debug.Log ("Attempting to damage mob: " + mob.name);
 				HealthScript health = mob.GetComponent<HealthScript>();
 				
 				if (health)
