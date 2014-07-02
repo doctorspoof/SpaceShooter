@@ -172,7 +172,7 @@ public class EnemyGroup : MonoBehaviour
 
         while (!pathFound)
         {
-            fromPosition = GetPositionForAvoidance(collidedObject, position, 10.0f, radiusOfFormation);
+            fromPosition = GetPositionForAvoidance(collidedObject, position, fromPosition, 10.0f, radiusOfFormation);
 
             moveOrderPositions.Add(fromPosition);
             pathFound = CheckCanMoveTo(fromPosition, position, out collidedObject);
@@ -184,6 +184,7 @@ public class EnemyGroup : MonoBehaviour
 
         moveOrderPositions.Add(position);
 
+        // uncomment to show movement paths
         //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
 
         //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
@@ -228,7 +229,7 @@ public class EnemyGroup : MonoBehaviour
         float distanceToTarget = Vector2.Distance(from, target) + 10;
         RaycastHit hit;
 
-        bool collidedWithSomething = Physics.Raycast(new Ray(from, target - from), out hit, distanceToTarget, 1 << LayerMask.NameToLayer("Environmental Damage"));
+        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized ), out hit, distanceToTarget, 1 << LayerMask.NameToLayer("Environmental Damage"));
 
         if (collidedWithSomething)
             collidedObject = hit.collider.gameObject;
@@ -236,9 +237,10 @@ public class EnemyGroup : MonoBehaviour
         return !collidedWithSomething;
     }
 
-    public Vector2 GetPositionForAvoidance(GameObject objectToAvoid, Vector2 targetLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
+    public Vector2 GetPositionForAvoidance(GameObject objectToAvoid, Vector2 targetLocation, Vector2 currentLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
     {
-        Vector2 directionFromObjectToThis = transform.position - objectToAvoid.transform.position;
+
+        Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
         float radiusOfObject = Mathf.Sqrt(Mathf.Pow(objectToAvoid.transform.localScale.x, 2) + Mathf.Pow(objectToAvoid.transform.localScale.y, 2)) * objectToAvoid.GetComponent<SphereCollider>().radius;
         float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
 
@@ -246,13 +248,13 @@ public class EnemyGroup : MonoBehaviour
         returnee[0] = new Vector2(radius, 0);
         returnee[1] = new Vector2(-radius, 0);
 
-        Vector2 dir = (targetLocation - (Vector2)this.transform.position).normalized;
+        Vector2 dir = (targetLocation - currentLocation).normalized;
         Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
 
         returnee[0] = (rotation * returnee[0]) + objectToAvoid.transform.position;
         returnee[1] = (rotation * returnee[1]) + objectToAvoid.transform.position;
 
-        if (Vector2.SqrMagnitude((Vector2)transform.position - returnee[0]) < Vector2.SqrMagnitude((Vector2)transform.position - returnee[1]))
+        if (Vector2.SqrMagnitude(currentLocation - returnee[0]) < Vector2.SqrMagnitude(currentLocation - returnee[1]))
         {
             return returnee[0];
         }

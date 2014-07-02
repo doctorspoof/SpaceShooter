@@ -204,8 +204,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     void SendNextWaveToPoints()
     {
-        Debug.Log("THIS IS RUNNING");
-
         waveCount++;
         //if (currentWave < m_waveInfos.Length)
         //{
@@ -234,8 +232,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
             spawnersToBeSpawnedAt = GetRandomSpawnPoints(2, m_allSpawnPoints.Length);
 
-            Debug.Log("Spawning small waves at " + spawnersToBeSpawnedAt.Count + " waveID = " + random);
-
             float[] ratios = new float[newWave.m_enemiesOnWave.Length];
             for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
             {
@@ -244,26 +240,19 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
             for (int a = 0; a < spawnersToBeSpawnedAt.Count; ++a)
             {
-                Debug.Log("________ newSpawnPoint _____________");
                 WaveInfo adjustedWave = newWave.Clone();
 
                 for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
                 {
-                    Debug.Log("________ newWave");
                     int shipsCount = newWave.m_enemiesOnWave[i].m_numEnemy;
                     //                int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count),
                     //shipsCount - a * Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count));
 
                     int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(ratios[i]), Mathf.CeilToInt(shipsCount / (float)(spawnersToBeSpawnedAt.Count - a)));
 
-                    Debug.Log("newWave.m_enemiesOnWave[" + i + "].m_numEnemy = " + newWave.m_enemiesOnWave[i].m_numEnemy);
-                    Debug.Log("added = " + shipsPerGroup);
-
                     adjustedWave.m_enemiesOnWave[i].m_numEnemy = shipsPerGroup;
                     newWave.m_enemiesOnWave[i].m_numEnemy -= shipsPerGroup;
 
-                    Debug.Log("adjustedWave.m_enemiesOnWave[" + i + "].m_numEnemy = " + adjustedWave.m_enemiesOnWave[i].m_numEnemy);
-                    Debug.Log("newWave.m_enemiesOnWave[" + i + "].m_numEnemy = " + newWave.m_enemiesOnWave[i].m_numEnemy);
                 }
 
                 List<WaveInfo> waveToBePassed = new List<WaveInfo>();

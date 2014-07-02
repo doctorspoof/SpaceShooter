@@ -66,7 +66,6 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             /// find the closest target to this spawn point out of all potential targets with the tag specified
             GameObject[] defaultTargets = GameObject.FindGameObjectsWithTag(info.GetDefaultOrderTargetTag());
-            Debug.Log("Adding default order attack at " + info.GetDefaultOrderTargetTag());
             float closest = 0;
             GameObject closestTarget = null;
             foreach (GameObject potentialTarget in defaultTargets)
