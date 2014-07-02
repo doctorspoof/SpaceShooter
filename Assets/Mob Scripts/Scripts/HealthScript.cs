@@ -464,9 +464,9 @@ public class HealthScript : MonoBehaviour
 		else if(this.tag == "Enemy")
 		{
 			//If this mob isn't a player, apply bounty to killer (if pc) and destroy mob
-			if(killer != null && killer.GetComponent<PlayerControlScript>() != null)
+			if(killer && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
-				killer.GetComponent<PlayerControlScript>().AddSpaceBucks(this.GetComponent<EnemyScript>().GetBounty());
+				killer.transform.root.GetComponent<PlayerControlScript>().AddSpaceBucks(this.GetComponent<EnemyScript>().GetBounty());
 			}
 			Network.Destroy (this.gameObject);
 			
