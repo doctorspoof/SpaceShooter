@@ -1370,22 +1370,22 @@ public class PlayerControlScript : Ship
 	void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
 	{
 		float magnitude = moveTo.magnitude;
-        float playerSpeedMargin = 200f;
-		float dockSpeedMargin = 80f;
+        float playerSpeedDistance = 200f;
+		float dockSpeedDistance = 80f;
 		float desiredDockSpeed = 0f;
 		
 		if (GetCurrentShipSpeed() > m_maxDockingSpeed)
 		{
 			// Use the players speed
-			if (magnitude > playerSpeedMargin)
+            if (magnitude > playerSpeedDistance)
 			{
                 desiredDockSpeed = GetCurrentShipSpeed();
 			}
 			
 			// Lerp between the players movement speed and the max docking speed
-			else if (magnitude > dockSpeedMargin)
+            else if (magnitude > dockSpeedDistance)
 			{
-                desiredDockSpeed = Mathf.Lerp(GetCurrentShipSpeed(), m_maxDockingSpeed, (magnitude - dockSpeedMargin) / (playerSpeedMargin - dockSpeedMargin));
+                desiredDockSpeed = Mathf.Lerp(GetCurrentMomentum(), m_maxDockingSpeed, (magnitude - dockSpeedDistance) / (playerSpeedDistance - dockSpeedDistance));
 			}
 			
 			else
@@ -1397,6 +1397,8 @@ public class PlayerControlScript : Ship
 		{
             desiredDockSpeed = GetCurrentShipSpeed();
 		}
+
+        Debug.LogError("desiredDockSpeed = " + desiredDockSpeed);
 
 		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * Time.deltaTime);
 		
