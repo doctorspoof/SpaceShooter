@@ -51,7 +51,6 @@ public class BeamBulletScript : MonoBehaviour
 	{
 		if (firer)
 		{
-			Debug.Log (firer.name);
 			// Increase the overflow by deltaTime to ensure correct damage is being applied
 			m_overflow += m_beamDamage * Time.deltaTime;
 			
