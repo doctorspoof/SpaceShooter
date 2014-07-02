@@ -199,7 +199,8 @@ MonoBehaviour:
   secondsBetweenWaves: 60
   shouldStart: 0
   allDone: 1
-  lastTime: 0
+  lastTimeModifier: 0
+  lastTimeSpawn: 0
 --- !u!4 &11740236
 Transform:
   m_ObjectHideFlags: 0
@@ -1695,8 +1696,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!4 &350535794
 Transform:
@@ -2734,8 +2733,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!4 &763287804
 Transform:
@@ -5752,8 +5749,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!1 &1428634412
 GameObject:
@@ -6204,8 +6199,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!1001 &1538284621
 Prefab:
@@ -6365,8 +6358,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!4 &1601321189
 Transform:
@@ -7113,8 +7104,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!4 &1707248791
 Transform:
@@ -7167,8 +7156,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!1 &1722342694
 GameObject:
@@ -7367,7 +7354,8 @@ MonoBehaviour:
   secondsBetweenWaves: 60
   shouldStart: 0
   allDone: 1
-  lastTime: 0
+  lastTimeModifier: 0
+  lastTimeSpawn: 0
 --- !u!4 &1744561043
 Transform:
   m_ObjectHideFlags: 0
@@ -7679,8 +7667,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CapitalShip: {fileID: 0}
   m_timeBetweenReleases: 0
-  m_shouldStartSpawning: 0
-  m_spawnerHasFinished: 0
   m_shouldPause: 0
 --- !u!4 &1847112372
 Transform:

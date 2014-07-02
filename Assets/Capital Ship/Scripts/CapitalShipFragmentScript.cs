@@ -17,7 +17,6 @@ public class CapitalShipFragmentScript : MonoBehaviour
 	void Start () 
 	{
 		rotationAmount = m_clockwiseSpin ? Random.Range(0.0f, 2.5f) : Random.Range (-2.5f, 0.0f);
-		Debug.Log ("Rotationamount: " + rotationAmount);
 		speed = Random.Range(0.0f, 0.1f);
 		direction = new Vector3(Random.Range(m_travelDirection.x - 0.025f, m_travelDirection.x + 0.025f), Random.Range(m_travelDirection.y - 0.025f, m_travelDirection.y + 0.025f), 0);
 	}
