@@ -256,6 +256,7 @@ MonoBehaviour:
   m_recoilTime: .100000001
   m_currentRecoil: 0
   m_bulletRef: {fileID: 100000, guid: 5af9466808a1b0440a7199e903baa472, type: 2}
+  m_bulletOffset: {x: 0, y: 0, z: .100000001}
   m_needsLockon: 0
 --- !u!114 &11400006
 MonoBehaviour:

@@ -48,6 +48,9 @@ public class WeaponScript : MonoBehaviour
 	float m_currentRecoil;
 	[SerializeField]
 	GameObject m_bulletRef;
+
+	[SerializeField] 
+	Vector3 m_bulletOffset = Vector3.zero;
 	
 	// Use this for initialization
 	void Start () 
@@ -210,10 +213,10 @@ public class WeaponScript : MonoBehaviour
 				//Quaternion bulletRot = this.transform.rotation;
 				
 				GameObject bullet = (GameObject)Network.Instantiate(m_bulletRef, this.transform.position, bulletRot, 0);
-				bullet.transform.parent = this.transform.parent;
+				bullet.transform.parent = this.transform;
 				bullet.transform.localScale = new Vector3(bullet.transform.localScale.x, 0f, bullet.transform.localScale.z);
-				bullet.GetComponent<BeamBulletScript>().SetOffset(new Vector3(0f, 0f, 0.1f));
-				bullet.GetComponent<BeamBulletScript>().firer = transform.parent.gameObject;
+				bullet.GetComponent<BeamBulletScript>().SetOffset(m_bulletOffset);
+				bullet.GetComponent<BeamBulletScript>().firer = transform.gameObject;
 				
 				GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
 				bullet.GetComponent<BeamBulletScript>().ParentBeamToFirer(gsc.GetNameFromNetworkPlayer(transform.parent.GetComponent<PlayerControlScript>().GetOwner()));
@@ -292,7 +295,7 @@ public class WeaponScript : MonoBehaviour
 		{
 			bulletPos = m_barrels[m_currentBarrelNum].transform.position;
 		}
-		GameObject bullet = (GameObject)Instantiate(m_bulletRef, bulletPos + new Vector3(0, 0, 0.1f), bulletRot);
+		GameObject bullet = (GameObject)Instantiate(m_bulletRef, bulletPos + m_bulletOffset, bulletRot);
 		if(currTarget != null)
 			bullet.GetComponent<BasicBulletScript>().m_homingTarget = currTarget;
 		bullet.networkView.viewID = id;

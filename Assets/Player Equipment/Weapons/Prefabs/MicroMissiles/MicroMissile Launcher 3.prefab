@@ -140,6 +140,7 @@ MonoBehaviour:
   m_recoilTime: 2.5
   m_currentRecoil: 0
   m_bulletRef: {fileID: 100000, guid: 6be819ba49d5c7245b18b2b3aa44f015, type: 2}
+  m_bulletOffset: {x: 0, y: 0, z: .100000001}
   m_needsLockon: 1
 --- !u!148 &14800000
 NetworkView:

@@ -1474,7 +1474,7 @@ public class PlayerControlScript : Ship
 		this.GetComponent<HealthScript>().m_shouldStop = true;
 	}
 
-	GameObject GetWeaponObject()
+	public GameObject GetWeaponObject()
 	{
 		foreach(Transform child in transform)
 		{

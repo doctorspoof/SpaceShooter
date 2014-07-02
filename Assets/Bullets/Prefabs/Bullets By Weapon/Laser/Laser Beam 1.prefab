@@ -101,6 +101,7 @@ MonoBehaviour:
   _uvTieX: 4
   _uvTieY: 1
   _fps: 30
+  _frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0

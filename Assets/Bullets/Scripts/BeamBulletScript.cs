@@ -18,6 +18,7 @@ public class BeamBulletScript : MonoBehaviour
 	int m_damageMask;												// A layermask used in raycasting against valid enemy targets
 	
 	Vector3 m_offset = Vector3.zero;								// The position offset used to make the beam reach from the firer to the target
+	Vector3 m_raycastOffset = Vector3.zero;							// Used to work around the problem of Z values effecting the raycast
 
 	[HideInInspector] public RaycastHit beamHit = new RaycastHit();	// The point at which the beam has hit an object 	
 	[HideInInspector] public GameObject firer = null;				// The parent object which fires the beam
@@ -29,6 +30,9 @@ public class BeamBulletScript : MonoBehaviour
 	public void SetOffset (Vector3 offset)
 	{
 		m_offset = offset;
+		m_raycastOffset = offset;
+		m_raycastOffset.z = 0f;
+
 		transform.localPosition = offset;
 	}
 	
@@ -47,11 +51,12 @@ public class BeamBulletScript : MonoBehaviour
 	{
 		if (firer)
 		{
+			Debug.Log (firer.name);
 			// Increase the overflow by deltaTime to ensure correct damage is being applied
 			m_overflow += m_beamDamage * Time.deltaTime;
 			
 			// Check if the beam is hitting anything
-			if (Physics.Raycast (firer.transform.position, firer.transform.up, out beamHit, m_beamLength, m_damageMask))
+			if (Physics.Raycast (firer.transform.position + m_raycastOffset, firer.transform.up, out beamHit, m_beamLength, m_damageMask))
 			{
 				// Reset the distance according to the RaycastHit
 				ResetOffset (beamHit.distance);
@@ -100,15 +105,15 @@ public class BeamBulletScript : MonoBehaviour
 	void ResetOffset (float distance = -1f)
 	{
 		// Calculate the scale modifier based on the parents scale
-		float scaleModifier = Mathf.Max (firer.transform.localScale.x * firer.transform.localScale.y, 0.1f);
-		
-		float newPositionY = distance >= 0f && distance <= m_beamLength ? distance / scaleModifier : m_beamLength / scaleModifier;
-		
-		m_offset.y = newPositionY;
+		float scaleModifier = Mathf.Max (transform.root.localScale.y * transform.parent.localScale.y, 0.00001f);
+
+		float newPositionY = distance >= 0f && distance <= m_beamLength ? distance * (1f / scaleModifier) : m_beamLength * (1f / scaleModifier);
+
+		m_offset.y = newPositionY / 2f;
 		transform.localPosition = m_offset;
 		
 		// The scale will always be double the position to centre the beam
-		Vector3 newScale = new Vector3 (transform.localScale.x, newPositionY * 2f, transform.localScale.z);
+		Vector3 newScale = new Vector3 (transform.localScale.x, newPositionY, transform.localScale.z);
 		transform.localScale = newScale;
 	}
 	
@@ -164,7 +169,7 @@ public class BeamBulletScript : MonoBehaviour
 		GameObject playerGO = gsc.GetPlayerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(gsc.GetIDFromName(playerName)));
 		Debug.Log ("Attaching beam: " + this.name + " to gameObject: " + playerGO.name + ".");
 
-		this.transform.parent = playerGO.transform;
+		this.transform.parent = playerGO.GetComponent<PlayerControlScript>().GetWeaponObject().transform;
 		firer = playerGO;
 	}
 	
