@@ -27,7 +27,6 @@ public class AttackStrafeLeft : IAttack
 
         Ray ray = new Ray(ship.transform.position, direction);
         //Debug.DrawLine(ship.transform.position, ship.transform.position + direction * weaponRange);
-        Debug.Log("Running strafe left");
 
         RaycastHit hit;
         if (weaponScript != null && target.collider.Raycast(ray, out hit, totalRange))
