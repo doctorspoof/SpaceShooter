@@ -6,6 +6,13 @@ using System.Linq;
 
 public class CapitalShipScript : Ship
 {
+	[SerializeField]
+	GameObject m_buildUpExplodeRef;
+	[SerializeField]
+	GameObject m_finalExplodeRef;
+	[SerializeField]
+	GameObject m_shatteredShip;
+
     [SerializeField]
     Transform targetPoint;
 
@@ -764,6 +771,41 @@ public class CapitalShipScript : Ship
         m_maxResourceFuel = fuelMax;
         m_maxResourceMass = massMax;
     }
+
+	GameObject buildUpExplo;
+	GameObject bigExplo;
+	public void BeginDeathBuildUpAnim()
+	{
+		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position + new Vector3(0, 0, -1.0f), this.transform.rotation);
+		explodeObj1.transform.parent = this.transform;
+		buildUpExplo = explodeObj1;
+	}
+	public void BeginDeathFinalAnim()
+	{
+		GameObject explodeObj2 = (GameObject)Instantiate(m_finalExplodeRef, this.transform.position + new Vector3(0, 0, -1.5f), this.transform.rotation);
+		bigExplo = explodeObj2;
+
+		//Begin a timer here, and then split the cship into fragments
+		StartCoroutine(SplitCShipDelay());
+	}
+
+	IEnumerator SplitCShipDelay()
+	{
+		float t = 0;
+
+		while(t < 2.75f)
+		{
+			t += Time.deltaTime;
+			yield return 0;
+		}
+
+		//Spawn shattered bits
+		GameObject ship = (GameObject)Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
+
+		//Destroy self
+		Destroy (this.gameObject);
+	}
+
 
     GameObject GetCTurretWithID(int id)
     {

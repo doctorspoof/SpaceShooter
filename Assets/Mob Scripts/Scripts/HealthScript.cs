@@ -456,7 +456,7 @@ public class HealthScript : MonoBehaviour
 			if(Network.isServer)
 			{
 				m_GameStateController.GetComponent<GameStateController>().TellAllClientsCapitalShipHasBeenDestroyed();
-				Network.Destroy(this.gameObject);
+				//Network.Destroy(this.gameObject);
 			}
 			
 			//Animate destruction, pause game, splash text?

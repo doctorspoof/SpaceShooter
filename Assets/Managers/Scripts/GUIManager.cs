@@ -3178,4 +3178,24 @@ public class GUIManager : MonoBehaviour
 		outOfBoundsTimer = 10.0f;
 		isOoBCountingDown = false;
 	}
+
+	public void AlertGUIDeathSequenceBegins()
+	{
+		//Make sure we unset all popup bools
+		m_isOnMap = false;
+		m_PlayerHasDockedAtShop = false;
+		m_PlayerHasDockedAtCapital = false;
+
+		m_inGameMenuIsOpen = false;
+		m_shouldShowWarningAttack = false;
+
+		//Stop all enemies
+		FreezeAllEnemies();
+
+		//Tell the player to stop inputting
+		thisPlayerHP.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
+
+		//Now tell the camera to start lerping
+		Camera.main.gameObject.GetComponent<CameraScript>().TellCameraBeginDeathSequence();
+	}
 }

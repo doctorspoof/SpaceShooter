@@ -6,7 +6,8 @@ public class SpriteSheet : MonoBehaviour
 	public int _uvTieX = 1;
 	public int _uvTieY = 1;
 	public int _fps = 10;
-	
+	public int _frameOffset = 0;
+
 	private Vector2 _size;
 	private Renderer _myRenderer;
 	private int _lastIndex = -1;
@@ -25,6 +26,8 @@ public class SpriteSheet : MonoBehaviour
 		_myRenderer = renderer;
 		if(_myRenderer == null)
 			enabled = false;
+
+		m_currentIndex = _frameOffset;
 	}
 
 
