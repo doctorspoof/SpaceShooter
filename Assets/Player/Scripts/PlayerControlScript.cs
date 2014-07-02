@@ -1354,7 +1354,7 @@ public class PlayerControlScript : Ship
 
         if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
         {
-            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed());
+            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
             transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
         }
         else
@@ -1363,7 +1363,7 @@ public class PlayerControlScript : Ship
             rotate.x = 0;
             rotate.y = 0;
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() / 50 * Time.deltaTime);
         }
     }
 
