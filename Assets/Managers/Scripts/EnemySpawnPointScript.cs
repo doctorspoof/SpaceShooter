@@ -2,15 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(MeshRenderer))]
 public class EnemySpawnPointScript : MonoBehaviour
 {
     List<WaveInfo> m_wavesToBeSpawned;
 
-    public GameObject m_CapitalShip;
+    [SerializeField]
+    float activeTime;
+    float m_timeSinceLastRelease;
+
+    MeshRenderer renderer;
+    [SerializeField]
+    bool active = false;
 
     [SerializeField]
-    float m_timeBetweenReleases;
-    float m_timeSinceLastRelease;
+    Material idleMat;
+
+    [SerializeField]
+    Material activeMat;
 
     public bool m_shouldPause = false;
 
@@ -20,6 +29,7 @@ public class EnemySpawnPointScript : MonoBehaviour
     void Start()
     {
         m_wavesToBeSpawned = new List<WaveInfo>();
+        renderer = GetComponent<MeshRenderer>();
     }
 
     // Update is called once per frame
@@ -27,9 +37,13 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (Network.isServer && !m_shouldPause)
         {
-            // m_timeSinceLastRelease += Time.deltaTime;
-            //if (m_timeSinceLastRelease >= m_timeBetweenReleases && m_wavesToBeSpawned.Count != 0)
-            ReleaseEnemy();
+            if (active)
+            {
+                m_timeSinceLastRelease += Time.deltaTime;
+                if (m_timeSinceLastRelease >= activeTime && active)
+                    ReleaseEnemy();
+            }
+
         }
     }
 
@@ -42,6 +56,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             return;
         }
 
+        Activate(false);
 
         foreach (WaveInfo info in m_wavesToBeSpawned)
         {
@@ -110,12 +125,16 @@ public class EnemySpawnPointScript : MonoBehaviour
     //    m_wavesToBeSpawned.AddRange(waves);
     //}
 
-    public void AddToSpawnList(List<WaveInfo> waves_, float relayTime_)
+    public void AddToSpawnList(List<WaveInfo> waves_)
     {
-
-        m_timeBetweenReleases = relayTime_;
-
         m_wavesToBeSpawned.AddRange(waves_);
+
+        Activate(true);
+    }
+
+    void Activate(bool flag_)
+    {
+        renderer.material = (active = flag_) == true ? activeMat : idleMat;
     }
 
     public void SetModifier(float modifier_)
