@@ -742,6 +742,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61226d5b1d62304d909df1c10b142f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shipTransform: {fileID: 0}
   m_maxShipSpeed: 250
   m_currentShipSpeed: 0
   m_rotateSpeed: 2
@@ -769,14 +770,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e312940f5c188749884f611168f43cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_recoilTime: 4.5
+  m_recoilTime: 15
   m_bulletRef: {fileID: 100000, guid: 7fcb488fdadeccf4788958881692d12c, type: 2}
   m_firePoints:
   - {fileID: 100034}
   - {fileID: 100030}
   - {fileID: 100028}
   - {fileID: 100032}
-  m_burstFireTime: .75
+  m_burstFireTime: 1.5
   m_firesInBursts: 1
   m_firesSequentially: 0
   m_shotsFiredInBurst: 8

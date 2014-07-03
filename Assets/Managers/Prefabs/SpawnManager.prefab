@@ -113,13 +113,25 @@ MonoBehaviour:
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
     - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
+      m_numEnemy: 10
   - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
       m_numEnemy: 1
     - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 20
+      m_numEnemy: 25
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
+      m_numEnemy: 1
+    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
+      m_numEnemy: 2
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
+      m_numEnemy: 1
+    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
+      m_numEnemy: 10
   specialWaves:
   - defaultOrderTargetTag: Player
     m_enemiesOnWave:
@@ -135,7 +147,8 @@ MonoBehaviour:
   secondsBetweenWaves: 60
   shouldStart: 0
   allDone: 1
-  lastTime: 0
+  lastTimeModifier: 0
+  lastTimeSpawn: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

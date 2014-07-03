@@ -5,7 +5,7 @@ using System.Collections;
 public class Ship : MonoBehaviour
 {
 
-    protected Transform shipTransform;
+    public Transform shipTransform;
 
     [SerializeField]
     float m_maxShipSpeed;
@@ -157,5 +157,19 @@ public class Ship : MonoBehaviour
         Vector3 dir = Vector3.Normalize(position - shipTransform.position);
         Quaternion lookRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
         rigidbody.MoveRotation(Quaternion.Slerp(shipTransform.rotation, lookRotation, GetRotateSpeed() * Time.deltaTime));
+    }
+
+    public float GetCalculatedSizeByPosition(Vector2 position_)
+    {
+
+        Vector2 dir = (position_ - (Vector2)shipTransform.position).normalized;
+
+        float dot = Vector2.Dot(transform.up, dir);
+
+        float width = (1 - Mathf.Abs(dot)) * (m_shipWidth / 2.0f);
+        float height = Mathf.Abs(dot) * (m_shipHeight / 2.0f);
+
+        return width + height;
+
     }
 }

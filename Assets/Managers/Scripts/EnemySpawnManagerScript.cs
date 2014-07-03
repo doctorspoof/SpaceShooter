@@ -211,10 +211,10 @@ public class EnemySpawnManagerScript : MonoBehaviour
         List<GameObject> spawnersToBeSpawnedAt = null;
 
         // decide if this is a large or small wave
-        if (waveCount % 5 == 0 && waveCount > 0)
+        if ((waveCount % 5 == 0 && waveCount > 0) || true)
         {
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
+            waveToBePassed.Add(singleLargeWave[7]);//Random.Range(0, singleLargeWave.Length)]);
 
             spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
 
