@@ -214,7 +214,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         if ((waveCount % 5 == 0 && waveCount > 0) || true)
         {
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(singleLargeWave[7]);//Random.Range(0, singleLargeWave.Length)]);
+            waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
 
             spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
 
