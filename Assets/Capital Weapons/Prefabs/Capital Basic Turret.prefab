@@ -210,6 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_posOffset: {x: 0, y: .677805185, z: .200000003}
+  rotateSpeed: 20
   m_spreadFactor: 0
   m_evenSpread: 1
   m_shotsPerVolley: 1
