@@ -923,7 +923,7 @@ public class GUIManager : MonoBehaviour
 	{
 		if(username != "Name" && username != "")
 		{
-			GameStateController.GetComponent<GameStateController>().PlayerRequestsToHostGame(username);
+			GameStateController.GetComponent<GameStateController>().PlayerRequestsToHostGame(username, m_hostShouldStartSpec);
 			Time.timeScale = 1.0f;
 			PlayerPrefs.SetString("LastUsername", username);
 		}
@@ -1025,7 +1025,7 @@ public class GUIManager : MonoBehaviour
 	bool m_isSpecMode = false;
 	public float m_gameTimer = 0;
 	int m_trackedPlayerID = -1;
-	GameObject[] players;
+	public GameObject[] players;
 	public void BeginSpecModeGameTimer()
 	{
 		m_isSpecMode = true;
@@ -1172,18 +1172,167 @@ public class GUIManager : MonoBehaviour
 			GameStateController.GetComponent<GameStateController>().AlertGameControllerBeginSpawning();
 	}
 
+	/* Spectator Images */
+
+	[SerializeField]
+	Texture m_SpecCShipImage;
+	[SerializeField]
+	Texture m_SpecBottomPanel;
+
 	void DrawInGameSpec()
 	{
-		//In spec mode, GUI should show all player's statuses along the bottom
+		//New spec mode: Players + CShip along the bottom, timer at the top
+
+		//Underlays: Fadeout hex thing?
+
+
+		//Timer: show timer in a nice box :)
+		GUI.DrawTexture(new Rect(740, 5, 10, 50), m_barEnd);
+		GUI.DrawTexture(new Rect(750, 5, 100, 50), m_barMid);
+		GUI.DrawTexture(new Rect(860, 5, -10, 50), m_barEnd);
+		int seconds2 = (int)m_gameTimer;
+		string displayedTime = string.Format("{0:00}:{1:00}", (seconds2/60)%60, seconds2%60);
+		GUI.Label (new Rect(760, 10, 80, 40), displayedTime, m_nonBoxStyle);
+
+		//Border
+		GUI.DrawTexture (new Rect(0, 650, 1600, 250), m_SpecBottomPanel);
+
+		//CShip: show a cship picture, and it's HP/Shield. Bottom-middle
+		if(CShip)
+		{
+			GUI.DrawTexture(new Rect(640, 770, 340, 100), m_SpecCShipImage);
+			float hpPercent = CShipHealth.GetHPPercentage();
+			float shieldPercent = CShipHealth.GetShieldPercentage();
+
+			GUI.DrawTexture(new Rect(570, 680, 460, 60), m_healthBackground);
+			GUI.DrawTextureWithTexCoords(new Rect(570, 680, 460 * hpPercent, 60), m_healthBar, new Rect(0, 0, hpPercent, 1));
+			GUI.DrawTextureWithTexCoords(new Rect(570, 680, 460 * shieldPercent, 60), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
+		}
+		else
+		{
+			//Draw big cross? etc.
+
+		}
+
+		//Players: show the player's name, hp/shield and equipment icons. Bottom line, left, left mid, right mid & right
+		List<DeadPlayer> deadPlayers = GameStateController.GetComponent<GameStateController>().m_deadPlayers;
+		for(int i = 0; i < players.Length; i++)
+		{
+			if(players[i] != null)
+			{
+				if(i < 2)
+				{
+					//Left side
+					//Name
+					string name = GameStateController.GetComponent<GameStateController>().GetNameFromID(i);
+					GUI.Label (new Rect(20 + (i * 270), 700, 240, 40), name, m_nonBoxStyle);
+
+					if(i == m_trackedPlayerID)
+					{
+						GUI.DrawTexture(new Rect(20 + (i * 270), 695, 20, 60), m_barEnd);
+						GUI.DrawTexture(new Rect(40 + (i * 270), 695, 200, 60), m_barMid);
+						GUI.DrawTexture(new Rect(260 + (i * 270), 695, -20, 60), m_barEnd);
+					}
+
+					//Health
+					float hpPercent = players[i].GetComponent<HealthScript>().GetHPPercentage();
+					float shieldPercent = players[i].GetComponent<HealthScript>().GetShieldPercentage();
+					GUI.DrawTexture(new Rect(20 + (i * 270), 760, 240, 45), m_healthBackground);
+					GUI.DrawTextureWithTexCoords(new Rect(20 + (i * 270), 760, 240 * hpPercent, 45), m_healthBar, new Rect(0, 0, hpPercent, 1));
+					GUI.DrawTextureWithTexCoords(new Rect(20 + (i * 270), 760, 240 * shieldPercent, 45), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
+
+					//Equipment
+					Texture weapTex = players[i].GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon();
+					Texture shieldTex = players[i].GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon();
+					Texture armourTex = players[i].GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon();
+					Texture engineTex = players[i].GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon();
+
+					GUI.DrawTexture(new Rect(20 + (i * 270), 820, 49, 55), weapTex);
+					GUI.DrawTexture(new Rect(84 + (i * 270), 820, 49, 55), shieldTex);
+					GUI.DrawTexture(new Rect(148 + (i * 270), 820, 49, 55), armourTex);
+					GUI.DrawTexture(new Rect(212 + (i * 270), 820, 49, 55), engineTex);
+				}
+				else
+				{
+					//Right side
+					//Name
+					string name = GameStateController.GetComponent<GameStateController>().GetNameFromID(i);
+					GUI.Label (new Rect(1070 + ((i - 2) * 270), 700, 240, 40), name, m_nonBoxStyle);
+
+					if(i == m_trackedPlayerID)
+					{
+						GUI.DrawTexture(new Rect(1070 + ((i - 2) * 270), 695, 20, 60), m_barEnd);
+						GUI.DrawTexture(new Rect(1090 + ((i - 2) * 270), 695, 200, 60), m_barMid);
+						GUI.DrawTexture(new Rect(1310 + ((i - 2) * 270), 695, -20, 60), m_barEnd);
+					}
+
+					//Health
+					float hpPercent = players[i].GetComponent<HealthScript>().GetHPPercentage();
+					float shieldPercent = players[i].GetComponent<HealthScript>().GetShieldPercentage();
+					GUI.DrawTexture(new Rect(1070 + ((i - 2) * 270), 760, 240, 45), m_healthBackground);
+					GUI.DrawTextureWithTexCoords(new Rect(1070 + ((i - 2) * 270), 760, 240 * hpPercent, 45), m_healthBar, new Rect(0, 0, hpPercent, 1));
+					GUI.DrawTextureWithTexCoords(new Rect(1070 + ((i - 2) * 270), 760, 240 * shieldPercent, 45), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
+
+					//Equipment
+					Texture weapTex = players[i].GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon();
+					Texture shieldTex = players[i].GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon();
+					Texture armourTex = players[i].GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon();
+					Texture engineTex = players[i].GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon();
+
+					GUI.DrawTexture(new Rect(1070 + ((i - 2) * 270), 820, 49, 55), weapTex);
+					GUI.DrawTexture(new Rect(1134 + ((i - 2) * 270), 820, 49, 55), shieldTex);
+					GUI.DrawTexture(new Rect(1198 + ((i - 2) * 270), 820, 49, 55), armourTex);
+					GUI.DrawTexture(new Rect(1262 + ((i - 2) * 270), 820, 49, 55), engineTex);
+				}
+			}
+			else
+			{
+				//Catch if they've respawned:
+				players[i] = GameStateController.GetComponent<GameStateController>().GetPlayerFromNetworkPlayer(GameStateController.GetComponent<GameStateController>().GetNetworkPlayerFromID(i));
+
+				if(players[i] == null)
+				{
+					//If they're still dead, show death screen
+					if(i < 2)
+					{
+						//Name
+						string name = GameStateController.GetComponent<GameStateController>().GetNameFromID(i);
+						GUI.Label (new Rect(20 + (i * 270), 700, 240, 40), name, m_nonBoxStyle);
+
+						//Dead
+						GUI.Label (new Rect(20 + (i * 270), 760, 240, 45), "DESTROYED", m_nonBoxStyle);
+
+						//Respawntime
+						GameStateController gsc = GameStateController.GetComponent<GameStateController>();
+						float timer = gsc.GetDeathTimerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(i));
+						GUI.Label (new Rect(20 + (i * 270), 820, 240, 55), "Respawn in: " + System.Math.Round(timer, System.MidpointRounding.AwayFromZero), m_nonBoxStyle);
+					}
+					else
+					{
+						//Name
+						string name = GameStateController.GetComponent<GameStateController>().GetNameFromID(i);
+						GUI.Label (new Rect(1070 + ((i - 2) * 270), 700, 240, 40), name, m_nonBoxStyle);
+						
+						//Dead
+						GUI.Label (new Rect(1070 + ((i - 2) * 270), 760, 240, 45), "DESTROYED", m_nonBoxStyle);
+						
+						//Respawntime
+						GameStateController gsc = GameStateController.GetComponent<GameStateController>();
+						float timer = gsc.GetDeathTimerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(i));
+						GUI.Label (new Rect(1070 + ((i - 2) * 270), 820, 240, 55), "Respawn in: " + System.Math.Round(timer, System.MidpointRounding.AwayFromZero), m_nonBoxStyle);
+					}
+				}
+			}
+		}
 
 		//Show CShip HP top-left
-		GUI.Label (new Rect(50, 10, 200, 50), "Capital Ship Status");
+		/*GUI.Label (new Rect(50, 10, 200, 50), "Capital Ship Status");
 		if(CShip == null)
 		{
 			GUI.Label(new Rect(100, 10, 200, 80), "DESTROYED - Game Over!");
 		}
 		else
-		{
+		{*/
 			/*int maxHP = CShip.GetComponent<HealthScript>().GetMaxHP();
 			int numBlips = (maxHP / 10);
 			int totalHPWidth = (numBlips * 8) + ((numBlips + 1) * 4);
@@ -1214,24 +1363,24 @@ public class GUIManager : MonoBehaviour
 			}*/
 
 			//new hp for cship
-			float hpPercent = CShipHealth.GetHPPercentage();
+			/*float hpPercent = CShipHealth.GetHPPercentage();
 			float shieldPercent = CShipHealth.GetShieldPercentage();
 
 			GUI.DrawTextureWithTexCoords(new Rect(50, 50, 800 * hpPercent, 80), m_cShipBarHealth, new Rect(0, 0, hpPercent, 1));
 			GUI.DrawTextureWithTexCoords(new Rect(50, 50, 800 * shieldPercent, 80), m_cShipBarShield, new Rect(0, 0, shieldPercent, 1));
 			GUI.DrawTexture(new Rect(50, 50, 800, 80), m_cShipBarBorder);
-		}
+		}*/
 
 		//Show timer top-right
-		GUI.DrawTexture(new Rect(1350, 40, 10, 50), m_barEnd);
+		/*GUI.DrawTexture(new Rect(1350, 40, 10, 50), m_barEnd);
 		GUI.DrawTexture(new Rect(1360, 40, 200, 50), m_barMid);
 		GUI.DrawTexture(new Rect(1570, 40, -10, 50), m_barEnd);
 		int seconds = (int)m_gameTimer;
 		string displayedTime = string.Format("{0:00}:{1:00}", (seconds/60)%60, seconds%60);
-		GUI.Label(new Rect(1360, 43, 180, 44), displayedTime);
+		GUI.Label(new Rect(1360, 43, 180, 44), displayedTime);*/
 
 		//Show all player statuses along bottom
-		for(int i = 0; i < players.Length; i++)
+		/*for(int i = 0; i < players.Length; i++)
 		{
 			if(players[i] == null)
 			{
@@ -1256,7 +1405,7 @@ public class GUIManager : MonoBehaviour
 
 				//Draw Name
 				string name = GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(players[i].GetComponent<PlayerControlScript>().GetOwner());
-				GUI.Label (new Rect(50 + (i * 400), 630, 200, 50), name);
+				GUI.Label (new Rect(50 + (i * 400), 630, 200, 50), name);*/
 
 				//Draw HP
 				/*HealthScript thisHPSc = players[i].GetComponent<HealthScript>();
@@ -1272,7 +1421,7 @@ public class GUIManager : MonoBehaviour
 					GUI.DrawTexture(new Rect(25 + (i * 400) + (12 * j), 703, 8, 44), m_healthBlip);
 				}*/
 
-				float hpPercent = players[i].GetComponent<HealthScript>().GetHPPercentage();
+				/*float hpPercent = players[i].GetComponent<HealthScript>().GetHPPercentage();
 				float shieldPercent = players[i].GetComponent<HealthScript>().GetShieldPercentage();
 
 				GUI.DrawTextureWithTexCoords(new Rect(20 + (400 * i), 700, 360 * hpPercent, 80), m_playerBarHealth, new Rect(0, 0, hpPercent, 1));
@@ -1280,7 +1429,7 @@ public class GUIManager : MonoBehaviour
 				GUI.DrawTexture(new Rect(20 + (400 * i), 700, 360, 80), m_playerBarBorder);
 
 				//Show player cash
-				GUI.Label (new Rect(50 + (i * 400), 800, 200, 50), "$" + players[i].GetComponent<PlayerControlScript>().GetSpaceBucks());
+				GUI.Label (new Rect(50 + (i * 400), 800, 200, 50), "$" + players[i].GetComponent<PlayerControlScript>().GetSpaceBucks());*/
 
 				//Draw Shields
 				/*int maxS = thisHPSc.GetMaxShield();
@@ -1296,8 +1445,8 @@ public class GUIManager : MonoBehaviour
 				{
 					GUI.DrawTexture(new Rect(25 + (12 * j) + (i * 400), 803, 8, 44), m_shieldBlip);
 				}*/
-			}
-		}
+			//}
+		//}
 	}
 
 	/* Attach ingame Texs here */
@@ -1391,30 +1540,32 @@ public class GUIManager : MonoBehaviour
 					if(m_shipyardScreen)
 					{
 						//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
-						GameObject[] shopInv = m_shopDockedAt.GetComponent<ShopScript>().GetShopInventory();
+						ShopScript script = m_shopDockedAt.GetComponent<ShopScript>();
+						NetworkInventory shopInv = script.GetShopInventory();
+						int itemCost = 0;
+
+
 						PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
-
-
-
-						for(int i = 0; i < shopInv.Length; i++)
+						for(int i = 0; i < shopInv.GetCount(); i++)
 						{
 							if(shopInv[i] != null)
 							{
+								itemCost = script.GetItemCost (i);
+
 								GUI.Label (new Rect(480 + (i * 150), 360, 140, 100), shopInv[i].GetComponent<ItemScript>().GetShopText());
-								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + ((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent))))
+								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + itemCost))
 								{
 									//Check if the player has enough cash
-									if(pcControl.CheckCanAffordAmount((int)
-	                                  (shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
+									if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull())
 									{
 										//Add the item to the player's inventory
-										pcControl.AddItemToInventory(shopInv[i]);
+										pcControl.AddItemToInventory(shopInv[i].gameObject);
 
 										//Remove cash from player
-										pcControl.RemoveSpaceBucks((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent));
+										pcControl.RemoveSpaceBucks(itemCost);
 
 										//Remove it from the shop's inventory
-										m_shopDockedAt.GetComponent<ShopScript>().RemoveItemFromShopInventory(i);
+										//m_shopDockedAt.GetComponent<ShopScript>().RemoveItemFromShopInventory(i);
 									}
 								}
 							}
@@ -2078,7 +2229,7 @@ public class GUIManager : MonoBehaviour
 					Vector2 playPos = WorldToMapPos(player.transform.position);
 					GUI.DrawTexture(new Rect(playPos.x - (m_blobSize * 0.5f), playPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_otherPBlob);
 					GUI.Label (new Rect(playPos.x - (m_blobSize * 1.5f), playPos.y + (m_blobSize * 0.5f), 75, 40),
-                        GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
+					          GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
 				}
 			}
 		}
@@ -2505,7 +2656,7 @@ public class GUIManager : MonoBehaviour
 	}
 
 	//Drag & Drop
-	GameObject m_currentDraggedItem = null;
+	ItemScript m_currentDraggedItem = null;
 	bool m_currentDraggedItemIsFromPlayerInv = true;
 	int m_currentDraggedItemInventoryId = -1;
 
@@ -2618,11 +2769,11 @@ public class GUIManager : MonoBehaviour
 	{
 		List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
 		List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+		NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
 
 		//Depending on where the cursor is when the mouse is released, decide what happens to the item
 		if(isLeftPanel)
 		{
-
 			//If over player inventory, try to store there.
 			if(m_LeftPanelPlayerRect.Contains(mousePos))
 			{
@@ -2631,8 +2782,14 @@ public class GUIManager : MonoBehaviour
 				{
 					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
 					{
-						CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[m_currentDraggedItemInventoryId]);
-						StartCoroutine (WaitForItemRequestReply (cshipInv[m_currentDraggedItemInventoryId]));
+						//Debug.Log ("<color=blue>Beginning item transfer sequence</color>");
+						inventory.RequestTicketValidityCheck(m_currentTicket);
+						StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
+						return;
+					}
+					else
+					{
+						inventory.RequestServerCancel(m_currentTicket);
 					}
 				}
 				m_currentDraggedItem = null;
@@ -2644,8 +2801,8 @@ public class GUIManager : MonoBehaviour
 			{
 				if(m_currentDraggedItemIsFromPlayerInv)
 				{
-					CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
-					thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					inventory.RequestServerAdd(m_currentDraggedItem);
+					StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
 				}
 				m_currentDraggedItem = null;
 				m_currentDraggedItemIsFromPlayerInv = false;
@@ -2731,8 +2888,14 @@ public class GUIManager : MonoBehaviour
 				{
 					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
 					{
-						CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[m_currentDraggedItemInventoryId]);
-						StartCoroutine (WaitForItemRequestReply (cshipInv[m_currentDraggedItemInventoryId]));
+						inventory.RequestTicketValidityCheck(m_currentTicket);
+						Debug.Log ("Requesting ticket validity check. Awaiting response...");
+						StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
+						return;
+					}
+					else
+					{
+						inventory.RequestServerCancel(m_currentTicket);
 					}
 				}
 				m_currentDraggedItem = null;
@@ -2744,8 +2907,9 @@ public class GUIManager : MonoBehaviour
 			{
 				if(m_currentDraggedItemIsFromPlayerInv)
 				{
-					CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
-					thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					//CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					inventory.RequestServerAdd(m_currentDraggedItem);
+					StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
 				}
 				m_currentDraggedItem = null;
 				m_currentDraggedItemIsFromPlayerInv = false;
@@ -2757,7 +2921,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(1, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(1, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2769,7 +2933,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(2, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(2, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2781,7 +2945,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(3, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(3, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2793,7 +2957,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(4, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(4, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2808,8 +2972,9 @@ public class GUIManager : MonoBehaviour
 	[SerializeField]
 	Vector2 cshipScrollPosition = Vector2.zero;
 
-	Dictionary<Rect, GameObject> drawnItems = new Dictionary<Rect, GameObject>();
+	Dictionary<Rect, ItemScript> drawnItems = new Dictionary<Rect, ItemScript>();
 
+	bool m_requestedTicketIsValid = false;
 	void DrawCShipDockOverlay()
 	{
 		Event currentEvent = Event.current;
@@ -2871,7 +3036,7 @@ public class GUIManager : MonoBehaviour
 					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
 
 					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-						drawnItems.Add(modR, playerInv[i]);
+						drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
 
 					if(currentEvent.type == EventType.MouseDown)
 					{
@@ -2879,7 +3044,7 @@ public class GUIManager : MonoBehaviour
 						if(modR.Contains(mousePos))
 						{
 							//Begin drag & drop
-							m_currentDraggedItem = playerInv[i];
+							m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = true;
 						}
@@ -2890,14 +3055,15 @@ public class GUIManager : MonoBehaviour
 				GUI.EndScrollView();
 				
 				GUI.Label (new Rect(612, 270, 164, 40), "Capital:", m_nonBoxStyle);
-				List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				//List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				NetworkInventory cshipInv = CShip.GetComponent<NetworkInventory>();
 				Rect scrollAreaRect = new Rect(612, 330, 180, 320);
-				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.Count));
-				for(int i = 0; i < cshipInv.Count; i++)
+				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
+				for(int i = 0; i < cshipInv.GetCount(); i++)
 				{
-					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemScript>().GetIcon());
+					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetIcon());
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
-					GUI.Label(lastR, cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+					GUI.Label(lastR, cshipInv[i].GetItemName(), m_nonBoxSmallStyle);
 					Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
 
 					if(scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
@@ -2912,6 +3078,8 @@ public class GUIManager : MonoBehaviour
 							m_currentDraggedItem = cshipInv[i];
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = false;
+							cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
+							StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake));
 						}
 					}
 				}
@@ -2922,8 +3090,9 @@ public class GUIManager : MonoBehaviour
 				//Handle mouse up if item is selected
 				if(m_currentDraggedItem != null)
 				{
-					if(Input.GetMouseButtonUp(0))
+					if(Input.GetMouseButtonUp(0) && !m_isRequestingItem)
 					{
+						Debug.Log ("Mouse button released, drop the item");
 						HandleItemDrop(false, mousePos);
 					}
 					
@@ -2981,7 +3150,7 @@ public class GUIManager : MonoBehaviour
 					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
 
 					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-						drawnItems.Add(modR, playerInv[i]);
+						drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
 
 					if(currentEvent.type == EventType.MouseDown)
 					{
@@ -2989,7 +3158,7 @@ public class GUIManager : MonoBehaviour
 						if(modR.Contains(mousePos))
 						{
 							//Begin drag & drop
-							m_currentDraggedItem = playerInv[i];
+							m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = true;
 						}
@@ -2998,10 +3167,10 @@ public class GUIManager : MonoBehaviour
 				GUI.EndScrollView();
 
 				GUI.Label (new Rect(1020, 270, 164, 40), "Capital:", m_nonBoxStyle);
-				List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				NetworkInventory cshipInv = CShip.GetComponent<NetworkInventory>();
 				Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
-				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.Count));
-				for(int i = 0; i < cshipInv.Count; i++)
+				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
+				for(int i = 0; i < cshipInv.GetCount(); i++)
 				{
 					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemScript>().GetIcon());
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
@@ -3020,6 +3189,8 @@ public class GUIManager : MonoBehaviour
 							m_currentDraggedItem = cshipInv[i];
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = false;
+							cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
+							StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake));
 						}
 					}
 				}
@@ -3030,8 +3201,9 @@ public class GUIManager : MonoBehaviour
 				//Handle mouse up if item is selected
 				if(m_currentDraggedItem != null)
 				{
-					if(!Input.GetMouseButton(0))
+					if(Input.GetMouseButtonUp(0) && !m_isRequestingItem)
 					{
+						Debug.Log ("Mouse button released, drop the item");
 						HandleItemDrop(true, mousePos);
 					}
 
@@ -3095,7 +3267,7 @@ public class GUIManager : MonoBehaviour
 			{
 				if(key.Contains(mousePos))
 				{
-					string text = drawnItems[key].GetComponent<ItemScript>().GetShopText();
+					string text = drawnItems[key].GetShopText();
 					DrawHoverText(text, mousePos);
 				}
 			}
@@ -3266,7 +3438,7 @@ public class GUIManager : MonoBehaviour
 						if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull() || cshipInv[i].GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
 						{
 							CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[i]);
-							StartCoroutine (WaitForItemRequestReply (cshipInv[i]));
+							StartCoroutine (WaitForCShipItemRequestReply (cshipInv[i]));
 						}
 					}
 				}
@@ -3335,14 +3507,92 @@ public class GUIManager : MonoBehaviour
 		GUI.Label (new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, m_hoverBoxTextStyle);
 	}
 
-	IEnumerator WaitForItemRequestReply (GameObject item)
+	ItemTicket m_currentTicket;
+	IEnumerator AwaitTicketRequestResponse(NetworkInventory inventory, RequestType reqType, bool isToPlayerInv = false)
 	{
-		CapitalShipScript script = CShip.GetComponent<CapitalShipScript>();
+		m_requestedTicketIsValid = false;
+		m_isRequestingItem = true;
+
+		while(!inventory.HasServerResponded())
+		{
+			Debug.Log ("Server has not yet responded <color=yellow>:(</color>");
+			yield return null;
+		}
+
+		Debug.Log ("Entering switch case with value: " + reqType);
+		switch(reqType)
+		{
+			case RequestType.ItemAdd:
+			{
+				m_currentTicket = inventory.GetItemAddResponse();
+				if(m_currentTicket.IsValid())
+				{
+				int itemID = m_currentTicket.itemID;
+					if(inventory.AddItemToServer(m_currentTicket))
+					{
+//						if(m_currentDraggedItem != null)
+						thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
+					}
+
+					m_currentDraggedItem = null;
+					m_currentDraggedItemInventoryId = -1;
+					m_currentDraggedItemIsFromPlayerInv = false;
+				}
+				break;	
+			}
+			case RequestType.ItemTake:
+			{
+				m_currentTicket = inventory.GetItemRequestResponse();
+				Debug.Log ("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
+				break;
+			}
+			case RequestType.TicketValidity:
+			{
+				Debug.Log ("Is the ticket valid?");
+				if(inventory.GetTicketValidityResponse())
+				{
+					Debug.Log ("Yes!");
+					if(isToPlayerInv)
+					{
+						Debug.Log ("Did the item successfully remove from the server?");
+						if(!inventory.RemoveItemFromServer(m_currentTicket))
+						{
+							Debug.Log ("No!");
+							Debug.LogError ("<color=blue>Ticket mismatch!</color>");
+						}
+						else
+						{
+							Debug.Log ("Yes!");
+							thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory(m_currentDraggedItem.gameObject);
+						}
+
+						m_currentDraggedItem = null;
+						m_currentDraggedItemInventoryId = -1;
+						m_currentDraggedItemIsFromPlayerInv = false;
+					}
+					else
+					{
+						
+					}
+				}
+				else
+				{
+					Debug.Log ("Nope. Here's the ticket: " + m_currentTicket.uniqueID + ", itemId: " + m_currentTicket.itemID + ".");
+				}
+				break;
+			}
+		}
+
+		m_isRequestingItem = false;
+	}
+
+	/*IEnumerator WaitForItemRequestReply (NetworkInventory inventory, bool )
+	{
 		bool response = false;
 		m_isRequestingItem = true;
 
 		// Wait until the server has responded
-		while (!script.GetRequestResponse (out response))
+		while (!inventory.HasServerResponded())
 		{
 			yield return null;
 		}
@@ -3359,7 +3609,7 @@ public class GUIManager : MonoBehaviour
 		}
 
 		m_isRequestingItem = false;
-	}
+	}*/
 
 
 	void RequestServerRespawnPlayer(NetworkPlayer player)
