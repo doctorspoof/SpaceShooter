@@ -1379,7 +1379,8 @@ public class GUIManager : MonoBehaviour
 				if(m_shopDockedAt != null)
 				{
 					//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
-					GameObject[] shopInv = m_shopDockedAt.GetComponent<ShopScript>().GetShopInventory();
+					ShopScript shopScript = m_shopDockedAt.GetComponent<ShopScript>();
+					GameObject[] shopInv = shopScript.GetShopInventory();
 					PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
 
 					GUI.Box (new Rect(400, 100, 800, 700), "");
@@ -1389,17 +1390,19 @@ public class GUIManager : MonoBehaviour
 						if(shopInv[i] != null)
 						{
 							GUI.Label (new Rect(480 + (i * 150), 360, 140, 100), shopInv[i].GetComponent<ItemScript>().GetShopText());
-							if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + ((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent))))
+
+							int itemCost = shopScript.GetItemCost (i);
+
+							if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + itemCost))
 							{
 								//Check if the player has enough cash
-								if(pcControl.CheckCanAffordAmount((int)
-                                  (shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
+								if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull())
 								{
 									//Add the item to the player's inventory
 									pcControl.AddItemToInventory(shopInv[i]);
 
 									//Remove cash from player
-									pcControl.RemoveSpaceBucks((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent));
+									pcControl.RemoveSpaceBucks(itemCost);
 
 									//Remove it from the shop's inventory
 									m_shopDockedAt.GetComponent<ShopScript>().RemoveItemFromShopInventory(i);
@@ -2512,7 +2515,7 @@ public class GUIManager : MonoBehaviour
 						if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull() || cshipInv[i].GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
 						{
 							CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[i]);
-							StartCoroutine (WaitForItemRequestReply (cshipInv[i]));
+							StartCoroutine (WaitForCShipItemRequestReply (cshipInv[i]));
 						}
 					}
 				}
@@ -2586,7 +2589,7 @@ public class GUIManager : MonoBehaviour
 	}
 
 
-	IEnumerator WaitForItemRequestReply (GameObject item)
+	IEnumerator WaitForCShipItemRequestReply (GameObject item)
 	{
 		CapitalShipScript script = CShip.GetComponent<CapitalShipScript>();
 		bool response = false;
