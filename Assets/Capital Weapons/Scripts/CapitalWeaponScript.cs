@@ -255,14 +255,14 @@ public class CapitalWeaponScript : MonoBehaviour
 
     public void RotateTowards(Vector3 targetPosition)
     {
-        Vector2 targetDirection = targetPosition - transform.position;
+        Vector2 targetDirection = targetPosition - transform.parent.position;
         float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
-        float currentAngle = transform.rotation.eulerAngles.z;
+        float currentAngle = transform.parent.rotation.eulerAngles.z;
 
         if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 0.1f && true) /// turn to false to use old rotation movement
         {
             float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, rotateSpeed * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
+            transform.parent.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
         }
         else
         {
@@ -270,7 +270,7 @@ public class CapitalWeaponScript : MonoBehaviour
             rotate.x = 0;
             rotate.y = 0;
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, rotateSpeed / 50 * Time.deltaTime);
+            transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, rotate, rotateSpeed / 50 * Time.deltaTime);
         }
     }
 
@@ -584,7 +584,7 @@ public class CapitalWeaponScript : MonoBehaviour
 	
 	GameObject FindClosestTarget (out EnemyScript enemyScript, bool enemyOnly = false, bool targettingShipOnly = false)
 	{
-		int layerMask = enemyOnly ? (1 << Layers.enemy) : (1 << Layers.enemy) | (1 << Layers.asteroid);
+		int layerMask = enemyOnly ? (1 << Layers.enemy) : (1 << Layers.enemy) | (1 << Layers.asteroid) | (1 << Layers.enemyDestructibleBullet);
 		//Debug.Log ("[CWeapon]: Checking on layermask " + layerMask.ToString() + ".");
 		//Collider[] colliders = Physics.OverlapSphere(this.transform.position, 20, layerMask);
 		//Debug.Log ("[CWeapon]: Overlap Sphere returned " + colliders.Length + " colliders.");
