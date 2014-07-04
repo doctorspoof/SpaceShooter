@@ -337,6 +337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_dockPoint: {fileID: 645314090}
   m_shopSize: 5
   m_shopInventory:
@@ -543,6 +544,10 @@ Prefab:
       propertyPath: m_Observed
       value: 
       objectReference: {fileID: 1337935894}
+    - target: {fileID: 11400000, guid: ce373fba91905954f861555449eb39fa, type: 2}
+      propertyPath: m_shopType
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_RootGameObject: {fileID: 1337935893}
@@ -3238,6 +3243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_dockPoint: {fileID: 1204770483}
   m_shopSize: 5
   m_shopInventory:
@@ -3490,6 +3496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_dockPoint: {fileID: 2063122409}
   m_shopSize: 5
   m_shopInventory:
@@ -5590,6 +5597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_dockPoint: {fileID: 1608623262}
   m_shopSize: 5
   m_shopInventory:
@@ -5730,6 +5738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_dockPoint: {fileID: 1256501225}
   m_shopSize: 5
   m_shopInventory:
