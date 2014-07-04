@@ -581,9 +581,6 @@ public class PlayerControlScript : Ship
 
 		previousPacketPosition = this.transform.position;
 		predictedPacketPosition = this.transform.position;
-
-		GetComponent<HealthScript>().m_isInvincible = true;
-		rigidbody.isKinematic = true;
 	}
 
 	float timeSinceLastPacket;
@@ -733,6 +730,9 @@ public class PlayerControlScript : Ship
 		this.CShip = CShip;
 		targetPoint = CShip.transform.position;
 
+		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+		rigidbody.isKinematic = true;
+
 		m_isAnimating = true;
 		m_currentDockingState = DockingState.Docked;
 		GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
@@ -748,6 +748,7 @@ public class PlayerControlScript : Ship
 
 		//Reinstate movement (although input should never be cut anyway)
 		m_shouldRecieveInput = true;
+		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
 		rigidbody.isKinematic = false;
 
 		//Alert animation it needs to leave
@@ -757,6 +758,12 @@ public class PlayerControlScript : Ship
 	public void SetInputMethod(bool useControl)
 	{
 		useController = useControl;
+	}
+
+	[RPC]
+	void PropagateInvincibility(bool state)
+	{
+		GetComponent<HealthScript>().m_isInvincible = state;
 	}
 
 	bool useController = false;
@@ -799,6 +806,8 @@ public class PlayerControlScript : Ship
 					//We shouldn't even be here man
 					//We shouln't even BE here!
 					m_isAnimating = false;
+					networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+					rigidbody.isKinematic = false;
 					break;
 				}
 				case DockingState.OnApproach:
@@ -872,7 +881,7 @@ public class PlayerControlScript : Ship
 							GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
 							transform.parent = CShip.transform;
 							rigidbody.isKinematic = true;
-							GetComponent<HealthScript>().m_isInvincible = true;
+							networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
 						}
 					}
 					
@@ -923,7 +932,8 @@ public class PlayerControlScript : Ship
 						m_currentDockingState = DockingState.NOTDOCKING;
 						m_isAnimating = false;
 						this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
-						GetComponent<HealthScript>().m_isInvincible = false;
+						networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+						rigidbody.isKinematic = false;
 					}
 					
 					//Play the sound
