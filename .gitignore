@@ -18,3 +18,5 @@
 *.zip
 *.ttf
 *.mp4
+*.db
+*.db.meta
