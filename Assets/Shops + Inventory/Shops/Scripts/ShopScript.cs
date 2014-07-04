@@ -3,6 +3,21 @@ using System.Collections;
 
 public class ShopScript : MonoBehaviour 
 {
+	// Use ShopType to indicate whether the shop is a Shipyard or a standard shop
+	public enum ShopType
+	{
+		Basic = 0,
+		Shipyard = 1
+	}
+	
+
+	[SerializeField] ShopType m_shopType = ShopType.Basic;			// The ShopType determines the functionality available
+
+	public ShopType GetShopType()
+	{
+		return m_shopType;
+	}
+
 	[SerializeField]
 	GameObject m_dockPoint;
 	public Vector3 GetDockPoint()
