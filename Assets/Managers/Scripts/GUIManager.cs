@@ -7,7 +7,10 @@ public enum CShipScreen
 {
 	PlayerPanel = 1,
 	StatusPanel = 2,
-	ObjectivePanel = 3
+	ObjectivePanel = 3,
+	DualPanel = 5,
+	LeftPanelActive = 6,
+	RightPanelActive = 7
 }
 
 public class GUIManager : MonoBehaviour
@@ -2440,10 +2443,86 @@ public class GUIManager : MonoBehaviour
 		}
 	}
 
+	//Docking attach points
+	[SerializeField]
+	Texture m_DockBackground;
+	[SerializeField]
+	Texture m_DockCShipImage;
+	[SerializeField]
+	Texture m_DockPlayerImage;
+	[SerializeField]
+	Texture m_DockInventoryBorder;
+
 	CShipScreen m_currentCShipPanel = CShipScreen.StatusPanel;
 	void DrawCShipDockOverlay()
 	{
-		GUI.Box(new Rect(400, 100, 800, 700), "");
+		GUI.DrawTexture(new Rect(396, 86, 807, 727), m_DockBackground);
+
+		GUI.DrawTexture(new Rect(394, 250, 408, 400), m_DockPlayerImage);
+		GUI.DrawTexture(new Rect(796, 250, 408, 400), m_DockCShipImage);
+
+		//Show bank status
+		GUI.Label (new Rect(1012, 140, 134, 40), "$" + CShip.GetComponent<CapitalShipScript>().GetBankedCash(), m_nonBoxStyle);
+
+		//Desposit moneys
+		if(GUI.Button (new Rect(1038, 180, 84, 33), "", "label"))
+		{
+			PlayerControlScript pCSc = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
+			int cashAmount = pCSc.GetSpaceBucks();
+			pCSc.RemoveSpaceBucks(cashAmount);
+			CShip.GetComponent<CapitalShipScript>().DepositCashToCShip(cashAmount);
+		}
+		
+		//Do screen specific stuff here:
+		switch(m_currentCShipPanel)
+		{
+			case CShipScreen.DualPanel:
+			{
+				
+				break;
+			}
+		}
+
+		//Back to all-case here
+
+		//Respawn buttons:
+		List<DeadPlayer> deadPlayers = GameStateController.GetComponent<GameStateController>().m_deadPlayers;
+		for(int i = 0; i < deadPlayers.Count; i++)
+		{
+			int fastSpawnCost = 500 + (int)(deadPlayers[i].m_deadTimer * 10);
+			float buttonX = 811 + (i * 96);
+			GUI.Label (new Rect(buttonX - 20, 690, 124, 33), deadPlayers[i].m_playerObject.m_name, m_nonBoxStyle);
+			GUI.Label (new Rect(buttonX - 20, 722, 124, 33), "$" + fastSpawnCost, m_nonBoxStyle);
+
+			if(GUI.Button (new Rect(buttonX, 765, 84, 33), ""))
+			{
+				//Check if amount is available, then respawn player as usual
+				if(CShip.GetComponent<CapitalShipScript>().CShipCanAfford(fastSpawnCost))
+				{
+					CShip.GetComponent<CapitalShipScript>().SpendBankedCash(fastSpawnCost);
+					RequestServerRespawnPlayer(deadPlayers[i].m_playerObject.m_netPlayer);
+				}
+			}
+		}
+
+		//Leave button
+		if(GUI.Button (new Rect(512, 687, 176, 110), "", "label"))
+		{
+			m_PlayerHasDockedAtCapital = false;
+			Screen.showCursor = false;
+			thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellPlayerStopDocking();
+			m_currentCShipPanel = CShipScreen.DualPanel;
+		}
+
+		/*for(int i = 0; i < 4; i++)
+		{
+			GUI.Button (new Rect(811 + (i * 96), 765, 84, 33), "");
+		}*/
+
+		//Fast respawn
+		/**/
+
+		/*GUI.Box(new Rect(400, 100, 800, 700), "");
 		GUI.Label (new Rect(700, 150, 200, 50), "Capital Ship Dock");
 		
 		CapitalShipScript cshipSc = CShip.GetComponent<CapitalShipScript>();
@@ -2540,7 +2619,7 @@ public class GUIManager : MonoBehaviour
 			}
 			case CShipScreen.StatusPanel:
 			{
-				/* Display CShip resources, CShip weapons + [sector info] */
+				// Display CShip resources, CShip weapons + [sector info] 
 
 				//Show CShip resources
 				GUI.Label(new Rect(480, 200, 150, 50), "Mass: " + cshipSc.GetCurrentResourceMass() + " / " + cshipSc.GetMaxResourceMass());
@@ -2619,27 +2698,16 @@ public class GUIManager : MonoBehaviour
 			}
 		}
 
-		/*
-		
-		*/
 		
 		//Leave docking
 		if(GUI.Button (new Rect(440, 720, 150, 60), "Leave Capital Ship"))
 		{
-			/*if(!m_playerHasAlreadyLeft)
-			{
-				networkView.RPC ("TellOtherPlayersPlayerHasLeft", RPCMode.Others);
-				m_playerHasAlreadyLeft = true;
-				if(Network.isClient)
-					networkView.RPC ("AskServerToBeginSpawns", RPCMode.Server);
-				else
-					AskServerToBeginSpawns();
-			}*/
 			m_PlayerHasDockedAtCapital = false;
 			Screen.showCursor = false;
 			thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellPlayerStopDocking();
 			m_currentCShipPanel = CShipScreen.StatusPanel;
 		}
+		*/
 	}
 
 
