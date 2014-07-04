@@ -881,7 +881,7 @@ public class PlayerControlScript : Ship
 							GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
 							transform.parent = CShip.transform;
 							rigidbody.isKinematic = true;
-							networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+							networkView.RPC ("PropagateInvincibility", RPCMode.All, true);
 						}
 					}
 					
