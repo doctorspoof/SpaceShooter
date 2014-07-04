@@ -162,7 +162,7 @@ MonoBehaviour:
   m_bulletMinDamage: 1
   m_bulletSpeed: 6
   m_bulletMinimumSpeed: .25
-  m_bulletMaxLifetime: 16.1000004
+  m_bulletMaxLifetime: 50
   m_isSelfPropelled: 1
   m_isPiercing: 0
   m_maxPierceHits: 5
