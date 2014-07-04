@@ -544,6 +544,10 @@ Prefab:
       propertyPath: m_Observed
       value: 
       objectReference: {fileID: 1337935894}
+    - target: {fileID: 11400000, guid: ce373fba91905954f861555449eb39fa, type: 2}
+      propertyPath: m_shopType
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_RootGameObject: {fileID: 1337935893}
