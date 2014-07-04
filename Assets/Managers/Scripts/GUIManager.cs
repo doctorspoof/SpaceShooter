@@ -1379,13 +1379,14 @@ public class GUIManager : MonoBehaviour
 			{
 				if(m_shopDockedAt != null)
 				{
+					GUI.Box (new Rect(400, 100, 800, 700), "");
 					if(m_shipyardScreen)
 					{
 						//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
 						GameObject[] shopInv = m_shopDockedAt.GetComponent<ShopScript>().GetShopInventory();
 						PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
 
-						GUI.Box (new Rect(400, 100, 800, 700), "");
+
 
 						for(int i = 0; i < shopInv.Length; i++)
 						{
