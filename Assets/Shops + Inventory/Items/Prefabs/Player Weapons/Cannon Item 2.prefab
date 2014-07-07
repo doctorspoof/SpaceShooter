@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: a43e73c9ad54b084d86ce71e090c3a58, type: 3}
   m_equipmentName: Lion Cannon
   m_equipmentDescription: Upgraded cannon, featuring a larger slug at the same velocity.
     Favoured by military scouts for eliminate high value targets at a distance

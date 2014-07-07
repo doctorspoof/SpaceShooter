@@ -10,7 +10,8 @@ public enum CShipScreen
 	ObjectivePanel = 3,
 	DualPanel = 5,
 	LeftPanelActive = 6,
-	RightPanelActive = 7
+	RightPanelActive = 7,
+	PanelsAnimating = 8
 }
 
 public class GUIManager : MonoBehaviour
@@ -659,6 +660,8 @@ public class GUIManager : MonoBehaviour
 	GUIStyle m_sharedHighlightedGUIStyle;
 	[SerializeField]
 	GUIStyle m_nonBoxStyle;
+	[SerializeField]
+	GUIStyle m_nonBoxSmallStyle;
 	[SerializeField]
 	GUIStyle m_nonBoxBigStyle;
 	[SerializeField]
@@ -2453,13 +2456,56 @@ public class GUIManager : MonoBehaviour
 	[SerializeField]
 	Texture m_DockInventoryBorder;
 
-	CShipScreen m_currentCShipPanel = CShipScreen.StatusPanel;
+	CShipScreen m_currentCShipPanel = CShipScreen.DualPanel;
+
+	//Animatables
+	int m_playerPanelXWidth = 408;
+	IEnumerator AnimatePlayerPanel(int targetXWidth)
+	{
+		float t = 0;
+		int oldWidth = m_playerPanelXWidth;
+
+		while(t < 1)
+		{
+			t += Time.deltaTime;
+
+			m_playerPanelXWidth = (int)Mathf.Lerp((float)oldWidth, (float)targetXWidth, t);
+
+			yield return 0;
+		}
+
+		if(targetXWidth < 300)
+			m_currentCShipPanel = CShipScreen.RightPanelActive;
+		else
+			m_currentCShipPanel = CShipScreen.DualPanel;
+	}
+
+	int m_cShipPanelXPos = 796;
+	IEnumerator AnimateCShipPanel(int targetXPos)
+	{
+		float t = 0;
+		int oldWidth = m_cShipPanelXPos;
+		
+		while(t < 1)
+		{
+			t += Time.deltaTime;
+			
+			m_cShipPanelXPos = (int)Mathf.Lerp((float)oldWidth, (float)targetXPos, t);
+			
+			yield return 0;
+		}
+
+		if(targetXPos > 1000)
+			m_currentCShipPanel = CShipScreen.LeftPanelActive;
+		else
+			m_currentCShipPanel = CShipScreen.DualPanel;
+	}
+
+	Vector2 playerScrollPosition = Vector2.zero;
+	Vector2 cshipScrollPosition = Vector2.zero;
 	void DrawCShipDockOverlay()
 	{
 		GUI.DrawTexture(new Rect(396, 86, 807, 727), m_DockBackground);
-
-		GUI.DrawTexture(new Rect(394, 250, 408, 400), m_DockPlayerImage);
-		GUI.DrawTexture(new Rect(796, 250, 408, 400), m_DockCShipImage);
 
 		//Show bank status
 		GUI.Label (new Rect(1012, 140, 134, 40), "$" + CShip.GetComponent<CapitalShipScript>().GetBankedCash(), m_nonBoxStyle);
@@ -2478,12 +2524,62 @@ public class GUIManager : MonoBehaviour
 		{
 			case CShipScreen.DualPanel:
 			{
+				if(GUI.Button(new Rect(394, 250, m_playerPanelXWidth, 400), ""))
+				{
+					//If player is selected, CShip should animate away
+					StartCoroutine(AnimateCShipPanel(1204));
+					m_currentCShipPanel = CShipScreen.PanelsAnimating;
+				}
+
+				if(GUI.Button (new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), ""))
+				{
+					//If CShip is selected, player should animate away
+					StartCoroutine(AnimatePlayerPanel(0));
+					m_currentCShipPanel = CShipScreen.PanelsAnimating;
+				}
+				break;
+			}
+			case CShipScreen.RightPanelActive:
+			{
 				
+				break;
+			}
+			case CShipScreen.LeftPanelActive:
+			{
+				GUI.Label (new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
+				List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+				for(int i = 0; i < playerInv.Count; i++)
+				{
+					GUI.Button(new Rect(816, 350 + (i * 50), 164, 40), playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+				}
+
+				GUI.Label (new Rect(1020, 270, 164, 40), "Capital:", m_nonBoxStyle);
+				List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				for(int i = 0; i < cshipInv.Count; i++)
+				{
+					cshipScrollPosition = GUI.BeginScrollView(new Rect(796, 250, 408, 400), cshipScrollPosition, new Rect());
+					/*GUI.Button(new Rect(1080, 320 + (i * 50), 114, 40), cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+					GUI.Label (new Rect(1020, 315 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemScript>().GetIcon());*/
+					GUI.EndScrollView();
+				}
+				break;
+			}
+			case CShipScreen.PanelsAnimating:
+			{
+				//Wait for animating to complete;
 				break;
 			}
 		}
 
-		//Back to all-case here
+		//Draw panels
+		float playerSourceWidth = m_playerPanelXWidth / 408.0f;
+		//GUI.DrawTexture(new Rect(394, 250, m_playerPanelXWidth, 400), m_DockPlayerImage);
+		GUI.DrawTexture(new Rect(394, 250, 408, 400), m_DockInventoryBorder);
+		GUI.DrawTextureWithTexCoords(new Rect(394, 250, m_playerPanelXWidth, 400), m_DockPlayerImage, new Rect(1 - playerSourceWidth, 1, playerSourceWidth, 1));
+		
+		float cshipSourcewidth = (1204.0f - (float)m_cShipPanelXPos) / 408.0f;
+		GUI.DrawTexture(new Rect(796, 250, 408, 400), m_DockInventoryBorder);
+		GUI.DrawTextureWithTexCoords(new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), m_DockCShipImage, new Rect(0, 0, cshipSourcewidth, 1));
 
 		//Respawn buttons:
 		List<DeadPlayer> deadPlayers = GameStateController.GetComponent<GameStateController>().m_deadPlayers;

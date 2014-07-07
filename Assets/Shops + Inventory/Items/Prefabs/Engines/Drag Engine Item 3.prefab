@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 95d5f416931c0694db432387a1dc49c3, type: 3}
   m_equipmentName: Lightbooster
   m_equipmentDescription: The engine fitted to the famous Exceleron ship that broke
     the known speed record.

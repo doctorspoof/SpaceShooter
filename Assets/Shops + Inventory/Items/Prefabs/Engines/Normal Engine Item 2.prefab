@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 6dd18c52040635249913c991e21e2a56, type: 3}
   m_equipmentName: Advanced Thurster
   m_equipmentDescription: An improved fusion engine. Fitted to the ships of mercenaries
     and military ships

@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 1
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: d25b0dc89e7d3ab41aeb4ecae38d4d96, type: 3}
   m_equipmentName: Aegis
   m_equipmentDescription: The most powerful shield created by humans. Can absorb fire
     from even capital ship class weaponry.

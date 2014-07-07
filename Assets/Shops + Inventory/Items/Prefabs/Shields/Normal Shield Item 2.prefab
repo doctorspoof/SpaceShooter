@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 1
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: fe5d31a4e870a4d4b805a6dfcf658ff1, type: 3}
   m_equipmentName: Improved Barrier
   m_equipmentDescription: Advanced shielding issued to experienced military craft
   m_cost: 520

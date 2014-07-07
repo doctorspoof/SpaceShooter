@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 715f654b91952ec43bbfbeae0db8f7b1, type: 3}
   m_equipmentName: Pulse Blaster mkII
   m_equipmentDescription: A prototype upgraded pulse blaster. Fires faster and does
     more damage

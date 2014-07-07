@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 8e3a4b150009d284c8b8beb8acff589f, type: 3}
   m_equipmentName: Standard Thurster
   m_equipmentDescription: A simple fusion engine. Standard equipment for most human
     vessels.

@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 1
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: fbade0886514393418ec7a7413b0ad0b, type: 3}
   m_equipmentName: Steadfast Shield
   m_equipmentDescription: Strong, reactive shielding system pioneered on the legendary
     human flagship Voracious Storm

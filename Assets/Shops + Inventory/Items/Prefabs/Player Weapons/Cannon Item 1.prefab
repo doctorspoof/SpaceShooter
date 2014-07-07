@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: e82cea661665a9b41933a5ed5d5167a0, type: 3}
   m_equipmentName: Bulldog Cannon
   m_equipmentDescription: Large, slow weapon firing solid metal slugs at high speeds.
     Can often over-penetrate targets.

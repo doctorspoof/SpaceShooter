@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: a642e988dada3284ba1344216d94ca62, type: 3}
   m_equipmentName: Ion Pulsar
   m_equipmentDescription: Elite version of the standard blaster. Often fitted to undercover
     military or police vessels

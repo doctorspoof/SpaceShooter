@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 8d7e2f0d9ed578c47b27746de93804f0, type: 3}
   m_equipmentName: '''Starfury'' Missile Launcher'
   m_equipmentDescription: A highly sought after weapon. Dual-launcher technology allows
     for double the fun

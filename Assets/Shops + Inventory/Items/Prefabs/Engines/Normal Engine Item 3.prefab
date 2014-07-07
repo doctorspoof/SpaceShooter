@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 95d7ec1ff204b9343af4501b2bf08676, type: 3}
   m_equipmentName: Celadon Hyperdrive
   m_equipmentDescription: A top of the range thruster. Popular in illegal races.
   m_cost: 775

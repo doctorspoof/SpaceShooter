@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 4
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 1437a7f12c97fad409a65f26d6e89972, type: 3}
   m_equipmentName: Tsunami Blaster
   m_equipmentDescription: Overloaded rapid firing automated turret
   m_cost: 325

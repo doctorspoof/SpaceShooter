@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 4
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 32adb778cba6dcc43b24365cb1dff584, type: 3}
   m_equipmentName: Dirge Beam
   m_equipmentDescription: High powered anti-ship laser
   m_cost: 350

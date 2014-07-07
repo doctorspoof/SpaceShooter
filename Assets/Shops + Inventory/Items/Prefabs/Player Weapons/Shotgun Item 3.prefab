@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: d09b6b186ce9b5d4f8caaf48e94e3743, type: 3}
   m_equipmentName: Overloaded Plasma Spreader
   m_equipmentDescription: A weapon found only on black markets. Altered to illegally
     circumvent armament limitation laws.

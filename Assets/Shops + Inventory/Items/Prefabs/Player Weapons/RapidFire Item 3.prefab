@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 2aa64a3e72920f9499f775f60a750779, type: 3}
   m_equipmentName: Tsunami Emitter
   m_equipmentDescription: Ultimate Rapid-fire weapon. Fires so quickly it appears
     to fire multiple shots at once

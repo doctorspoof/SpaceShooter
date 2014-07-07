@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 4
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 2338508fc45b5d54ab5d6db74038d011, type: 3}
   m_equipmentName: Distortion Spreader
   m_equipmentDescription: Dual-barreled launcher firing exploding globs of supercharged
     plasma

@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: f49def48af517b441abccdbd0b7575b4, type: 3}
   m_equipmentName: Velron Omnithrust
   m_equipmentDescription: A low-speed, high maneuverability engine. Popular with civilan
     vessels, especially those that encounter frequent asteroid fields.

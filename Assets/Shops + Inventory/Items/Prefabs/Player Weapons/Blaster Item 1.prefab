@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: aa723100979752540826ba0bbd5eed2c, type: 3}
   m_equipmentName: Pulse Blaster
   m_equipmentDescription: Standard anti-ship weapon used on human fighters
   m_cost: 150

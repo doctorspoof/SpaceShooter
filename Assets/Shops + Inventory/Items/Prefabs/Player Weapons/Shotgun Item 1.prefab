@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 4353d55e68ebdf741be7b0f06cc97090, type: 3}
   m_equipmentName: Plasma Sprayer
   m_equipmentDescription: Close range spread weapon often found on fast assault craft
   m_cost: 200

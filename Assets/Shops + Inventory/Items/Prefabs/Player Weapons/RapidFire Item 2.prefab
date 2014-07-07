@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 06da5b2de0f4c1e438f580ebbffbeb64, type: 3}
   m_equipmentName: Storm Emitter
   m_equipmentDescription: Upgraded rapid-fire weapon. Often equipped as secondary
     weapons on larger ships for it's point defence capabilities

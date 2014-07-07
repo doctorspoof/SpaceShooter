@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: f5393686a177f8e4aaa0c52817909526, type: 3}
   m_equipmentName: Project X Thruster
   m_equipmentDescription: A propulsion system created from extra-solar material capture
     by a comet storm. Features full strafing movement speed

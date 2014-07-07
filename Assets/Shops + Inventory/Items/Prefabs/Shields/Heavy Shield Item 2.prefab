@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 1
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: afaaa818ef6e55841b723acb8a19b25c, type: 3}
   m_equipmentName: Endu-cover
   m_equipmentDescription: A high-powered kinetic shield. Can easily absorb a hail
     of fire. Fitted to important military vessels

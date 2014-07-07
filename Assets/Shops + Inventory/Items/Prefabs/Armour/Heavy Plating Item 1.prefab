@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 14ba15fb3d495a74782e2ce28e292947, type: 3}
   m_equipmentName: Reinforced Plating
   m_equipmentDescription: Overlapping plates of metal produce this heavier variant
     of the standard human plating.

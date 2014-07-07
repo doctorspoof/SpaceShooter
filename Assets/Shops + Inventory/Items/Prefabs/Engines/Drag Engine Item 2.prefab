@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 1f7fd7b77d5d1584e842585f1c98ba68, type: 3}
   m_equipmentName: Hermes Engine
   m_equipmentDescription: A powerful, speed-oriented engine. Popular on courier and
     transport ships.

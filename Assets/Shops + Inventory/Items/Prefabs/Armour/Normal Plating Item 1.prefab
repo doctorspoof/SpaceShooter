@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: d8ceb0242b9d8a74cb57352b27e110cc, type: 3}
   m_equipmentName: Standard Issue Plating
   m_equipmentDescription: Sturdy steel hull plating. Fitted as standard to most Human
     ships

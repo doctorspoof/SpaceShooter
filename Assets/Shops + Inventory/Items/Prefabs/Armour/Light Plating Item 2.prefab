@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 8c52267e89a29ce4aacd66d3b80189b2, type: 3}
   m_equipmentName: Vanguard Armour
   m_equipmentDescription: Elite lightweight plating, often found on organised criminal
     ships.

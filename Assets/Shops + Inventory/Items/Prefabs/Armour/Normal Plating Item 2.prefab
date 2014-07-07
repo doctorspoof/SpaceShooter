@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: e6bb8ecd6b00e0e4b8253f4a85afae7b, type: 3}
   m_equipmentName: Advanced Issue Plating
   m_equipmentDescription: Steel plating reinforced with tungsten beams. The modern
     choice of armour for human ships.

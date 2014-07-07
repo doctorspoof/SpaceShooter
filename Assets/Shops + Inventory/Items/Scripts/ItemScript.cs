@@ -18,6 +18,11 @@ public class ItemScript : MonoBehaviour
 	[SerializeField]
 	Texture m_equipmentIcon;
 
+	public Texture GetIcon()
+	{
+		return m_equipmentIcon;
+	}
+
 	[SerializeField]
 	string m_equipmentName;
 	[SerializeField]

@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 69f79b7dbf3b88048b7eb40c2f2ac087, type: 3}
   m_equipmentName: Impervium Skinning
   m_equipmentDescription: This hyper rare material makes for a very durable, albiet
     very heavy, armour system.

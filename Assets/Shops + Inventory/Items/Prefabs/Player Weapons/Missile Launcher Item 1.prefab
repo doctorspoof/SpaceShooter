@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: b300350430b3b6b4b99ca69bdadc36cc, type: 3}
   m_equipmentName: '''Comet'' Missile Launcher'
   m_equipmentDescription: Standard homing anti-ship missile launcher
   m_cost: 215

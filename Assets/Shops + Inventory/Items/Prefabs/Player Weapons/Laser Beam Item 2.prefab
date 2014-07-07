@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: f5e4ccfda120cb946902b861cb946011, type: 3}
   m_equipmentName: Regeant Beam
   m_equipmentDescription: A purple-tinted laser beam. Attuned through rare Plutonian
     amethysts
