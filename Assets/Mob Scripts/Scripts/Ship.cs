@@ -222,7 +222,6 @@ public class Ship : MonoBehaviour
     {
         if (!afterburnersFiring && afterburnersRecharged)
         {
-            Debug.Log("Afterburner firing");
             afterburnersFiring = true;
             afterburnersRecharged = false;
         }

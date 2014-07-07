@@ -92,6 +92,10 @@ public class EnemySpawnPointScript : MonoBehaviour
                 }
             }
 
+            if(closestTarget == null)
+            {
+                Debug.LogError("Default target is null");
+            }
 
             /// attach order targetting closest target to group
             AIOrder<EnemyGroup> defaultOrder = new AIOrder<EnemyGroup> { Orderee = spawnedGroup, ObjectOfInterest = closestTarget };

@@ -269,12 +269,8 @@ public class EnemyScript : Ship
                     }
                 case Order.Move:
                     {
-                        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-                        //watch.Start();
                         MoveTowardTarget();
-                        //watch.Stop();
-                        //Debug.Log("time taken = " + watch.ElapsedTicks);
-                        Debug.Log("Move running");
+
                         if (Vector3.SqrMagnitude((Vector2)shipTransform.position - m_moveTarget) < 0.64f || m_parentGroup.HasGroupArrivedAtLocation())
                         {
                             m_currentOrder = Order.Idle;
@@ -308,7 +304,6 @@ public class EnemyScript : Ship
                         RaycastHit hit;
                         if (!m_target.collider.Raycast(ray, out hit, totalRange))
                         {
-                            Debug.Log("raytrace missed");
                             Vector2 normalOfDirection = GetNormal(direction);
 
                             RotateTowards((Vector2)m_target.transform.position + (randomOffsetFromTarget * normalOfDirection));
@@ -317,7 +312,6 @@ public class EnemyScript : Ship
                         }
                         else
                         {
-                            Debug.Log("Attack running");
                             currentAttackType.Attack(this, m_target);
                         }
 

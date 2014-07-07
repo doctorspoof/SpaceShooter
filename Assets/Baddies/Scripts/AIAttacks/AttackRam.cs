@@ -9,7 +9,7 @@ public class AttackRam : IAttack
 
     public override void Attack(EnemyScript ship, GameObject target)
     {
-        Debug.Log("momentum = " + ship.GetCurrentMomentum());
+        //Debug.Log("momentum = " + ship.GetCurrentMomentum());
 
         ship.FireAfterburners();
 

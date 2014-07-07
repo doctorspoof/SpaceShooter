@@ -102,11 +102,17 @@ public class EnemyGroup : MonoBehaviour
 
         CheckAndAttackPlayersInRange(50);
 
-        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-        //watch.Start();
         SetShipSpeeds();
-        //watch.Stop();
-        //Debug.Log("time taken = " + watch.ElapsedMilliseconds);
+
+        //if (orderQueue.Count > 0)
+        //{
+        //    Debug.DrawLine(transform.position, orderQueue[0].PositionOfInterest);
+
+        //    if(orderQueue[0].ObjectOfInterest != null)
+        //    {
+        //        Debug.Log("objectOfInterest = " + orderQueue[0].ObjectOfInterest.name);
+        //    }
+        //}
 
         if (orderQueue.Count == 0 && defaultOrders.Count > 0 && !GroupStillHasMembersWithOrder())
         {
@@ -229,7 +235,7 @@ public class EnemyGroup : MonoBehaviour
         float distanceToTarget = Vector2.Distance(from, target) + 10;
         RaycastHit hit;
 
-        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized ), out hit, distanceToTarget, 1 << LayerMask.NameToLayer("Environmental Damage"));
+        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget, 1 << LayerMask.NameToLayer("Environmental Damage"));
 
         if (collidedWithSomething)
             collidedObject = hit.collider.gameObject;
@@ -656,9 +662,9 @@ public class EnemyGroup : MonoBehaviour
         outOfFormation = new List<EnemyScript>();
         foreach (List<EnemyScript> shipTier in m_children)
         {
-            foreach(EnemyScript ship in shipTier)
+            foreach (EnemyScript ship in shipTier)
             {
-                if(ship.InFormation(0.8f))
+                if (ship.InFormation(0.8f))
                 {
                     inFormation.Add(ship);
                 }

@@ -108,7 +108,7 @@ public class HealthScript : MonoBehaviour
 	void OnCollisionEnter(Collision collision)
 	{
 		//if(this.tag == "Asteroid")
-		Debug.Log ("Object '" + name + " collided with object: '" + collision.gameObject.name + "'.");
+		//Debug.Log ("Object '" + name + " collided with object: '" + collision.gameObject.name + "'.");
 		//NOTE: This function should only apply damage to the other collider, since the function will be called on
 		// 		both sides
 		if(this.tag == "Enemy")
