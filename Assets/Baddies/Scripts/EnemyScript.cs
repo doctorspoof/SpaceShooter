@@ -47,12 +47,12 @@ public class EnemyScript : Ship
         get { return m_currentOrder; }
     }
 
-    Vector3 lastFramePosition;
-    public Vector3 LastFramePosition
-    {
-        get { return lastFramePosition; }
-        set { lastFramePosition = value; }
-    }
+    //Vector3 lastFramePosition;
+    //public Vector3 LastFramePosition
+    //{
+    //    get { return lastFramePosition; }
+    //    set { lastFramePosition = value; }
+    //}
 
     Vector2 formationPosition;
     public Vector2 FormationPosition
@@ -204,7 +204,7 @@ public class EnemyScript : Ship
         //}
     }
 
-    void Awake()
+    protected override void Awake()
     {
         Init();
     }
@@ -223,7 +223,7 @@ public class EnemyScript : Ship
 
         shipTransform = transform;
 
-        lastFramePosition = shipTransform.position;
+        //lastFramePosition = shipTransform.position;
         currentAttackType = AIAttackCollection.GetAttack(allowedAttacksForShip[Random.Range(0, allowedAttacksForShip.Length)]);
         randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
         ResetShipSpeed();
@@ -237,7 +237,7 @@ public class EnemyScript : Ship
 
     bool isGoingLeft = false;
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
         //m_shipSpeed = 0;
 
@@ -245,7 +245,7 @@ public class EnemyScript : Ship
         {
             base.Update();
 
-            EnemyScript slowestShip = m_parentGroup.GetSlowestShip();
+            //EnemyScript slowestShip = m_parentGroup.GetSlowestShip();
 
             switch (m_currentOrder)
             {
@@ -463,7 +463,7 @@ public class EnemyScript : Ship
             Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
             Vector2 distanceToTargetPosition = (m_moveTarget - (Vector2)shipTransform.position);
 
-            float speed = m_parentGroup.GetSlowestShipSpeed();
+            //float speed = m_parentGroup.GetSlowestShipSpeed();
 
             float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
             Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
@@ -568,7 +568,7 @@ public class EnemyScript : Ship
         {
             t += Time.deltaTime;
             GameObject shield = GetShield();
-            float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
+            //float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
 
             //oldImp.w = 1.0f - t;
 

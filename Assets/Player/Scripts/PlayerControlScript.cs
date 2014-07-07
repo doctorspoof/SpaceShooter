@@ -85,7 +85,7 @@ public class PlayerControlScript : Ship
 			return false;
 	}
 
-    void Awake()
+    protected override void Awake()
     {
         Init();
     }
@@ -769,7 +769,7 @@ public class PlayerControlScript : Ship
 	bool useController = false;
 	Quaternion targetAngle;
 	// Update is called once per frame
-	void Update () 
+    protected override void Update() 
 	{
 		ownerSt = owner.ToString();
 		bool recievedInput = false;
@@ -1411,9 +1411,9 @@ public class PlayerControlScript : Ship
             desiredDockSpeed = GetCurrentShipSpeed();
 		}
 
-        //Debug.LogError("desiredDockSpeed = " + desiredDockSpeed);
+        //Debug.LogError("desiredDockSpeed = " + desiredDockSpeed + " maxShipMomentum = " + GetMaxShipSpeed());
 
-		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * Time.deltaTime);
+		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * rigidbody.mass * Time.deltaTime);
 		
 		// Rotate towards point
         Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(rotateTo.y, rotateTo.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
