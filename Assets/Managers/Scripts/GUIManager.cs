@@ -1379,49 +1379,24 @@ public class GUIManager : MonoBehaviour
 			{
 				if(m_shopDockedAt != null)
 				{
-<<<<<<< HEAD
-					//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
-					ShopScript shopScript = m_shopDockedAt.GetComponent<ShopScript>();
-					GameObject[] shopInv = shopScript.GetShopInventory();
-					PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
-
-=======
->>>>>>> development
 					GUI.Box (new Rect(400, 100, 800, 700), "");
 					if(m_shipyardScreen)
 					{
 						//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
 						GameObject[] shopInv = m_shopDockedAt.GetComponent<ShopScript>().GetShopInventory();
+
+
+
 						PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
-
-
-
 						for(int i = 0; i < shopInv.Length; i++)
 						{
-<<<<<<< HEAD
-							GUI.Label (new Rect(480 + (i * 150), 360, 140, 100), shopInv[i].GetComponent<ItemScript>().GetShopText());
-
-							int itemCost = shopScript.GetItemCost (i);
-
-							if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + itemCost))
-							{
-								//Check if the player has enough cash
-								if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull())
-								{
-									//Add the item to the player's inventory
-									pcControl.AddItemToInventory(shopInv[i]);
-
-									//Remove cash from player
-									pcControl.RemoveSpaceBucks(itemCost);
-=======
 							if(shopInv[i] != null)
 							{
 								GUI.Label (new Rect(480 + (i * 150), 360, 140, 100), shopInv[i].GetComponent<ItemScript>().GetShopText());
 								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + ((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent))))
 								{
 									//Check if the player has enough cash
-									if(pcControl.CheckCanAffordAmount((int)
-	                                  (shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
+									if(pcControl.CheckCanAffordAmount((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
 									{
 										//Add the item to the player's inventory
 										pcControl.AddItemToInventory(shopInv[i]);
@@ -1435,7 +1410,6 @@ public class GUIManager : MonoBehaviour
 								}
 							}
 						}
->>>>>>> development
 
 						if(m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Shipyard)
 						{
@@ -2095,7 +2069,7 @@ public class GUIManager : MonoBehaviour
 					Vector2 playPos = WorldToMapPos(player.transform.position);
 					GUI.DrawTexture(new Rect(playPos.x - (m_blobSize * 0.5f), playPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_otherPBlob);
 					GUI.Label (new Rect(playPos.x - (m_blobSize * 1.5f), playPos.y + (m_blobSize * 0.5f), 75, 40),
-                        GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
+					          GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
 				}
 			}
 		}
