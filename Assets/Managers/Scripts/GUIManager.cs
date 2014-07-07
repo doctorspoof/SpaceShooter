@@ -69,7 +69,7 @@ public class GUIManager : MonoBehaviour
 		chatMessages = new List<string>();
 		//GetClipCursor(ref previousCursorClip);
 
-		Resolution current = Screen.currentResolution;
+		//Resolution current = Screen.currentResolution;
 
 		//System.IntPtr window = FindWindow(null, "X-Sidus");
 		//SetWindowPos(window, 0, 0, 0, current.width, current.height, 0);
@@ -1336,6 +1336,7 @@ public class GUIManager : MonoBehaviour
 	GameObject m_lastLockonTarget = null;
 
 	public bool m_isOnFollowMap = true;
+	bool m_shipyardScreen = true;
 
 	void DrawInGame()
 	{
@@ -1378,17 +1379,26 @@ public class GUIManager : MonoBehaviour
 			{
 				if(m_shopDockedAt != null)
 				{
+<<<<<<< HEAD
 					//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
 					ShopScript shopScript = m_shopDockedAt.GetComponent<ShopScript>();
 					GameObject[] shopInv = shopScript.GetShopInventory();
 					PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
 
+=======
+>>>>>>> development
 					GUI.Box (new Rect(400, 100, 800, 700), "");
-
-					for(int i = 0; i < shopInv.Length; i++)
+					if(m_shipyardScreen)
 					{
-						if(shopInv[i] != null)
+						//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
+						GameObject[] shopInv = m_shopDockedAt.GetComponent<ShopScript>().GetShopInventory();
+						PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
+
+
+
+						for(int i = 0; i < shopInv.Length; i++)
 						{
+<<<<<<< HEAD
 							GUI.Label (new Rect(480 + (i * 150), 360, 140, 100), shopInv[i].GetComponent<ItemScript>().GetShopText());
 
 							int itemCost = shopScript.GetItemCost (i);
@@ -1403,19 +1413,88 @@ public class GUIManager : MonoBehaviour
 
 									//Remove cash from player
 									pcControl.RemoveSpaceBucks(itemCost);
+=======
+							if(shopInv[i] != null)
+							{
+								GUI.Label (new Rect(480 + (i * 150), 360, 140, 100), shopInv[i].GetComponent<ItemScript>().GetShopText());
+								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + ((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent))))
+								{
+									//Check if the player has enough cash
+									if(pcControl.CheckCanAffordAmount((int)
+	                                  (shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
+									{
+										//Add the item to the player's inventory
+										pcControl.AddItemToInventory(shopInv[i]);
 
-									//Remove it from the shop's inventory
-									m_shopDockedAt.GetComponent<ShopScript>().RemoveItemFromShopInventory(i);
+										//Remove cash from player
+										pcControl.RemoveSpaceBucks((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent));
+
+										//Remove it from the shop's inventory
+										m_shopDockedAt.GetComponent<ShopScript>().RemoveItemFromShopInventory(i);
+									}
 								}
 							}
 						}
+>>>>>>> development
+
+						if(m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Shipyard)
+						{
+							if(GUI.Button (new Rect(275, 420, 100, 60), "<"))
+							{
+								m_shipyardScreen = false;
+							}
+						}
 					}
+					else
+					{
+						//Display player inventory and equipment
+						PlayerControlScript pcControl2 = thisPlayerHP.GetComponent<PlayerControlScript>();
+						GameObject currW = pcControl2.m_equippedWeaponItem;
+						GameObject currS = pcControl2.m_equippedShieldItem;
+						GameObject currE = pcControl2.m_equippedEngineItem;
+						GameObject currP = pcControl2.m_equippedPlatingItem;
+						GUI.Label (new Rect(450, 460, 200, 50), "Currently equipped weapon: " + System.Environment.NewLine + currW.GetComponent<ItemScript>().GetItemName());
+						GUI.Label (new Rect(450, 510, 200, 50), "Currently equipped plating: " + System.Environment.NewLine + currP.GetComponent<ItemScript>().GetItemName());
+						GUI.Label (new Rect(450, 560, 200, 50), "Currently equipped shield: " + System.Environment.NewLine + currS.GetComponent<ItemScript>().GetItemName());
+						GUI.Label (new Rect(450, 610, 200, 50), "Currently equipped engine: " + System.Environment.NewLine + currE.GetComponent<ItemScript>().GetItemName());
+						
+						GUI.Label (new Rect(775, 460, 200, 50), "Player Inventory: ");
+						List<GameObject> inv = pcControl2.m_playerInventory;
+						
+						for(int i = 0; i < inv.Count; i++)
+						{
+							int rowNum = (int)(i / 2);
+							int columnNum = i % 2;
+							if(pcControl2.GetItemInSlot(i) != null)
+							{
+								if(pcControl2.GetItemInSlot(i).GetComponent<ItemScript>())
+								{
+									if(GUI.Button (new Rect(840 + (columnNum * 150), 480 + (rowNum * 75), 140, 50), pcControl2.GetItemInSlot(i).GetComponent<ItemScript>().GetItemName()))
+									{
+										pcControl2.EquipItemInSlot(i);
+									}
+								}
+								else
+								{
+									GUI.Button (new Rect(840 + (columnNum * 150), 480 + (rowNum * 75), 140, 50), "Unknown Item");
+								}
+							}
+						}
+
+						if(GUI.Button (new Rect(1225, 420, 100, 60), ">"))
+						{
+							m_shipyardScreen = true;
+						}
+					}
+
+
 
 					//We'll handle the close button
 					if(GUI.Button (new Rect(440, 720, 150, 60), "Leave Shop"))
 					{
 						m_PlayerHasDockedAtShop = false;
 						m_shopDockedAt = null;
+						m_shipyardScreen = true;
 						thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().nearbyShop = null;
 						thisPlayerHP.transform.parent = null;
 						thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();

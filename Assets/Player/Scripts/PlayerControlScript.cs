@@ -85,7 +85,7 @@ public class PlayerControlScript : Ship
 			return false;
 	}
 
-    void Awake()
+    protected override void Awake()
     {
         Init();
     }
@@ -730,6 +730,9 @@ public class PlayerControlScript : Ship
 		this.CShip = CShip;
 		targetPoint = CShip.transform.position;
 
+		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+		rigidbody.isKinematic = true;
+
 		m_isAnimating = true;
 		m_currentDockingState = DockingState.Docked;
 		GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
@@ -745,6 +748,7 @@ public class PlayerControlScript : Ship
 
 		//Reinstate movement (although input should never be cut anyway)
 		m_shouldRecieveInput = true;
+		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
 		rigidbody.isKinematic = false;
 
 		//Alert animation it needs to leave
@@ -756,10 +760,16 @@ public class PlayerControlScript : Ship
 		useController = useControl;
 	}
 
+	[RPC]
+	void PropagateInvincibility(bool state)
+	{
+		GetComponent<HealthScript>().m_isInvincible = state;
+	}
+
 	bool useController = false;
 	Quaternion targetAngle;
 	// Update is called once per frame
-	void Update () 
+    protected override void Update() 
 	{
 		ownerSt = owner.ToString();
 		bool recievedInput = false;
@@ -796,6 +806,8 @@ public class PlayerControlScript : Ship
 					//We shouldn't even be here man
 					//We shouln't even BE here!
 					m_isAnimating = false;
+					networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+					rigidbody.isKinematic = false;
 					break;
 				}
 				case DockingState.OnApproach:
@@ -869,7 +881,7 @@ public class PlayerControlScript : Ship
 							GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
 							transform.parent = CShip.transform;
 							rigidbody.isKinematic = true;
-							GetComponent<HealthScript>().m_isInvincible = true;
+							networkView.RPC ("PropagateInvincibility", RPCMode.All, true);
 						}
 					}
 					
@@ -920,7 +932,8 @@ public class PlayerControlScript : Ship
 						m_currentDockingState = DockingState.NOTDOCKING;
 						m_isAnimating = false;
 						this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
-						GetComponent<HealthScript>().m_isInvincible = false;
+						networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+						rigidbody.isKinematic = false;
 					}
 					
 					//Play the sound
@@ -1398,9 +1411,9 @@ public class PlayerControlScript : Ship
             desiredDockSpeed = GetCurrentShipSpeed();
 		}
 
-        //Debug.LogError("desiredDockSpeed = " + desiredDockSpeed);
+        //Debug.LogError("desiredDockSpeed = " + desiredDockSpeed + " maxShipMomentum = " + GetMaxShipSpeed());
 
-		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * Time.deltaTime);
+		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * rigidbody.mass * Time.deltaTime);
 		
 		// Rotate towards point
         Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(rotateTo.y, rotateTo.x) - Mathf.PI / 2) * Mathf.Rad2Deg));

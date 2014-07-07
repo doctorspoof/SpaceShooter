@@ -119,8 +119,10 @@ public class HealthScript : MonoBehaviour
 				//If it's a PC or the capital ship, work out how fast the collision was
 				//TODO: 
 				//Insert sounds here
-				float magnitude = collision.relativeVelocity.magnitude;
-				int PCdamage = (int)(magnitude * this.GetComponent<EnemyScript>().GetRamDam());
+                Ship shipComponent = GetComponent<Ship>();
+
+				float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
+                int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
 				//Debug.Log("Applying " + PCdamage + " damage to PC.");
 				collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
 			}
@@ -496,6 +498,11 @@ public class HealthScript : MonoBehaviour
 			{
 				GetComponent<AsteroidScript>().SplitAsteroid (transform);
 			}
+		}
+		else if(this.tag == "Bullet")
+		{
+			//Tell the bullet to explode if it has AoE
+			this.GetComponent<BasicBulletScript>().DetonateBullet();
 		}
 	}
 	[RPC]

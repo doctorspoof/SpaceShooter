@@ -88,8 +88,10 @@
 				//if(decimal > 1.0f)
 					//decimal = decimal - 1.0f;
 				
-				float pulseDistance = 14.5f * decimal;
-				float pulseMinDistance = 12.5f * decimal * 0.75f;
+				float inputDistance = 20.5f;
+				
+				float pulseDistance = inputDistance * decimal;
+				float pulseMinDistance = (inputDistance - 2.0f) * decimal * 0.75f;
 				float2 centre = float2(0,0);
 				float distanceFromCentre = distance(centre, i.usePos.xy);
 				float pulseEffect = 0;
@@ -97,26 +99,28 @@
 				//Edge shimmer
 				float edgeEffect = 0.0f;
 				float edgeMultiplier = 1.0f;
-				if(distanceFromCentre > 11.25f)
+				float edgeBeginPoint = inputDistance * 0.775862f;
+				if(distanceFromCentre > edgeBeginPoint)
 				{
 					float edgeDistance = 1.0f;
 					float midDistance = 0.5f * edgeDistance;
 					
-					float edgeCentreDistance = 11.25f + midDistance;
+					float edgeCentreDistance = edgeBeginPoint + midDistance;
 					float distanceToEdgeCentre = abs(edgeCentreDistance - distanceFromCentre);
 					
 					edgeEffect = 0.35f * (1.0f - (distanceToEdgeCentre * (1.0f / (edgeDistance * 0.5f))));
 				}
 				
-				if(pulseDistance > 12.5f)
+				if(pulseDistance > edgeBeginPoint)
 				{
 					//0 @ 14.5f, 1 @ 13.5f
-					float effect = clamp(abs(14.5f - pulseDistance), 0.0f, 1.0f);
+					float effect = clamp(abs(inputDistance - pulseDistance), 0.0f, 1.0f);
 					//edgeMultiplier = effect * 0.0833333333333333333333333f;
 					edgeMultiplier = effect;
 				}
 				
-				pulseDistance = clamp(pulseDistance, 0.0f, 13.25f);
+				float pulseLimit = inputDistance - 1.25f;
+				pulseDistance = clamp(pulseDistance, 0.0f, pulseLimit);
 				//Calculate pulse
 				if(distanceFromCentre < pulseDistance && distanceFromCentre > pulseMinDistance)
 				{
@@ -134,7 +138,7 @@
 				float4 tex = tex2D(_MainTex, i.texcoord0.xy);
 				
 				//Alpha = (Base value + pulse + wibble effects) * texture's normal alpha
-				tex.a = (0.15f + edgeEffect + (pulseEffect * edgeMultiplier) + (effects[0] + effects[1] + effects[2] + effects[3] + effects[4])) * tex.a;
+				tex.a = (0.19f + edgeEffect + (pulseEffect * edgeMultiplier) + (effects[0] + effects[1] + effects[2] + effects[3] + effects[4])) * tex.a;
 				return tex;
 			}
 

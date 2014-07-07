@@ -4,18 +4,20 @@
 /// </summary>
 public sealed class Layers
 {
-	public const int	player = 8,
-						ignore = 9,
-						enemy = 11,
-						objective = 12,
-						capital = 13,
-						playerBullet = 14,
-						enemyBullet = 15,
-						capitalBullet = 16,
-						asteroid = 17,
-						shop = 18,
-						events = 19,
-						environmentalDamage = 20,
-						planets3D = 21,
-						enemySupportShield = 22;
+    public const int player = 8,
+                        ignore = 9,
+                        enemy = 11,
+                        objective = 12,
+                        capital = 13,
+                        playerBullet = 14,
+                        enemyBullet = 15,
+                        capitalBullet = 16,
+                        asteroid = 17,
+                        shop = 18,
+                        events = 19,
+                        environmentalDamage = 20,
+                        planets3D = 21,
+                        enemySupportShield = 22,
+                        enemyDestructibleBullet = 23,
+                        enemyCollide = 24;
 }

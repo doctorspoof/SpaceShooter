@@ -32,8 +32,6 @@ public class EnemyScript : Ship
     [SerializeField]
     bool m_hasTurrets = false;
 
-    
-
     EnemyGroup m_parentGroup;
 
     GameObject m_target;
@@ -49,12 +47,12 @@ public class EnemyScript : Ship
         get { return m_currentOrder; }
     }
 
-    Vector3 lastFramePosition;
-    public Vector3 LastFramePosition
-    {
-        get { return lastFramePosition; }
-        set { lastFramePosition = value; }
-    }
+    //Vector3 lastFramePosition;
+    //public Vector3 LastFramePosition
+    //{
+    //    get { return lastFramePosition; }
+    //    set { lastFramePosition = value; }
+    //}
 
     Vector2 formationPosition;
     public Vector2 FormationPosition
@@ -206,12 +204,12 @@ public class EnemyScript : Ship
         //}
     }
 
-    void Awake()
+    protected override void Awake()
     {
         Init();
     }
 
-    
+
 
     [SerializeField]
     public int shipID = -1;
@@ -225,7 +223,7 @@ public class EnemyScript : Ship
 
         shipTransform = transform;
 
-        lastFramePosition = shipTransform.position;
+        //lastFramePosition = shipTransform.position;
         currentAttackType = AIAttackCollection.GetAttack(allowedAttacksForShip[Random.Range(0, allowedAttacksForShip.Length)]);
         randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
         ResetShipSpeed();
@@ -239,14 +237,15 @@ public class EnemyScript : Ship
 
     bool isGoingLeft = false;
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
-
         //m_shipSpeed = 0;
 
         if (Network.isServer)
         {
-            EnemyScript slowestShip = m_parentGroup.GetSlowestShip();
+            base.Update();
+
+            //EnemyScript slowestShip = m_parentGroup.GetSlowestShip();
 
             switch (m_currentOrder)
             {
@@ -270,13 +269,9 @@ public class EnemyScript : Ship
                     }
                 case Order.Move:
                     {
-                        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-                        //watch.Start();
                         MoveTowardTarget();
-                        //watch.Stop();
-                        //Debug.Log("time taken = " + watch.ElapsedTicks);
 
-                        if (Vector3.Distance((Vector2)shipTransform.position, m_moveTarget) < 0.8f || m_parentGroup.HasGroupArrivedAtLocation())
+                        if (Vector3.SqrMagnitude((Vector2)shipTransform.position - m_moveTarget) < 0.64f || m_parentGroup.HasGroupArrivedAtLocation())
                         {
                             m_currentOrder = Order.Idle;
                         }
@@ -287,10 +282,11 @@ public class EnemyScript : Ship
                     {
                         if (m_target == null)
                         {
+                            Debug.Log("target is null");
                             m_currentOrder = Order.Idle;
                             break;
                         }
-
+                        
                         Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
                         Ray ray = new Ray(shipTransform.position, direction);
 
@@ -298,18 +294,21 @@ public class EnemyScript : Ship
                         Ship targetShip = m_target.GetComponent<Ship>();
                         if (targetShip != null)
                         {
-                            shipDimension = targetShip.GetMaxSize();
+                            shipDimension = targetShip.GetCalculatedSizeByPosition(shipTransform.position);
                         }
 
+                        float minWeaponRange = GetMinimumWeaponRange();
+
+                        float totalRange = minWeaponRange <= shipDimension ? minWeaponRange + shipDimension : minWeaponRange;
+
                         RaycastHit hit;
-                        if (!m_target.collider.Raycast(ray, out hit, GetMinimumWeaponRange() + shipDimension))
+                        if (!m_target.collider.Raycast(ray, out hit, totalRange))
                         {
                             Vector2 normalOfDirection = GetNormal(direction);
 
                             RotateTowards((Vector2)m_target.transform.position + (randomOffsetFromTarget * normalOfDirection));
 
                             rigidbody.AddForce(shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
-                            //MoveTowardTarget();
                         }
                         else
                         {
@@ -430,39 +429,31 @@ public class EnemyScript : Ship
         return Physics.OverlapSphere(shipTransform.position, range, layerMask);
     }
 
-    
-
-    public float GetMinimumWeaponRange()
+    public override float GetMinimumWeaponRange()
     {
-        float weaponRange = 0;
+        //float weaponRange = 0;
         EnemyWeaponScript enemyWeaponScript;
         if ((enemyWeaponScript = GetComponent<EnemyWeaponScript>()) != null)
         {
             weaponRange = enemyWeaponScript.GetRange();
             return weaponRange;
         }
-        else
+
+        GameObject[] turrets = GetAttachedTurrets();
+        if (turrets != null)
         {
-            GameObject[] turrets = GetAttachedTurrets();
-
-            if (turrets != null)
+            foreach (GameObject turret in GetAttachedTurrets())
             {
-                foreach (GameObject turret in GetAttachedTurrets())
+                EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
+                if (turretScript != null && (weaponRange == 0 || turretScript.GetRange() < weaponRange))
                 {
-                    EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
-                    if (turretScript != null && (weaponRange == 0 || turretScript.GetRange() < weaponRange))
-                    {
-                        weaponRange = turretScript.GetRange();
-                    }
+                    weaponRange = turretScript.GetRange();
                 }
-                return weaponRange;
             }
-            else
-            {
-                return 0;
-            }
-
+            return weaponRange;
         }
+
+        return weaponRange;
     }
 
     private void MoveTowardTarget()
@@ -472,7 +463,7 @@ public class EnemyScript : Ship
             Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
             Vector2 distanceToTargetPosition = (m_moveTarget - (Vector2)shipTransform.position);
 
-            float speed = m_parentGroup.GetSlowestShipSpeed();
+            //float speed = m_parentGroup.GetSlowestShipSpeed();
 
             float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
             Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
@@ -577,7 +568,7 @@ public class EnemyScript : Ship
         {
             t += Time.deltaTime;
             GameObject shield = GetShield();
-            float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
+            //float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
 
             //oldImp.w = 1.0f - t;
 

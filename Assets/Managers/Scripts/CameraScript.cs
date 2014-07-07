@@ -270,11 +270,40 @@ public class CameraScript : MonoBehaviour
 			}
 
 		}
+		else
+		{
+			//Move towards targetPoint
+			float distance = Vector3.Distance(targetPoint, this.transform.position);
+			if(distance > 2.0f)
+			{
+				Vector3 dir = targetPoint - this.transform.position;
+				dir.Normalize();
+
+				this.transform.position += dir * 18.5f * Time.deltaTime;
+			}
+			else
+			{
+				if(!hasCompleted)
+				{
+					GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().TellServerCameraInCorrectPosition();
+					hasCompleted = true;
+				}
+			}
+
+			if(camera.orthographicSize < 15.0f)
+			{
+				camera.orthographicSize += 2.0f * Time.deltaTime;
+				if(camera.orthographicSize > 15.0f)
+					camera.orthographicSize = 15.0f;
+			}
+		}
 
 		Vector3 endPos = transform.position;
 		if(m_backgroundHolder != null && m_shouldParallax)
 			m_backgroundHolder.GetComponent<ParallaxHolder>().Move(endPos - startPos, transform.position);
 	}
+
+	bool hasCompleted = false;
 
 	public void NotifyPlayerHasDied()
 	{
@@ -285,12 +314,14 @@ public class CameraScript : MonoBehaviour
 		m_allowDirectCameraControl = false;
 	}
 
+	Vector3 targetPoint;
 	public void TellCameraBeginDeathSequence()
 	{
 		m_shouldAllowInput = false;
 		Vector3 capitalPos = GameObject.FindGameObjectWithTag("Capital").transform.position;
 		Vector3 cameraTargetPos = new Vector3(capitalPos.x, capitalPos.y, -54);
-		StartCoroutine(LerpCamera(cameraTargetPos));
+		//StartCoroutine(LerpCamera(cameraTargetPos));
+		targetPoint = cameraTargetPos;
 	}
 	IEnumerator LerpCamera(Vector3 target)
 	{

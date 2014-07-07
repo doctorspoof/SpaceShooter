@@ -2,15 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(MeshRenderer))]
 public class EnemySpawnPointScript : MonoBehaviour
 {
     List<WaveInfo> m_wavesToBeSpawned;
 
-    public GameObject m_CapitalShip;
+    [SerializeField]
+    float activeTime;
+    float m_timeSinceLastRelease;
+
+    MeshRenderer meshRenderer;
+    [SerializeField]
+    bool spawnPointActive = false;
 
     [SerializeField]
-    float m_timeBetweenReleases;
-    float m_timeSinceLastRelease;
+    Material idleMat;
+
+    [SerializeField]
+    Material activeMat;
 
     public bool m_shouldPause = false;
 
@@ -20,6 +29,7 @@ public class EnemySpawnPointScript : MonoBehaviour
     void Start()
     {
         m_wavesToBeSpawned = new List<WaveInfo>();
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     // Update is called once per frame
@@ -27,9 +37,13 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (Network.isServer && !m_shouldPause)
         {
-            // m_timeSinceLastRelease += Time.deltaTime;
-            //if (m_timeSinceLastRelease >= m_timeBetweenReleases && m_wavesToBeSpawned.Count != 0)
-            ReleaseEnemy();
+            if (spawnPointActive)
+            {
+                m_timeSinceLastRelease += Time.deltaTime;
+                if (m_timeSinceLastRelease >= activeTime && spawnPointActive)
+                    ReleaseEnemy();
+            }
+
         }
     }
 
@@ -42,6 +56,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             return;
         }
 
+        Activate(false);
 
         foreach (WaveInfo info in m_wavesToBeSpawned)
         {
@@ -77,6 +92,10 @@ public class EnemySpawnPointScript : MonoBehaviour
                 }
             }
 
+            if(closestTarget == null)
+            {
+                Debug.LogError("Default target is null");
+            }
 
             /// attach order targetting closest target to group
             AIOrder<EnemyGroup> defaultOrder = new AIOrder<EnemyGroup> { Orderee = spawnedGroup, ObjectOfInterest = closestTarget };
@@ -110,12 +129,16 @@ public class EnemySpawnPointScript : MonoBehaviour
     //    m_wavesToBeSpawned.AddRange(waves);
     //}
 
-    public void AddToSpawnList(List<WaveInfo> waves_, float relayTime_)
+    public void AddToSpawnList(List<WaveInfo> waves_)
     {
-
-        m_timeBetweenReleases = relayTime_;
-
         m_wavesToBeSpawned.AddRange(waves_);
+
+        Activate(true);
+    }
+
+    void Activate(bool flag_)
+    {
+        meshRenderer.material = (spawnPointActive = flag_) == true ? activeMat : idleMat;
     }
 
     public void SetModifier(float modifier_)

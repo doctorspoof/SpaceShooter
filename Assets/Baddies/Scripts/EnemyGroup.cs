@@ -102,11 +102,17 @@ public class EnemyGroup : MonoBehaviour
 
         CheckAndAttackPlayersInRange(50);
 
-        //System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-        //watch.Start();
         SetShipSpeeds();
-        //watch.Stop();
-        //Debug.Log("time taken = " + watch.ElapsedMilliseconds);
+
+        //if (orderQueue.Count > 0)
+        //{
+        //    Debug.DrawLine(transform.position, orderQueue[0].PositionOfInterest);
+
+        //    if(orderQueue[0].ObjectOfInterest != null)
+        //    {
+        //        Debug.Log("objectOfInterest = " + orderQueue[0].ObjectOfInterest.name);
+        //    }
+        //}
 
         if (orderQueue.Count == 0 && defaultOrders.Count > 0 && !GroupStillHasMembersWithOrder())
         {
@@ -136,7 +142,7 @@ public class EnemyGroup : MonoBehaviour
     void LateUpdate()
     {
         transform.position = GetGroupAverageCentre();
-        UpdateLastPositions();
+        //UpdateLastPositions();
 
         if (orderQueue.Count > 0)
         {
@@ -205,7 +211,7 @@ public class EnemyGroup : MonoBehaviour
                                    {
                                        foreach (EnemyScript ship in tier)
                                        {
-                                           int indexOfShip = group.Children[(int)ship.ShipSize].IndexOf(ship);
+                                           //int indexOfShip = group.Children[(int)ship.ShipSize].IndexOf(ship);
 
                                            ship.SetMoveTarget((Vector2)pointOfInterest + ship.GetLocalFormationPosition());
 
@@ -229,7 +235,7 @@ public class EnemyGroup : MonoBehaviour
         float distanceToTarget = Vector2.Distance(from, target) + 10;
         RaycastHit hit;
 
-        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized ), out hit, distanceToTarget, 1 << LayerMask.NameToLayer("Environmental Damage"));
+        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget, 1 << LayerMask.NameToLayer("Environmental Damage"));
 
         if (collidedWithSomething)
             collidedObject = hit.collider.gameObject;
@@ -239,8 +245,8 @@ public class EnemyGroup : MonoBehaviour
 
     public Vector2 GetPositionForAvoidance(GameObject objectToAvoid, Vector2 targetLocation, Vector2 currentLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
     {
-
-        Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
+         
+        //Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
         float radiusOfObject = Mathf.Sqrt(Mathf.Pow(objectToAvoid.transform.localScale.x, 2) + Mathf.Pow(objectToAvoid.transform.localScale.y, 2)) * objectToAvoid.GetComponent<SphereCollider>().radius;
         float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
 
@@ -565,47 +571,47 @@ public class EnemyGroup : MonoBehaviour
         return ship;
     }
 
-    public void UpdateGroupCentre()
-    {
-        Vector2 returnee = new Vector2(0, 0);
-        foreach (List<EnemyScript> shipTier in m_children)
-        {
-            foreach (EnemyScript enemy in shipTier)
-            {
-                returnee += (Vector2)(enemy.rigidbody.transform.position - enemy.LastFramePosition);
-            }
-        }
-        transform.position = (Vector2)transform.position + (returnee / m_shipCount);
-    }
+    //public void UpdateGroupCentre()
+    //{
+    //    Vector2 returnee = new Vector2(0, 0);
+    //    foreach (List<EnemyScript> shipTier in m_children)
+    //    {
+    //        foreach (EnemyScript enemy in shipTier)
+    //        {
+    //            returnee += (Vector2)(enemy.rigidbody.transform.position - enemy.LastFramePosition);
+    //        }
+    //    }
+    //    transform.position = (Vector2)transform.position + (returnee / m_shipCount);
+    //}
 
     /// <summary>
     /// used when you want to add an array of ships translation to the group centre
     /// </summary>
     /// <param name="ship"></param>
-    public void AddToGroupCentre(EnemyScript[] ships)
-    {
-        Vector2 returnee = new Vector2(0, 0);
-        foreach (EnemyScript ship in ships)
-        {
-            returnee += (Vector2)(ship.rigidbody.transform.position - ship.LastFramePosition);
-        }
-        transform.position = (Vector2)transform.position + (returnee / ships.Length);
-    }
+    //public void AddToGroupCentre(EnemyScript[] ships)
+    //{
+    //    Vector2 returnee = new Vector2(0, 0);
+    //    foreach (EnemyScript ship in ships)
+    //    {
+    //        returnee += (Vector2)(ship.rigidbody.transform.position - ship.LastFramePosition);
+    //    }
+    //    transform.position = (Vector2)transform.position + (returnee / ships.Length);
+    //}
 
     /// <summary>
     /// This needed to be seperate from UpdateGroupCentre as it caused problems when update group centre stopped being called
     /// and then called at a later frame when the ships have reformed. It would cause the centre to jump.
     /// </summary>
-    private void UpdateLastPositions()
-    {
-        foreach (List<EnemyScript> shipTier in m_children)
-        {
-            foreach (EnemyScript enemy in shipTier)
-            {
-                enemy.LastFramePosition = enemy.rigidbody.transform.position;
-            }
-        }
-    }
+    //private void UpdateLastPositions()
+    //{
+    //    foreach (List<EnemyScript> shipTier in m_children)
+    //    {
+    //        foreach (EnemyScript enemy in shipTier)
+    //        {
+    //            enemy.LastFramePosition = enemy.rigidbody.transform.position;
+    //        }
+    //    }
+    //}
 
     public Vector2 GetGroupAverageCentre()
     {
@@ -656,9 +662,9 @@ public class EnemyGroup : MonoBehaviour
         outOfFormation = new List<EnemyScript>();
         foreach (List<EnemyScript> shipTier in m_children)
         {
-            foreach(EnemyScript ship in shipTier)
+            foreach (EnemyScript ship in shipTier)
             {
-                if(ship.InFormation(0.8f))
+                if (ship.InFormation(0.8f))
                 {
                     inFormation.Add(ship);
                 }
@@ -779,7 +785,7 @@ public class EnemyGroup : MonoBehaviour
     void GenerateBoxFormation()
     {
 
-        int middleLayer = Mathf.CeilToInt(m_children.Length / 2.0f);
+        //  int middleLayer = Mathf.CeilToInt(m_children.Length / 2.0f);
 
         float width = 0, height = 0;
 
@@ -854,7 +860,7 @@ public class EnemyGroup : MonoBehaviour
 
                         for (int j = 0; j < m_children[i].Count; ++j)
                         {
-                            float layerX = spacingBetweenShipsInLayer;
+                            //float layerX = spacingBetweenShipsInLayer;
 
                             m_children[i][j].FormationPosition = new Vector2((spacingBetweenShipsInLayer * j) - (width / 2.0f) + (spacingBetweenShipsInLayer / 2), spacingBetweenLayers - (height / 2.0f) + (spacingBetweenLayers / 2));
                         }
@@ -988,7 +994,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                EnemyScript ship = m_children[i][j];
+                //EnemyScript ship = m_children[i][j];
 
                 float arrowheadAngle = 90.0f;
 
@@ -1206,7 +1212,7 @@ public class EnemyGroup : MonoBehaviour
         if (outOfFormation.Count > 0)
         {
 
-            EnemyScript shipFurthestOutOfFormation = GetShipFurthestOutOfFormation();
+            //EnemyScript shipFurthestOutOfFormation = GetShipFurthestOutOfFormation();
             List<EnemyScript> shipsAhead = new List<EnemyScript>();
             foreach (EnemyScript ship in outOfFormation)
             {

@@ -425,7 +425,7 @@ public class EventScript : MonoBehaviour
                     enemyWaves.Add(wave);
                 }
 
-                EnemySpawnPointScript spawnPoint = newSpawnPoint.GetComponent<EnemySpawnPointScript>();
+                //EnemySpawnPointScript spawnPoint = newSpawnPoint.GetComponent<EnemySpawnPointScript>();
                 //spawnPoint.SetSpawnList(enemyWaves, timeBetweenWaves);
                 //spawnPoint.m_shouldStartSpawning = true;
 				break;

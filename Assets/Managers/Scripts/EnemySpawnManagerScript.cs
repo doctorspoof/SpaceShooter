@@ -114,10 +114,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
     {
         m_allSpawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
         m_capitalShip = ship;
-        foreach (GameObject spawner in m_allSpawnPoints)
-        {
-            spawner.GetComponent<EnemySpawnPointScript>().m_CapitalShip = ship;
-        }
     }
 
     // Use this for initialization
@@ -209,9 +205,9 @@ public class EnemySpawnManagerScript : MonoBehaviour
         //{
 
         List<GameObject> spawnersToBeSpawnedAt = null;
-
+        //spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
         // decide if this is a large or small wave
-        if (waveCount % 5 == 0 && waveCount > 0)
+        if ((waveCount % 5 == 0 && waveCount > 0))
         {
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
             waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
@@ -219,7 +215,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
 
             EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[0].GetComponent<EnemySpawnPointScript>();
-            spawnPoint.AddToSpawnList(waveToBePassed, secondsBetweenWaves);
+            spawnPoint.AddToSpawnList(waveToBePassed);
 
         }
         else
@@ -259,7 +255,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
                 waveToBePassed.Add(adjustedWave);
 
                 EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[a].GetComponent<EnemySpawnPointScript>();
-                spawnPoint.AddToSpawnList(waveToBePassed, secondsBetweenWaves);
+                spawnPoint.AddToSpawnList(waveToBePassed);
             }
 
 
@@ -274,7 +270,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             foreach (GameObject obj in spawnersToBeSpawnedAt)
             {
                 EnemySpawnPointScript spawnPoint = obj.GetComponent<EnemySpawnPointScript>();
-                spawnPoint.AddToSpawnList(waveToBePassed, secondsBetweenWaves);
+                spawnPoint.AddToSpawnList(waveToBePassed);
             }
         }
 

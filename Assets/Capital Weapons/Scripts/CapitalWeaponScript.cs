@@ -16,6 +16,9 @@ public class CapitalWeaponScript : MonoBehaviour
 	[SerializeField]
 	Vector3 m_posOffset;
 
+    [SerializeField]
+    float rotateSpeed = 20f;
+
 	[SerializeField]
 	float m_spreadFactor = 0;
 	[SerializeField]
@@ -113,8 +116,10 @@ public class CapitalWeaponScript : MonoBehaviour
 				}
 
 				//Rotate towards forward
-				Quaternion targetR = Quaternion.Euler (new Vector3(0,0,(Mathf.Atan2 (this.transform.parent.up.y, this.transform.parent.up.x) - Mathf.PI/2) * Mathf.Rad2Deg));
-				transform.parent.rotation = Quaternion.Slerp(transform.rotation, targetR, 5.0f * Time.deltaTime);
+                //Quaternion targetR = Quaternion.Euler (new Vector3(0,0,(Mathf.Atan2 (this.transform.parent.up.y, this.transform.parent.up.x) - Mathf.PI/2) * Mathf.Rad2Deg));
+                //transform.parent.rotation = Quaternion.Slerp(transform.rotation, targetR, 5.0f * Time.deltaTime);
+
+                RotateTowards(transform.position + transform.parent.up);
 				
 				//Look for enemy
 				//Only look for enemy layer
@@ -131,7 +136,7 @@ public class CapitalWeaponScript : MonoBehaviour
 					}
 					case AimingStyle.Basic:
 					{
-						RotateTowardsTarget(target.transform.position);
+						RotateTowards(target.transform.position);
 						bool didFire;
 						CheckTargetsAndFire(target.transform.position, out didFire);
 						break;
@@ -142,7 +147,7 @@ public class CapitalWeaponScript : MonoBehaviour
 						float timeTakenToTravel = Vector3.Distance(target.transform.position, this.transform.position) / bulletRef.GetComponent<BasicBulletScript>().GetBulletSpeed();
 						Vector3 predictedTargetPos = target.transform.position + (target.rigidbody.velocity * timeTakenToTravel);
 
-						RotateTowardsTarget(predictedTargetPos);
+						RotateTowards(predictedTargetPos);
 						bool didFire;
 						CheckTargetsAndFire(predictedTargetPos, out didFire);
 						break;
@@ -150,7 +155,7 @@ public class CapitalWeaponScript : MonoBehaviour
 					case AimingStyle.EdgeExplode:
 					{
 						Vector3 targetPos = target.transform.position + m_flakFiringOffset;
-						RotateTowardsTarget(targetPos);
+						RotateTowards(targetPos);
 						bool didFire;
 						CheckTargetsAndFire(targetPos, out didFire);
 						if(didFire)
@@ -163,7 +168,7 @@ public class CapitalWeaponScript : MonoBehaviour
 					}
 					case AimingStyle.Beam:
 					{
-						RotateTowardsTarget(target.transform.position);
+						RotateTowards(target.transform.position);
 						//Ensure we are beam type
 						if(m_isBeam)
 						{
@@ -195,9 +200,11 @@ public class CapitalWeaponScript : MonoBehaviour
 				//Rotate towards enemy
 				/*var dir = target.transform.position - transform.position;
 				Quaternion targetR = Quaternion.Euler (new Vector3(0,0,(Mathf.Atan2 (dir.y,dir.x) - Mathf.PI/2) * Mathf.Rad2Deg));
-				transform.parent.rotation = Quaternion.Slerp(transform.rotation, targetR, 5.0f * Time.deltaTime);
+				transform.parent.rotation = Quaternion.Slerp(transform.rotation, targetR, 5.0f * Time.deltaTime);*/
+                
+                //RotateTowards(target.transform.position);
 				
-				Debug.DrawLine (transform.position, target.transform.position);
+				/*Debug.DrawLine (transform.position, target.transform.position);
 				
 				//Check if in range/angle, if so, fire
 				if (IsObjectInWeaponRange (target))
@@ -246,13 +253,27 @@ public class CapitalWeaponScript : MonoBehaviour
 		}
 	}
 
-	void RotateTowardsTarget(Vector3 targetPos)
-	{
-		var dir = targetPos - transform.position;
-		Quaternion targetR = Quaternion.Euler (new Vector3(0,0,(Mathf.Atan2 (dir.y,dir.x) - Mathf.PI/2) * Mathf.Rad2Deg));
-		transform.parent.rotation = Quaternion.Slerp(transform.rotation, targetR, 5.0f * Time.deltaTime);
-		Debug.DrawLine (transform.position, targetPos);
-	}
+    public void RotateTowards(Vector3 targetPosition)
+    {
+        Vector2 targetDirection = targetPosition - transform.parent.position;
+        float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
+        float currentAngle = transform.parent.rotation.eulerAngles.z;
+
+        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 0.1f && true) /// turn to false to use old rotation movement
+        {
+            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, rotateSpeed * Time.deltaTime);
+            transform.parent.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
+        }
+        else
+        {
+            Quaternion rotate = Quaternion.LookRotation(targetDirection, Vector3.back);
+            rotate.x = 0;
+            rotate.y = 0;
+
+            transform.parent.rotation = Quaternion.Slerp(transform.parent.rotation, rotate, rotateSpeed / 50 * Time.deltaTime);
+        }
+    }
+
 	void CheckTargetsAndFire(Vector3 targetPos, out bool didFire, bool enemyOverEnemy = true)
 	{
 		didFire = false;
@@ -563,7 +584,7 @@ public class CapitalWeaponScript : MonoBehaviour
 	
 	GameObject FindClosestTarget (out EnemyScript enemyScript, bool enemyOnly = false, bool targettingShipOnly = false)
 	{
-		int layerMask = enemyOnly ? (1 << Layers.enemy) : (1 << Layers.enemy) | (1 << Layers.asteroid);
+		int layerMask = enemyOnly ? (1 << Layers.enemy) : (1 << Layers.enemy) | (1 << Layers.asteroid) | (1 << Layers.enemyDestructibleBullet) | (1 << LayerMask.NameToLayer("EnemyCollide"));
 		//Debug.Log ("[CWeapon]: Checking on layermask " + layerMask.ToString() + ".");
 		//Collider[] colliders = Physics.OverlapSphere(this.transform.position, 20, layerMask);
 		//Debug.Log ("[CWeapon]: Overlap Sphere returned " + colliders.Length + " colliders.");

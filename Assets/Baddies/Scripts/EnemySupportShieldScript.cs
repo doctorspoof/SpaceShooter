@@ -150,7 +150,7 @@ public class EnemySupportShieldScript : MonoBehaviour
 		while (t <= 1.0f)
 		{
 			t += Time.deltaTime;
-			float time = this.renderer.material.GetFloat ("_ImpactTime" + (i + 1).ToString());
+			//float time = this.renderer.material.GetFloat ("_ImpactTime" + (i + 1).ToString());
 			
 			//oldImp.w = 1.0f - t;
 			
