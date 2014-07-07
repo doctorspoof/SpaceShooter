@@ -5,6 +5,8 @@
 /// </summary>
 public sealed class ItemTicket
 {
+	/// Variables
+
 	/// <summary>
 	/// Each ticket should contain a unique ID which is used to identify whether the ticket is valid or not.
 	/// </summary>
@@ -22,8 +24,16 @@ public sealed class ItemTicket
 	/// The itemIndex identifies where in the array or list of the NetworkInventory the corresponding item should be.
 	/// </summary>
 	public int itemIndex = -1;
+	
+	
+	/// <summary>
+	/// A static reference to the default values an ItemTicket holds when it is created.
+	/// </summary>
+	public static ItemTicket standard = new ItemTicket().Reset();
 
 
+
+	/// Functions
 
 	/// <summary>
 	/// The default constructor which will initiate the ItemTicket to default invalid values.
@@ -48,10 +58,12 @@ public sealed class ItemTicket
 	/// <summary>
 	/// Will reset the value of each variable to -1.
 	/// </summary>
-	public void Reset()
+	public ItemTicket Reset()
 	{
 		uniqueID = -1;
 		itemID = -1;
 		itemIndex = -1;
+
+		return this;
 	}
 }
