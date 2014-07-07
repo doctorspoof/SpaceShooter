@@ -1556,7 +1556,7 @@ public class GUIManager : MonoBehaviour
 								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + itemCost))
 								{
 									//Check if the player has enough cash
-									if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull())
+									if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull()
 									{
 										//Add the item to the player's inventory
 										pcControl.AddItemToInventory(shopInv[i].gameObject);

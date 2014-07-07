@@ -13,12 +13,14 @@ using System.Linq;
 [System.Serializable]
 public sealed class NetworkInventory : MonoBehaviour 
 {
+	// Used in the IsDesired functions
 	private enum RequestCheck
 	{
 		None = 1,
 		Requested = 2,
 		Unrequested = 3
 	}
+
 
 
 	/// Unity modifiable variables
