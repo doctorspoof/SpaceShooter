@@ -205,64 +205,64 @@ public class EnemySpawnManagerScript : MonoBehaviour
         //{
 
         List<GameObject> spawnersToBeSpawnedAt = null;
-
+        spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
         // decide if this is a large or small wave
-        if ((waveCount % 5 == 0 && waveCount > 0))
-        {
-            List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
+        //if ((waveCount % 5 == 0 && waveCount > 0))
+        //{
+        //    List<WaveInfo> waveToBePassed = new List<WaveInfo>();
+        //    waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
 
-            spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
+        //    spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
 
-            EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[0].GetComponent<EnemySpawnPointScript>();
-            spawnPoint.AddToSpawnList(waveToBePassed);
+        //    EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[0].GetComponent<EnemySpawnPointScript>();
+        //    spawnPoint.AddToSpawnList(waveToBePassed);
 
-        }
-        else
-        {
+        //}
+        //else
+        //{
 
-            int random = Random.Range(0, smallMultipleWaves.Length);
-            WaveInfo newWave = smallMultipleWaves[random].Clone();
+        //    int random = Random.Range(0, smallMultipleWaves.Length);
+        //    WaveInfo newWave = smallMultipleWaves[random].Clone();
 
-            //waveToBePassed.Add(newWave);
+        //    //waveToBePassed.Add(newWave);
 
-            spawnersToBeSpawnedAt = GetRandomSpawnPoints(2, m_allSpawnPoints.Length);
+        //    spawnersToBeSpawnedAt = GetRandomSpawnPoints(2, m_allSpawnPoints.Length);
 
-            float[] ratios = new float[newWave.m_enemiesOnWave.Length];
-            for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
-            {
-                ratios[i] = newWave.m_enemiesOnWave[i].m_numEnemy / (float)spawnersToBeSpawnedAt.Count;
-            }
+        //    float[] ratios = new float[newWave.m_enemiesOnWave.Length];
+        //    for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
+        //    {
+        //        ratios[i] = newWave.m_enemiesOnWave[i].m_numEnemy / (float)spawnersToBeSpawnedAt.Count;
+        //    }
 
-            for (int a = 0; a < spawnersToBeSpawnedAt.Count; ++a)
-            {
-                WaveInfo adjustedWave = newWave.Clone();
+        //    for (int a = 0; a < spawnersToBeSpawnedAt.Count; ++a)
+        //    {
+        //        WaveInfo adjustedWave = newWave.Clone();
 
-                for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
-                {
-                    int shipsCount = newWave.m_enemiesOnWave[i].m_numEnemy;
-                    //                int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count),
-                    //shipsCount - a * Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count));
+        //        for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
+        //        {
+        //            int shipsCount = newWave.m_enemiesOnWave[i].m_numEnemy;
+        //            //                int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count),
+        //            //shipsCount - a * Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count));
 
-                    int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(ratios[i]), Mathf.CeilToInt(shipsCount / (float)(spawnersToBeSpawnedAt.Count - a)));
+        //            int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(ratios[i]), Mathf.CeilToInt(shipsCount / (float)(spawnersToBeSpawnedAt.Count - a)));
 
-                    adjustedWave.m_enemiesOnWave[i].m_numEnemy = shipsPerGroup;
-                    newWave.m_enemiesOnWave[i].m_numEnemy -= shipsPerGroup;
+        //            adjustedWave.m_enemiesOnWave[i].m_numEnemy = shipsPerGroup;
+        //            newWave.m_enemiesOnWave[i].m_numEnemy -= shipsPerGroup;
 
-                }
+        //        }
 
-                List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-                waveToBePassed.Add(adjustedWave);
+        //        List<WaveInfo> waveToBePassed = new List<WaveInfo>();
+        //        waveToBePassed.Add(adjustedWave);
 
-                EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[a].GetComponent<EnemySpawnPointScript>();
-                spawnPoint.AddToSpawnList(waveToBePassed);
-            }
+        //        EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[a].GetComponent<EnemySpawnPointScript>();
+        //        spawnPoint.AddToSpawnList(waveToBePassed);
+        //    }
 
 
-        }
+        //}
 
         // will a special wave spawn in addition?
-        if (waveCount % 4 == 0)
+        if (waveCount % 1 == 0)
         {
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
             waveToBePassed.Add(specialWaves[Random.Range(0, specialWaves.Length)]);

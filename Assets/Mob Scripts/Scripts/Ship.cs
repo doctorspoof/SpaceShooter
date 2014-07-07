@@ -13,6 +13,17 @@ public class Ship : MonoBehaviour
     [SerializeField]
     float m_currentShipSpeed = 0.0f;
 
+    bool afterburnersFiring = false, afterburnersRecharged = true;
+    float currentAfterburnerTime = 0.0f, currentAfterburnerRechargeTime = 0.0f;
+    [SerializeField]
+    float afterburnerIncreaseOfSpeed;
+    [SerializeField]
+    float afterburnerLength;
+    [SerializeField]
+    float afterburnerRechargeTime;
+    //[SerializeField]
+    //float decreaseInTurnRateWithAfterburner;
+
     [SerializeField]
     float m_rotateSpeed = 5.0f;
 
@@ -21,6 +32,9 @@ public class Ship : MonoBehaviour
 
     [SerializeField]
     bool maunuallySetWidthAndHeight = false;
+
+    [SerializeField]
+    protected float weaponRange = 0.0f;
 
     [SerializeField]
     float m_shipWidth;
@@ -39,7 +53,7 @@ public class Ship : MonoBehaviour
 
     public float GetCurrentMomentum()
     {
-        return m_currentShipSpeed * rigidbody.mass;
+        return GetCurrentShipSpeed() * rigidbody.mass;
     }
 
     public float GetRamDam()
@@ -47,7 +61,7 @@ public class Ship : MonoBehaviour
         return m_ramDamageMultiplier;
     }
 
-    void Awake()
+    protected virtual void Awake()
     {
         Init();
     }
@@ -56,6 +70,32 @@ public class Ship : MonoBehaviour
     {
         shipTransform = transform;
         SetShipSizes();
+    }
+
+    protected virtual void Update()
+    {
+        if (afterburnersFiring == true)
+        {
+            currentAfterburnerTime += Time.deltaTime;
+            if (currentAfterburnerTime >= afterburnerLength)
+            {
+                currentAfterburnerTime = 0;
+                afterburnersFiring = false;
+            }
+        }
+
+        if (afterburnersFiring == false)
+        {
+            if (afterburnersRecharged == false)
+            {
+                currentAfterburnerRechargeTime += Time.deltaTime;
+                if (currentAfterburnerRechargeTime >= afterburnerRechargeTime)
+                {
+                    afterburnersRecharged = true;
+                }
+            }
+        }
+
     }
 
     public void SetShipMomentum(float currentSpeed)
@@ -75,7 +115,7 @@ public class Ship : MonoBehaviour
 
     public float GetCurrentShipSpeed()
     {
-        return m_currentShipSpeed;
+        return afterburnersFiring == true ? m_currentShipSpeed + afterburnerIncreaseOfSpeed : m_currentShipSpeed;
     }
 
     public void ResetShipSpeed()
@@ -171,5 +211,25 @@ public class Ship : MonoBehaviour
 
         return width + height;
 
+    }
+
+    public bool CanFireAfterburners()
+    {
+        return !afterburnersFiring && afterburnersRecharged;
+    }
+
+    public void FireAfterburners()
+    {
+        if (!afterburnersFiring && afterburnersRecharged)
+        {
+            Debug.Log("Afterburner firing");
+            afterburnersFiring = true;
+            afterburnersRecharged = false;
+        }
+    }
+
+    public virtual float GetMinimumWeaponRange()
+    {
+        return weaponRange;
     }
 }

@@ -207,8 +207,12 @@ MonoBehaviour:
   specialWaves:
   - defaultOrderTargetTag: Player
     m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
       m_numEnemy: 3
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
+      m_numEnemy: 2
   test: []
   m_allSpawnPoints: []
   m_capitalShip: {fileID: 0}
@@ -491,6 +495,10 @@ Prefab:
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
@@ -2038,7 +2046,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &525127594
 Transform:
   m_ObjectHideFlags: 0
@@ -2556,6 +2564,10 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
   m_RootGameObject: {fileID: 1291703275}
@@ -2605,7 +2617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &656297902
 Transform:
   m_ObjectHideFlags: 0
@@ -3027,6 +3039,10 @@ Prefab:
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
@@ -4196,7 +4212,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!23 &883425383
 Renderer:
   m_ObjectHideFlags: 0
@@ -4662,7 +4678,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1032593785
 Transform:
   m_ObjectHideFlags: 0
@@ -5177,6 +5193,10 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
   m_RootGameObject: {fileID: 1755202260}
@@ -5222,7 +5242,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1229404442
 Transform:
   m_ObjectHideFlags: 0
@@ -5413,7 +5433,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1291703276
 Transform:
   m_ObjectHideFlags: 0
@@ -6266,7 +6286,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1405214340
 Transform:
   m_ObjectHideFlags: 0
@@ -6757,6 +6777,10 @@ Prefab:
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
@@ -8016,8 +8040,12 @@ MonoBehaviour:
   specialWaves:
   - defaultOrderTargetTag: Player
     m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
       m_numEnemy: 3
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
+      m_numEnemy: 2
   test: []
   m_allSpawnPoints: []
   m_capitalShip: {fileID: 0}
@@ -8137,7 +8165,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1755202261
 Transform:
   m_ObjectHideFlags: 0
@@ -8402,6 +8430,10 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
   m_RootGameObject: {fileID: 656297901}
@@ -8538,6 +8570,10 @@ Prefab:
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}

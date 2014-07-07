@@ -108,7 +108,7 @@ public class HealthScript : MonoBehaviour
 	void OnCollisionEnter(Collision collision)
 	{
 		//if(this.tag == "Asteroid")
-		//Debug.Log ("Object '" + name + " collided with object: '" + collision.gameObject.name + "'.");
+		Debug.Log ("Object '" + name + " collided with object: '" + collision.gameObject.name + "'.");
 		//NOTE: This function should only apply damage to the other collider, since the function will be called on
 		// 		both sides
 		if(this.tag == "Enemy")
@@ -119,8 +119,10 @@ public class HealthScript : MonoBehaviour
 				//If it's a PC or the capital ship, work out how fast the collision was
 				//TODO: 
 				//Insert sounds here
-				float magnitude = collision.relativeVelocity.magnitude;
-				int PCdamage = (int)(magnitude * this.GetComponent<EnemyScript>().GetRamDam());
+                Ship shipComponent = GetComponent<Ship>();
+
+				float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
+                int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
 				//Debug.Log("Applying " + PCdamage + " damage to PC.");
 				collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
 			}

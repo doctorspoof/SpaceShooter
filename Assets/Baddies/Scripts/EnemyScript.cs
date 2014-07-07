@@ -32,8 +32,6 @@ public class EnemyScript : Ship
     [SerializeField]
     bool m_hasTurrets = false;
 
-    
-
     EnemyGroup m_parentGroup;
 
     GameObject m_target;
@@ -211,7 +209,7 @@ public class EnemyScript : Ship
         Init();
     }
 
-    
+
 
     [SerializeField]
     public int shipID = -1;
@@ -241,11 +239,12 @@ public class EnemyScript : Ship
     // Update is called once per frame
     void Update()
     {
-
         //m_shipSpeed = 0;
 
         if (Network.isServer)
         {
+            base.Update();
+
             EnemyScript slowestShip = m_parentGroup.GetSlowestShip();
 
             switch (m_currentOrder)
@@ -275,7 +274,7 @@ public class EnemyScript : Ship
                         MoveTowardTarget();
                         //watch.Stop();
                         //Debug.Log("time taken = " + watch.ElapsedTicks);
-
+                        Debug.Log("Move running");
                         if (Vector3.SqrMagnitude((Vector2)shipTransform.position - m_moveTarget) < 0.64f || m_parentGroup.HasGroupArrivedAtLocation())
                         {
                             m_currentOrder = Order.Idle;
@@ -287,10 +286,11 @@ public class EnemyScript : Ship
                     {
                         if (m_target == null)
                         {
+                            Debug.Log("target is null");
                             m_currentOrder = Order.Idle;
                             break;
                         }
-
+                        
                         Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
                         Ray ray = new Ray(shipTransform.position, direction);
 
@@ -308,6 +308,7 @@ public class EnemyScript : Ship
                         RaycastHit hit;
                         if (!m_target.collider.Raycast(ray, out hit, totalRange))
                         {
+                            Debug.Log("raytrace missed");
                             Vector2 normalOfDirection = GetNormal(direction);
 
                             RotateTowards((Vector2)m_target.transform.position + (randomOffsetFromTarget * normalOfDirection));
@@ -316,6 +317,7 @@ public class EnemyScript : Ship
                         }
                         else
                         {
+                            Debug.Log("Attack running");
                             currentAttackType.Attack(this, m_target);
                         }
 
@@ -433,39 +435,31 @@ public class EnemyScript : Ship
         return Physics.OverlapSphere(shipTransform.position, range, layerMask);
     }
 
-    
-
-    public float GetMinimumWeaponRange()
+    public override float GetMinimumWeaponRange()
     {
-        float weaponRange = 0;
+        //float weaponRange = 0;
         EnemyWeaponScript enemyWeaponScript;
         if ((enemyWeaponScript = GetComponent<EnemyWeaponScript>()) != null)
         {
             weaponRange = enemyWeaponScript.GetRange();
             return weaponRange;
         }
-        else
+
+        GameObject[] turrets = GetAttachedTurrets();
+        if (turrets != null)
         {
-            GameObject[] turrets = GetAttachedTurrets();
-
-            if (turrets != null)
+            foreach (GameObject turret in GetAttachedTurrets())
             {
-                foreach (GameObject turret in GetAttachedTurrets())
+                EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
+                if (turretScript != null && (weaponRange == 0 || turretScript.GetRange() < weaponRange))
                 {
-                    EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
-                    if (turretScript != null && (weaponRange == 0 || turretScript.GetRange() < weaponRange))
-                    {
-                        weaponRange = turretScript.GetRange();
-                    }
+                    weaponRange = turretScript.GetRange();
                 }
-                return weaponRange;
             }
-            else
-            {
-                return 0;
-            }
-
+            return weaponRange;
         }
+
+        return weaponRange;
     }
 
     private void MoveTowardTarget()
