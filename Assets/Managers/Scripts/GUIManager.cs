@@ -69,7 +69,7 @@ public class GUIManager : MonoBehaviour
 		chatMessages = new List<string>();
 		//GetClipCursor(ref previousCursorClip);
 
-		Resolution current = Screen.currentResolution;
+		//Resolution current = Screen.currentResolution;
 
 		//System.IntPtr window = FindWindow(null, "X-Sidus");
 		//SetWindowPos(window, 0, 0, 0, current.width, current.height, 0);

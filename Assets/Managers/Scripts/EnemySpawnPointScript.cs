@@ -11,9 +11,9 @@ public class EnemySpawnPointScript : MonoBehaviour
     float activeTime;
     float m_timeSinceLastRelease;
 
-    MeshRenderer renderer;
+    MeshRenderer meshRenderer;
     [SerializeField]
-    bool active = false;
+    bool spawnPointActive = false;
 
     [SerializeField]
     Material idleMat;
@@ -29,7 +29,7 @@ public class EnemySpawnPointScript : MonoBehaviour
     void Start()
     {
         m_wavesToBeSpawned = new List<WaveInfo>();
-        renderer = GetComponent<MeshRenderer>();
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     // Update is called once per frame
@@ -37,10 +37,10 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (Network.isServer && !m_shouldPause)
         {
-            if (active)
+            if (spawnPointActive)
             {
                 m_timeSinceLastRelease += Time.deltaTime;
-                if (m_timeSinceLastRelease >= activeTime && active)
+                if (m_timeSinceLastRelease >= activeTime && spawnPointActive)
                     ReleaseEnemy();
             }
 
@@ -138,7 +138,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     void Activate(bool flag_)
     {
-        renderer.material = (active = flag_) == true ? activeMat : idleMat;
+        meshRenderer.material = (spawnPointActive = flag_) == true ? activeMat : idleMat;
     }
 
     public void SetModifier(float modifier_)

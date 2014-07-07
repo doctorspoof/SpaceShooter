@@ -38,7 +38,7 @@ public class AttackShieldShipCircleClockwise : IAttack
 
             float targetAngle = currentAngle - 10;
 
-            float distanceToTarget = Vector2.Distance(ship.shipTransform.position, target.transform.position);
+            //float distanceToTarget = Vector2.Distance(ship.shipTransform.position, target.transform.position);
 
             float rangeToCircleAt = totalRange;
 

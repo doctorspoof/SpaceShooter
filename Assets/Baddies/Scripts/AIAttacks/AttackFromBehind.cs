@@ -54,7 +54,7 @@ public class AttackFromBehind : IAttack
 
     Vector2 GetPositionForAvoidance(EnemyScript ship, GameObject objectToAvoid, Vector2 targetLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
     {
-        Vector2 directionFromObjectToThis = ship.shipTransform.position - objectToAvoid.transform.position;
+        //Vector2 directionFromObjectToThis = ship.shipTransform.position - objectToAvoid.transform.position;
         float radiusOfObject = Mathf.Sqrt(Mathf.Pow(objectToAvoid.transform.localScale.x, 2) + Mathf.Pow(objectToAvoid.transform.localScale.y, 2));
         float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
 
