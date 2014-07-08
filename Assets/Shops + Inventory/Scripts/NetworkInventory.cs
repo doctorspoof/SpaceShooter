@@ -26,7 +26,7 @@ public sealed class NetworkInventory : MonoBehaviour
 	/// Unity modifiable variables
 	[SerializeField] List<ItemScript> m_inventory = new List<ItemScript>(0);	// Only objects with ItemScript components are valid
 	[SerializeField, Range (0, 100)] int m_capacity = 20;						// The maximum number of items the inventory can hold
-	[SerializeField, Range (0.1f, 120f)] float m_requestTimeOutSeconds = 120f;	// How long before a request ticket will be deleted due to it timing out
+	[SerializeField, Range (0.1f, 600f)] float m_requestTimeOutSeconds = 120f;	// How long before a request ticket will be deleted due to it timing out
 	[SerializeField] bool m_nullRemovedItems = false;							// Whether removals should just null the reference or remove it from the list entirely
 
 
@@ -144,7 +144,12 @@ public sealed class NetworkInventory : MonoBehaviour
 			PropagateRemoveNulls (true);
 		}
 
-		// Ensure the capacity isn't above the limited size
+		// Ensure the correct capacity has been set
+		if (m_inventory.Count > m_capacity)
+		{
+			m_inventory.RemoveRange (m_capacity, m_inventory.Count - m_capacity);
+		}
+		
 		m_inventory.Capacity = m_capacity;
 
 		// Fill the other lists
@@ -157,6 +162,10 @@ public sealed class NetworkInventory : MonoBehaviour
 
 		// Give ticketNumber a random starting value
 		ticketNumber = Random.Range (0, int.MaxValue);
+		
+		Debug.Log (m_inventory.Count + " / " + m_inventory.Capacity);
+		Debug.Log (m_isItemRequested.Count + " / " + m_isItemRequested.Capacity);
+		Debug.Log (m_requestTickets.Count + " / " + m_requestTickets.Capacity);
 	}
 
 
@@ -337,14 +346,22 @@ public sealed class NetworkInventory : MonoBehaviour
 		// Tickets which have been redeemed will be reset to the standard ticket
 		if (!toExpire.Equals (ItemTicket.standard))
 		{
-			int index = DetermineTicketIndex (toExpire);
-
-			if (IsValidIndex(index))
+			// Only the server needs to manage whether the item is flagged as requested or not
+			if (Network.isServer)
 			{
-				// Reset the request
-				m_isItemRequested[index] = false;
-				m_requestTickets[index].Reset();
+				// Obtain the index
+				int index = DetermineTicketIndex (toExpire);
+
+				// Flag the item as unrequested
+				if (IsValidIndex(index))
+				{
+					// Reset the request
+					m_isItemRequested[index] = false;
+				}
 			}
+
+			// Reset the ticket to ensure it's invalid
+			toExpire.Reset();
 		}
 	}
 
@@ -405,7 +422,7 @@ public sealed class NetworkInventory : MonoBehaviour
 		if (Network.isServer)
 		{
 			// Create the default response
-			ItemTicket response = new ItemTicket (-1, itemID, index);
+			ItemTicket ticket = new ItemTicket (-1, itemID, index);
 
 			// We now need to check if the itemID is valid
 			if (itemID >= 0)
@@ -420,25 +437,29 @@ public sealed class NetworkInventory : MonoBehaviour
 				}
 
 				// Set a valid uniqueID
-				response.uniqueID = ticketNumber++;
+				ticket.uniqueID = ticketNumber++;
 
 				// Add the valid ticket
 				if (isValidIndex)
 				{
+					// Make sure the ticket can expire
+					StartCoroutine (ExpireItemTicket (ticket, m_requestTimeOutSeconds));
+
+					// Add the ticket to the lists
 					m_isItemRequested[index] = true;
-					m_requestTickets[index] = response;
+					m_requestTickets[index] = ticket;
 				}
 			}
 
 			// Silly workaround for RPC sending limitation
 			if (message.Equals (m_blankMessage))
 			{
-				RespondToAddRequest (response);
+				RespondToAddRequest (ticket);
 			}
 
 			else
 			{
-				networkView.RPC ("RespondToAddRequest", message.sender, response.uniqueID, response.itemID, response.itemIndex);
+				networkView.RPC ("RespondToAddRequest", message.sender, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
 			}
 		}
 
@@ -516,8 +537,15 @@ public sealed class NetworkInventory : MonoBehaviour
 	// The server can just pass the ticket reference through to improve performance
 	void RespondToItemRequest (ItemTicket ticket)
 	{
+		// Assign response values
 		m_hasServerResponded = true;
 		m_itemRequestResponse = ticket;
+
+		// Ensure the ticket expires, the server doesn't need to do it again
+		if (Network.isClient)
+		{
+			StartCoroutine (ExpireItemTicket (ticket, m_requestTimeOutSeconds));
+		}
 	}
 	
 		
@@ -529,10 +557,16 @@ public sealed class NetworkInventory : MonoBehaviour
 
 
 	// The server can just pass the ticket reference through to improve performance
-	void RespondToAddRequest (ItemTicket response)
+	void RespondToAddRequest (ItemTicket ticket)
 	{
 		m_hasServerResponded = true;
-		m_itemAddResponse = response;
+		m_itemAddResponse = ticket;
+		
+		// Ensure the ticket expires, the server doesn't need to do it again
+		if (Network.isClient)
+		{
+			StartCoroutine (ExpireItemTicket (ticket, m_requestTimeOutSeconds));
+		}
 	}
 		
 
@@ -681,8 +715,14 @@ public sealed class NetworkInventory : MonoBehaviour
 			if (!m_inventory[i])
 			{
 				m_inventory.RemoveAt (i);
-				m_isItemRequested.RemoveAt (i);
-				m_requestTickets.RemoveAt (i);
+
+				// Counts are synchronised, this just ensures that if ran at the start, the function won't crash.
+				if (m_isItemRequested.Count > i)
+				{
+					m_isItemRequested.RemoveAt (i);
+					m_requestTickets.RemoveAt (i);
+				}
+
 				propagateRemoval = true;
 				--i;
 			}
