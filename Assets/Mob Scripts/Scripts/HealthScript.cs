@@ -237,7 +237,7 @@ public class HealthScript : MonoBehaviour
 			if(m_currentHealth < 0)
 			{
 				//Mob is dead :(
-				Debug.Log ("Alerting Mob that it's ran out of HP");
+				//Debug.Log ("Alerting Mob that it's ran out of HP");
 				OnMobDies(null);
 			}
 			

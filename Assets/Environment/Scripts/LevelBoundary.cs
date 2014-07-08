@@ -88,7 +88,7 @@ public sealed class LevelBoundary : MonoBehaviour
 	{
 		if (destroy)
 		{
-			Debug.Log ("Destroying " + destroy.name + " because it reached the level boundary");
+			//Debug.Log ("Destroying " + destroy.name + " because it reached the level boundary");
 			Network.Destroy (destroy);
 		}
 	}

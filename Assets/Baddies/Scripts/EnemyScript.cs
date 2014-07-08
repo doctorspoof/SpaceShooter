@@ -209,18 +209,9 @@ public class EnemyScript : Ship
         Init();
     }
 
-
-
-    [SerializeField]
-    public int shipID = -1;
-    static int ids = 0;
-
     // Use this for initialization
     void Start()
     {
-        shipID = ids;
-        ids++;
-
         shipTransform = transform;
         ResetThrusters();
 

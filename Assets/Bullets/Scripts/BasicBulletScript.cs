@@ -350,7 +350,7 @@ public class BasicBulletScript : MonoBehaviour
         {
             if (!m_isPiercing || !m_pastHits.Contains(mob))
             {
-                Debug.Log("Attempting to damage mob: " + mob.name);
+                //Debug.Log("Attempting to damage mob: " + mob.name);
                 HealthScript health = mob.GetComponent<HealthScript>();
 
                 if (health)

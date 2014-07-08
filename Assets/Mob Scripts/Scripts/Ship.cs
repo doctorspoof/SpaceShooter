@@ -25,7 +25,12 @@ public class ThrusterObject
         thrusterTransform.localScale = newScale;
 
         thrusterTransform.localPosition = originalPosition - (new Vector3(0, (newScale.y - originalScale.y) / 2, 0));
-        Debug.DrawLine(thrusterTransform.parent.position + originalPosition, thrusterTransform.parent.position + thrusterTransform.localPosition, Color.red);
+        //Debug.DrawLine(thrusterTransform.parent.position + originalPosition, thrusterTransform.parent.position + thrusterTransform.localPosition, Color.red);
+    }
+
+    public string Name
+    {
+        get { return thruster.name; }
     }
 
 }
@@ -72,8 +77,8 @@ public class Ship : MonoBehaviour
     float m_shipHeight;
 
     float maxThrusterVelocitySeen = 0;
-    GameObject thrustersHolder;
-    ThrusterObject[] thrusters;
+    Transform thrustersHolder = null, afterburnersHolder = null;
+    ThrusterObject[] thrusters = null, afterburners = null;
 
     public float GetMaxShipSpeed()
     {
@@ -100,8 +105,14 @@ public class Ship : MonoBehaviour
         Init();
     }
 
+    [SerializeField]
+    public int shipID = -1;
+    static int ids = 0;
+
     protected void Init()
     {
+        shipID = ids++;
+
         shipTransform = transform;
         shipRigidbody = rigidbody;
         SetShipSizes();
@@ -115,8 +126,7 @@ public class Ship : MonoBehaviour
             currentAfterburnerTime += Time.deltaTime;
             if (currentAfterburnerTime >= afterburnerLength)
             {
-                currentAfterburnerTime = 0;
-                afterburnersFiring = false;
+                AfterburnerFinished();
             }
         }
 
@@ -128,6 +138,7 @@ public class Ship : MonoBehaviour
                 if (currentAfterburnerRechargeTime >= afterburnerRechargeTime)
                 {
                     afterburnersRecharged = true;
+                    currentAfterburnerRechargeTime = 0;
                 }
             }
         }
@@ -140,13 +151,21 @@ public class Ship : MonoBehaviour
 
         if (thrustersHolder != null && maxThrusterVelocitySeen > 0)
         {
+
             float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
 
-            foreach(ThrusterObject thruster in thrusters)
+            foreach (ThrusterObject thruster in thrusters)
             {
                 thruster.SetPercentage(ratio);
             }
 
+            //if (afterburners != null)
+            //{
+            //    foreach (ThrusterObject thruster in afterburners)
+            //    {
+            //        thruster.SetPercentage(ratio);
+            //    }
+            //}
         }
 
     }
@@ -277,7 +296,17 @@ public class Ship : MonoBehaviour
         {
             afterburnersFiring = true;
             afterburnersRecharged = false;
+            afterburnersHolder.gameObject.SetActive(true);
         }
+    }
+
+    public void AfterburnerFinished()
+    {
+        currentAfterburnerTime = 0;
+        afterburnersFiring = false;
+        afterburnersRecharged = false;
+
+        afterburnersHolder.gameObject.SetActive(false);
     }
 
     public virtual float GetMinimumWeaponRange()
@@ -291,12 +320,12 @@ public class Ship : MonoBehaviour
         maxThrusterVelocitySeen = 0;
     }
 
-    private GameObject GetThrusterHolder()
+    private Transform GetThrusterHolder()
     {
         return RecursiveSearchForChild(shipTransform, "Thrusters");
     }
 
-    static private GameObject RecursiveSearchForChild(Transform object_, string name_)
+    static private Transform RecursiveSearchForChild(Transform object_, string name_)
     {
         // we look along all of the current child objects incase its on the top layer
         for (int i = 0; i < object_.childCount; ++i)
@@ -304,7 +333,7 @@ public class Ship : MonoBehaviour
             Transform child = object_.GetChild(i);
             if (child.name.Equals(name_))
             {
-                return child.gameObject;
+                return child;
             }
         }
 
@@ -312,7 +341,7 @@ public class Ship : MonoBehaviour
         for (int i = 0; i < object_.childCount; ++i)
         {
             Transform child = object_.GetChild(i);
-            GameObject returnee = RecursiveSearchForChild(child, name_);
+            Transform returnee = RecursiveSearchForChild(child, name_);
             if (returnee != null)
             {
                 return returnee;
@@ -329,12 +358,36 @@ public class Ship : MonoBehaviour
     public void ResetThrusterObjects()
     {
         thrustersHolder = GetThrusterHolder();
+        afterburnersHolder = thrustersHolder.transform.FindChild("Afterburners");
 
-        thrusters = new ThrusterObject[thrustersHolder.transform.childCount];
-        for (int i = 0; i < thrusters.Length; ++i)
+        //if there are afterburners, take 1 away since the afterburner holder is a child but not a thruster itself
+        thrusters = new ThrusterObject[afterburnersHolder != null ? thrustersHolder.transform.childCount - 1 : thrustersHolder.transform.childCount];
+
+
+
+        for (int i = 0, a = 0; i < thrusters.Length; )
         {
-            thrusters[i] = new ThrusterObject(thrustersHolder.transform.GetChild(i).gameObject);
+            GameObject child = thrustersHolder.transform.GetChild(a).gameObject;
+            ++a;
+            if (child != null && !child.name.Equals("Afterburners"))
+            {
+                thrusters[i] = new ThrusterObject(child);
+                ++i;
+            }
         }
+
+
+        if (afterburnersHolder != null)
+        {
+            afterburners = new ThrusterObject[afterburnersHolder.childCount];
+
+            for (int i = 0; i < afterburners.Length; ++i)
+            {
+                afterburners[i] = new ThrusterObject(afterburnersHolder.GetChild(i).gameObject);
+            }
+        }
+
+
     }
 
     /// <summary>
@@ -344,5 +397,10 @@ public class Ship : MonoBehaviour
     public ThrusterObject[] GetThrusters()
     {
         return thrusters;
+    }
+
+    public ThrusterObject[] GetAfterburners()
+    {
+        return afterburners;
     }
 }
