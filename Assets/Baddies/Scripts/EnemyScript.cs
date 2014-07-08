@@ -222,6 +222,7 @@ public class EnemyScript : Ship
         ids++;
 
         shipTransform = transform;
+        ResetThrusters();
 
         //lastFramePosition = shipTransform.position;
         currentAttackType = AIAttackCollection.GetAttack(allowedAttacksForShip[Random.Range(0, allowedAttacksForShip.Length)]);

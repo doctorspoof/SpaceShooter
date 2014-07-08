@@ -1,11 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public class ThrusterObject
+{
+
+    GameObject thruster;
+    Transform thrusterTransform;
+    Vector3 originalScale, originalPosition;
+
+    public ThrusterObject(GameObject object_)
+    {
+        thruster = object_;
+        thrusterTransform = thruster.transform;
+        originalScale = thrusterTransform.localScale;
+        originalPosition = thrusterTransform.localPosition;
+    }
+
+    public void SetPercentage(float percentage_)
+    {
+        float clamped = Mathf.Clamp(percentage_, 0, 1);
+
+        Vector3 newScale = originalScale * clamped;
+        newScale.z = 1;
+        thrusterTransform.localScale = newScale;
+
+        thrusterTransform.localPosition = originalPosition - (new Vector3(0, (newScale.y - originalScale.y) / 2, 0));
+        Debug.DrawLine(thrusterTransform.parent.position + originalPosition, thrusterTransform.parent.position + thrusterTransform.localPosition, Color.red);
+    }
+
+}
+
 [RequireComponent(typeof(MeshFilter))]
 public class Ship : MonoBehaviour
 {
 
     public Transform shipTransform;
+    public Rigidbody shipRigidbody;
 
     [SerializeField]
     float m_maxShipSpeed;
@@ -41,6 +71,10 @@ public class Ship : MonoBehaviour
     [SerializeField]
     float m_shipHeight;
 
+    float maxThrusterVelocitySeen = 0;
+    GameObject thrustersHolder;
+    ThrusterObject[] thrusters;
+
     public float GetMaxShipSpeed()
     {
         return m_maxShipSpeed;
@@ -69,7 +103,9 @@ public class Ship : MonoBehaviour
     protected void Init()
     {
         shipTransform = transform;
+        shipRigidbody = rigidbody;
         SetShipSizes();
+        //ResetThrusters();
     }
 
     protected virtual void Update()
@@ -94,6 +130,23 @@ public class Ship : MonoBehaviour
                     afterburnersRecharged = true;
                 }
             }
+        }
+
+        // we cant calculate the max velocity neatly so we check to see if its larger
+        if (maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude)
+        {
+            maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
+        }
+
+        if (thrustersHolder != null && maxThrusterVelocitySeen > 0)
+        {
+            float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
+
+            foreach(ThrusterObject thruster in thrusters)
+            {
+                thruster.SetPercentage(ratio);
+            }
+
         }
 
     }
@@ -230,5 +283,66 @@ public class Ship : MonoBehaviour
     public virtual float GetMinimumWeaponRange()
     {
         return weaponRange;
+    }
+
+    public void ResetThrusters()
+    {
+        ResetThrusterObjects();
+        maxThrusterVelocitySeen = 0;
+    }
+
+    private GameObject GetThrusterHolder()
+    {
+        return RecursiveSearchForChild(shipTransform, "Thrusters");
+    }
+
+    static private GameObject RecursiveSearchForChild(Transform object_, string name_)
+    {
+        // we look along all of the current child objects incase its on the top layer
+        for (int i = 0; i < object_.childCount; ++i)
+        {
+            Transform child = object_.GetChild(i);
+            if (child.name.Equals(name_))
+            {
+                return child.gameObject;
+            }
+        }
+
+        // we then recursively search each child
+        for (int i = 0; i < object_.childCount; ++i)
+        {
+            Transform child = object_.GetChild(i);
+            GameObject returnee = RecursiveSearchForChild(child, name_);
+            if (returnee != null)
+            {
+                return returnee;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Resets the thrusters if the ship has been changed.
+    /// </summary>
+    /// <returns></returns>
+    public void ResetThrusterObjects()
+    {
+        thrustersHolder = GetThrusterHolder();
+
+        thrusters = new ThrusterObject[thrustersHolder.transform.childCount];
+        for (int i = 0; i < thrusters.Length; ++i)
+        {
+            thrusters[i] = new ThrusterObject(thrustersHolder.transform.GetChild(i).gameObject);
+        }
+    }
+
+    /// <summary>
+    /// Returns thrusters. Do not use if the engine has changed as it will not return the updated thrusters. Use FindThrusters instead
+    /// </summary>
+    /// <returns></returns>
+    public ThrusterObject[] GetThrusters()
+    {
+        return thrusters;
     }
 }

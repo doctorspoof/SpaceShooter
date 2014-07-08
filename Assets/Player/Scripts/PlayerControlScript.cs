@@ -175,6 +175,8 @@ public class PlayerControlScript : Ship
         SetCurrentShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
         SetRotateSpeed(m_baseEngineTurnSpeed + esc.GetTurnSpeed());
 
+        ResetThrusters();
+
 	}
 
 	public GameObject m_equippedPlatingItem;
@@ -775,6 +777,8 @@ public class PlayerControlScript : Ship
 		bool recievedInput = false;
 		if(owner != null && owner == Network.player)
 		{
+            base.Update();
+
 			if((useController && Input.GetButtonDown("X360Start")) || (!useController && Input.GetKeyDown(KeyCode.Escape)))
 			{
 				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMenuState();
