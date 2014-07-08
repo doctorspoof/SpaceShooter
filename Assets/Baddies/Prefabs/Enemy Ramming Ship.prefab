@@ -898,24 +898,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shipTransform: {fileID: 0}
+  shipRigidbody: {fileID: 0}
   m_maxShipSpeed: 360
   m_currentShipSpeed: 0
   afterburnerIncreaseOfSpeed: 720
   afterburnerLength: 10
-  afterburnerRechargeTime: 0
+  afterburnerRechargeTime: 10
   m_rotateSpeed: .800000012
   m_ramDamageMultiplier: 8
   maunuallySetWidthAndHeight: 0
   weaponRange: 40
   m_shipWidth: 0
   m_shipHeight: 0
+  shipID: -1
   m_bountyAmount: 85
   m_hasTurrets: 0
   m_currentOrder: 0
   allowedAttacksForShip:
   - AttackRam
   shipSize: 2
-  shipID: -1
   m_pathToShieldObject: Composite Collider/Shield
 --- !u!114 &11400002
 MonoBehaviour:
