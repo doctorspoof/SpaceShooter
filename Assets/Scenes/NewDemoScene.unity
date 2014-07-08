@@ -6829,6 +6829,9 @@ MonoBehaviour:
   m_DockPlayerImage: {fileID: 2800000, guid: feb0f331ada19a74fa3d1967ac03cfdd, type: 3}
   m_DockInventoryBorder: {fileID: 2800000, guid: eaaec054f7677414cadcb67f70ef7750,
     type: 3}
+  m_currentCShipPanel: 5
+  playerScrollPosition: {x: 0, y: 0}
+  cshipScrollPosition: {x: 0, y: 0}
   m_hostShouldSelectTiebreaker: 0
   m_hostIsTieBreaking: 0
   m_playerVotes: 

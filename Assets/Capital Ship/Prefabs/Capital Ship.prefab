@@ -2428,13 +2428,14 @@ MonoBehaviour:
   - {fileID: 100000, guid: ff79a71609e3a3546ba21bb666fc4ef6, type: 2}
   - {fileID: 100000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
   - {fileID: 100000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
+  - {fileID: 100000, guid: 06c29fda1f94a174286d4a736f75a752, type: 2}
   shouldStart: 0
   m_shipSpeed: 15
   m_attachedTurretsItemWrappers:
-  - {fileID: 100000, guid: 5b1d5d222bda2f7439450b0b8305b141, type: 2}
-  - {fileID: 100000, guid: 5b1d5d222bda2f7439450b0b8305b141, type: 2}
-  - {fileID: 100000, guid: 5b1d5d222bda2f7439450b0b8305b141, type: 2}
-  - {fileID: 100000, guid: 5b1d5d222bda2f7439450b0b8305b141, type: 2}
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
   m_shouldAnchor: 1
   m_pathToShieldObject: Composite Collider/Shield
 --- !u!114 &11400004

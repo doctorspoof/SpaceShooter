@@ -293,7 +293,6 @@ public class PlayerControlScript : Ship
 					//If we're told to equip a weapon:
 					Debug.Log ("Equipping weapon " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + owner);
 
-
 					//Unequip old weapon
 					GameObject temp = m_equippedWeaponItem;
 					//Destroy object
