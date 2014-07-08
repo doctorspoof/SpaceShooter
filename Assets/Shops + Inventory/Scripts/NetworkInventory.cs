@@ -30,53 +30,58 @@ public sealed class NetworkInventory : MonoBehaviour
 	[SerializeField] bool m_nullRemovedItems = false;							// Whether removals should just null the reference or remove it from the list entirely
 
 
+
 	/// Internal data
+	bool m_hasServerResponded = false;								// Indicates whether a response has been received or not
+	
+	int m_ticketNumber = 0;											// A valid ticket number which will be incremented each time a ticket is created
+																	// NOTE: NEVER SET THIS VALUE DIRECTLY! Use the ticketNumber property instead
+
+	int m_addRequests = 0;											// A counter for how many add requests have been made
+																	// NOTE: NEVER SET THIS VALUE DIRECTLY! Use the addRequests property instead
+
 	List<bool> m_isItemRequested = new List<bool>(0);				// Keeps a reference of whether each item has been requested
 	List<ItemTicket> m_requestTickets = new List<ItemTicket>(0);	// Each ticket which has previously been handed out
 
-	bool m_hadServerResponse = false;								// Indicates whether a response has been received or not
-	bool m_itemAddResponse = false;									// Indicates whether the server will allow the item addition or not
+	ItemTicket m_itemAddResponse = new ItemTicket();				// Indicates whether the server will allow the item addition or not
 	ItemTicket m_itemRequestResponse = new ItemTicket();			// The ticket to return once a response has been given
-	
-	int m_ticketNumber = Random.Range (0, int.MaxValue);			// A valid ticket number which will be incremented each time a ticket is created
-	int m_addRequests = 0;											// A counter for how many add requests have been made
-
 	NetworkMessageInfo m_blankMessage = new NetworkMessageInfo();	// Used when the server sends a message to itself
 	
+
 
 	/// External references
 	ItemIDHolder m_itemIDs = null;	// Useful for turning item ID numbers into actual GameObjects
 
 
-
+	
 	/// Getters, setters and properties
-	public int capacity
+	public bool HasServerResponded()
 	{
-		get { return m_capacity; }
+		return m_hasServerResponded;
 	}
 
 
-	public int count
+	public int GetCapacity()
 	{
-		get { return m_inventory.Count; }
+		return m_capacity;
+	}
+
+
+	public int GetCount()
+	{
+		return m_inventory.Count;
+	}
+
+
+	public ItemTicket GetItemAddResponse()
+	{
+		return m_itemAddResponse;
 	}
 	
-
-	public bool hadServerResponse
-	{
-		get { return m_hadServerResponse; }
-	}
-
-
-	public bool itemAddResponse
-	{
-		get { return m_itemAddResponse; }
-	}
 	
-	
-	public ItemTicket itemRequestResponse
+	public ItemTicket GetItemRequestResponse()
 	{
-		get { return m_itemRequestResponse; }
+		return m_itemRequestResponse;
 	}
 
 	
@@ -86,18 +91,45 @@ public sealed class NetworkInventory : MonoBehaviour
 		// a try-catch block is used instead of checking the the index each time.
 		try
 		{
-			if (m_inventory[index])
-			{
-				return m_inventory[index];
-			}
+			return m_inventory[index];
 		}
 
 		catch (System.Exception error)
 		{
-			Debug.LogError ("Exception occurred in NetworkInventory.GetItemScript(): " + error.Message);
+			Debug.LogError ("Exception occurred in " + name + ".NetworkInventory: " + error.Message);
+			return null;
 		}
+	}
 
-		return null;
+
+	/// Shorthand for GetItemScript(), allows the usage of the [] operator
+	public ItemScript this[int index]
+	{
+		get { return GetItemScript (index); }
+	}
+
+
+	// Means that we don't have to max sure m_ticketNumber is clamped every time it's incremented
+	private int ticketNumber
+	{
+		get { return m_ticketNumber; }
+		set 
+		{
+			// Keep it clamped to positive integers
+			m_ticketNumber = Mathf.Max (0, value);
+		}
+	}
+	
+	
+	// Means that we don't have to max sure m_addNumber is clamped every time it's incremented
+	private int addRequests
+	{
+		get { return m_addRequests; }
+		set 
+		{
+			// Keep it clamped to positive integers
+			m_addRequests = Mathf.Max (0, value);
+		}
 	}
 
 
@@ -122,6 +154,9 @@ public sealed class NetworkInventory : MonoBehaviour
 		// Resize their capacities to increase performance at the sake of RAM
 		m_isItemRequested.Capacity = m_capacity;
 		m_requestTickets.Capacity = m_capacity;
+
+		// Give ticketNumber a random starting value
+		ticketNumber = Random.Range (0, int.MaxValue);
 	}
 
 
@@ -160,8 +195,8 @@ public sealed class NetworkInventory : MonoBehaviour
 	// Resets the response booleans to default values so another request can be made
 	void ResetResponse (bool fakeDecline = false)
 	{
-		m_hadServerResponse = fakeDecline;
-		m_itemAddResponse = false;
+		m_hasServerResponded = fakeDecline;
+		m_itemAddResponse.Reset();
 		m_itemRequestResponse.Reset();
 	}
 
@@ -178,8 +213,8 @@ public sealed class NetworkInventory : MonoBehaviour
 	{
 		// If items are being nulled then we need to count the nulls for accuracy
 		int count = m_nullRemovedItems ? 
-										m_inventory.Count + m_addRequests - CountNulls() :
-										m_inventory.Count + m_addRequests;
+										m_inventory.Count + addRequests - CountNulls() :
+										m_inventory.Count + addRequests;
 
 		return count >= m_capacity;
 	}
@@ -328,7 +363,7 @@ public sealed class NetworkInventory : MonoBehaviour
 			if (IsValidIndex (index))
 			{
 				// Create the ticket
-				ticket = new ItemTicket (m_ticketNumber++, itemID, index);
+				ticket = new ItemTicket (ticketNumber++, itemID, index);
 
 				// Start the expiration countdown
 				StartCoroutine (ExpireItemTicket (ticket, m_requestTimeOutSeconds));
@@ -336,9 +371,6 @@ public sealed class NetworkInventory : MonoBehaviour
 				// Keep a copy on the server and flag it as requested
 				m_requestTickets[index] = ticket;
 				m_isItemRequested[index] = true;
-
-				// Clamp the ticket number between 0 and int.MaxValue, negative values are invalid
-				m_ticketNumber = Mathf.Max (0, m_ticketNumber);
 			}
 			
 			else
@@ -368,15 +400,34 @@ public sealed class NetworkInventory : MonoBehaviour
 
 
 	// When a client requests an item be added to the inventory it must be authorised first
-	[RPC] void RequestAdd (NetworkMessageInfo message)
+	[RPC] void RequestAdd (int itemID, int index, NetworkMessageInfo message)
 	{
 		if (Network.isServer)
 		{
-			bool response = !IsInventoryFull();
+			// Create the default response
+			ItemTicket response = new ItemTicket (-1, itemID, index);
 
-			if (response)
+			// We now need to check if the itemID is valid
+			if (itemID >= 0)
 			{
-				++m_addRequests;
+				bool isValidIndex = IsValidIndex (index);
+
+				// If the index is invalid it should be added on to the end. If the index points to a null object then it counts as adding.
+				// In both of these cases the number of add requests needs to be incremented.
+				if (!isValidIndex || !m_inventory[index])
+				{
+					++addRequests;
+				}
+
+				// Set a valid uniqueID
+				response.uniqueID = ticketNumber++;
+
+				// Add the valid ticket
+				if (isValidIndex)
+				{
+					m_isItemRequested[index] = true;
+					m_requestTickets[index] = response;
+				}
 			}
 
 			// Silly workaround for RPC sending limitation
@@ -387,7 +438,7 @@ public sealed class NetworkInventory : MonoBehaviour
 
 			else
 			{
-				networkView.RPC ("RespondToAddRequest", message.sender, response);
+				networkView.RPC ("RespondToAddRequest", message.sender, response.uniqueID, response.itemID, response.itemIndex);
 			}
 		}
 
@@ -401,58 +452,56 @@ public sealed class NetworkInventory : MonoBehaviour
 
 
 	// Used to cancel an item request, provided you have the related ticket. This function is an entry point for RequestCancelItem (ticket:ItemTicket):void.
-	[RPC] void RequestCancelItem (int ticketID, int itemID, int itemIndex)
+	[RPC] void RequestCancel (int ticketID, int itemID, int itemIndex)
 	{
 		if (Network.isServer)
 		{
 			// Recompose the ticket for comparison purposes
-			ItemTicket ticket = new ItemTicket (ticketID, itemID, itemIndex);
-
-			RequestCancelItem (ticket);
+			RequestCancel (new ItemTicket (ticketID, itemID, itemIndex));
 		}
 
 		else
 		{
-			Debug.LogError ("A client attempted to call RequestCancelItem in NetworkInventory.");
+			Debug.LogError ("A client attempted to call RequestCancel in NetworkInventory");
 		}
 	}
 
 
 	// An ItemTicket version is provided to increase performance as items time out.
-	void RequestCancelItem (ItemTicket ticket)
+	void RequestCancel (ItemTicket ticket)
 	{
 		if (ticket.isValid())
 		{
-			// The index of the cancellation
-			int index = DetermineTicketIndex (ticket);
-			
-			// Attempt to cancel the ticket
-			if (IsValidIndex (index))
+			// If the index is invalid we know that the ticket is an add request
+			if (!IsValidIndex (ticket.itemIndex))
 			{
-				// Reset the ticket
-				m_requestTickets[ticket.itemIndex].Reset();
-				m_isItemRequested[ticket.itemIndex] = false;
+				--addRequests;
 			}
-			
+
 			else
 			{
-				Debug.LogError ("An attempt was made to cancel a request which doesn't exist in NetworkInventory.");
+				// The index of the cancellation
+				int index = DetermineTicketIndex (ticket);
+
+				// Attempt to cancel the ticket
+				if (IsValidIndex (index))
+				{
+					// Reset the ticket
+					m_requestTickets[ticket.itemIndex].Reset();
+					m_isItemRequested[ticket.itemIndex] = false;
+
+					// Check to see if the desired index was a null item, this means that it was an add requests
+					if (!m_inventory[index])
+					{
+						--addRequests;
+					}
+				}
+				
+				else
+				{
+					Debug.LogError ("An attempt was made to cancel a request which doesn't exist in " + name + ".NetworkInventory.");
+				}
 			}
-		}
-	}
-
-
-	// Reduces the item add requests
-	[RPC] void RequestCancelAdd()
-	{
-		if (Network.isServer)
-		{
-			m_addRequests = Mathf.Max (0, --m_addRequests);
-		}
-
-		else
-		{
-			Debug.LogError ("A client attempted to call RequestCancelAdd in NetworkInventory");
 		}
 	}
 
@@ -460,41 +509,65 @@ public sealed class NetworkInventory : MonoBehaviour
 	// Used to tell the client if they are allowed to take the item they requested or not
 	[RPC] void RespondToItemRequest (int ticketID, int itemID, int itemIndex)
 	{
-		m_hadServerResponse = true;
-		m_itemRequestResponse = new ItemTicket (ticketID, itemID, itemIndex);
+		RespondToItemRequest (new ItemTicket (ticketID, itemID, itemIndex));
 	}
 
 
 	// The server can just pass the ticket reference through to improve performance
 	void RespondToItemRequest (ItemTicket ticket)
 	{
-		m_hadServerResponse = true;
+		m_hasServerResponded = true;
 		m_itemRequestResponse = ticket;
 	}
 	
 		
 	// Used to tell the client if they are allowed to take the item they requested or not
-	[RPC] void RespondToAddRequest (bool response)
+	[RPC] void RespondToAddRequest (int ticketID, int itemID, int itemIndex)
 	{
-		m_hadServerResponse = true;
-		m_itemAddResponse = response;
+		RespondToAddRequest (new ItemTicket (ticketID, itemID, itemIndex));
 	}
 
 
+	// The server can just pass the ticket reference through to improve performance
+	void RespondToAddRequest (ItemTicket response)
+	{
+		m_hasServerResponded = true;
+		m_itemAddResponse = response;
+	}
+		
+
 	// The entry point for item addition
-	[RPC] void ServerAddItem (int index, int itemID)
+	[RPC] void ServerAddItem (int uniqueID, int itemID, int itemIndex)
 	{
 		if (Network.isServer)
 		{
-			// Only accept the index if nulls are allowed and the given index is for a null pointer
-			if (!(m_nullRemovedItems && IsValidIndex (index) && !m_inventory[index]))
-			{
-				// Attempt to find the first null value, otherwise just force it onto the end
-				index = m_nullRemovedItems ? FindFirstNull() : -1;
-			}
+			ServerAddItem (new ItemTicket (uniqueID, itemID, itemIndex));
+		}
 
+		else
+		{
+			Debug.LogError ("A client attempted to call ServerAddItem in NetworkInventory");
+		}
+	}
+
+
+	void ServerAddItem (ItemTicket ticket)
+	{
+		if (ticket.isValid())
+		{
+			// Attempt to find the first null value, if a position hasn't been specified
+			if (m_nullRemovedItems && !IsValidIndex (ticket.itemIndex))
+			{
+				ticket.itemIndex = FindFirstNull();			
+			}
+			
 			// Finally propagate the addition
-			PropagateAddAtIndex (index, itemID);
+			PropagateAddAtIndex (ticket.itemIndex, ticket.itemID);
+		}
+
+		else
+		{
+			Debug.LogError ("Attempt to add item with invalid or expired ticket in " + name + ".NetworkInventory");
 		}
 	}
 	
@@ -502,15 +575,15 @@ public sealed class NetworkInventory : MonoBehaviour
 	// Used to specify the item at a particular slot which is then synchronised
 	[RPC] void PropagateAddAtIndex (int index, int itemID)
 	{
-		// Double check that there is space in the inventory
-		if (!IsInventoryFull())
+		// Double check that there is space in the inventory, though clients would never be able to tell
+		if (Network.isClient || !IsInventoryFull())
 		{
 			// Allow null values if m_nullRemovedItems
 			GameObject itemObject = m_itemIDs.GetItemWithID (itemID);
 			ItemScript item = itemObject ? itemObject.GetComponent<ItemScript>() : null;
 			
 			// Only allow nulls if that has been specified as an attribute
-			if (m_nullRemovedItems || !m_nullRemovedItems && item)
+			if (m_nullRemovedItems || (!m_nullRemovedItems && item))
 			{
 				// The index should always be valid but just in case.
 				if (IsValidIndex (index))
@@ -532,7 +605,7 @@ public sealed class NetworkInventory : MonoBehaviour
 				// Propagate it to the clients to keep the clients inventories in sync
 				if (Network.isServer)
 				{
-					--m_addRequests;
+					--addRequests;
 					networkView.RPC ("PropagateItemAtIndex", RPCMode.Others, index, itemID);
 				}
 			}
@@ -541,17 +614,17 @@ public sealed class NetworkInventory : MonoBehaviour
 
 
 	// Reconstructs the item ticket before passing the ticket into the actual function
-	[RPC] void PropagateRemovalAtIndex (int uniqueID, int itemID, int itemIndex, bool nullInsteadOfRemove)
+	[RPC] void PropagateRemovalAtIndex (int uniqueID, int itemID, int itemIndex)
 	{
 		// Reconstruct the ticket
 		ItemTicket ticket = new ItemTicket (uniqueID, itemID, itemIndex);
 
-		PropagateRemovalAtIndex (ticket, nullInsteadOfRemove);
+		PropagateRemovalAtIndex (ticket);
 	}
 
 
 	// Used to perform a synchronised removal
-	void PropagateRemovalAtIndex (ItemTicket ticket, bool nullInsteadOfRemove)
+	void PropagateRemovalAtIndex (ItemTicket ticket)
 	{
 		if (ticket.isValid())
 		{
@@ -562,7 +635,7 @@ public sealed class NetworkInventory : MonoBehaviour
 			if (IsValidIndex (index))
 			{
 				// Remove or null the item based on the passed parameter
-				if (nullInsteadOfRemove)
+				if (m_nullRemovedItems)
 				{
 					m_inventory[index] = null;
 					m_isItemRequested[index] = false;
@@ -574,7 +647,7 @@ public sealed class NetworkInventory : MonoBehaviour
 					m_inventory.RemoveAt (index);
 					m_isItemRequested.RemoveAt (index);
 
-					// Reset it so the expiration coroutine knows it can stop running
+					// Reset the ticket so the expiration coroutine knows it has been removed
 					m_requestTickets[index].Reset();
 					m_requestTickets.RemoveAt (index);
 				}
@@ -587,7 +660,7 @@ public sealed class NetworkInventory : MonoBehaviour
 					ticket.itemIndex = index;
 					
 					// Propagate the removal
-					networkView.RPC ("PropagateRemovalAtIndex", RPCMode.Others, ticket.uniqueID, ticket.itemID, ticket.itemIndex, nullInsteadOfRemove);
+					networkView.RPC ("PropagateRemovalAtIndex", RPCMode.Others, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
 				}
 			}
 			
@@ -629,26 +702,22 @@ public sealed class NetworkInventory : MonoBehaviour
 	public void RequestServerItem (int itemID, int preferredIndex = -1)
 	{
 		// Have client do the legwork to reduce strain on the host
-		int index = DetermineDesiredIndex (itemID, preferredIndex);
-		
-		// -1 is returned on failure
-		if (IsValidIndex (index))
-		{
-			// Silly Unity requires a workaround for the server
-			if (Network.isServer)
-			{
-				RequestItem (itemID, index, m_blankMessage);
-			}
-			
-			else
-			{
-				networkView.RPC ("RequestItem", RPCMode.Server, itemID, index);
-			}
+		int index = Network.isClient ? DetermineDesiredIndex (itemID, preferredIndex) : preferredIndex;
 
+		// Silly Unity requires a workaround for the server
+		if (Network.isServer)
+		{
+			RequestItem (itemID, index, m_blankMessage);
+		}
+
+		// Clients need to check if the index generated is valid
+		else if (IsValidIndex (index))
+		{
+			networkView.RPC ("RequestItem", RPCMode.Server, itemID, index);
 			ResetResponse (false);
 		}
-		
-		// Pretend the server declined the request
+
+		// Pretend the server responded with a failure
 		else
 		{
 			ResetResponse (true);
@@ -659,76 +728,47 @@ public sealed class NetworkInventory : MonoBehaviour
 	// Requests that the server add an item to its inventory
 	public void RequestServerAdd (ItemScript item, int preferredIndex = -1)
 	{
-		if (item)
+		if (item && item.m_equipmentID >= 0)
 		{
-			int itemID = item.m_equipmentID;
-
-			if (itemID >= 0)
+			// Silly Unity requires a workaround for the server
+			if (Network.isServer)
 			{
-				// Silly Unity requires a workaround for the server
-				if (Network.isServer)
-				{
-					RequestAdd (m_blankMessage);
-				}
-				
-				else
-				{
-					networkView.RPC ("RequestAdd", RPCMode.Server);
-				}
-
-				// Reset the response whilst they away one
-				ResetResponse (false);
+				RequestAdd (item.m_equipmentID, preferredIndex, m_blankMessage);
 			}
-
-			// Pretend the server declined the false request
+			
 			else
 			{
-				ResetResponse (true);
+				networkView.RPC ("RequestAdd", RPCMode.Server, item.m_equipmentID, preferredIndex);
 			}
+
+			// Reset the response whilst they away one
+			ResetResponse (false);
 		}
 
 		// Pretend the server declined the request
 		else
 		{
 			ResetResponse (true);
-			Debug.LogError ("Attempt to add null to the " + name + " NetworkInventory");
+			Debug.LogError (name + ".NetworkInventory: Refused to request invalid item.");
 		}
 	}
 
 	
 	// Causes the server to cancel a request so that others can request the item
-	public void RequestServerCancelItem (ItemTicket ticket)
+	public void RequestServerCancel (ItemTicket ticket)
 	{
 		// Ensure we are not wasting time by checking if the ticket is valid
-		if (ticket.isValid())
+		if (ticket && ticket.isValid())
 		{
 			if (Network.isServer)
 			{
-				RequestCancelItem (ticket.uniqueID, ticket.itemID, ticket.itemIndex);
+				RequestCancel (ticket);
 			}
 			
 			else
 			{
-				networkView.RPC ("RequestCancelItem", RPCMode.Server, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
+				networkView.RPC ("RequestCancelm", RPCMode.Server, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
 			}
-		}
-		
-		// Reset the response since we know they've received it
-		ResetResponse (false);
-	}
-	
-	
-	// Simply tells the server to reduce its add request counter
-	public void RequestServerCancelAdd()
-	{
-		if (Network.isServer)
-		{
-			RequestCancelAdd();
-		}
-		
-		else
-		{
-			networkView.RPC ("RequestCancelAdd", RPCMode.Server);
 		}
 		
 		// Reset the response since we know they've received it
@@ -741,35 +781,28 @@ public sealed class NetworkInventory : MonoBehaviour
 	/// Also it's worth noting that the return value doesn't mean the server will definitely add the item, if any error occurs it will not exist.
 	/// </summary>
 	/// <returns><c>true</c>, if the transaction goes through, <c>false</c> otherwise.</returns>
-	/// <param name="item">The item to add.</param>
-	/// <param name="preferredIndex">The preferred index where the item shall be placed.</param>
-	public bool AddItemToServer (ItemScript item, int preferredIndex = -1)
+	/// <param name="ticket">The ticket given by the server which authorises your transaction.</param>
+	public bool AddItemToServer (ItemTicket ticket)
 	{
 		// Check the item exists and whether the transaction has been authorised
-		if (item && m_itemAddResponse)
+		if (ticket && ticket.isValid() && ticket == m_itemAddResponse)
 		{
-			int itemID = item.m_equipmentID;
-
-			// Check if the value is valid
-			if (itemID >= 0)
+			// Unity silliness again
+			if (Network.isServer)
 			{
-				// Unity silliness again
-				if (Network.isServer)
-				{
-					ServerAddItem (preferredIndex, itemID);
-				}
-
-				else
-				{
-					networkView.RPC ("ServerAddItem", RPCMode.Server, preferredIndex, itemID);
-				}
-
-				// Reset the response to ensure the security of future transactions
-				ResetResponse (false);
-
-				// Transaction processed successfully
-				return true;
+				ServerAddItem (ticket);
 			}
+
+			else
+			{
+				networkView.RPC ("ServerAddItem", RPCMode.Server, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
+			}
+
+			// Reset the response to ensure the security of future transactions
+			ResetResponse (false);
+
+			// Transaction processed successfully
+			return true;
 		}
 
 
@@ -789,11 +822,11 @@ public sealed class NetworkInventory : MonoBehaviour
 	public bool RemoveItemFromServer (ItemTicket ticket)
 	{
 		// Ensure the ticket is both valid to prevent wasting the servers time
-		if (ticket.isValid())
+		if (ticket && ticket.isValid() && ticket == m_itemRequestResponse)
 		{
 			if (Network.isServer)
 			{
-				PropagateRemovalAtIndex (ticket, m_nullRemovedItems);
+				PropagateRemovalAtIndex (ticket);
 			}
 
 			else
