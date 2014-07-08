@@ -45,7 +45,7 @@ MonoBehaviour:
     control of the craft with limited top speed.
   m_cost: 464
   m_equipmentID: 70
-  m_equipmentReference: {fileID: 100000, guid: 5f2deaa375d2b95489def46bb451b194, type: 2}
+  m_equipmentReference: {fileID: 100010, guid: 5f2deaa375d2b95489def46bb451b194, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

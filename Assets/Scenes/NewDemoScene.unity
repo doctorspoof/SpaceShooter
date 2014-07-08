@@ -1772,7 +1772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -2120,7 +2120,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -2691,7 +2691,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -4275,7 +4275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -4752,7 +4752,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -5507,7 +5507,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -6360,7 +6360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -8239,7 +8239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
