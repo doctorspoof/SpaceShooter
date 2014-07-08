@@ -29,12 +29,11 @@ public sealed class ItemTicket
 	/// <summary>
 	/// A static reference to the default values an ItemTicket holds when it is created.
 	/// </summary>
-	public static ItemTicket standard = new ItemTicket().Reset();
+	public static readonly ItemTicket standard = new ItemTicket().Reset();
 
 
 
 	/// Functions
-
 	/// <summary>
 	/// The default constructor which will initiate the ItemTicket to default invalid values.
 	/// </summary>
@@ -46,12 +45,19 @@ public sealed class ItemTicket
 	}
 
 
+	// Allows for statements such as if (ticket) instead of if (ticket != null).
+	public static implicit operator bool (ItemTicket ticket)
+	{
+		return ticket != null;
+	}
+
+
 	/// <summary>
 	/// A simple function which will check to see if any value is equal to -1, making it invalid.
 	/// </summary>
 	public bool isValid()
 	{
-		return !(uniqueID == -1 || itemID == -1 || itemIndex == -1);
+		return !(uniqueID == -1 || itemID == -1);
 	}
 
 
