@@ -33,6 +33,7 @@ GameObject:
   - 114: {fileID: 11400004}
   - 54: {fileID: 5400000}
   - 148: {fileID: 14800000}
+  - 114: {fileID: 11400014}
   m_Layer: 11
   m_Name: Enemy Normal
   m_TagString: Enemy
@@ -336,7 +337,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 148.207108, y: 5.76722908, z: 10}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400014}
@@ -894,6 +895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shipTransform: {fileID: 0}
+  shipRigidbody: {fileID: 0}
   m_maxShipSpeed: 360
   m_currentShipSpeed: 0
   afterburnerIncreaseOfSpeed: 0
@@ -905,6 +907,7 @@ MonoBehaviour:
   weaponRange: 0
   m_shipWidth: 0
   m_shipHeight: 0
+  shipID: -1
   m_bountyAmount: 15
   m_hasTurrets: 0
   m_currentOrder: 0
@@ -912,7 +915,6 @@ MonoBehaviour:
   - AttackStrafeRight
   - AttackStrafeLeft
   shipSize: 2
-  shipID: -1
   m_pathToShieldObject: Composite Collider/Shield
 --- !u!114 &11400004
 MonoBehaviour:
@@ -1005,6 +1007,27 @@ MonoBehaviour:
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
+--- !u!114 &11400014
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explodeOnDeath: 0
+  removeShipAfterSeconds: -1
+  explosions:
+  - explosionPrefabs:
+    - {fileID: 100000, guid: 5f86f9da513c93e4fbea0cabdd34dd44, type: 2}
+    - {fileID: 100000, guid: 75aee9c489749624d9b977f9b7eb00f6, type: 2}
+    - {fileID: 100000, guid: 3d56c3dc7212b474ebdc5f46af8a0952, type: 2}
+    localPosition: {x: 0, y: 0, z: -.0500000007}
+    localScale: {x: 4, y: 4, z: 1}
+    timeAfterDeathThatExplosionStarts: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

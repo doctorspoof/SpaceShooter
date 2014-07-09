@@ -17,6 +17,7 @@ GameObject:
   - 54: {fileID: 5400000}
   - 82: {fileID: 8200000}
   - 65: {fileID: 6500014}
+  - 114: {fileID: 11400006}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -581,6 +582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shipTransform: {fileID: 0}
+  shipRigidbody: {fileID: 0}
   m_maxShipSpeed: 0
   m_currentShipSpeed: 0
   afterburnerIncreaseOfSpeed: 0
@@ -592,6 +594,7 @@ MonoBehaviour:
   weaponRange: 0
   m_shipWidth: 0
   m_shipHeight: 0
+  shipID: -1
   m_shouldRecieveInput: 1
   ownerSt: 
   m_baseEngineSpeed: 5
@@ -602,9 +605,9 @@ MonoBehaviour:
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
   m_currentSpaceBucks: 300
-  m_equippedWeaponItem: {fileID: 100000, guid: d8e1271c27ab7ae4793d51be5149f688, type: 2}
-  m_equippedShieldItem: {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
-  m_equippedEngineItem: {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
+  m_equippedWeaponItem: {fileID: 100000, guid: 69b742df1cb78b842906a9cfa0bac2c3, type: 2}
+  m_equippedShieldItem: {fileID: 100000, guid: 7ea0ae0dc3d236947a5d3e422f83bfd7, type: 2}
+  m_equippedEngineItem: {fileID: 100000, guid: bc473d29b92f5b24ea8bbd26b4a0bc1a, type: 2}
   m_equippedPlatingItem: {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
     type: 2}
   m_playerInventory: []
@@ -650,6 +653,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentWeapon: {fileID: 0}
+--- !u!114 &11400006
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explodeOnDeath: 0
+  removeShipAfterSeconds: -1
+  explosions:
+  - explosionPrefabs:
+    - {fileID: 100000, guid: 5f86f9da513c93e4fbea0cabdd34dd44, type: 2}
+    - {fileID: 100000, guid: 75aee9c489749624d9b977f9b7eb00f6, type: 2}
+    - {fileID: 100000, guid: 3d56c3dc7212b474ebdc5f46af8a0952, type: 2}
+    - {fileID: 100000, guid: 921676dad59146e40b6c9e54d9cc227c, type: 2}
+    - {fileID: 100000, guid: 379de339833f70c4181e9f28557e86ba, type: 2}
+    - {fileID: 100000, guid: 373f52a514d17114eb7d9657670f84ee, type: 2}
+    localPosition: {x: 0, y: 0, z: -.0500000007}
+    localScale: {x: 2, y: 2, z: 1}
+    timeAfterDeathThatExplosionStarts: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

@@ -104,4 +104,9 @@ public class SpriteSheet : MonoBehaviour
 			}
 		}
 	}
+
+    public void SetShouldDieAfterFirstRun(bool flag_)
+    {
+        shouldDieAfterFirstRun = flag_;
+    }
 }

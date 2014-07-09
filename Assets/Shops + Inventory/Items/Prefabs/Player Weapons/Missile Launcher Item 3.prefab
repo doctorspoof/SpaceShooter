@@ -45,7 +45,7 @@ MonoBehaviour:
     for double the fun
   m_cost: 830
   m_equipmentID: 22
-  m_equipmentReference: {fileID: 100000, guid: 313b176055ccae14e84c25136a855960, type: 2}
+  m_equipmentReference: {fileID: 100000, guid: a5cd10c7c08931946ad39874f5485a29, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

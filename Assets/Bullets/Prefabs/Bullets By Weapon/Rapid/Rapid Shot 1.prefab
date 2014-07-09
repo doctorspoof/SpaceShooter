@@ -115,7 +115,8 @@ MonoBehaviour:
   m_aoeDamageAccuracy: 1
   m_aoeRange: 0
   m_aoeMaxDamageRange: .25
-  m_explosiveAOEForce: 15
+  m_aoeMaxExplosiveForce: 15
+  m_aoeMinExplosiveForce: 5
   firer: {fileID: 0}
   m_homingTarget: {fileID: 0}
 --- !u!148 &14800000

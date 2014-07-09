@@ -14,6 +14,7 @@ GameObject:
   - 114: {fileID: 11400000}
   - 54: {fileID: 5400000}
   - 148: {fileID: 14800000}
+  - 114: {fileID: 11400004}
   m_Layer: 14
   m_Name: MicroMissiles 3
   m_TagString: Bullet
@@ -191,9 +192,30 @@ MonoBehaviour:
   _uvTieX: 8
   _uvTieY: 8
   _fps: 10
+  _frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
+--- !u!114 &11400004
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explodeOnDeath: 1
+  explosions:
+  - explosionPrefabs:
+    - {fileID: 100000, guid: 657be5f271159824185adcd4946a589e, type: 2}
+    - {fileID: 100000, guid: be52553a843e6364dad1306537ccd2f1, type: 2}
+    - {fileID: 100000, guid: ac476495fd0093e49ba5ae210b44ec49, type: 2}
+    localPosition: {x: 0, y: 0, z: 0}
+    localScale: {x: 1.39999998, y: 1.39999998, z: 1}
+    timeAfterDeathThatExplosionStarts: 0
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1
