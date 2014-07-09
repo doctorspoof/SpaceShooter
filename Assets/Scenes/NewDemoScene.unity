@@ -3310,7 +3310,7 @@ MonoBehaviour:
     itemID: 110
   - itemObject: {fileID: 100000, guid: 210550419beca0f489e69b97c9a720a7, type: 2}
     itemID: 111
-  - itemObject: {fileID: 0}
+  - itemObject: {fileID: 100000, guid: 4bcccbf8b5978e945b3eb48bc86c5878, type: 2}
     itemID: 112
   - itemObject: {fileID: 0}
     itemID: 0
@@ -6191,6 +6191,10 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 4210f4c91bd1bfd42ae480a8ad382994, type: 2}
+      propertyPath: ItemList.Array.data[112].itemObject
+      value: 
+      objectReference: {fileID: 100000, guid: 4bcccbf8b5978e945b3eb48bc86c5878, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 4210f4c91bd1bfd42ae480a8ad382994, type: 2}
   m_RootGameObject: {fileID: 871924829}

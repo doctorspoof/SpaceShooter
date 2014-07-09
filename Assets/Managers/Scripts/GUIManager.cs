@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using SimpleJSON;
+using System.IO;
 
 public enum CShipScreen
 {
@@ -65,6 +67,7 @@ public class GUIManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+
 		Time.timeScale = 1.0f;
 		int control = PlayerPrefs.GetInt("UseControl");
 		if(control == 1)
@@ -2802,6 +2805,9 @@ public class GUIManager : MonoBehaviour
 	Vector2 playerScrollPosition = Vector2.zero;
 	[SerializeField]
 	Vector2 cshipScrollPosition = Vector2.zero;
+
+	Dictionary<Rect, GameObject> drawnItems = new Dictionary<Rect, GameObject>();
+
 	void DrawCShipDockOverlay()
 	{
 		Event currentEvent = Event.current;
@@ -2848,6 +2854,7 @@ public class GUIManager : MonoBehaviour
 			}
 			case CShipScreen.RightPanelActive:
 			{
+				drawnItems.Clear();
 				DrawRightPanel();
 
 				GUI.Label (new Rect(408, 270, 164, 40), "Player:", m_nonBoxStyle);
@@ -2871,6 +2878,8 @@ public class GUIManager : MonoBehaviour
 							m_currentDraggedItemIsFromPlayerInv = true;
 						}
 					}
+
+					
 				}
 				GUI.EndScrollView();
 				

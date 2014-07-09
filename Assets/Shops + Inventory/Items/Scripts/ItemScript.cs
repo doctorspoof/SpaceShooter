@@ -26,6 +26,8 @@ public class ItemScript : MonoBehaviour
 	[SerializeField]
 	string m_equipmentName;
 	[SerializeField]
+	//string m_equipmentDescription;
+	int m_descriptionID;
 	string m_equipmentDescription;
 	
 	public int m_cost;
@@ -42,7 +44,7 @@ public class ItemScript : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
-		
+
 	}
 	
 	// Update is called once per frame
@@ -57,9 +59,16 @@ public class ItemScript : MonoBehaviour
 	}
 	public string GetShopText()
 	{
-		string output = "";
+		/*string output = "";
 		output += m_equipmentName;
 		output += System.Environment.NewLine + m_equipmentDescription;
-		return output;
+		return output;*/
+
+		if(m_equipmentDescription == null || m_equipmentDescription == "")
+		{
+			ItemDescriptionHolder.GetDescriptionFromID(m_equipmentID);
+		}
+
+		return m_equipmentName + System.Environment.NewLine + m_equipmentDescription;
 	}
 }
