@@ -27,9 +27,9 @@ public sealed class ItemTicket
 	
 	
 	/// <summary>
-	/// A static reference to the default values an ItemTicket holds when it is created.
+	/// A static reference to the default values an ItemTicket holds when it is reset.
 	/// </summary>
-	public static readonly ItemTicket standard = new ItemTicket().Reset();
+	public static readonly ItemTicket reset = new ItemTicket().Reset();
 
 
 
@@ -55,7 +55,7 @@ public sealed class ItemTicket
 	/// <summary>
 	/// A simple function which will check to see if any value is equal to -1, making it invalid.
 	/// </summary>
-	public bool isValid()
+	public bool IsValid()
 	{
 		return !(uniqueID == -1 || itemID == -1);
 	}
