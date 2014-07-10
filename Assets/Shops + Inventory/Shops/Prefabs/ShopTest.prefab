@@ -232,16 +232,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_inventory:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
+  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
   m_capacity: 5
   m_requestTimeOutSeconds: 120
   m_nullRemovedItems: 1

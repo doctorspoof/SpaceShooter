@@ -475,24 +475,22 @@ public sealed class NetworkInventory : MonoBehaviour
 	{
 		if (Network.isServer)
 		{
-			ItemTicket ticket;
+			ItemTicket ticket = new ItemTicket();
 
 			int index = DetermineDesiredIndex (itemID, preferredIndex, RequestCheck.Requested);
 			
 			if (IsValidIndex (index))
 			{
 				// Create the ticket
-				ticket = new ItemTicket (ticketNumber++, itemID, index);
+				ticket.uniqueID = ticketNumber++;
+				ticket.itemID = itemID;
+				ticket.itemIndex = index;
 
 				// Ensure the item is successfully reserved
 				ReserveItem (index, ticket);
 			}
-			
-			else
-			{
-				// Send back an invalid ticket
-				ticket = new ItemTicket();
-			}
+
+			// Else send back an invalid ticket
 			
 			// This is the only way I've found to check if the message is blank, an alternative method would be preferable
 			if (message.Equals (m_blankMessage))
