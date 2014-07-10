@@ -170,6 +170,65 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 1
+  m_hoverBoxTextStyle:
+    m_Name: Hover Box
+    m_Normal:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: 1, g: 1, b: 1, a: 1}
+    m_Hover:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .996078432, g: .996078432, b: .996078432, a: 1}
+    m_Active:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .992156863, g: .992156863, b: .992156863, a: 1}
+    m_Focused:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .988235295, g: .988235295, b: .988235295, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .984313726, g: .984313726, b: .984313726, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .980392158, g: .980392158, b: .980392158, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .97647059, g: .97647059, b: .97647059, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .972549021, g: .972549021, b: .972549021, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 12800000, guid: 011a0bd9400ef0c4694412ef3e725a00, type: 3}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_Alignment: 3
+    m_WordWrap: 1
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 1
+    m_StretchHeight: 1
   m_nonBoxStyle:
     m_Name: No Box
     m_Normal:
@@ -278,7 +337,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 011a0bd9400ef0c4694412ef3e725a00, type: 3}
     m_FontSize: 16
     m_FontStyle: 0
-    m_Alignment: 4
+    m_Alignment: 3
     m_WordWrap: 1
     m_RichText: 1
     m_TextClipping: 0
@@ -454,6 +513,9 @@ MonoBehaviour:
   m_DockPlayerImage: {fileID: 2800000, guid: feb0f331ada19a74fa3d1967ac03cfdd, type: 3}
   m_DockInventoryBorder: {fileID: 2800000, guid: eaaec054f7677414cadcb67f70ef7750,
     type: 3}
+  m_currentCShipPanel: 5
+  playerScrollPosition: {x: 0, y: 0}
+  cshipScrollPosition: {x: 0, y: 0}
   m_hostShouldSelectTiebreaker: 0
   m_hostIsTieBreaking: 0
   m_playerVotes: 
