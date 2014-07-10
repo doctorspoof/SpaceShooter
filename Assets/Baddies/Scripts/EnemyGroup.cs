@@ -123,7 +123,6 @@ public class EnemyGroup : MonoBehaviour
         {
             NextOrder();
         }
-
     }
 
     private void NextOrder()

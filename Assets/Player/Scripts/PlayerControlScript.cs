@@ -1012,7 +1012,7 @@ public class PlayerControlScript : Ship
 						if(Input.GetKey (KeyCode.S))
 						{
 							//this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
-                            this.rigidbody.AddForce(this.transform.up * -GetCurrentMomentum() * Time.deltaTime);
+                            this.rigidbody.AddForce(this.transform.up * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
 							
 							if(!shouldPlaySound)
 							{

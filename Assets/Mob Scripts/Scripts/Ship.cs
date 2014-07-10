@@ -153,19 +153,12 @@ public class Ship : MonoBehaviour
         {
 
             float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
-
+            float clampedDot = Mathf.Clamp(Vector2.Dot(shipTransform.up, shipTransform.rigidbody.velocity.normalized), 0, 1);
             foreach (ThrusterObject thruster in thrusters)
             {
-                thruster.SetPercentage(ratio);
+                thruster.SetPercentage(clampedDot * ratio);
             }
 
-            //if (afterburners != null)
-            //{
-            //    foreach (ThrusterObject thruster in afterburners)
-            //    {
-            //        thruster.SetPercentage(ratio);
-            //    }
-            //}
         }
 
     }
