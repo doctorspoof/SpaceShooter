@@ -3043,7 +3043,6 @@ public class GUIManager : MonoBehaviour
 						bool insideModR = modR.Contains(mousePos);
 						if(modR.Contains(mousePos))
 						{
-							//Begin drag & drop
 							m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = true;
