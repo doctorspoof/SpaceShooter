@@ -65,10 +65,15 @@ public class Explode : MonoBehaviour
             shipComponent.enabled = false;
         }
 
-        Transform shield = this.tag.Equals("Player") == true ? transform.FindChild("Shield") : transform.FindChild("Composite Collider").FindChild("Shield");
-        if(shield)
+        //Transform shield = this.tag.Equals("Player") == true ? transform.FindChild("Shield") : transform.FindChild("Composite Collider").FindChild("Shield");
+        //if(shield)
+        //{
+        //    shield.gameObject.SetActive(false);
+        //}
+
+        for(int i = 0; i < transform.childCount; ++i)
         {
-            shield.gameObject.SetActive(false);
+            transform.GetChild(i).gameObject.SetActive(false);
         }
         //MonoBehaviour[] monoBehaviours = GetComponents<MonoBehaviour>();
         //foreach(MonoBehaviour monoBehaviour in monoBehaviours)

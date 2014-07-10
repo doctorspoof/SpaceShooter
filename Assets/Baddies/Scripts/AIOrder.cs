@@ -22,7 +22,7 @@ public class AIOrder<T>
 	{
 		get
 		{
-			if (m_positionOfInterest.x != 0 && m_positionOfInterest.y != 0)
+			if ((m_positionOfInterest.x != 0 && m_positionOfInterest.y != 0) || ObjectOfInterest == null)
 				return m_positionOfInterest;
 			else
 				return ObjectOfInterest.transform.position;

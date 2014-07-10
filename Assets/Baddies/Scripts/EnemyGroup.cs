@@ -128,7 +128,7 @@ public class EnemyGroup : MonoBehaviour
 
     private void NextOrder()
     {
-        if (orderQueue.Count > 0 && orderQueue[0].Completed())
+        if (orderQueue[0].Completed())
         {
             orderQueue.RemoveAt(0);
         }
