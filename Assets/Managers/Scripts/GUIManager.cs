@@ -1392,10 +1392,10 @@ public class GUIManager : MonoBehaviour
 					{
 						//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
 						GameObject[] shopInv = m_shopDockedAt.GetComponent<ShopScript>().GetShopInventory();
+
+
+
 						PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
-
-
-
 						for(int i = 0; i < shopInv.Length; i++)
 						{
 							if(shopInv[i] != null)
@@ -1404,8 +1404,7 @@ public class GUIManager : MonoBehaviour
 								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + ((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent))))
 								{
 									//Check if the player has enough cash
-									if(pcControl.CheckCanAffordAmount((int)
-	                                  (shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
+									if(pcControl.CheckCanAffordAmount((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
 									{
 										//Add the item to the player's inventory
 										pcControl.AddItemToInventory(shopInv[i]);
@@ -2078,7 +2077,7 @@ public class GUIManager : MonoBehaviour
 					Vector2 playPos = WorldToMapPos(player.transform.position);
 					GUI.DrawTexture(new Rect(playPos.x - (m_blobSize * 0.5f), playPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_otherPBlob);
 					GUI.Label (new Rect(playPos.x - (m_blobSize * 1.5f), playPos.y + (m_blobSize * 0.5f), 75, 40),
-                        GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
+					          GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
 				}
 			}
 		}
@@ -3266,7 +3265,7 @@ public class GUIManager : MonoBehaviour
 						if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull() || cshipInv[i].GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
 						{
 							CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[i]);
-							StartCoroutine (WaitForItemRequestReply (cshipInv[i]));
+							StartCoroutine (WaitForCShipItemRequestReply (cshipInv[i]));
 						}
 					}
 				}
@@ -3335,7 +3334,7 @@ public class GUIManager : MonoBehaviour
 		GUI.Label (new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, m_hoverBoxTextStyle);
 	}
 
-	IEnumerator WaitForItemRequestReply (GameObject item)
+	IEnumerator WaitForCShipItemRequestReply (GameObject item)
 	{
 		CapitalShipScript script = CShip.GetComponent<CapitalShipScript>();
 		bool response = false;

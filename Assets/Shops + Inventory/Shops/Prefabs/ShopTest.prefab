@@ -11,8 +11,9 @@ GameObject:
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
   - 65: {fileID: 6500000}
-  - 114: {fileID: 11400000}
   - 148: {fileID: 14800000}
+  - 114: {fileID: 11400000}
+  - 114: {fileID: 11400006}
   - 114: {fileID: 11400002}
   m_Layer: 18
   m_Name: ShopTest
@@ -47,7 +48,7 @@ GameObject:
   - 33: {fileID: 3300002}
   - 23: {fileID: 2300002}
   - 114: {fileID: 11400004}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,7 +62,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 80.231926, y: -13.2420588, z: 10.4999943}
+  m_LocalPosition: {x: 66.255394, y: -7.36372375, z: 10.4999943}
   m_LocalScale: {x: 12, y: 12, z: 10}
   m_Children:
   - {fileID: 400004}
@@ -168,14 +169,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopRotationSpeed: 5
+  m_priceMultiplier: 1
+  m_shopType: 1
   m_dockPoint: {fileID: 100002}
-  m_shopSize: 5
-  m_shopInventory:
-  - {fileID: 100000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
-  - {fileID: 100000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
-  - {fileID: 100000, guid: 15881c0ffbdd9a14fbc3b3442039d539, type: 2}
-  - {fileID: 100000, guid: b3ecd28f8b07ecb478e515966e1049fe, type: 2}
-  - {fileID: 100000, guid: 49419fb7373f5bf4f9998248931a2ab5, type: 2}
   m_canStockWeapons: 1
   m_weaponRarityMod: 1
   m_canStockShields: 1
@@ -186,7 +183,7 @@ MonoBehaviour:
   m_platingRarityMod: 1
   m_canStockCWeapons: 0
   m_cWeaponRarityMod: 1
-  m_pricePercent: 1
+  RESETINVENTORY: 0
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -201,8 +198,10 @@ MonoBehaviour:
   _uvTieX: 5
   _uvTieY: 1
   _fps: 6
+  _frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -217,8 +216,30 @@ MonoBehaviour:
   _uvTieX: 7
   _uvTieY: 1
   _fps: 10
+  _frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
+  shouldDieAfterFirstRun: 0
+--- !u!114 &11400006
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a9c42e19f8748b5afe26b98d8e9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventory:
+  - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
+  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
+  m_capacity: 5
+  m_requestTimeOutSeconds: 120
+  m_nullRemovedItems: 1
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1
