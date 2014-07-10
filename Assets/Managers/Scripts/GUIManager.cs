@@ -2507,7 +2507,7 @@ public class GUIManager : MonoBehaviour
 	}
 
 	//Drag & Drop
-	GameObject m_currentDraggedItem = null;
+	ItemScript m_currentDraggedItem = null;
 	bool m_currentDraggedItemIsFromPlayerInv = true;
 	int m_currentDraggedItemInventoryId = -1;
 
@@ -2624,7 +2624,6 @@ public class GUIManager : MonoBehaviour
 		//Depending on where the cursor is when the mouse is released, decide what happens to the item
 		if(isLeftPanel)
 		{
-
 			//If over player inventory, try to store there.
 			if(m_LeftPanelPlayerRect.Contains(mousePos))
 			{
@@ -2633,8 +2632,11 @@ public class GUIManager : MonoBehaviour
 				{
 					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
 					{
-						CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[m_currentDraggedItemInventoryId]);
-						StartCoroutine (WaitForItemRequestReply (cshipInv[m_currentDraggedItemInventoryId]));
+						Debug.Log ("<color=blue>Beginning item transfer sequence</color>");
+						NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
+						inventory.RequestTicketValidityCheck(m_currentTicket);
+						StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
+						return;
 					}
 				}
 				m_currentDraggedItem = null;
@@ -2733,8 +2735,10 @@ public class GUIManager : MonoBehaviour
 				{
 					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
 					{
-						CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[m_currentDraggedItemInventoryId]);
-						StartCoroutine (WaitForItemRequestReply (cshipInv[m_currentDraggedItemInventoryId]));
+						NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
+						inventory.RequestTicketValidityCheck(m_currentTicket);
+						StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
+						return;
 					}
 				}
 				m_currentDraggedItem = null;
@@ -2759,7 +2763,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(1, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(1, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2771,7 +2775,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(2, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(2, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2783,7 +2787,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(3, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(3, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2795,7 +2799,7 @@ public class GUIManager : MonoBehaviour
 				if(!m_currentDraggedItemIsFromPlayerInv)
 				{
 					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(4, m_currentDraggedItem);
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(4, m_currentDraggedItem.gameObject);
 				}
 				
 				m_currentDraggedItem = null;
@@ -2810,8 +2814,9 @@ public class GUIManager : MonoBehaviour
 	[SerializeField]
 	Vector2 cshipScrollPosition = Vector2.zero;
 
-	Dictionary<Rect, GameObject> drawnItems = new Dictionary<Rect, GameObject>();
+	Dictionary<Rect, ItemScript> drawnItems = new Dictionary<Rect, ItemScript>();
 
+	bool m_requestedTicketIsValid = false;
 	void DrawCShipDockOverlay()
 	{
 		Event currentEvent = Event.current;
@@ -2873,7 +2878,7 @@ public class GUIManager : MonoBehaviour
 					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
 
 					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-						drawnItems.Add(modR, playerInv[i]);
+						drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
 
 					if(currentEvent.type == EventType.MouseDown)
 					{
@@ -2881,9 +2886,11 @@ public class GUIManager : MonoBehaviour
 						if(modR.Contains(mousePos))
 						{
 							//Begin drag & drop
-							m_currentDraggedItem = playerInv[i];
+							/*m_currentDraggedItem = playerInv[i];
 							m_currentDraggedItemInventoryId = i;
-							m_currentDraggedItemIsFromPlayerInv = true;
+							m_currentDraggedItemIsFromPlayerInv = true;*/
+
+							
 						}
 					}
 
@@ -2892,14 +2899,15 @@ public class GUIManager : MonoBehaviour
 				GUI.EndScrollView();
 				
 				GUI.Label (new Rect(612, 270, 164, 40), "Capital:", m_nonBoxStyle);
-				List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				//List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				NetworkInventory cshipInv = CShip.GetComponent<NetworkInventory>();
 				Rect scrollAreaRect = new Rect(612, 330, 180, 320);
-				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.Count));
-				for(int i = 0; i < cshipInv.Count; i++)
+				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
+				for(int i = 0; i < cshipInv.GetCount(); i++)
 				{
-					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemScript>().GetIcon());
+					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetIcon());
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
-					GUI.Label(lastR, cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+					GUI.Label(lastR, cshipInv[i].GetItemName(), m_nonBoxSmallStyle);
 					Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
 
 					if(scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
@@ -2914,6 +2922,8 @@ public class GUIManager : MonoBehaviour
 							m_currentDraggedItem = cshipInv[i];
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = false;
+							cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
+							StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake));
 						}
 					}
 				}
@@ -2983,7 +2993,7 @@ public class GUIManager : MonoBehaviour
 					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
 
 					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-						drawnItems.Add(modR, playerInv[i]);
+						drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
 
 					if(currentEvent.type == EventType.MouseDown)
 					{
@@ -2991,7 +3001,7 @@ public class GUIManager : MonoBehaviour
 						if(modR.Contains(mousePos))
 						{
 							//Begin drag & drop
-							m_currentDraggedItem = playerInv[i];
+							m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = true;
 						}
@@ -3000,10 +3010,10 @@ public class GUIManager : MonoBehaviour
 				GUI.EndScrollView();
 
 				GUI.Label (new Rect(1020, 270, 164, 40), "Capital:", m_nonBoxStyle);
-				List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				NetworkInventory cshipInv = CShip.GetComponent<NetworkInventory>();
 				Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
-				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.Count));
-				for(int i = 0; i < cshipInv.Count; i++)
+				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
+				for(int i = 0; i < cshipInv.GetCount(); i++)
 				{
 					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemScript>().GetIcon());
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
@@ -3022,6 +3032,8 @@ public class GUIManager : MonoBehaviour
 							m_currentDraggedItem = cshipInv[i];
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = false;
+							cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
+							StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake));
 						}
 					}
 				}
@@ -3097,7 +3109,7 @@ public class GUIManager : MonoBehaviour
 			{
 				if(key.Contains(mousePos))
 				{
-					string text = drawnItems[key].GetComponent<ItemScript>().GetShopText();
+					string text = drawnItems[key].GetShopText();
 					DrawHoverText(text, mousePos);
 				}
 			}
@@ -3337,14 +3349,61 @@ public class GUIManager : MonoBehaviour
 		GUI.Label (new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, m_hoverBoxTextStyle);
 	}
 
-	IEnumerator WaitForItemRequestReply (GameObject item)
+	ItemTicket m_currentTicket;
+	IEnumerator AwaitTicketRequestResponse(NetworkInventory inventory, RequestType reqType, bool isToPlayerInv = false)
 	{
-		CapitalShipScript script = CShip.GetComponent<CapitalShipScript>();
+		m_requestedTicketIsValid = false;
+		m_isRequestingItem = true;
+
+		while(!inventory.HasServerResponded())
+		{
+			yield return null;
+		}
+		
+		switch(reqType)
+		{
+			case RequestType.ItemAdd:
+			{
+				m_currentTicket = inventory.GetItemAddResponse();
+				break;	
+			}
+			case RequestType.ItemTake:
+			{
+				m_currentTicket = inventory.GetItemRequestResponse();
+				Debug.Log ("Ticket: " + m_currentTicket.uniqueID + " : " + m_currentTicket.itemID + " : " + m_currentTicket.itemIndex + ".");
+				break;
+			}
+			case RequestType.TicketValidity:
+			{
+				if(inventory.GetTicketValidityResponse())
+				{
+					if(isToPlayerInv)
+					{
+						thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory(m_currentDraggedItem.gameObject);
+						if(!inventory.RemoveItemFromServer(m_currentTicket))
+							Debug.LogError ("<color=blue>Ticket mismatch!</color>");
+
+						m_currentDraggedItem = null;
+						m_currentDraggedItemInventoryId = -1;
+						m_currentDraggedItemIsFromPlayerInv = false;
+					}
+					else
+					{
+						
+					}
+				}
+				break;
+			}
+		}
+	}
+
+	/*IEnumerator WaitForItemRequestReply (NetworkInventory inventory, bool )
+	{
 		bool response = false;
 		m_isRequestingItem = true;
 
 		// Wait until the server has responded
-		while (!script.GetRequestResponse (out response))
+		while (!inventory.HasServerResponded())
 		{
 			yield return null;
 		}
@@ -3361,7 +3420,7 @@ public class GUIManager : MonoBehaviour
 		}
 
 		m_isRequestingItem = false;
-	}
+	}*/
 
 
 	void RequestServerRespawnPlayer(NetworkPlayer player)

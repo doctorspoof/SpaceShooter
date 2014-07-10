@@ -119,6 +119,7 @@ GameObject:
   - 148: {fileID: 14800000}
   - 82: {fileID: 8200000}
   - 65: {fileID: 6500032}
+  - 114: {fileID: 11400060}
   m_Layer: 13
   m_Name: Capital Ship
   m_TagString: Capital
@@ -2449,6 +2450,7 @@ MonoBehaviour:
   weaponRange: 0
   m_shipWidth: 6
   m_shipHeight: 24
+  shipID: -1
   m_buildUpExplodeRef: {fileID: 100014, guid: 697f6e534d5ab7148a3bf48bdb26c81d, type: 2}
   m_finalExplodeRef: {fileID: 100000, guid: 5563a7198eaee104f8914633f124840e, type: 2}
   m_shatteredShip: {fileID: 100018, guid: f2187e9cf94fbb947b5a55afb04a90c9, type: 2}
@@ -2950,6 +2952,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_turretGlowID: 4
+--- !u!114 &11400060
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a9c42e19f8748b5afe26b98d8e9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventory:
+  - {fileID: 11400000, guid: 06c29fda1f94a174286d4a736f75a752, type: 2}
+  - {fileID: 11400000, guid: ff79a71609e3a3546ba21bb666fc4ef6, type: 2}
+  - {fileID: 11400000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
+  - {fileID: 11400000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
+  - {fileID: 11400000, guid: aa2ed2b9777c2d746b74405771f540b9, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 4a2edc6e9d340c248a2c2bfde990a7d0, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_capacity: 10
+  m_requestTimeOutSeconds: 120
+  m_nullRemovedItems: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

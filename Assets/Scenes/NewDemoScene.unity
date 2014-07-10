@@ -207,8 +207,12 @@ MonoBehaviour:
   specialWaves:
   - defaultOrderTargetTag: Player
     m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
       m_numEnemy: 3
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
+      m_numEnemy: 2
   test: []
   m_allSpawnPoints: []
   m_capitalShip: {fileID: 0}
@@ -270,8 +274,9 @@ GameObject:
   - 33: {fileID: 61916498}
   - 23: {fileID: 61916497}
   - 65: {fileID: 61916496}
-  - 114: {fileID: 61916495}
   - 148: {fileID: 61916494}
+  - 114: {fileID: 61916495}
+  - 114: {fileID: 61916499}
   - 114: {fileID: 61916493}
   m_Layer: 18
   m_Name: ShopTest
@@ -337,15 +342,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shopType: 0
+  m_shopRotationSpeed: 5
+  m_priceMultiplier: 1
+  m_shopType: 1
   m_dockPoint: {fileID: 645314090}
-  m_shopSize: 5
-  m_shopInventory:
-  - {fileID: 100000, guid: b3ecd28f8b07ecb478e515966e1049fe, type: 2}
-  - {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
-  - {fileID: 100000, guid: 49419fb7373f5bf4f9998248931a2ab5, type: 2}
-  - {fileID: 100000, guid: 258fc36f052e6914a99fdb5ede6e6d34, type: 2}
-  - {fileID: 100000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
   m_canStockWeapons: 0
   m_weaponRarityMod: 1.5
   m_canStockShields: 1
@@ -356,7 +356,7 @@ MonoBehaviour:
   m_platingRarityMod: 1
   m_canStockCWeapons: 0
   m_cWeaponRarityMod: 1
-  m_pricePercent: 1
+  RESETINVENTORY: 0
 --- !u!65 &61916496
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -400,6 +400,27 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1074594216}
   m_GameObject: {fileID: 61916491}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &61916499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400006, guid: ce373fba91905954f861555449eb39fa,
+    type: 2}
+  m_PrefabInternal: {fileID: 1074594216}
+  m_GameObject: {fileID: 61916491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a9c42e19f8748b5afe26b98d8e9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventory:
+  - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
+  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
+  m_capacity: 5
+  m_requestTimeOutSeconds: 120
+  m_nullRemovedItems: 1
 --- !u!1 &112678121
 GameObject:
   m_ObjectHideFlags: 0
@@ -564,7 +585,7 @@ GameObject:
   - 33: {fileID: 249488145}
   - 23: {fileID: 249488144}
   - 114: {fileID: 249488143}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -756,7 +777,7 @@ GameObject:
   - 33: {fileID: 283628327}
   - 23: {fileID: 283628326}
   - 114: {fileID: 283628325}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -943,7 +964,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -1291,7 +1312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -1858,7 +1879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -2355,8 +2376,9 @@ GameObject:
   - 33: {fileID: 779021247}
   - 23: {fileID: 779021246}
   - 65: {fileID: 779021245}
-  - 114: {fileID: 779021244}
   - 148: {fileID: 779021243}
+  - 114: {fileID: 779021244}
+  - 114: {fileID: 779021248}
   - 114: {fileID: 779021242}
   m_Layer: 18
   m_Name: ShopTest
@@ -2422,15 +2444,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shopType: 0
+  m_shopRotationSpeed: 5
+  m_priceMultiplier: 1
+  m_shopType: 1
   m_dockPoint: {fileID: 1204770483}
-  m_shopSize: 5
-  m_shopInventory:
-  - {fileID: 100000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
-  - {fileID: 100000, guid: fd4bbcc88b5b30148acc903d15d32f59, type: 2}
-  - {fileID: 100000, guid: 15881c0ffbdd9a14fbc3b3442039d539, type: 2}
-  - {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
-  - {fileID: 100000, guid: eb3aeac0034c92b439db7f96d3266dca, type: 2}
   m_canStockWeapons: 0
   m_weaponRarityMod: 1.5
   m_canStockShields: 0
@@ -2441,7 +2458,7 @@ MonoBehaviour:
   m_platingRarityMod: 1
   m_canStockCWeapons: 0
   m_cWeaponRarityMod: 1
-  m_pricePercent: 1
+  RESETINVENTORY: 0
 --- !u!65 &779021245
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2485,6 +2502,27 @@ MeshFilter:
   m_PrefabInternal: {fileID: 674312033}
   m_GameObject: {fileID: 779021240}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &779021248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400006, guid: ce373fba91905954f861555449eb39fa,
+    type: 2}
+  m_PrefabInternal: {fileID: 674312033}
+  m_GameObject: {fileID: 779021240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a9c42e19f8748b5afe26b98d8e9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventory:
+  - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
+  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
+  m_capacity: 5
+  m_requestTimeOutSeconds: 120
+  m_nullRemovedItems: 1
 --- !u!1001 &788266642
 Prefab:
   m_ObjectHideFlags: 0
@@ -2608,8 +2646,9 @@ GameObject:
   - 33: {fileID: 800427927}
   - 23: {fileID: 800427926}
   - 65: {fileID: 800427925}
-  - 114: {fileID: 800427924}
   - 148: {fileID: 800427923}
+  - 114: {fileID: 800427924}
+  - 114: {fileID: 800427928}
   - 114: {fileID: 800427922}
   m_Layer: 18
   m_Name: ShopTest
@@ -2675,15 +2714,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shopType: 0
+  m_shopRotationSpeed: 5
+  m_priceMultiplier: 1
+  m_shopType: 1
   m_dockPoint: {fileID: 2063122409}
-  m_shopSize: 5
-  m_shopInventory:
-  - {fileID: 100000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
-  - {fileID: 100000, guid: aa2ed2b9777c2d746b74405771f540b9, type: 2}
-  - {fileID: 100000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
-  - {fileID: 100000, guid: 4a2edc6e9d340c248a2c2bfde990a7d0, type: 2}
-  - {fileID: 100000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
   m_canStockWeapons: 1
   m_weaponRarityMod: 2
   m_canStockShields: 0
@@ -2694,7 +2728,7 @@ MonoBehaviour:
   m_platingRarityMod: 1
   m_canStockCWeapons: 0
   m_cWeaponRarityMod: 1
-  m_pricePercent: 1
+  RESETINVENTORY: 0
 --- !u!65 &800427925
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2738,6 +2772,27 @@ MeshFilter:
   m_PrefabInternal: {fileID: 2023888411}
   m_GameObject: {fileID: 800427920}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &800427928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400006, guid: ce373fba91905954f861555449eb39fa,
+    type: 2}
+  m_PrefabInternal: {fileID: 2023888411}
+  m_GameObject: {fileID: 800427920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a9c42e19f8748b5afe26b98d8e9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventory:
+  - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
+  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
+  m_capacity: 5
+  m_requestTimeOutSeconds: 120
+  m_nullRemovedItems: 1
 --- !u!1 &804827316
 GameObject:
   m_ObjectHideFlags: 0
@@ -3438,7 +3493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -3915,7 +3970,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -4666,7 +4721,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -4754,8 +4809,9 @@ GameObject:
   - 33: {fileID: 1337935897}
   - 23: {fileID: 1337935896}
   - 65: {fileID: 1337935895}
-  - 114: {fileID: 1337935894}
   - 148: {fileID: 1337935899}
+  - 114: {fileID: 1337935894}
+  - 114: {fileID: 1337935901}
   - 114: {fileID: 1337935900}
   m_Layer: 18
   m_Name: ShopTest
@@ -4776,15 +4832,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopRotationSpeed: 5
+  m_priceMultiplier: 1
   m_shopType: 1
   m_dockPoint: {fileID: 1608623262}
-  m_shopSize: 5
-  m_shopInventory:
-  - {fileID: 100000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
-  - {fileID: 100000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
-  - {fileID: 100000, guid: 15881c0ffbdd9a14fbc3b3442039d539, type: 2}
-  - {fileID: 100000, guid: b3ecd28f8b07ecb478e515966e1049fe, type: 2}
-  - {fileID: 100000, guid: 49419fb7373f5bf4f9998248931a2ab5, type: 2}
   m_canStockWeapons: 1
   m_weaponRarityMod: 1
   m_canStockShields: 1
@@ -4795,7 +4846,7 @@ MonoBehaviour:
   m_platingRarityMod: 1
   m_canStockCWeapons: 0
   m_cWeaponRarityMod: 1
-  m_pricePercent: 1
+  RESETINVENTORY: 0
 --- !u!65 &1337935895
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4884,6 +4935,27 @@ MonoBehaviour:
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
+--- !u!114 &1337935901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400006, guid: ce373fba91905954f861555449eb39fa,
+    type: 2}
+  m_PrefabInternal: {fileID: 240164086}
+  m_GameObject: {fileID: 1337935893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a9c42e19f8748b5afe26b98d8e9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventory:
+  - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
+  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
+  m_capacity: 5
+  m_requestTimeOutSeconds: 120
+  m_nullRemovedItems: 1
 --- !u!1 &1339814083
 GameObject:
   m_ObjectHideFlags: 0
@@ -4895,8 +4967,9 @@ GameObject:
   - 33: {fileID: 1339814087}
   - 23: {fileID: 1339814086}
   - 65: {fileID: 1339814085}
-  - 114: {fileID: 1339814084}
   - 148: {fileID: 1339814089}
+  - 114: {fileID: 1339814084}
+  - 114: {fileID: 1339814091}
   - 114: {fileID: 1339814090}
   m_Layer: 18
   m_Name: ShopTest
@@ -4917,15 +4990,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_shopType: 0
+  m_shopRotationSpeed: 5
+  m_priceMultiplier: 1
+  m_shopType: 1
   m_dockPoint: {fileID: 1256501225}
-  m_shopSize: 5
-  m_shopInventory:
-  - {fileID: 100000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
-  - {fileID: 100000, guid: 7772f63fee7d55c408bf20b9f328d3c3, type: 2}
-  - {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69, type: 2}
-  - {fileID: 100000, guid: de04f216a3ed4ad4888703ce21382956, type: 2}
-  - {fileID: 100000, guid: fa5fcd494869242409ca668be4e9f376, type: 2}
   m_canStockWeapons: 0
   m_weaponRarityMod: 1.5
   m_canStockShields: 0
@@ -4936,7 +5004,7 @@ MonoBehaviour:
   m_platingRarityMod: 2
   m_canStockCWeapons: 0
   m_cWeaponRarityMod: 1
-  m_pricePercent: 1
+  RESETINVENTORY: 0
 --- !u!65 &1339814085
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5025,6 +5093,27 @@ MonoBehaviour:
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
+--- !u!114 &1339814091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400006, guid: ce373fba91905954f861555449eb39fa,
+    type: 2}
+  m_PrefabInternal: {fileID: 706319949}
+  m_GameObject: {fileID: 1339814083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6a9c42e19f8748b5afe26b98d8e9f14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_inventory:
+  - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
+  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
+  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
+  m_capacity: 5
+  m_requestTimeOutSeconds: 120
+  m_nullRemovedItems: 1
 --- !u!1001 &1340838148
 Prefab:
   m_ObjectHideFlags: 0
@@ -5519,7 +5608,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -5534,7 +5623,7 @@ GameObject:
   - 33: {fileID: 1406026653}
   - 23: {fileID: 1406026652}
   - 114: {fileID: 1406026651}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5612,7 +5701,7 @@ GameObject:
   - 33: {fileID: 1411088266}
   - 23: {fileID: 1411088265}
   - 114: {fileID: 1411088264}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6549,6 +6638,65 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 1
+  m_hoverBoxTextStyle:
+    m_Name: Hover Box
+    m_Normal:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: 1, g: 1, b: 1, a: 1}
+    m_Hover:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .996078432, g: .996078432, b: .996078432, a: 1}
+    m_Active:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .992156863, g: .992156863, b: .992156863, a: 1}
+    m_Focused:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .988235295, g: .988235295, b: .988235295, a: 1}
+    m_OnNormal:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .984313726, g: .984313726, b: .984313726, a: 1}
+    m_OnHover:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .980392158, g: .980392158, b: .980392158, a: 1}
+    m_OnActive:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .97647059, g: .97647059, b: .97647059, a: 1}
+    m_OnFocused:
+      m_Background: {fileID: 2800000, guid: 22d5a608a58438d43858443751913af6, type: 3}
+      m_TextColor: {r: .972549021, g: .972549021, b: .972549021, a: 1}
+    m_Border:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Margin:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Padding:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Overflow:
+      m_Left: 0
+      m_Right: 0
+      m_Top: 0
+      m_Bottom: 0
+    m_Font: {fileID: 12800000, guid: 011a0bd9400ef0c4694412ef3e725a00, type: 3}
+    m_FontSize: 20
+    m_FontStyle: 0
+    m_Alignment: 3
+    m_WordWrap: 1
+    m_RichText: 1
+    m_TextClipping: 0
+    m_ImagePosition: 0
+    m_ContentOffset: {x: 0, y: 0}
+    m_FixedWidth: 0
+    m_FixedHeight: 0
+    m_StretchWidth: 1
+    m_StretchHeight: 1
   m_nonBoxStyle:
     m_Name: No Box
     m_Normal:
@@ -7266,8 +7414,12 @@ MonoBehaviour:
   specialWaves:
   - defaultOrderTargetTag: Player
     m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
       m_numEnemy: 3
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
+      m_numEnemy: 2
   test: []
   m_allSpawnPoints: []
   m_capitalShip: {fileID: 0}
@@ -7302,7 +7454,7 @@ GameObject:
   - 33: {fileID: 1754092240}
   - 23: {fileID: 1754092239}
   - 114: {fileID: 1754092238}
-  m_Layer: 0
+  m_Layer: 18
   m_Name: Deck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7461,7 +7613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   activeTime: 30
-  active: 0
+  spawnPointActive: 0
   idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
   activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_shouldPause: 0
@@ -7697,7 +7849,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ItemManager: {fileID: 871924829}
-  m_itemList: []
 --- !u!1 &1848115361
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
+public enum RequestType
+{
+	ItemTake = 0,
+	ItemAdd = 1,
+	TicketValidity = 2
+}
 
 /// <summary>
 /// A NetworkInventory is a special type of inventory where the host manages everything to do with it. Any item requests
@@ -477,7 +482,7 @@ public sealed class NetworkInventory : MonoBehaviour
 		{
 			ItemTicket ticket = new ItemTicket();
 
-			int index = DetermineDesiredIndex (itemID, preferredIndex, RequestCheck.Requested);
+			int index = DetermineDesiredIndex (itemID, preferredIndex, RequestCheck.Unrequested);
 			
 			if (IsValidIndex (index))
 			{
@@ -491,6 +496,7 @@ public sealed class NetworkInventory : MonoBehaviour
 			}
 
 			// Else send back an invalid ticket
+			Debug.Log("Index: " + index + ", itemID: " + itemID + ", preferredIndex: " + preferredIndex + ".");
 			
 			// This is the only way I've found to check if the message is blank, an alternative method would be preferable
 			if (message.Equals (m_blankMessage))
