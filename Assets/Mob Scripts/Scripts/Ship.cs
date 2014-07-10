@@ -1,17 +1,63 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public class ThrusterObject
+{
+
+    GameObject thruster;
+    Transform thrusterTransform;
+    Vector3 originalScale, originalPosition;
+
+    public ThrusterObject(GameObject object_)
+    {
+        thruster = object_;
+        thrusterTransform = thruster.transform;
+        originalScale = thrusterTransform.localScale;
+        originalPosition = thrusterTransform.localPosition;
+    }
+
+    public void SetPercentage(float percentage_)
+    {
+        float clamped = Mathf.Clamp(percentage_, 0, 1);
+
+        Vector3 newScale = originalScale * clamped;
+        newScale.z = 1;
+        thrusterTransform.localScale = newScale;
+
+        thrusterTransform.localPosition = originalPosition - (new Vector3(0, (newScale.y - originalScale.y) / 2, 0));
+        //Debug.DrawLine(thrusterTransform.parent.position + originalPosition, thrusterTransform.parent.position + thrusterTransform.localPosition, Color.red);
+    }
+
+    public string Name
+    {
+        get { return thruster.name; }
+    }
+
+}
+
 [RequireComponent(typeof(MeshFilter))]
 public class Ship : MonoBehaviour
 {
 
     public Transform shipTransform;
+    public Rigidbody shipRigidbody;
 
     [SerializeField]
     float m_maxShipSpeed;
 
     [SerializeField]
     float m_currentShipSpeed = 0.0f;
+
+    bool afterburnersFiring = false, afterburnersRecharged = true;
+    float currentAfterburnerTime = 0.0f, currentAfterburnerRechargeTime = 0.0f;
+    [SerializeField]
+    float afterburnerIncreaseOfSpeed;
+    [SerializeField]
+    float afterburnerLength;
+    [SerializeField]
+    float afterburnerRechargeTime;
+    //[SerializeField]
+    //float decreaseInTurnRateWithAfterburner;
 
     [SerializeField]
     float m_rotateSpeed = 5.0f;
@@ -23,9 +69,16 @@ public class Ship : MonoBehaviour
     bool maunuallySetWidthAndHeight = false;
 
     [SerializeField]
+    protected float weaponRange = 0.0f;
+
+    [SerializeField]
     float m_shipWidth;
     [SerializeField]
     float m_shipHeight;
+
+    float maxThrusterVelocitySeen = 0;
+    Transform thrustersHolder = null, afterburnersHolder = null;
+    ThrusterObject[] thrusters = null, afterburners = null;
 
     public float GetMaxShipSpeed()
     {
@@ -39,7 +92,7 @@ public class Ship : MonoBehaviour
 
     public float GetCurrentMomentum()
     {
-        return m_currentShipSpeed * rigidbody.mass;
+        return GetCurrentShipSpeed() * rigidbody.mass;
     }
 
     public float GetRamDam()
@@ -47,15 +100,74 @@ public class Ship : MonoBehaviour
         return m_ramDamageMultiplier;
     }
 
-    void Awake()
+    protected virtual void Awake()
     {
         Init();
     }
 
+    [SerializeField]
+    public int shipID = -1;
+    static int ids = 0;
+
     protected void Init()
     {
+        shipID = ids++;
+
         shipTransform = transform;
+        shipRigidbody = rigidbody;
         SetShipSizes();
+        //ResetThrusters();
+    }
+
+    protected virtual void Update()
+    {
+        if (afterburnersFiring == true)
+        {
+            currentAfterburnerTime += Time.deltaTime;
+            if (currentAfterburnerTime >= afterburnerLength)
+            {
+                AfterburnerFinished();
+            }
+        }
+
+        if (afterburnersFiring == false)
+        {
+            if (afterburnersRecharged == false)
+            {
+                currentAfterburnerRechargeTime += Time.deltaTime;
+                if (currentAfterburnerRechargeTime >= afterburnerRechargeTime)
+                {
+                    afterburnersRecharged = true;
+                    currentAfterburnerRechargeTime = 0;
+                }
+            }
+        }
+
+        // we cant calculate the max velocity neatly so we check to see if its larger
+        if (maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude)
+        {
+            maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
+        }
+
+        if (thrustersHolder != null && maxThrusterVelocitySeen > 0)
+        {
+
+            float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
+
+            foreach (ThrusterObject thruster in thrusters)
+            {
+                thruster.SetPercentage(ratio);
+            }
+
+            //if (afterburners != null)
+            //{
+            //    foreach (ThrusterObject thruster in afterburners)
+            //    {
+            //        thruster.SetPercentage(ratio);
+            //    }
+            //}
+        }
+
     }
 
     public void SetShipMomentum(float currentSpeed)
@@ -75,7 +187,7 @@ public class Ship : MonoBehaviour
 
     public float GetCurrentShipSpeed()
     {
-        return m_currentShipSpeed;
+        return afterburnersFiring == true ? m_currentShipSpeed + afterburnerIncreaseOfSpeed : m_currentShipSpeed;
     }
 
     public void ResetShipSpeed()
@@ -171,5 +283,124 @@ public class Ship : MonoBehaviour
 
         return width + height;
 
+    }
+
+    public bool CanFireAfterburners()
+    {
+        return !afterburnersFiring && afterburnersRecharged;
+    }
+
+    public void FireAfterburners()
+    {
+        if (!afterburnersFiring && afterburnersRecharged)
+        {
+            afterburnersFiring = true;
+            afterburnersRecharged = false;
+            afterburnersHolder.gameObject.SetActive(true);
+        }
+    }
+
+    public void AfterburnerFinished()
+    {
+        currentAfterburnerTime = 0;
+        afterburnersFiring = false;
+        afterburnersRecharged = false;
+
+        afterburnersHolder.gameObject.SetActive(false);
+    }
+
+    public virtual float GetMinimumWeaponRange()
+    {
+        return weaponRange;
+    }
+
+    public void ResetThrusters()
+    {
+        ResetThrusterObjects();
+        maxThrusterVelocitySeen = 0;
+    }
+
+    private Transform GetThrusterHolder()
+    {
+        return RecursiveSearchForChild(shipTransform, "Thrusters");
+    }
+
+    static private Transform RecursiveSearchForChild(Transform object_, string name_)
+    {
+        // we look along all of the current child objects incase its on the top layer
+        for (int i = 0; i < object_.childCount; ++i)
+        {
+            Transform child = object_.GetChild(i);
+            if (child.name.Equals(name_))
+            {
+                return child;
+            }
+        }
+
+        // we then recursively search each child
+        for (int i = 0; i < object_.childCount; ++i)
+        {
+            Transform child = object_.GetChild(i);
+            Transform returnee = RecursiveSearchForChild(child, name_);
+            if (returnee != null)
+            {
+                return returnee;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Resets the thrusters if the ship has been changed.
+    /// </summary>
+    /// <returns></returns>
+    public void ResetThrusterObjects()
+    {
+        thrustersHolder = GetThrusterHolder();
+        afterburnersHolder = thrustersHolder.transform.FindChild("Afterburners");
+
+        //if there are afterburners, take 1 away since the afterburner holder is a child but not a thruster itself
+        thrusters = new ThrusterObject[afterburnersHolder != null ? thrustersHolder.transform.childCount - 1 : thrustersHolder.transform.childCount];
+
+
+
+        for (int i = 0, a = 0; i < thrusters.Length; )
+        {
+            GameObject child = thrustersHolder.transform.GetChild(a).gameObject;
+            ++a;
+            if (child != null && !child.name.Equals("Afterburners"))
+            {
+                thrusters[i] = new ThrusterObject(child);
+                ++i;
+            }
+        }
+
+
+        if (afterburnersHolder != null)
+        {
+            afterburners = new ThrusterObject[afterburnersHolder.childCount];
+
+            for (int i = 0; i < afterburners.Length; ++i)
+            {
+                afterburners[i] = new ThrusterObject(afterburnersHolder.GetChild(i).gameObject);
+            }
+        }
+
+
+    }
+
+    /// <summary>
+    /// Returns thrusters. Do not use if the engine has changed as it will not return the updated thrusters. Use FindThrusters instead
+    /// </summary>
+    /// <returns></returns>
+    public ThrusterObject[] GetThrusters()
+    {
+        return thrusters;
+    }
+
+    public ThrusterObject[] GetAfterburners()
+    {
+        return afterburners;
     }
 }

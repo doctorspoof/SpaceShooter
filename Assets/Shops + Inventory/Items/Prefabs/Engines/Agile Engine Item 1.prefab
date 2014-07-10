@@ -45,7 +45,7 @@ MonoBehaviour:
     vessels, especially those that encounter frequent asteroid fields.
   m_cost: 240
   m_equipmentID: 60
-  m_equipmentReference: {fileID: 100000, guid: 4cdbff785f0c28e45b93ad7a5687c8f7, type: 2}
+  m_equipmentReference: {fileID: 100000, guid: 3641e8d8213d52448b7f325eebf928ae, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

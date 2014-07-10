@@ -3,6 +3,8 @@ using System.Collections;
 
 public class DeathScript : MonoBehaviour 
 {
+    [SerializeField]
+    GameObject[] explosionPrefabs;
 
 	// Use this for initialization
 	void Start () 

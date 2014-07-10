@@ -12,7 +12,8 @@ public class AIAttackCollection : MonoBehaviour
         {"AttackStrafeRight", new AttackStrafeRight()},
         {"AttackFromBehind", new AttackFromBehind()},
         {"AttackShieldShipCircleClockwise", new AttackShieldShipCircleClockwise()},
-        {"AttackShieldShipCircleAntiClockwise", new AttackShieldShipCircleAntiClockwise()}
+        {"AttackShieldShipCircleAntiClockwise", new AttackShieldShipCircleAntiClockwise()},
+        {"AttackRam", new AttackRam()}
     };
 
     public AIAttackCollection()

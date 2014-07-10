@@ -16,6 +16,7 @@ GameObject:
   - 148: {fileID: 14800000}
   - 114: {fileID: 11400004}
   - 114: {fileID: 11400002}
+  - 114: {fileID: 11400008}
   m_Layer: 23
   m_Name: Enemy Barrage Rocket
   m_TagString: Bullet
@@ -230,6 +231,30 @@ MonoBehaviour:
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
+--- !u!114 &11400008
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explodeOnDeath: 1
+  removeShipAfterSeconds: -1
+  explosions:
+  - explosionPrefabs:
+    - {fileID: 100000, guid: 07c39ee94f2bf134d948702fb466a8c2, type: 2}
+    - {fileID: 100000, guid: 7c52b76debbd81549989bb6ecef31f30, type: 2}
+    - {fileID: 100000, guid: f4cd2070a221f824887b979e68362f4a, type: 2}
+    - {fileID: 100000, guid: 6e873483de14f5f469413f0a41307424, type: 2}
+    - {fileID: 100000, guid: a5fab6f3e32b14e4db5a12dc0d93fbc6, type: 2}
+    - {fileID: 100000, guid: 6f1b21cd58f6aed4cb993c60133e2236, type: 2}
+    localPosition: {x: 0, y: 0, z: -.100000001}
+    localScale: {x: 4, y: 4, z: 1}
+    timeAfterDeathThatExplosionStarts: 0
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

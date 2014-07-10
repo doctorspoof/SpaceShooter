@@ -205,7 +205,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         //{
 
         List<GameObject> spawnersToBeSpawnedAt = null;
-
+        //spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
         // decide if this is a large or small wave
         if ((waveCount % 5 == 0 && waveCount > 0))
         {

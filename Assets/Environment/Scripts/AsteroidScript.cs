@@ -158,7 +158,7 @@ public class AsteroidScript : MonoBehaviour
 
 		//float rotZ = this.transform.rotation.eulerAngles.z;
 
-		Vector3 velocity = rigidbody.velocity;
+		//Vector3 velocity = rigidbody.velocity;
 
 		if(stream.isWriting)
 		{

@@ -28,7 +28,7 @@ public class CapitalShipScript : Ship
 	bool m_hadItemResponse = false;
 	bool m_itemRequestResponse = false;
 
-    void Awake()
+    protected override void Awake()
     {
         Init();
     }
@@ -514,7 +514,7 @@ public class CapitalShipScript : Ship
         {
             t += Time.deltaTime;
             GameObject shield = GetShield();
-            float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
+            //float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
 
             //oldImp.w = 1.0f - t;
 
@@ -530,7 +530,7 @@ public class CapitalShipScript : Ship
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
         if (shouldStart && targetPoint != null)
         {
@@ -802,7 +802,7 @@ public class CapitalShipScript : Ship
 		}
 
 		//Spawn shattered bits
-		GameObject ship = (GameObject)Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
+		//GameObject ship = (GameObject)Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
 
 		//Destroy self
 		Destroy (this.gameObject);

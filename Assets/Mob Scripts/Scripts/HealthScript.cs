@@ -119,8 +119,10 @@ public class HealthScript : MonoBehaviour
 				//If it's a PC or the capital ship, work out how fast the collision was
 				//TODO: 
 				//Insert sounds here
-				float magnitude = collision.relativeVelocity.magnitude;
-				int PCdamage = (int)(magnitude * this.GetComponent<EnemyScript>().GetRamDam());
+                Ship shipComponent = GetComponent<Ship>();
+
+				float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
+                int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
 				//Debug.Log("Applying " + PCdamage + " damage to PC.");
 				collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
 			}
@@ -235,7 +237,7 @@ public class HealthScript : MonoBehaviour
 			if(m_currentHealth < 0)
 			{
 				//Mob is dead :(
-				Debug.Log ("Alerting Mob that it's ran out of HP");
+				//Debug.Log ("Alerting Mob that it's ran out of HP");
 				OnMobDies(null);
 			}
 			
@@ -437,7 +439,7 @@ public class HealthScript : MonoBehaviour
 				GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDied(this.gameObject);
 				//networkView.RPC ("PropagatePlayerDeath", RPCMode.Others);
 				Debug.Log ("[HealthScript]: Destroying object...");
-				Network.Destroy(this.gameObject);
+                networkView.RPC("PropagateEntityDied", RPCMode.All);
 				
 				//Use this to fix crashes
 				//this.gameObject.SetActive(false);
@@ -446,6 +448,7 @@ public class HealthScript : MonoBehaviour
 			{
 				//Tell the client that it's dead
 				networkView.RPC ("PropagatePlayerHasJustDied", this.GetComponent<PlayerControlScript>().GetOwner());
+                networkView.RPC("PropagateEntityDied", RPCMode.All);
 			}
 		}
 		else if(this.tag == "Capital")
@@ -468,7 +471,7 @@ public class HealthScript : MonoBehaviour
 			{
 				killer.transform.root.GetComponent<PlayerControlScript>().AddSpaceBucks(this.GetComponent<EnemyScript>().GetBounty());
 			}
-			Network.Destroy (this.gameObject);
+            networkView.RPC("PropagateEntityDied", RPCMode.All);
 			
 			if(m_DeathObjectRef != null)
 			{
@@ -507,8 +510,14 @@ public class HealthScript : MonoBehaviour
 	void PropagatePlayerHasJustDied()
 	{
 		GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDied(this.gameObject);
-		Network.Destroy (this.gameObject);
+		//Network.Destroy (this.gameObject);
 	}
+
+    [RPC]
+    void PropagateEntityDied()
+    {
+        GetComponent<Explode>().Fire();
+    }
 	
 	/*[RPC]
 	void PropagatePlayerDeath()

@@ -14,6 +14,7 @@ GameObject:
   - 114: {fileID: 11400000}
   - 54: {fileID: 5400000}
   - 148: {fileID: 14800000}
+  - 114: {fileID: 11400004}
   m_Layer: 14
   m_Name: Missile 3
   m_TagString: Bullet
@@ -191,9 +192,34 @@ MonoBehaviour:
   _uvTieX: 8
   _uvTieY: 8
   _fps: 10
+  _frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
+--- !u!114 &11400004
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explodeOnDeath: 1
+  removeShipAfterSeconds: -1
+  explosions:
+  - explosionPrefabs:
+    - {fileID: 100000, guid: 5f86f9da513c93e4fbea0cabdd34dd44, type: 2}
+    - {fileID: 100000, guid: 75aee9c489749624d9b977f9b7eb00f6, type: 2}
+    - {fileID: 100000, guid: 3d56c3dc7212b474ebdc5f46af8a0952, type: 2}
+    - {fileID: 100000, guid: 921676dad59146e40b6c9e54d9cc227c, type: 2}
+    - {fileID: 100000, guid: 379de339833f70c4181e9f28557e86ba, type: 2}
+    - {fileID: 100000, guid: 373f52a514d17114eb7d9657670f84ee, type: 2}
+    localPosition: {x: 0, y: 0, z: 0}
+    localScale: {x: 6, y: 6, z: 1}
+    timeAfterDeathThatExplosionStarts: 0
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1
