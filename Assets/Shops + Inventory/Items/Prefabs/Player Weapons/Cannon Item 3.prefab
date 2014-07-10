@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 98edb7b79866df844a44c19f9c68cef0, type: 3}
   m_equipmentName: Titan Cannon
   m_equipmentDescription: Insanely powerful cannon. Rumours suggest it has been known
     to accidentally destroy moons.

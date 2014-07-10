@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 83caab32ebd8ce84aa0cf6d3ba5d53e2, type: 3}
   m_equipmentName: Horde Launcher
   m_equipmentDescription: Eighteen barreled launcher. Due to it's high number of warheads,
     it is illegal to fire it inside a planet's atmosphere.

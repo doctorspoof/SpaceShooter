@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: d91f07267c0166e41978b6b72d77ec79, type: 3}
   m_equipmentName: Plasma Sprayer mkII
   m_equipmentDescription: Upgraded spread weapon, that surpasses it's predecessor
     in every way

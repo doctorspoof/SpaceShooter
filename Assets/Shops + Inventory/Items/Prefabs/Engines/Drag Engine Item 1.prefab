@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 6f89f43e768dd754eafcd6a4acc7d0e8, type: 3}
   m_equipmentName: Fusion Engine VxIII
   m_equipmentDescription: A modified standard engine. Power from other thrusters was
     rerouted to the main thruster at the rear of the ship.

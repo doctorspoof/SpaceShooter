@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 47021c4754414a840950242387cb2e11, type: 3}
   m_equipmentName: Micro Missile Launcher
   m_equipmentDescription: Ten barreled launcher, firing small homing rockets.
   m_cost: 300

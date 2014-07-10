@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 1
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: a17e7806d35a88b43a29fdf516e8dfe4, type: 3}
   m_equipmentName: Everguard
   m_equipmentDescription: Advanced barrier system that allows for near permanent shielding
     coverage.

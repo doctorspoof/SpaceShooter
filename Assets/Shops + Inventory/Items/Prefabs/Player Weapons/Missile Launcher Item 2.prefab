@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 61514dc3921c16c4da14c84c038b9602, type: 3}
   m_equipmentName: '''Meteor'' Missile Launcher'
   m_equipmentDescription: Upgraded smart launcher weapon. Popular among pirates in
     the Gamma sector

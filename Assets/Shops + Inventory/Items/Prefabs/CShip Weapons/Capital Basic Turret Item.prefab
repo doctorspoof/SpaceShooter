@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 4
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 44c71325222932a49997871de6e5d672, type: 3}
   m_equipmentName: Ion Cannon
   m_equipmentDescription: Powerful auto-targetting turret firing short ion beams
   m_cost: 50

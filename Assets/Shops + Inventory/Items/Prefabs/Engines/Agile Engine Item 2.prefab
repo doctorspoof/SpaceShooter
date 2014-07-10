@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 2
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: be0a456975ce7a344ab6ce66a47b1364, type: 3}
   m_equipmentName: Gosforth/King Propulsion System
   m_equipmentDescription: An experiment into maneuverability. Provides very tight
     control of the craft with limited top speed.

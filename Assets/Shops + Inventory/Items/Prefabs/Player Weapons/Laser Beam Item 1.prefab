@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 2655d437c10deb341ab5c58b8cfb6559, type: 3}
   m_equipmentName: Verdant Laser
   m_equipmentDescription: A green-tinged focused light beam
   m_cost: 250

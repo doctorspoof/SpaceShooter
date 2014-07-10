@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 0cac25cad5a28e649a52213ce9879377, type: 3}
   m_equipmentName: Chimera Armour
   m_equipmentDescription: Extremly rare armour fashioned from extra-galactic material,
     retro-fitted to a human frame.

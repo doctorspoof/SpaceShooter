@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 4
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: ec4963a2d10b45149ac746248dd193c0, type: 3}
   m_equipmentName: Guided Missile Launcher
   m_equipmentDescription: Automated turret firing a barrage of three homing missiles
   m_cost: 280

@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 786c8e77eddce5c46a5295c25979b1c0, type: 3}
   m_equipmentName: Ceramite Hull
   m_equipmentDescription: Heavy slabs of the artificial alloy Ceramite
   m_cost: 560

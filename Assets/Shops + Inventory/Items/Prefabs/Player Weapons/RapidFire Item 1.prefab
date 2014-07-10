@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: a9630065231b0a54e8ad658248db7bd0, type: 3}
   m_equipmentName: Riptide Emitter
   m_equipmentDescription: Low-grade rapid-fire weapon that focuses on the age old
     'spray and pray' technique

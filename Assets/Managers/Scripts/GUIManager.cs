@@ -2,12 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using SimpleJSON;
+using System.IO;
 
 public enum CShipScreen
 {
 	PlayerPanel = 1,
 	StatusPanel = 2,
-	ObjectivePanel = 3
+	ObjectivePanel = 3,
+	DualPanel = 5,
+	LeftPanelActive = 6,
+	RightPanelActive = 7,
+	PanelsAnimating = 8
 }
 
 public class GUIManager : MonoBehaviour
@@ -61,6 +67,7 @@ public class GUIManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+
 		Time.timeScale = 1.0f;
 		int control = PlayerPrefs.GetInt("UseControl");
 		if(control == 1)
@@ -655,7 +662,11 @@ public class GUIManager : MonoBehaviour
 	[SerializeField]
 	GUIStyle m_sharedHighlightedGUIStyle;
 	[SerializeField]
+	GUIStyle m_hoverBoxTextStyle;
+	[SerializeField]
 	GUIStyle m_nonBoxStyle;
+	[SerializeField]
+	GUIStyle m_nonBoxSmallStyle;
 	[SerializeField]
 	GUIStyle m_nonBoxBigStyle;
 	[SerializeField]
@@ -1350,10 +1361,7 @@ public class GUIManager : MonoBehaviour
 		{
 			if(m_PlayerHasDockedAtCapital)
 			{
-				if(m_playerIsSelectingCShipTurret)
-					DrawCTurretSelect();
-				else
-					DrawCShipDockOverlay();
+				DrawCShipDockOverlay();
 			}
 			else
 			{
@@ -2440,10 +2448,699 @@ public class GUIManager : MonoBehaviour
 		}
 	}
 
-	CShipScreen m_currentCShipPanel = CShipScreen.StatusPanel;
+	//Docking attach points
+	[SerializeField]
+	Texture m_DockBackground;
+	[SerializeField]
+	Texture m_DockCShipImage;
+	[SerializeField]
+	Texture m_DockPlayerImage;
+	[SerializeField]
+	Texture m_DockInventoryBorder;
+
+	[SerializeField]
+	CShipScreen m_currentCShipPanel = CShipScreen.DualPanel;
+
+	//Animatables
+	int m_playerPanelXWidth = 408;
+	IEnumerator AnimatePlayerPanel(int targetXWidth)
+	{
+		float t = 0;
+		int oldWidth = m_playerPanelXWidth;
+
+		while(t < 1)
+		{
+			t += Time.deltaTime;
+
+			m_playerPanelXWidth = (int)Mathf.Lerp((float)oldWidth, (float)targetXWidth, t);
+
+			yield return 0;
+		}
+
+		if(targetXWidth < 300)
+			m_currentCShipPanel = CShipScreen.RightPanelActive;
+		else
+			m_currentCShipPanel = CShipScreen.DualPanel;
+	}
+
+	int m_cShipPanelXPos = 796;
+	IEnumerator AnimateCShipPanel(int targetXPos)
+	{
+		float t = 0;
+		int oldWidth = m_cShipPanelXPos;
+		
+		while(t < 1)
+		{
+			t += Time.deltaTime;
+			
+			m_cShipPanelXPos = (int)Mathf.Lerp((float)oldWidth, (float)targetXPos, t);
+			
+			yield return 0;
+		}
+
+		if(targetXPos > 1000)
+			m_currentCShipPanel = CShipScreen.LeftPanelActive;
+		else
+			m_currentCShipPanel = CShipScreen.DualPanel;
+	}
+
+	//Drag & Drop
+	GameObject m_currentDraggedItem = null;
+	bool m_currentDraggedItemIsFromPlayerInv = true;
+	int m_currentDraggedItemInventoryId = -1;
+
+	Rect m_LeftPanelPlayerRect = new Rect(810, 315, 180, 335);
+	Rect m_LeftPanelCShipRect = new Rect(1010, 315, 180, 335);
+	Rect m_LeftPanelWeaponRect = new Rect(602, 315, 70, 60);
+	Rect m_LeftPanelEngineRect = new Rect(602, 567, 70, 60);
+	Rect m_LeftPanelShieldRect = new Rect(602, 375, 70, 60);
+	Rect m_LeftPanelPlatingRect = new Rect(602, 440, 70, 60);
+
+	void DrawLeftPanel()
+	{
+		float playerSourceWidth = m_playerPanelXWidth / 408.0f;
+		GUI.DrawTexture(new Rect(394, 250, 408, 400), m_DockInventoryBorder);
+		GUI.DrawTextureWithTexCoords(new Rect(394, 250, m_playerPanelXWidth, 400), m_DockPlayerImage, new Rect(1 - playerSourceWidth, 1, playerSourceWidth, 1));
+
+		//Equipped icons:
+		float iconLeftX = 602.0f - (408.0f - m_playerPanelXWidth);
+		if(iconLeftX >= 324.0f)
+		{
+			Rect weaponSource = new Rect(0, 0, 1, 1);
+			Rect weaponTemp = new Rect(iconLeftX, m_LeftPanelWeaponRect.y, m_LeftPanelWeaponRect.width, m_LeftPanelWeaponRect.height);
+			Rect shieldSource = new Rect(0, 0, 1, 1);
+			Rect shieldTemp = new Rect(iconLeftX, m_LeftPanelShieldRect.y, m_LeftPanelShieldRect.width, m_LeftPanelShieldRect.height);
+			Rect platingSource = new Rect(0, 0, 1, 1);
+			Rect platingTemp = new Rect(iconLeftX, m_LeftPanelPlatingRect.y, m_LeftPanelPlatingRect.width, m_LeftPanelPlatingRect.height);
+			Rect engineSource = new Rect(0, 0, 1, 1);
+			Rect engineTemp = new Rect(iconLeftX, m_LeftPanelEngineRect.y, m_LeftPanelEngineRect.width, m_LeftPanelEngineRect.height);
+
+			if(iconLeftX <= 394.0f)
+			{
+				//Gives how far over the border we are
+				float xDiff = 394.0f - iconLeftX;
+				float xPercentageOverlap = xDiff / 70.0f;
+
+				//Change the sourceRect for the icons
+				weaponSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+				shieldSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+				platingSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+				engineSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+
+				//Now change the coords to reflect the edge
+				weaponTemp = new Rect(weaponTemp.x + xDiff, weaponTemp.y, weaponTemp.width - xDiff, weaponTemp.height);
+				shieldTemp = new Rect(shieldTemp.x + xDiff, shieldTemp.y, shieldTemp.width - xDiff, shieldTemp.height);
+				platingTemp = new Rect(platingTemp.x + xDiff, platingTemp.y, platingTemp.width - xDiff, platingTemp.height);
+				engineTemp = new Rect(engineTemp.x + xDiff, engineTemp.y, engineTemp.width - xDiff, engineTemp.height);
+			}
+
+			GUI.DrawTextureWithTexCoords (weaponTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon(), weaponSource);
+			GUI.DrawTextureWithTexCoords (shieldTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon(), shieldSource);
+			GUI.DrawTextureWithTexCoords (platingTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon(), platingSource);
+			GUI.DrawTextureWithTexCoords (engineTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon(), engineSource);
+		}
+	}
+
+	Rect m_RightPanelPlayerRect = new Rect(407, 315, 180, 335);
+	Rect m_RightPanelCShipRect = new Rect(607, 315, 180, 335);
+	Rect m_RightPanelWeapon1Rect = new Rect(915, 318, 78, 58);
+	Rect m_RightPanelWeapon2Rect = new Rect(915, 378, 78, 58);
+	Rect m_RightPanelWeapon3Rect = new Rect(915, 439, 78, 58);
+	Rect m_RightPanelWeapon4Rect = new Rect(915, 568, 78, 58);
+
+	void DrawRightPanel()
+	{
+		float cshipSourcewidth = (1204.0f - (float)m_cShipPanelXPos) / 408.0f;
+		GUI.DrawTexture(new Rect(796, 250, 408, 400), m_DockInventoryBorder);
+		GUI.DrawTextureWithTexCoords(new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), m_DockCShipImage, new Rect(0, 0, cshipSourcewidth, 1));
+	
+		//Draw Icons
+		float iconLeftX = 915.0f + (m_cShipPanelXPos - 796.0f);
+		if(iconLeftX <= 1204.0f)
+		{
+			Rect weapon1Source = new Rect(0, 0, 1, 1);
+			Rect weapon1Temp = new Rect(iconLeftX, m_RightPanelWeapon1Rect.y, m_RightPanelWeapon1Rect.width, m_RightPanelWeapon1Rect.height);
+			Rect weapon2Source = new Rect(0, 0, 1, 1);
+			Rect weapon2Temp = new Rect(iconLeftX, m_RightPanelWeapon2Rect.y, m_RightPanelWeapon2Rect.width, m_RightPanelWeapon2Rect.height);
+			Rect weapon3Source = new Rect(0, 0, 1, 1);
+			Rect weapon3Temp = new Rect(iconLeftX, m_RightPanelWeapon3Rect.y, m_RightPanelWeapon3Rect.width, m_RightPanelWeapon3Rect.height);
+			Rect weapon4Source = new Rect(0, 0, 1, 1);
+			Rect weapon4Temp = new Rect(iconLeftX, m_RightPanelWeapon4Rect.y, m_RightPanelWeapon4Rect.width, m_RightPanelWeapon4Rect.height);
+
+			if(iconLeftX >= 1126.0f)
+			{
+				//Get how far over the border our edge is
+				float widthOverlap = iconLeftX - 1126.0f;
+				float percentageOverlap = widthOverlap / 78.0f;
+
+				//Change the source Rect
+				weapon1Source = new Rect(0, 0, 1 - percentageOverlap, 1);
+				weapon2Source = new Rect(0, 0, 1 - percentageOverlap, 1);
+				weapon3Source = new Rect(0, 0, 1 - percentageOverlap, 1);
+				weapon4Source = new Rect(0, 0, 1- percentageOverlap, 1);
+
+				//Change the dest rect
+				weapon1Temp = new Rect(weapon1Temp.x, weapon1Temp.y, weapon1Temp.width - widthOverlap, weapon1Temp.height);
+				weapon2Temp = new Rect(weapon2Temp.x, weapon2Temp.y, weapon2Temp.width - widthOverlap, weapon2Temp.height);
+				weapon3Temp = new Rect(weapon3Temp.x, weapon3Temp.y, weapon3Temp.width - widthOverlap, weapon3Temp.height);
+				weapon4Temp = new Rect(weapon4Temp.x, weapon4Temp.y, weapon4Temp.width - widthOverlap, weapon4Temp.height);
+			}
+
+			GameObject[] turrets = CShip.GetComponent<CapitalShipScript>().GetAttachedTurrets();
+			GUI.DrawTextureWithTexCoords(weapon1Temp, turrets[0].GetComponent<ItemScript>().GetIcon(), weapon1Source);
+			GUI.DrawTextureWithTexCoords(weapon2Temp, turrets[1].GetComponent<ItemScript>().GetIcon(), weapon2Source);
+			GUI.DrawTextureWithTexCoords(weapon3Temp, turrets[2].GetComponent<ItemScript>().GetIcon(), weapon3Source);
+			GUI.DrawTextureWithTexCoords(weapon4Temp, turrets[3].GetComponent<ItemScript>().GetIcon(), weapon4Source);
+		}
+	}
+
+	void HandleItemDrop(bool isLeftPanel, Vector2 mousePos)
+	{
+		List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+		List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+
+		//Depending on where the cursor is when the mouse is released, decide what happens to the item
+		if(isLeftPanel)
+		{
+
+			//If over player inventory, try to store there.
+			if(m_LeftPanelPlayerRect.Contains(mousePos))
+			{
+				//If the item was originally from here, we don't need to do anything
+				if(!m_currentDraggedItemIsFromPlayerInv)
+				{
+					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
+					{
+						CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[m_currentDraggedItemInventoryId]);
+						StartCoroutine (WaitForItemRequestReply (cshipInv[m_currentDraggedItemInventoryId]));
+					}
+				}
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			//If over CShip inventory, try and drop there
+			else if(m_LeftPanelCShipRect.Contains(mousePos))
+			{
+				if(m_currentDraggedItemIsFromPlayerInv)
+				{
+					CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+				}
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			//If over any equipment slot points try and equip it
+			else if(m_LeftPanelWeaponRect.Contains(mousePos))
+			{
+				if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Weapon)
+				{
+					//if the item is a weapon, equip plz!
+					if(m_currentDraggedItemIsFromPlayerInv)
+						thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+					else
+					{
+						//TODO: Add in networkInv stuff
+					}
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			else if(m_LeftPanelShieldRect.Contains(mousePos))
+			{
+				if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Shield)
+				{
+					//if the item is a weapon, equip plz!
+					if(m_currentDraggedItemIsFromPlayerInv)
+						thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+					else
+					{
+						//TODO: Add in networkInv stuff
+					}
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			else if(m_LeftPanelPlatingRect.Contains(mousePos))
+			{
+				if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Plating)
+				{
+					//if the item is a weapon, equip plz!
+					if(m_currentDraggedItemIsFromPlayerInv)
+						thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+					else
+					{
+						//TODO: Add in networkInv stuff
+					}
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			else if(m_LeftPanelEngineRect.Contains(mousePos))
+			{
+				if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Engine)
+				{
+					//if the item is a weapon, equip plz!
+					if(m_currentDraggedItemIsFromPlayerInv)
+						thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+					else
+					{
+						//TODO: Add in networkInv stuff
+					}
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+		}
+		else
+		{
+			//If over player inventory, try to store there.
+			if(m_RightPanelPlayerRect.Contains(mousePos))
+			{
+				//If the item was originally from here, we don't need to do anything
+				if(!m_currentDraggedItemIsFromPlayerInv)
+				{
+					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
+					{
+						CShip.GetComponent<CapitalShipScript>().RequestItemFromServer (cshipInv[m_currentDraggedItemInventoryId]);
+						StartCoroutine (WaitForItemRequestReply (cshipInv[m_currentDraggedItemInventoryId]));
+					}
+				}
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			//If over CShip inventory, try and drop there
+			else if(m_RightPanelCShipRect.Contains(mousePos))
+			{
+				if(m_currentDraggedItemIsFromPlayerInv)
+				{
+					CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+				}
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			//If over any equipment slot points try and equip it
+			else if(m_RightPanelWeapon1Rect.Contains(mousePos))
+			{
+				if(!m_currentDraggedItemIsFromPlayerInv)
+				{
+					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(1, m_currentDraggedItem);
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			else if(m_RightPanelWeapon2Rect.Contains(mousePos))
+			{
+				if(!m_currentDraggedItemIsFromPlayerInv)
+				{
+					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(2, m_currentDraggedItem);
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			else if(m_RightPanelWeapon3Rect.Contains(mousePos))
+			{
+				if(!m_currentDraggedItemIsFromPlayerInv)
+				{
+					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(3, m_currentDraggedItem);
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+			else if(m_RightPanelWeapon4Rect.Contains(mousePos))
+			{
+				if(!m_currentDraggedItemIsFromPlayerInv)
+				{
+					if(m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+						CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(4, m_currentDraggedItem);
+				}
+				
+				m_currentDraggedItem = null;
+				m_currentDraggedItemIsFromPlayerInv = false;
+				m_currentDraggedItemInventoryId = -1;	
+			}
+		}
+	}
+
+	[SerializeField]
+	Vector2 playerScrollPosition = Vector2.zero;
+	[SerializeField]
+	Vector2 cshipScrollPosition = Vector2.zero;
+
+	Dictionary<Rect, GameObject> drawnItems = new Dictionary<Rect, GameObject>();
+
 	void DrawCShipDockOverlay()
 	{
-		GUI.Box(new Rect(400, 100, 800, 700), "");
+		Event currentEvent = Event.current;
+		Vector3 mousePos = currentEvent.mousePosition;
+
+		GUI.DrawTexture(new Rect(396, 86, 807, 727), m_DockBackground);
+
+		//Show bank status
+		GUI.Label (new Rect(1012, 140, 134, 40), "$" + CShip.GetComponent<CapitalShipScript>().GetBankedCash(), m_nonBoxStyle);
+
+		//Desposit moneys
+		if(GUI.Button (new Rect(1038, 180, 84, 33), "", "label"))
+		{
+			PlayerControlScript pCSc = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
+			int cashAmount = pCSc.GetSpaceBucks();
+			pCSc.RemoveSpaceBucks(cashAmount);
+			CShip.GetComponent<CapitalShipScript>().DepositCashToCShip(cashAmount);
+		}
+
+		drawnItems.Clear();
+		//Do screen specific stuff here:
+		switch(m_currentCShipPanel)
+		{
+			case CShipScreen.DualPanel:
+			{
+				if(GUI.Button(new Rect(394, 250, m_playerPanelXWidth, 400), ""))
+				{
+					//If player is selected, CShip should animate away
+					StartCoroutine(AnimateCShipPanel(1204));
+					m_currentCShipPanel = CShipScreen.PanelsAnimating;
+				}
+
+				if(GUI.Button (new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), ""))
+				{
+					//If CShip is selected, player should animate away
+					StartCoroutine(AnimatePlayerPanel(0));
+					m_currentCShipPanel = CShipScreen.PanelsAnimating;
+				}
+
+				DrawLeftPanel();
+
+				DrawRightPanel();
+
+				break;
+			}
+			case CShipScreen.RightPanelActive:
+			{
+				DrawRightPanel();
+
+				GUI.Label (new Rect(408, 270, 164, 40), "Player:", m_nonBoxStyle);
+				List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+				Rect scrollAreaRectPl = new Rect(408, 330, 180, 320);
+				playerScrollPosition = GUI.BeginScrollView(scrollAreaRectPl, playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
+				for(int i = 0; i < playerInv.Count; i++)
+				{
+					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
+					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+					GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, playerInv[i]);
+
+					if(currentEvent.type == EventType.MouseDown)
+					{
+						bool insideModR = modR.Contains(mousePos);
+						if(modR.Contains(mousePos))
+						{
+							//Begin drag & drop
+							m_currentDraggedItem = playerInv[i];
+							m_currentDraggedItemInventoryId = i;
+							m_currentDraggedItemIsFromPlayerInv = true;
+						}
+					}
+
+					
+				}
+				GUI.EndScrollView();
+				
+				GUI.Label (new Rect(612, 270, 164, 40), "Capital:", m_nonBoxStyle);
+				List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				Rect scrollAreaRect = new Rect(612, 330, 180, 320);
+				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.Count));
+				for(int i = 0; i < cshipInv.Count; i++)
+				{
+					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemScript>().GetIcon());
+					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+					GUI.Label(lastR, cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+					Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, cshipInv[i]);
+
+					if(currentEvent.type == EventType.MouseDown)
+					{
+						bool insideModR = modR.Contains(mousePos);
+						if(modR.Contains(mousePos))
+						{
+							//Begin drag & drop
+							m_currentDraggedItem = cshipInv[i];
+							m_currentDraggedItemInventoryId = i;
+							m_currentDraggedItemIsFromPlayerInv = false;
+						}
+					}
+				}
+				GUI.EndScrollView();
+
+				DrawLeftPanel();
+
+				//Handle mouse up if item is selected
+				if(m_currentDraggedItem != null)
+				{
+					if(Input.GetMouseButtonUp(0))
+					{
+						HandleItemDrop(false, mousePos);
+					}
+					
+					//If we still have an item selected by this point, draw it next to the cursor
+					if(m_currentDraggedItem != null)
+					{
+						GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemScript>().GetIcon());
+					}
+				}
+				else
+				{
+					GameObject[] turrets = CShip.GetComponent<CapitalShipScript>().GetAttachedTurrets();
+					if(m_RightPanelWeapon1Rect.Contains(mousePos))
+				   	{
+						string text = turrets[0].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					else if(m_RightPanelWeapon2Rect.Contains(mousePos))
+					{
+						string text = turrets[1].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					else if(m_RightPanelWeapon3Rect.Contains(mousePos))
+					{
+						string text = turrets[2].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					else if(m_RightPanelWeapon4Rect.Contains(mousePos))
+					{
+						string text = turrets[3].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+				}
+
+				if(GUI.Button (new Rect(796, 250, 408, 400), "", "label"))
+				{
+					StartCoroutine(AnimatePlayerPanel(408));
+					m_currentCShipPanel = CShipScreen.PanelsAnimating;
+				}
+				break;
+			}
+			case CShipScreen.LeftPanelActive:
+			{
+				DrawLeftPanel();
+
+				GUI.Label (new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
+				List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+				Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
+				playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
+				for(int i = 0; i < playerInv.Count; i++)
+				{
+					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
+					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+					GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, playerInv[i]);
+
+					if(currentEvent.type == EventType.MouseDown)
+					{
+						bool insideModR = modR.Contains(mousePos);
+						if(modR.Contains(mousePos))
+						{
+							//Begin drag & drop
+							m_currentDraggedItem = playerInv[i];
+							m_currentDraggedItemInventoryId = i;
+							m_currentDraggedItemIsFromPlayerInv = true;
+						}
+					}
+				}
+				GUI.EndScrollView();
+
+				GUI.Label (new Rect(1020, 270, 164, 40), "Capital:", m_nonBoxStyle);
+				List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+				Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
+				cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.Count));
+				for(int i = 0; i < cshipInv.Count; i++)
+				{
+					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemScript>().GetIcon());
+					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+					GUI.Label(lastR, cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+					Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, cshipInv[i]);
+
+					if(currentEvent.type == EventType.MouseDown)
+					{
+						bool insideModR = modR.Contains(mousePos);
+						if(modR.Contains(mousePos))
+						{
+							//Begin drag & drop
+							m_currentDraggedItem = cshipInv[i];
+							m_currentDraggedItemInventoryId = i;
+							m_currentDraggedItemIsFromPlayerInv = false;
+						}
+					}
+				}
+				GUI.EndScrollView();
+
+				DrawRightPanel();
+
+				//Handle mouse up if item is selected
+				if(m_currentDraggedItem != null)
+				{
+					if(!Input.GetMouseButton(0))
+					{
+						HandleItemDrop(true, mousePos);
+					}
+
+					//If we still have an item selected by this point, draw it next to the cursor
+					if(m_currentDraggedItem != null)
+					{
+						GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemScript>().GetIcon());
+					}
+
+				}
+				else
+				{
+					//Hovers
+					if(m_LeftPanelWeaponRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					
+					if(m_LeftPanelShieldRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					
+					if(m_LeftPanelPlatingRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					
+					if(m_LeftPanelEngineRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+				}
+
+				if(GUI.Button(new Rect(394, 250, 408, 400), "", "label"))
+			   	{
+					//Change back to dual panel
+					m_currentDraggedItem = null;
+					StartCoroutine(AnimateCShipPanel(796));
+					m_currentCShipPanel = CShipScreen.PanelsAnimating;
+				}
+				break;
+			}
+			case CShipScreen.PanelsAnimating:
+			{
+				//Wait for animating to complete;
+				DrawLeftPanel();
+				DrawRightPanel();
+				break;
+			}
+		}
+
+		//Hover text
+		if(m_currentDraggedItem == null)
+		{
+			foreach(Rect key in drawnItems.Keys)
+			{
+				if(key.Contains(mousePos))
+				{
+					string text = drawnItems[key].GetComponent<ItemScript>().GetShopText();
+					DrawHoverText(text, mousePos);
+				}
+			}
+		}
+
+		//Respawn buttons:
+		List<DeadPlayer> deadPlayers = GameStateController.GetComponent<GameStateController>().m_deadPlayers;
+		for(int i = 0; i < deadPlayers.Count; i++)
+		{
+			int fastSpawnCost = 500 + (int)(deadPlayers[i].m_deadTimer * 10);
+			float buttonX = 811 + (i * 96);
+			GUI.Label (new Rect(buttonX - 20, 690, 124, 33), deadPlayers[i].m_playerObject.m_name, m_nonBoxStyle);
+			GUI.Label (new Rect(buttonX - 20, 722, 124, 33), "$" + fastSpawnCost, m_nonBoxStyle);
+
+			if(GUI.Button (new Rect(buttonX, 765, 84, 33), ""))
+			{
+				//Check if amount is available, then respawn player as usual
+				if(CShip.GetComponent<CapitalShipScript>().CShipCanAfford(fastSpawnCost))
+				{
+					CShip.GetComponent<CapitalShipScript>().SpendBankedCash(fastSpawnCost);
+					RequestServerRespawnPlayer(deadPlayers[i].m_playerObject.m_netPlayer);
+				}
+			}
+		}
+
+		//Leave button
+		if(GUI.Button (new Rect(512, 687, 176, 110), "", "label"))
+		{
+			m_PlayerHasDockedAtCapital = false;
+			Screen.showCursor = false;
+			thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellPlayerStopDocking();
+			m_currentCShipPanel = CShipScreen.DualPanel;
+			StartCoroutine(AnimateCShipPanel(796));
+			StartCoroutine(AnimatePlayerPanel(408));
+		}
+
+		/*for(int i = 0; i < 4; i++)
+		{
+			GUI.Button (new Rect(811 + (i * 96), 765, 84, 33), "");
+		}*/
+
+		//Fast respawn
+		/**/
+
+		/*GUI.Box(new Rect(400, 100, 800, 700), "");
 		GUI.Label (new Rect(700, 150, 200, 50), "Capital Ship Dock");
 		
 		CapitalShipScript cshipSc = CShip.GetComponent<CapitalShipScript>();
@@ -2540,7 +3237,7 @@ public class GUIManager : MonoBehaviour
 			}
 			case CShipScreen.StatusPanel:
 			{
-				/* Display CShip resources, CShip weapons + [sector info] */
+				// Display CShip resources, CShip weapons + [sector info] 
 
 				//Show CShip resources
 				GUI.Label(new Rect(480, 200, 150, 50), "Mass: " + cshipSc.GetCurrentResourceMass() + " / " + cshipSc.GetMaxResourceMass());
@@ -2619,29 +3316,24 @@ public class GUIManager : MonoBehaviour
 			}
 		}
 
-		/*
-		
-		*/
 		
 		//Leave docking
 		if(GUI.Button (new Rect(440, 720, 150, 60), "Leave Capital Ship"))
 		{
-			/*if(!m_playerHasAlreadyLeft)
-			{
-				networkView.RPC ("TellOtherPlayersPlayerHasLeft", RPCMode.Others);
-				m_playerHasAlreadyLeft = true;
-				if(Network.isClient)
-					networkView.RPC ("AskServerToBeginSpawns", RPCMode.Server);
-				else
-					AskServerToBeginSpawns();
-			}*/
 			m_PlayerHasDockedAtCapital = false;
 			Screen.showCursor = false;
 			thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellPlayerStopDocking();
 			m_currentCShipPanel = CShipScreen.StatusPanel;
 		}
+		*/
 	}
 
+	void DrawHoverText(string text, Vector2 mousePos)
+	{
+		float width = 200;
+		float height = m_hoverBoxTextStyle.CalcHeight(new GUIContent(text), 200);
+		GUI.Label (new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, m_hoverBoxTextStyle);
+	}
 
 	IEnumerator WaitForItemRequestReply (GameObject item)
 	{
@@ -2657,17 +3349,8 @@ public class GUIManager : MonoBehaviour
 
 		if (response)
 		{
-			if (item.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-			{
-				m_selectedTurretItem = item;
-				m_playerIsSelectingCShipTurret = true;
-			}
-
-			else
-			{
-				thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
-				script.RemoveItemFromInventory (item);
-			}
+			thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
+			script.RemoveItemFromInventory (item);
 		}
 
 		else

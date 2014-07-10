@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 69506376580b37548ac9ba392f0d109e, type: 3}
   m_equipmentName: Swarm Launcher
   m_equipmentDescription: Fourteen barreled launcher. Equipped as emergency weapons
     on civilian vessels.

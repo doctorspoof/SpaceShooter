@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 1
-  m_equipmentIcon: {fileID: 0}
+  m_equipmentIcon: {fileID: 2800000, guid: 8b06350617d46ff46bbe84d122902689, type: 3}
   m_equipmentName: Tactical Shield
   m_equipmentDescription: Small shield fitted to fighters that attack in bursts
   m_cost: 240
