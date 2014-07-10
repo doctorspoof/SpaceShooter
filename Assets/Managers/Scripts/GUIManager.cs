@@ -2620,6 +2620,7 @@ public class GUIManager : MonoBehaviour
 	{
 		List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
 		List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
+		NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
 
 		//Depending on where the cursor is when the mouse is released, decide what happens to the item
 		if(isLeftPanel)
@@ -2632,11 +2633,14 @@ public class GUIManager : MonoBehaviour
 				{
 					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
 					{
-						Debug.Log ("<color=blue>Beginning item transfer sequence</color>");
-						NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
+						//Debug.Log ("<color=blue>Beginning item transfer sequence</color>");
 						inventory.RequestTicketValidityCheck(m_currentTicket);
 						StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
 						return;
+					}
+					else
+					{
+						inventory.RequestServerCancel(m_currentTicket);
 					}
 				}
 				m_currentDraggedItem = null;
@@ -2648,8 +2652,8 @@ public class GUIManager : MonoBehaviour
 			{
 				if(m_currentDraggedItemIsFromPlayerInv)
 				{
-					CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
-					thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					inventory.RequestServerAdd(m_currentDraggedItem);
+					StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
 				}
 				m_currentDraggedItem = null;
 				m_currentDraggedItemIsFromPlayerInv = false;
@@ -2735,10 +2739,14 @@ public class GUIManager : MonoBehaviour
 				{
 					if(!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
 					{
-						NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
 						inventory.RequestTicketValidityCheck(m_currentTicket);
+						Debug.Log ("Requesting ticket validity check. Awaiting response...");
 						StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
 						return;
+					}
+					else
+					{
+						inventory.RequestServerCancel(m_currentTicket);
 					}
 				}
 				m_currentDraggedItem = null;
@@ -2750,8 +2758,9 @@ public class GUIManager : MonoBehaviour
 			{
 				if(m_currentDraggedItemIsFromPlayerInv)
 				{
-					CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
-					thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					//CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+					inventory.RequestServerAdd(m_currentDraggedItem);
+					StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
 				}
 				m_currentDraggedItem = null;
 				m_currentDraggedItemIsFromPlayerInv = false;
@@ -2886,11 +2895,9 @@ public class GUIManager : MonoBehaviour
 						if(modR.Contains(mousePos))
 						{
 							//Begin drag & drop
-							/*m_currentDraggedItem = playerInv[i];
+							m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
 							m_currentDraggedItemInventoryId = i;
-							m_currentDraggedItemIsFromPlayerInv = true;*/
-
-							
+							m_currentDraggedItemIsFromPlayerInv = true;
 						}
 					}
 
@@ -2934,8 +2941,9 @@ public class GUIManager : MonoBehaviour
 				//Handle mouse up if item is selected
 				if(m_currentDraggedItem != null)
 				{
-					if(Input.GetMouseButtonUp(0))
+					if(Input.GetMouseButtonUp(0) && !m_isRequestingItem)
 					{
+						Debug.Log ("Mouse button released, drop the item");
 						HandleItemDrop(false, mousePos);
 					}
 					
@@ -3044,8 +3052,9 @@ public class GUIManager : MonoBehaviour
 				//Handle mouse up if item is selected
 				if(m_currentDraggedItem != null)
 				{
-					if(!Input.GetMouseButton(0))
+					if(Input.GetMouseButtonUp(0) && !m_isRequestingItem)
 					{
+						Debug.Log ("Mouse button released, drop the item");
 						HandleItemDrop(true, mousePos);
 					}
 
@@ -3357,31 +3366,56 @@ public class GUIManager : MonoBehaviour
 
 		while(!inventory.HasServerResponded())
 		{
+			Debug.Log ("Server has not yet responded <color=yellow>:(</color>");
 			yield return null;
 		}
-		
+
+		Debug.Log ("Entering switch case with value: " + reqType);
 		switch(reqType)
 		{
 			case RequestType.ItemAdd:
 			{
 				m_currentTicket = inventory.GetItemAddResponse();
+				if(m_currentTicket.IsValid())
+				{
+				int itemID = m_currentTicket.itemID;
+					if(inventory.AddItemToServer(m_currentTicket))
+					{
+//						if(m_currentDraggedItem != null)
+						thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
+					}
+
+					m_currentDraggedItem = null;
+					m_currentDraggedItemInventoryId = -1;
+					m_currentDraggedItemIsFromPlayerInv = false;
+				}
 				break;	
 			}
 			case RequestType.ItemTake:
 			{
 				m_currentTicket = inventory.GetItemRequestResponse();
-				Debug.Log ("Ticket: " + m_currentTicket.uniqueID + " : " + m_currentTicket.itemID + " : " + m_currentTicket.itemIndex + ".");
+				Debug.Log ("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
 				break;
 			}
 			case RequestType.TicketValidity:
 			{
+				Debug.Log ("Is the ticket valid?");
 				if(inventory.GetTicketValidityResponse())
 				{
+					Debug.Log ("Yes!");
 					if(isToPlayerInv)
 					{
-						thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory(m_currentDraggedItem.gameObject);
+						Debug.Log ("Did the item successfully remove from the server?");
 						if(!inventory.RemoveItemFromServer(m_currentTicket))
+						{
+							Debug.Log ("No!");
 							Debug.LogError ("<color=blue>Ticket mismatch!</color>");
+						}
+						else
+						{
+							Debug.Log ("Yes!");
+							thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory(m_currentDraggedItem.gameObject);
+						}
 
 						m_currentDraggedItem = null;
 						m_currentDraggedItemInventoryId = -1;
@@ -3392,9 +3426,15 @@ public class GUIManager : MonoBehaviour
 						
 					}
 				}
+				else
+				{
+					Debug.Log ("Nope. Here's the ticket: " + m_currentTicket.uniqueID + ", itemId: " + m_currentTicket.itemID + ".");
+				}
 				break;
 			}
 		}
+
+		m_isRequestingItem = false;
 	}
 
 	/*IEnumerator WaitForItemRequestReply (NetworkInventory inventory, bool )
