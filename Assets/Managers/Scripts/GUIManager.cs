@@ -3043,6 +3043,7 @@ public class GUIManager : MonoBehaviour
 						bool insideModR = modR.Contains(mousePos);
 						if(modR.Contains(mousePos))
 						{
+							//Begin drag & drop
 							m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
 							m_currentDraggedItemInventoryId = i;
 							m_currentDraggedItemIsFromPlayerInv = true;
@@ -3580,6 +3581,30 @@ public class GUIManager : MonoBehaviour
 				}
 				break;
 			}
+		}
+		m_isRequestingItem = false;
+	}
+
+	/*IEnumerator WaitForItemRequestReply (NetworkInventory inventory, bool )
+	{
+		bool response = false;
+		m_isRequestingItem = true;
+
+		// Wait until the server has responded
+		while (!inventory.HasServerResponded())
+		{
+			yield return null;
+		}
+
+		if (response)
+		{
+			thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
+			script.RemoveItemFromInventory (item);
+		}
+
+		else
+		{
+			Debug.Log (item.name + " has already been requested by another.");
 		}
 
 		m_isRequestingItem = false;

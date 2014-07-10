@@ -45,6 +45,18 @@ public sealed class ItemTicket
 	}
 
 
+	// Custom equivalence function
+	public override bool Equals (object o)
+	{
+		ItemTicket ticket = (ItemTicket)o;
+		return ((this.uniqueID == ticket.uniqueID) && (this.itemID == ticket.itemID) && (this.itemIndex == ticket.itemIndex));
+	}
+	public override string ToString ()
+	{
+		return string.Format("Ticket: {0}, with itemID: {1} and indexID: {2}", uniqueID, itemID, itemIndex);
+	}
+
+
 	// Allows for statements such as if (ticket) instead of if (ticket != null).
 	public static implicit operator bool (ItemTicket ticket)
 	{

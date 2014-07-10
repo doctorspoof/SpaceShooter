@@ -374,7 +374,7 @@ public sealed class NetworkInventory : MonoBehaviour
 		int index = ticket.itemIndex;
 
 		// Ideally the itemIndex will contain the perfect value
-		if (IsDesiredIndex (ticket.itemID, ticket.itemIndex, RequestCheck.Requested) && m_requestTickets[index].Equals(ticket))
+		if (IsDesiredIndex (ticket.itemIndex, ticket.itemID, RequestCheck.Requested) && m_requestTickets[index].Equals(ticket))
 		{
 			index = ticket.itemIndex;
 		}
@@ -384,6 +384,8 @@ public sealed class NetworkInventory : MonoBehaviour
 			// Use the functionality of List to find the ticket
 			index = m_requestTickets.IndexOf (ticket);
 		}
+
+		Debug.LogError ("Couldn't determine index of " + ticket + " in " + name + ".NetworkInventory");
 
 		return index;
 	}
@@ -496,7 +498,7 @@ public sealed class NetworkInventory : MonoBehaviour
 			}
 
 			// Else send back an invalid ticket
-			Debug.Log("Index: " + index + ", itemID: " + itemID + ", preferredIndex: " + preferredIndex + ".");
+			//Debug.Log("Index: " + index + ", itemID: " + itemID + ", preferredIndex: " + preferredIndex + ".");
 			
 			// This is the only way I've found to check if the message is blank, an alternative method would be preferable
 			if (message.Equals (m_blankMessage))
@@ -519,7 +521,7 @@ public sealed class NetworkInventory : MonoBehaviour
 
 
 	// When a client requests an item be added to the inventory it must be authorised first
-	[RPC] void RequestAdd (int itemID, int index, bool adminMode, NetworkMessageInfo message)
+	[RPC] void RequestAdd (int itemID, int index, bool adminMode, NetworkMessageInfo info)
 	{
 		if (Network.isServer)
 		{
@@ -569,17 +571,17 @@ public sealed class NetworkInventory : MonoBehaviour
 				}
 			}
 
-			Debug.Log ("Responding to RequestAdd with ticket: " + ticket.uniqueID + " " + ticket.itemID + " " + ticket.itemIndex);
+			//Debug.Log ("Responding to RequestAdd with ticket: " + ticket.uniqueID + " " + ticket.itemID + " " + ticket.itemIndex);
 
 			// Silly workaround for RPC sending limitation
-			if (message.Equals (m_blankMessage))
+			if (info.Equals (m_blankMessage))
 			{
 				RespondToAddRequest (ticket);
 			}
 
 			else
 			{
-				networkView.RPC ("RespondToAddRequest", message.sender, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
+				networkView.RPC ("RespondToAddRequest", info.sender, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
 			}
 		}
 
@@ -644,6 +646,11 @@ public sealed class NetworkInventory : MonoBehaviour
 				}
 			}
 		}
+
+		else
+		{
+			Debug.LogError ("Attempt to cancel invalid ticket in " + name + ".NetworkInventory");
+		}
 	}
 
 
@@ -679,7 +686,7 @@ public sealed class NetworkInventory : MonoBehaviour
 
 		else
 		{
-			networkView.RPC ("RespondToTicketValidtyCheck", message.sender, response);
+			networkView.RPC ("RespondToTicketValidityCheck", message.sender, response);
 		}
 	}
 
@@ -827,7 +834,8 @@ public sealed class NetworkInventory : MonoBehaviour
 	{
 		// Reconstruct the ticket
 		ItemTicket ticket = new ItemTicket (uniqueID, itemID, itemIndex);
-
+		if(Network.isClient)
+			Debug.Log ("Recieved remote item removal request. ItemIndex: " + ticket.itemIndex);
 		PropagateRemovalAtIndex (ticket);
 	}
 
@@ -835,11 +843,12 @@ public sealed class NetworkInventory : MonoBehaviour
 	// Used to perform a synchronised removal
 	void PropagateRemovalAtIndex (ItemTicket ticket)
 	{
+		Debug.Log (ticket.ToString());
 		if (ticket.IsValid())
 		{
 			// The correct index is guaranteed for the clients so only determine it for the server
 			int index = Network.isServer ? DetermineTicketIndex (ticket) : ticket.itemIndex;
-			
+			Debug.Log ("Index: " + index);
 			// Check if it is valid
 			if (IsValidIndex (index))
 			{
@@ -848,20 +857,19 @@ public sealed class NetworkInventory : MonoBehaviour
 				{
 					m_inventory[index] = null;
 					m_isItemRequested[index] = false;
-					m_requestTickets[index].Reset();
 				}
 				
 				else
 				{
+					Debug.Log ("Removing at: " + index);
 					m_inventory.RemoveAt (index);
 					m_isItemRequested.RemoveAt (index);
 
 					// Reset the ticket so the expiration coroutine knows it has been removed
-					m_requestTickets[index].Reset();
 					m_requestTickets.RemoveAt (index);
 				}
 				
-				
+				Debug.Log ("WHAT THE CRAP IS HAPPENING!");
 				// Propagate the change to the clients
 				if (Network.isServer)
 				{
@@ -869,6 +877,7 @@ public sealed class NetworkInventory : MonoBehaviour
 					ticket.itemIndex = index;
 					
 					// Propagate the removal
+					Debug.Log ("Sending removal notification to others.");
 					networkView.RPC ("PropagateRemovalAtIndex", RPCMode.Others, ticket.uniqueID, ticket.itemID, ticket.itemIndex);
 				}
 			}
