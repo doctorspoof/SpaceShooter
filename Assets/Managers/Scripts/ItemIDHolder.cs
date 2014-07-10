@@ -13,8 +13,13 @@ public class ItemIDHolder : MonoBehaviour
 	public Item[] ItemList;
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start () 
+	{
+		for(int i = 0; i < ItemList.Length; i++)
+		{
+			if(ItemList[i] != null && ItemList[i].itemObject != null)
+				ItemList[i].itemObject.GetComponent<ItemScript>().CollectDescription();
+		}
 	}
 	
 	// Update is called once per frame

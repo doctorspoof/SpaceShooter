@@ -121,7 +121,6 @@ public static class ItemDescriptionHolder
 		{112, "Type: Heavy Plating\r\nArmour fashioned from the very rare (but very heavy) metal 'Impervium'. Unbeatable protection, but at a serious cost to agility"},
 		{113, "ITEMMISSING"},
 		{114, "ITEMMISSING"},
-		{114, "ITEMMISSING"},
 		{115, "ITEMMISSING"},
 		{116, "ITEMMISSING"},
 		{117, "ITEMMISSING"},
@@ -129,7 +128,7 @@ public static class ItemDescriptionHolder
 		{119, "ITEMMISSING"},
 		{120, "Type: Capital Weapon\r\nStandard anti-ship turrets for larger vessels. Will attempt to lead targets to ensure accuracy"},
 		{121, "Type: Capital Weapon\r\nImproved default turret with additional barrels, for faster rate of fire"},
-		{122, "Type: Capital Weapon\r\nAnti-swarm weapon designed to effect a large area around the target with damage. Effective against large groups of both foes and asteroids"},
+		{122, "Type: Capital Weapon\r\nAnti-swarm weapon designed to affect a large area around the target with damage. Effective against large groups of both foes and asteroids"},
 		{123, "Type: Capital Weapon\r\nPowerful focused light beam that excels at destroying targets close to the attached vessel"},
 		{124, "Type: Capital Weapon\r\nFires multiple homing warheads. Can easily take down larger ships with a volley of explosive missiles"},
 		{125, "Type: Capital Weapon\r\nA body-modifying weapon system that replaces portions of the fuselage with huge missile ports. Fires large, homing warheads at nearby targets"}
@@ -138,11 +137,15 @@ public static class ItemDescriptionHolder
 	public static string GetDescriptionFromID(int id)
 	{
 		string output = "";
-		descriptionID.TryGetValue(id, out output);
+		output = descriptionID[id];
 
 		if(output == "MISSINGITEM")
+		{
 			return null;
+		}
 		else
+		{
 			return output;
+		}
 	}
 }

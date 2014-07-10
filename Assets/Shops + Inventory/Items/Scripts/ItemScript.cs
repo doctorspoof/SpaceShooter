@@ -28,7 +28,7 @@ public class ItemScript : MonoBehaviour
 	[SerializeField]
 	//string m_equipmentDescription;
 	int m_descriptionID;
-	string m_equipmentDescription;
+	string m_equipmentDescription = null;
 	
 	public int m_cost;
 	
@@ -53,6 +53,11 @@ public class ItemScript : MonoBehaviour
 		
 	}
 
+	public void CollectDescription()
+	{
+		m_equipmentDescription = ItemDescriptionHolder.GetDescriptionFromID(m_equipmentID);
+	}
+
 	public string GetItemName()
 	{
 		return m_equipmentName;
@@ -64,11 +69,13 @@ public class ItemScript : MonoBehaviour
 		output += System.Environment.NewLine + m_equipmentDescription;
 		return output;*/
 
-		if(m_equipmentDescription == null || m_equipmentDescription == "")
+		//m_equipmentDescription = ItemDescriptionHolder.GetDescriptionFromID(m_equipmentID);
+
+		if(m_equipmentDescription == null)
 		{
-			ItemDescriptionHolder.GetDescriptionFromID(m_equipmentID);
+			m_equipmentDescription = ItemDescriptionHolder.GetDescriptionFromID(m_equipmentID);
 		}
 
-		return m_equipmentName + System.Environment.NewLine + m_equipmentDescription;
+		return (m_equipmentName + System.Environment.NewLine + m_equipmentDescription);
 	}
 }

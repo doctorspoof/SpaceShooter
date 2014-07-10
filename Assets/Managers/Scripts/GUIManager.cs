@@ -662,6 +662,8 @@ public class GUIManager : MonoBehaviour
 	[SerializeField]
 	GUIStyle m_sharedHighlightedGUIStyle;
 	[SerializeField]
+	GUIStyle m_hoverBoxTextStyle;
+	[SerializeField]
 	GUIStyle m_nonBoxStyle;
 	[SerializeField]
 	GUIStyle m_nonBoxSmallStyle;
@@ -2826,7 +2828,8 @@ public class GUIManager : MonoBehaviour
 			pCSc.RemoveSpaceBucks(cashAmount);
 			CShip.GetComponent<CapitalShipScript>().DepositCashToCShip(cashAmount);
 		}
-		
+
+		drawnItems.Clear();
 		//Do screen specific stuff here:
 		switch(m_currentCShipPanel)
 		{
@@ -2854,7 +2857,6 @@ public class GUIManager : MonoBehaviour
 			}
 			case CShipScreen.RightPanelActive:
 			{
-				drawnItems.Clear();
 				DrawRightPanel();
 
 				GUI.Label (new Rect(408, 270, 164, 40), "Player:", m_nonBoxStyle);
@@ -2867,6 +2869,10 @@ public class GUIManager : MonoBehaviour
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
 					GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
 					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, playerInv[i]);
+
 					if(currentEvent.type == EventType.MouseDown)
 					{
 						bool insideModR = modR.Contains(mousePos);
@@ -2893,6 +2899,10 @@ public class GUIManager : MonoBehaviour
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
 					GUI.Label(lastR, cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
 					Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, cshipInv[i]);
+
 					if(currentEvent.type == EventType.MouseDown)
 					{
 						bool insideModR = modR.Contains(mousePos);
@@ -2906,6 +2916,8 @@ public class GUIManager : MonoBehaviour
 					}
 				}
 				GUI.EndScrollView();
+
+				DrawLeftPanel();
 
 				//Handle mouse up if item is selected
 				if(m_currentDraggedItem != null)
@@ -2921,8 +2933,30 @@ public class GUIManager : MonoBehaviour
 						GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemScript>().GetIcon());
 					}
 				}
-
-				DrawLeftPanel();
+				else
+				{
+					GameObject[] turrets = CShip.GetComponent<CapitalShipScript>().GetAttachedTurrets();
+					if(m_RightPanelWeapon1Rect.Contains(mousePos))
+				   	{
+						string text = turrets[0].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					else if(m_RightPanelWeapon2Rect.Contains(mousePos))
+					{
+						string text = turrets[1].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					else if(m_RightPanelWeapon3Rect.Contains(mousePos))
+					{
+						string text = turrets[2].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					else if(m_RightPanelWeapon4Rect.Contains(mousePos))
+					{
+						string text = turrets[3].GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+				}
 
 				if(GUI.Button (new Rect(796, 250, 408, 400), "", "label"))
 				{
@@ -2944,7 +2978,11 @@ public class GUIManager : MonoBehaviour
 					GUI.Label (new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
 					GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
-				Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+					Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, playerInv[i]);
+
 					if(currentEvent.type == EventType.MouseDown)
 					{
 						bool insideModR = modR.Contains(mousePos);
@@ -2969,6 +3007,10 @@ public class GUIManager : MonoBehaviour
 					Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
 					GUI.Label(lastR, cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
 					Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
+
+					if(scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+						drawnItems.Add(modR, cshipInv[i]);
+
 					if(currentEvent.type == EventType.MouseDown)
 					{
 						bool insideModR = modR.Contains(mousePos);
@@ -2982,6 +3024,8 @@ public class GUIManager : MonoBehaviour
 					}
 				}
 				GUI.EndScrollView();
+
+				DrawRightPanel();
 
 				//Handle mouse up if item is selected
 				if(m_currentDraggedItem != null)
@@ -2998,8 +3042,33 @@ public class GUIManager : MonoBehaviour
 					}
 
 				}
-
-				DrawRightPanel();
+				else
+				{
+					//Hovers
+					if(m_LeftPanelWeaponRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					
+					if(m_LeftPanelShieldRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					
+					if(m_LeftPanelPlatingRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+					
+					if(m_LeftPanelEngineRect.Contains(mousePos))
+					{
+						string text = thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetShopText();
+						DrawHoverText(text, mousePos);
+					}
+				}
 
 				if(GUI.Button(new Rect(394, 250, 408, 400), "", "label"))
 			   	{
@@ -3016,6 +3085,19 @@ public class GUIManager : MonoBehaviour
 				DrawLeftPanel();
 				DrawRightPanel();
 				break;
+			}
+		}
+
+		//Hover text
+		if(m_currentDraggedItem == null)
+		{
+			foreach(Rect key in drawnItems.Keys)
+			{
+				if(key.Contains(mousePos))
+				{
+					string text = drawnItems[key].GetComponent<ItemScript>().GetShopText();
+					DrawHoverText(text, mousePos);
+				}
 			}
 		}
 
@@ -3246,6 +3328,12 @@ public class GUIManager : MonoBehaviour
 		*/
 	}
 
+	void DrawHoverText(string text, Vector2 mousePos)
+	{
+		float width = 200;
+		float height = m_hoverBoxTextStyle.CalcHeight(new GUIContent(text), 200);
+		GUI.Label (new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, m_hoverBoxTextStyle);
+	}
 
 	IEnumerator WaitForItemRequestReply (GameObject item)
 	{
