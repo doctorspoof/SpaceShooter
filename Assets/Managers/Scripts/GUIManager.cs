@@ -1556,7 +1556,7 @@ public class GUIManager : MonoBehaviour
 								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + itemCost))
 								{
 									//Check if the player has enough cash
-									if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull()
+									if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull())
 									{
 										//Add the item to the player's inventory
 										pcControl.AddItemToInventory(shopInv[i].gameObject);
@@ -3585,32 +3585,6 @@ public class GUIManager : MonoBehaviour
 
 		m_isRequestingItem = false;
 	}
-
-	/*IEnumerator WaitForItemRequestReply (NetworkInventory inventory, bool )
-	{
-		bool response = false;
-		m_isRequestingItem = true;
-
-		// Wait until the server has responded
-		while (!inventory.HasServerResponded())
-		{
-			yield return null;
-		}
-
-		if (response)
-		{
-			thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
-			script.RemoveItemFromInventory (item);
-		}
-
-		else
-		{
-			Debug.Log (item.name + " has already been requested by another.");
-		}
-
-		m_isRequestingItem = false;
-	}*/
-
 
 	void RequestServerRespawnPlayer(NetworkPlayer player)
 	{
