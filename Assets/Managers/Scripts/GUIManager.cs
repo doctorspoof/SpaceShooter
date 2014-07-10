@@ -1391,29 +1391,32 @@ public class GUIManager : MonoBehaviour
 					if(m_shipyardScreen)
 					{
 						//m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
-						GameObject[] shopInv = m_shopDockedAt.GetComponent<ShopScript>().GetShopInventory();
-
+						ShopScript script = m_shopDockedAt.GetComponent<ShopScript>();
+						NetworkInventory shopInv = script.GetShopInventory();
+						int itemCost = 0;
 
 
 						PlayerControlScript pcControl = thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
-						for(int i = 0; i < shopInv.Length; i++)
+						for(int i = 0; i < shopInv.GetCount(); i++)
 						{
 							if(shopInv[i] != null)
 							{
+								itemCost = script.GetItemCost (i);
+
 								GUI.Label (new Rect(480 + (i * 150), 360, 140, 100), shopInv[i].GetComponent<ItemScript>().GetShopText());
-								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + ((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent))))
+								if(GUI.Button (new Rect(505 + (i * 150), 430, 90, 50), "Buy: $" + itemCost))
 								{
 									//Check if the player has enough cash
-									if(pcControl.CheckCanAffordAmount((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent)) && !pcControl.InventoryIsFull())
+									if(pcControl.CheckCanAffordAmount(itemCost) && !pcControl.InventoryIsFull())
 									{
 										//Add the item to the player's inventory
-										pcControl.AddItemToInventory(shopInv[i]);
+										pcControl.AddItemToInventory(shopInv[i].gameObject);
 
 										//Remove cash from player
-										pcControl.RemoveSpaceBucks((int)(shopInv[i].GetComponent<ItemScript>().m_cost * m_shopDockedAt.GetComponent<ShopScript>().m_pricePercent));
+										pcControl.RemoveSpaceBucks(itemCost);
 
 										//Remove it from the shop's inventory
-										m_shopDockedAt.GetComponent<ShopScript>().RemoveItemFromShopInventory(i);
+										//m_shopDockedAt.GetComponent<ShopScript>().RemoveItemFromShopInventory(i);
 									}
 								}
 							}
@@ -3334,7 +3337,7 @@ public class GUIManager : MonoBehaviour
 		GUI.Label (new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, m_hoverBoxTextStyle);
 	}
 
-	IEnumerator WaitForCShipItemRequestReply (GameObject item)
+	IEnumerator WaitForItemRequestReply (GameObject item)
 	{
 		CapitalShipScript script = CShip.GetComponent<CapitalShipScript>();
 		bool response = false;
