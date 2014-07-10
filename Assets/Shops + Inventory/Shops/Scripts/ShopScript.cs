@@ -136,6 +136,17 @@ public class ShopScript : MonoBehaviour
 	{
 		RotateShop();
 	}
+
+
+	public bool RESETINVENTORY = false;
+	void Update()
+	{
+		if (RESETINVENTORY)
+		{
+			RESETINVENTORY = false;
+			RequestNewInventory (Time.timeSinceLevelLoad);
+		}
+	}
 	
 	
 	// Update the rotation over the network
@@ -253,7 +264,7 @@ public class ShopScript : MonoBehaviour
 			for (int i = 0; i < items.Count; ++i)
 			{
 				// We know that server requests have no latency so don't bother waiting for a response.
-				m_shopInventory.RequestServerAdd (items[i], i, m_inventoryAdminKey);
+				m_shopInventory.RequestServerAdd (items[i], i, -1);
 
 				if (m_shopInventory.HasServerResponded())
 				{
