@@ -245,8 +245,7 @@ public class ShopScript : MonoBehaviour
 
 		return scripts;
 	}
-
-
+	
 	// Performs all the necessary work to add an item to the server
 	void RefillInventory (List<ItemScript> items)
 	{
@@ -260,7 +259,7 @@ public class ShopScript : MonoBehaviour
 			for (int i = 0; i < items.Count; ++i)
 			{
 				// We know that server requests have no latency so don't bother waiting for a response.
-				m_shopInventory.RequestServerAdd (items[i], i, -1);
+				m_shopInventory.RequestServerAdd (items[i], i, m_inventoryAdminKey);
 
 				if (m_shopInventory.HasServerResponded())
 				{
