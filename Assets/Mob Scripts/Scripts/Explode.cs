@@ -59,9 +59,17 @@ public class Explode : MonoBehaviour
 
     private void DisableAllNonEssentialComponents()
     {
-        GetComponent<Ship>().enabled = false;
+        Ship shipComponent = GetComponent<Ship>();
+        if(shipComponent)
+        {
+            shipComponent.enabled = false;
+        }
 
-        transform.FindChild("Composite Collider").FindChild("Shield").gameObject.SetActive(false);
+        Transform shield = this.tag.Equals("Player") == true ? transform.FindChild("Shield") : transform.FindChild("Composite Collider").FindChild("Shield");
+        if(shield)
+        {
+            shield.gameObject.SetActive(false);
+        }
         //MonoBehaviour[] monoBehaviours = GetComponents<MonoBehaviour>();
         //foreach(MonoBehaviour monoBehaviour in monoBehaviours)
         //{

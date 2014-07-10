@@ -25,6 +25,8 @@ public class HealthScript : MonoBehaviour
 	
 	// Stops the script from repeating searching for the shield GameObject
 	GameObject m_shieldCache;
+
+    bool isDead = false;
 	
 	
 	public void EquipNewPlating(int hullValue)
@@ -426,6 +428,11 @@ public class HealthScript : MonoBehaviour
 
 	void OnMobDies (GameObject killer, GameObject hitter = null)
 	{
+        if(isDead == true)
+        {
+            return;
+        }
+
 		//Debug.Log ("Mob has died!");
 		if(this.GetComponent<PlayerControlScript>() != null)
 		{
@@ -516,6 +523,7 @@ public class HealthScript : MonoBehaviour
     [RPC]
     void PropagateEntityDied()
     {
+        isDead = true;
         GetComponent<Explode>().Fire();
     }
 	

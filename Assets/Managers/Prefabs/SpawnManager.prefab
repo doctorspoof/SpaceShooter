@@ -143,7 +143,7 @@ MonoBehaviour:
   specialWaves:
   - defaultOrderTargetTag: Player
     m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
+    - m_enemyRef: {fileID: 100036, guid: 56293a06d8e04834fb2a97f86e4d9835, type: 2}
       m_numEnemy: 3
   - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
