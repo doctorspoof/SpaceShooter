@@ -245,9 +245,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 33311749}
   - 114: {fileID: 33311748}
-  - 114: {fileID: 33311747}
   - 33: {fileID: 33311746}
   - 23: {fileID: 33311745}
+  - 148: {fileID: 33311747}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -285,25 +285,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1361860670}
   m_GameObject: {fileID: 33311744}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &33311747
-MonoBehaviour:
+--- !u!148 &33311747
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 1361860670}
   m_GameObject: {fileID: 33311744}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 33311749}
+  m_ViewID:
+    m_ID: 24
+    m_Type: 1
 --- !u!114 &33311748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,8 +312,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &33311749
 Transform:
@@ -535,6 +528,14 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
   m_RootGameObject: {fileID: 67859105}
@@ -549,9 +550,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 67859110}
   - 114: {fileID: 67859109}
-  - 114: {fileID: 67859108}
   - 33: {fileID: 67859107}
   - 23: {fileID: 67859106}
+  - 148: {fileID: 67859108}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -589,25 +590,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 66292600}
   m_GameObject: {fileID: 67859105}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &67859108
-MonoBehaviour:
+--- !u!148 &67859108
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 66292600}
   m_GameObject: {fileID: 67859105}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 67859110}
+  m_ViewID:
+    m_ID: 23
+    m_Type: 1
 --- !u!114 &67859109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -622,8 +617,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &67859110
 Transform:
@@ -645,9 +639,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 94703548}
   - 114: {fileID: 94703547}
-  - 114: {fileID: 94703546}
   - 33: {fileID: 94703545}
   - 23: {fileID: 94703544}
+  - 148: {fileID: 94703546}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -685,25 +679,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1142302129}
   m_GameObject: {fileID: 94703543}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &94703546
-MonoBehaviour:
+--- !u!148 &94703546
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 1142302129}
   m_GameObject: {fileID: 94703543}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 94703548}
+  m_ViewID:
+    m_ID: 30
+    m_Type: 1
 --- !u!114 &94703547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -718,8 +706,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &94703548
 Transform:
@@ -1398,9 +1385,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 520790229}
   - 114: {fileID: 520790228}
-  - 114: {fileID: 520790227}
   - 33: {fileID: 520790226}
   - 23: {fileID: 520790225}
+  - 148: {fileID: 520790227}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -1438,25 +1425,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 2016122136}
   m_GameObject: {fileID: 520790224}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &520790227
-MonoBehaviour:
+--- !u!148 &520790227
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 2016122136}
   m_GameObject: {fileID: 520790224}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 520790229}
+  m_ViewID:
+    m_ID: 29
+    m_Type: 1
 --- !u!114 &520790228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1471,8 +1452,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &520790229
 Transform:
@@ -1671,9 +1651,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 539799790}
   - 114: {fileID: 539799789}
-  - 114: {fileID: 539799788}
   - 33: {fileID: 539799787}
   - 23: {fileID: 539799786}
+  - 148: {fileID: 539799788}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -1711,25 +1691,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1226655365}
   m_GameObject: {fileID: 539799785}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &539799788
-MonoBehaviour:
+--- !u!148 &539799788
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 1226655365}
   m_GameObject: {fileID: 539799785}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 539799790}
+  m_ViewID:
+    m_ID: 27
+    m_Type: 1
 --- !u!114 &539799789
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1744,8 +1718,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &539799790
 Transform:
@@ -2019,6 +1992,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2371,9 +2352,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 747189060}
   - 114: {fileID: 747189059}
-  - 114: {fileID: 747189058}
   - 33: {fileID: 747189057}
   - 23: {fileID: 747189056}
+  - 148: {fileID: 747189058}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -2411,25 +2392,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 618841095}
   m_GameObject: {fileID: 747189055}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &747189058
-MonoBehaviour:
+--- !u!148 &747189058
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 618841095}
   m_GameObject: {fileID: 747189055}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 747189060}
+  m_ViewID:
+    m_ID: 25
+    m_Type: 1
 --- !u!114 &747189059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2444,8 +2419,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &747189060
 Transform:
@@ -3612,9 +3586,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 936720315}
   - 114: {fileID: 936720314}
-  - 114: {fileID: 936720313}
   - 33: {fileID: 936720312}
   - 23: {fileID: 936720311}
+  - 148: {fileID: 936720313}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -3652,25 +3626,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1301054559}
   m_GameObject: {fileID: 936720310}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &936720313
-MonoBehaviour:
+--- !u!148 &936720313
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 1301054559}
   m_GameObject: {fileID: 936720310}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 936720315}
+  m_ViewID:
+    m_ID: 28
+    m_Type: 1
 --- !u!114 &936720314
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3685,8 +3653,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &936720315
 Transform:
@@ -4265,9 +4232,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 1087065111}
   - 114: {fileID: 1087065110}
-  - 114: {fileID: 1087065109}
   - 33: {fileID: 1087065108}
   - 23: {fileID: 1087065107}
+  - 148: {fileID: 1087065109}
   m_Layer: 2
   m_Name: EnemySpawnPoint
   m_TagString: SpawnPoint
@@ -4305,25 +4272,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1738304216}
   m_GameObject: {fileID: 1087065106}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1087065109
-MonoBehaviour:
+--- !u!148 &1087065109
+NetworkView:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
+  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
     type: 2}
   m_PrefabInternal: {fileID: 1738304216}
   m_GameObject: {fileID: 1087065106}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 1087065111}
+  m_ViewID:
+    m_ID: 26
+    m_Type: 1
 --- !u!114 &1087065110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4338,8 +4299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   activeTime: 30
   spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  activeMat: {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
+  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
   m_shouldPause: 0
 --- !u!4 &1087065111
 Transform:
@@ -4530,6 +4490,14 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
   m_RootGameObject: {fileID: 94703543}
@@ -4666,6 +4634,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 27
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -4859,6 +4835,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -5520,6 +5504,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -7327,6 +7319,14 @@ Prefab:
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 26
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
   m_RootGameObject: {fileID: 1087065106}
@@ -8153,6 +8153,14 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_ID
+      value: 29
+      objectReference: {fileID: 0}
+    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
+      propertyPath: m_ViewID.m_Type
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []

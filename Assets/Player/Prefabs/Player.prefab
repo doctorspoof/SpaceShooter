@@ -605,7 +605,7 @@ MonoBehaviour:
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
   m_currentSpaceBucks: 300
-  m_equippedWeaponItem: {fileID: 100000, guid: d8e1271c27ab7ae4793d51be5149f688, type: 2}
+  m_equippedWeaponItem: {fileID: 100000, guid: 22c6dc7be06d3f1448312bc61d2b5681, type: 2}
   m_equippedShieldItem: {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
   m_equippedEngineItem: {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
   m_equippedPlatingItem: {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
@@ -677,6 +677,7 @@ MonoBehaviour:
     localPosition: {x: 0, y: 0, z: -.0500000007}
     localScale: {x: 2, y: 2, z: 1}
     timeAfterDeathThatExplosionStarts: 0
+  fragments: []
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

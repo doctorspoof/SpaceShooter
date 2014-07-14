@@ -1062,6 +1062,17 @@ MonoBehaviour:
     localPosition: {x: .600000024, y: -.400000006, z: -.0500000007}
     localScale: {x: 1, y: 1, z: 1}
     timeAfterDeathThatExplosionStarts: 2
+  fragments:
+  - material: {fileID: 2100000, guid: 3f84549d65c802844b6345cda8f8b31a, type: 2}
+    directionToApplyForce: {x: -.100000001, y: 1, z: 0}
+  - material: {fileID: 2100000, guid: bf1c7dab0baf4e847bdfcf853989faf7, type: 2}
+    directionToApplyForce: {x: 1, y: 0, z: 0}
+  - material: {fileID: 2100000, guid: 55bcdde7d5f3a5144a5d311ce81307df, type: 2}
+    directionToApplyForce: {x: -1, y: 0, z: 0}
+  - material: {fileID: 2100000, guid: 441f31e88cda331488a66fc0b76becef, type: 2}
+    directionToApplyForce: {x: -1, y: -1, z: 0}
+  - material: {fileID: 2100000, guid: 8a0bcefa2554d1f458eaf039fbba41f2, type: 2}
+    directionToApplyForce: {x: 1, y: -.400000006, z: 0}
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

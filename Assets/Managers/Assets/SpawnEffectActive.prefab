@@ -8,13 +8,12 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 400000}
-  - 114: {fileID: 11400000}
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
-  - 148: {fileID: 14800000}
-  m_Layer: 2
-  m_Name: EnemySpawnPoint
-  m_TagString: SpawnPoint
+  - 114: {fileID: 11400000}
+  m_Layer: 0
+  m_Name: SpawnEffectActive
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -26,8 +25,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 70.3266602, y: 109.561249, z: -.00439453125}
+  m_LocalScale: {x: 6, y: 6, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
 --- !u!23 &2300000
@@ -42,7 +41,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
+  - {fileID: 2100000, guid: 259a5c803fcd84a44a37fd96d0c1ee68, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -66,26 +65,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
+  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 30
-  spawnPointActive: 0
-  idleMat: {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  spawnEffect: {fileID: 100000, guid: 58e723fdc6902414798ae7fc484dc651, type: 2}
-  m_shouldPause: 0
---- !u!148 &14800000
-NetworkView:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_StateSynchronization: 0
-  m_Observed: {fileID: 400000}
-  m_ViewID:
-    m_ID: 0
-    m_Type: 0
+  _uvTieX: 15
+  _uvTieY: 15
+  _fps: 60
+  _frameOffset: 0
+  m_shouldReverse: 0
+  m_isForwards: 1
+  shouldDieAfterFirstRun: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
