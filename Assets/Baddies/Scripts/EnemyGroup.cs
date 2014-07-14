@@ -22,6 +22,8 @@ public enum Formation
 public class EnemyGroup : MonoBehaviour
 {
 
+    bool waitForUnitsUntilCheckingToDestroy = true;
+
     List<AIOrder<EnemyGroup>> orderQueue = new List<AIOrder<EnemyGroup>>();
     List<AIOrder<EnemyGroup>> defaultOrders = new List<AIOrder<EnemyGroup>>();
 
@@ -82,7 +84,7 @@ public class EnemyGroup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (m_shipCount <= 0)
+        if (m_shipCount <= 0 && !waitForUnitsUntilCheckingToDestroy)
         {
             Destroy(this.gameObject);
             return;
@@ -369,6 +371,8 @@ public class EnemyGroup : MonoBehaviour
         {
             return false;
         }
+
+        waitForUnitsUntilCheckingToDestroy = false;
 
         m_children[(int)enemyShip.ShipSize].Add(enemyShip);
         enemyShip.FormationPosition = new Vector2();
@@ -1199,6 +1203,9 @@ public class EnemyGroup : MonoBehaviour
 
     void SetShipSpeeds()
     {
+
+        if (m_shipCount == 0)
+            return;
 
         // sort the ships into who is inFormation and outOfFormation
         List<EnemyScript> inFormation, outOfFormation;

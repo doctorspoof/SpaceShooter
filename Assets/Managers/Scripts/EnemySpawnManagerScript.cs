@@ -254,6 +254,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
                 List<WaveInfo> waveToBePassed = new List<WaveInfo>();
                 waveToBePassed.Add(adjustedWave);
 
+                //Debug.Log("a = " + a + " length = " + spawnersToBeSpawnedAt.Count);
                 EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[a].GetComponent<EnemySpawnPointScript>();
                 spawnPoint.AddToSpawnList(waveToBePassed);
             }

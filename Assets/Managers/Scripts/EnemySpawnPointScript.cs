@@ -4,15 +4,34 @@ using System.Collections.Generic;
 
 public class SpawnLocation
 {
+    public float timeUntilStart, currentTime = 0;
+    public Vector3 location;
     public GameObject spawner;
+}
+
+public class GroupedWaveInfo
+{
+
+    public EnemyGroup group;
+    public GameObject[] wave;
+    public int currentPositionInWave = 0;
+
+    public GameObject NextEnemy()
+    {
+        return wave[currentPositionInWave++];
+    }
+
+    public bool Finished()
+    {
+        return currentPositionInWave >= wave.Length;
+    }
+
 }
 
 [RequireComponent(typeof(MeshRenderer))]
 public class EnemySpawnPointScript : MonoBehaviour
 {
-    List<WaveInfo> m_wavesToBeSpawned;
-
-    
+    List<GroupedWaveInfo> m_wavesToBeSpawned;
 
     [SerializeField]
     float activeTime;
@@ -24,8 +43,21 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     [SerializeField]
     GameObject spawnEffect;
+    [SerializeField]
+    float maxTimeBetweenFirstAndLastSpawn;
 
-    List<SpawnLocation> nextWave;
+    List<SpawnLocation> enemiesWaitingToSpawn, enemiesBeingSpawned;
+
+    [SerializeField]
+    GameObject wormholePrefab;
+    [SerializeField]
+    float timeBeforeScalingWormhole, timeTakenToScaleWormhole;
+    float currentScalingTime = 0, currentT;
+    Transform wormhole;
+    [SerializeField]
+    Vector3 wormholeOriginalScale;
+    bool wormholeActive = false;
+
 
     public bool m_shouldPause = false;
 
@@ -34,8 +66,12 @@ public class EnemySpawnPointScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        nextWave = new List<SpawnLocation>();
-        m_wavesToBeSpawned = new List<WaveInfo>();
+        wormhole = ((GameObject)Instantiate(wormholePrefab, this.transform.position, this.transform.rotation)).transform;
+        wormhole.localScale = Vector3.zero;
+
+        enemiesWaitingToSpawn = new List<SpawnLocation>();
+        enemiesBeingSpawned = new List<SpawnLocation>();
+        m_wavesToBeSpawned = new List<GroupedWaveInfo>();
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
@@ -44,99 +80,186 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (spawnPointActive)
         {
-            m_timeSinceLastRelease += Time.deltaTime;
-            if (m_timeSinceLastRelease >= activeTime && spawnPointActive)
-                ReleaseEnemy();
+            CheckSpawning();
+
+            rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
         }
+
+        CheckScalingWormhole();
     }
 
-    void ReleaseEnemy()
+    void CheckScalingWormhole()
     {
-        m_timeSinceLastRelease = 0;
-
-        if (0 == m_wavesToBeSpawned.Count)
+        if (spawnPointActive && !wormholeActive)
         {
-            return;
+            currentScalingTime += Time.deltaTime;
+            if (currentScalingTime >= timeBeforeScalingWormhole)
+            {
+                SetWormholeSize((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
+
+                if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
+                {
+                    currentScalingTime = 0;
+                    wormholeActive = true;
+                }
+            }
+        }
+        else if (!spawnPointActive && wormholeActive)
+        {
+
+            currentScalingTime += Time.deltaTime;
+            if (currentScalingTime >= timeBeforeScalingWormhole)
+            {
+                SetWormholeSize(1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
+
+                if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
+                {
+                    currentScalingTime = 0;
+                    wormholeActive = false;
+                }
+            }
         }
 
-        
+    }
 
-        if (Network.isServer)
+    void CheckSpawning()
+    {
+
+
+        float delta = Time.deltaTime;
+        for (int i = enemiesWaitingToSpawn.Count - 1; i >= 0; --i)
         {
-            int currentSpawnLocationIndex = 0;
+            SpawnLocation spawn = enemiesWaitingToSpawn[i];
+            spawn.currentTime += delta;
 
-            foreach (WaveInfo info in m_wavesToBeSpawned)
+            if (spawn.currentTime >= spawn.timeUntilStart)
             {
 
-                /// set up group
-                GameObject groupObject = new GameObject("EnemyGroup");
-                groupObject.tag = "EnemyGroup";
+                GameObject spawnedEffect = (GameObject)Instantiate(spawnEffect, spawn.location, Quaternion.identity);
 
-                EnemyGroup spawnedGroup = groupObject.AddComponent<EnemyGroup>();
-                foreach (WaveEnemyType enemyType in info.m_enemiesOnWave)
+                // move the SpawnLocation from waitingToSpawn to beingSpawned
+                enemiesBeingSpawned.Add(spawn);
+                enemiesWaitingToSpawn.RemoveAt(i);
+
+                // reset the values so that they are correct
+                spawn.currentTime = 0;
+                spawn.timeUntilStart = activeTime;
+                spawn.spawner = spawnedEffect;
+            }
+        }
+
+
+
+        for (int i = enemiesBeingSpawned.Count - 1; i >= 0; --i)
+        {
+            SpawnLocation spawn = enemiesBeingSpawned[i];
+            spawn.currentTime += delta;
+
+            if (spawn.currentTime >= spawn.timeUntilStart)
+            {
+
+                Destroy(spawn.spawner, 3);
+
+                if (Network.isServer)
                 {
-                    for (int i = 0; i < enemyType.m_numEnemy; ++i)
-                    {
-                        GameObject enemy = (GameObject)Network.Instantiate(enemyType.m_enemyRef, nextWave[currentSpawnLocationIndex++].spawner.transform.position, this.transform.rotation, 0);
+                    GameObject enemy = (GameObject)Network.Instantiate(m_wavesToBeSpawned[0].NextEnemy(), spawn.spawner.transform.position, this.transform.rotation, 0);
 
-                        EnemyScript script = enemy.GetComponent<EnemyScript>();
-                        spawnedGroup.AddEnemyToGroup(script);
-                        HealthScript health = enemy.GetComponent<HealthScript>();
-                        health.SetModifier(modifier);
+                    EnemyScript script = enemy.GetComponent<EnemyScript>();
+                    m_wavesToBeSpawned[0].group.AddEnemyToGroup(script);
+
+                    HealthScript health = enemy.GetComponent<HealthScript>();
+                    health.SetModifier(modifier);
+
+                    if (m_wavesToBeSpawned[0].Finished())
+                    {
+                        m_wavesToBeSpawned.RemoveAt(0);
                     }
                 }
 
-
-                /// find the closest target to this spawn point out of all potential targets with the tag specified
-                GameObject[] defaultTargets = GameObject.FindGameObjectsWithTag(info.GetDefaultOrderTargetTag());
-                float closest = 0;
-                GameObject closestTarget = null;
-                foreach (GameObject potentialTarget in defaultTargets)
-                {
-                    if (closestTarget == null || Vector2.SqrMagnitude(transform.position - closestTarget.transform.position) < closest)
-                    {
-                        closestTarget = potentialTarget;
-                        closest = Vector2.SqrMagnitude(transform.position - closestTarget.transform.position);
-                    }
-                }
-
-                if (closestTarget == null)
-                {
-                    Debug.LogError("Default target is null");
-                }
-
-                /// attach order targetting closest target to group
-                AIOrder<EnemyGroup> defaultOrder = new AIOrder<EnemyGroup> { Orderee = spawnedGroup, ObjectOfInterest = closestTarget };
-                defaultOrder.AttachCondition(
-                    delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
-                    {
-                        return objectOfInterest == null;
-                    });
-                defaultOrder.AttachAction(
-                    delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
-                    {
-                        group.CancelCurrentOrder();
-                        group.OrderAttack(objectOfInterest);
-                    });
-                spawnedGroup.AddDefaultOrder(defaultOrder);
+                enemiesBeingSpawned.RemoveAt(i);
 
             }
 
-            m_wavesToBeSpawned.Clear();
-
         }
 
-        Activate(false);
-
+        if (enemiesWaitingToSpawn.Count == 0 && enemiesBeingSpawned.Count == 0)
+        {
+            Activate(false);
+        }
     }
 
     public void AddToSpawnList(List<WaveInfo> waves_)
     {
-        m_wavesToBeSpawned.AddRange(waves_);
+        foreach (WaveInfo info in waves_)
+        {
+            m_wavesToBeSpawned.Add(CreateGroupedWaveInfo(info));
+        }
 
         GenerateSpawnLocations();
 
         Activate(true);
+    }
+
+
+    /// <summary>
+    /// Used for tying a group to a wave
+    /// </summary>
+    /// <param name="info_"></param>
+    /// <returns></returns>
+    GroupedWaveInfo CreateGroupedWaveInfo(WaveInfo info_)
+    {
+        GameObject groupObject = new GameObject("EnemyGroup");
+        groupObject.tag = "EnemyGroup";
+
+        EnemyGroup spawnedGroup = groupObject.AddComponent<EnemyGroup>();
+
+        GameObject[] defaultTargets = GameObject.FindGameObjectsWithTag(info_.GetDefaultOrderTargetTag());
+        float closest = 0;
+        GameObject closestTarget = null;
+        foreach (GameObject potentialTarget in defaultTargets)
+        {
+            if (closestTarget == null || Vector2.SqrMagnitude(transform.position - closestTarget.transform.position) < closest)
+            {
+                closestTarget = potentialTarget;
+                closest = Vector2.SqrMagnitude(transform.position - closestTarget.transform.position);
+            }
+        }
+
+        if (closestTarget == null)
+        {
+            Debug.LogError("Default target is null");
+        }
+
+        /// attach order targetting closest target to group
+        AIOrder<EnemyGroup> defaultOrder = new AIOrder<EnemyGroup> { Orderee = spawnedGroup, ObjectOfInterest = closestTarget };
+        defaultOrder.AttachCondition(
+            delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
+            {
+                return objectOfInterest == null;
+            });
+        defaultOrder.AttachAction(
+            delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
+            {
+                group.CancelCurrentOrder();
+                group.OrderAttack(objectOfInterest);
+            });
+        spawnedGroup.AddDefaultOrder(defaultOrder);
+
+
+        // set all the objects into an array
+        List<GameObject> enemies = new List<GameObject>();
+
+        foreach (WaveEnemyType enemyType in info_.m_enemiesOnWave)
+        {
+            for (int i = 0; i < enemyType.m_numEnemy; ++i)
+            {
+
+                enemies.Add(enemyType.m_enemyRef);
+
+            }
+        }
+
+        return new GroupedWaveInfo { group = spawnedGroup, wave = enemies.ToArray() };
     }
 
     void Activate(bool flag_)
@@ -150,66 +273,60 @@ public class EnemySpawnPointScript : MonoBehaviour
         else
         {
             // spawn point is idle
-            networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All);
+            networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All, 0.0f);
         }
     }
+
 
     public void GenerateSpawnLocations()
     {
-        if (nextWave.Count > 0)
-            networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All);
-
-        foreach (WaveInfo info in m_wavesToBeSpawned)
+        if (Network.isServer)
         {
-            foreach (WaveEnemyType enemyType in info.m_enemiesOnWave)
+            if (enemiesWaitingToSpawn.Count > 0 || enemiesBeingSpawned.Count > 0)
+                networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All, 0.0f);
+
+            foreach (GroupedWaveInfo info in m_wavesToBeSpawned)
             {
-                for (int i = 0; i < enemyType.m_numEnemy; ++i)
+                for (int i = 0; i < info.wave.Length; ++i)
                 {
-                    networkView.RPC("PropagateNewSpawnLocation", RPCMode.All, this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));
+                    networkView.RPC("PropagateNewSpawnLocation", RPCMode.All, Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole, this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));
                 }
             }
         }
+
+
     }
 
     [RPC]
-    public void PropagateDestroySpawnLocations()
+    public void PropagateDestroySpawnLocations(float time_)
     {
-        if (nextWave.Count == 0)
+        if (enemiesWaitingToSpawn.Count > 0 && enemiesBeingSpawned.Count > 0)
             return;
 
-        foreach (SpawnLocation spawn in nextWave)
+        foreach (SpawnLocation spawn in enemiesBeingSpawned)
         {
-            Destroy(spawn.spawner, 5);
+            Destroy(spawn.spawner, time_);
         }
 
-        nextWave.Clear();
+        enemiesWaitingToSpawn.Clear();
+        enemiesBeingSpawned.Clear();
     }
 
     [RPC]
-    private void PropagateNewSpawnLocation(Vector3 location_)
+    private void PropagateNewSpawnLocation(float timeUntilStart_, Vector3 location_)
     {
-        nextWave.Add(new SpawnLocation { spawner = (GameObject)Instantiate(spawnEffect, location_, Quaternion.identity) });
-    }
-
-    public int GetEnemyCountOfNextWave()
-    {
-        int returnee = 0;
-
-        foreach (WaveInfo info in m_wavesToBeSpawned)
-        {
-            foreach (WaveEnemyType enemyType in info.m_enemiesOnWave)
-            {
-
-                returnee += enemyType.m_numEnemy;
-
-            }
-        }
-
-        return returnee;
+        enemiesWaitingToSpawn.Add(new SpawnLocation { timeUntilStart = timeUntilStart_, location = location_ });
     }
 
     public void SetModifier(float modifier_)
     {
         modifier = modifier_;
+    }
+
+    void SetWormholeSize(float t_)
+    {
+        Vector3 newScale = Vector3.Lerp(Vector3.zero, wormholeOriginalScale, t_);
+        newScale.z = 1;
+        wormhole.localScale = newScale;
     }
 }
