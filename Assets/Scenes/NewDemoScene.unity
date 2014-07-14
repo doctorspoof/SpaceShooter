@@ -7458,6 +7458,7 @@ MonoBehaviour:
     type: 3}
   m_selectedButton: 0
   m_gameTimer: 0
+  players: []
   m_barEnd: {fileID: 2800000, guid: 046bbc3d73d12bc40b569dfc9223a913, type: 3}
   m_barMid: {fileID: 2800000, guid: 0165ac27eb57f0449948f42e7446a8c8, type: 3}
   m_healthBlip: {fileID: 2800000, guid: 8d18d4a8d4ed96245a974839ce33045d, type: 3}
@@ -7470,6 +7471,8 @@ MonoBehaviour:
   m_PlayerHasDockedAtShop: 0
   m_shopDockedAt: {fileID: 0}
   thisPlayerHP: {fileID: 0}
+  m_SpecCShipImage: {fileID: 2800000, guid: 006f607291b2a594588ae89866250248, type: 3}
+  m_SpecBottomPanel: {fileID: 2800000, guid: 3480f946cfd89c14e98c68136ed66233, type: 3}
   m_playerBarBorder: {fileID: 2800000, guid: 1bb7328248134d641b55485a3c2de8b5, type: 3}
   m_playerBarHealth: {fileID: 2800000, guid: 221c034af0a1c824f8e9dce7e508fed7, type: 3}
   m_playerBarShield: {fileID: 2800000, guid: 4bb6bf1a8fa95864e86b908a75dec558, type: 3}
@@ -9474,6 +9477,14 @@ Prefab:
       propertyPath: m_hoverBoxTextStyle.m_OnFocused.m_Background
       value: 
       objectReference: {fileID: 2800000, guid: e3ce9b1c2a935964299eab68219f0376, type: 3}
+    - target: {fileID: 11400000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
+      propertyPath: m_SpecCShipImage
+      value: 
+      objectReference: {fileID: 2800000, guid: 006f607291b2a594588ae89866250248, type: 3}
+    - target: {fileID: 11400000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
+      propertyPath: m_SpecBottomPanel
+      value: 
+      objectReference: {fileID: 2800000, guid: 3480f946cfd89c14e98c68136ed66233, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
   m_RootGameObject: {fileID: 1614308795}

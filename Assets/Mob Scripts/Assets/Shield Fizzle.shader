@@ -84,6 +84,8 @@
 				//effects[3] = 0;
 				//effects[4] = 0;
 				
+				float staticExplodePulseDist = 3.0f;
+
 				for(int j = 0; j < 5; j++)
 				{
 					if(_ImpactTypes[j] == 0)
@@ -146,13 +148,13 @@
 							effect = distDiff / 2.0;
 						
 						//Shockwave stuff
-						float currentPulseDistance = (1 - _ImpactTimes[j]) * (staticExplodePulseDist * _ImpactMagnitudes[j]);
+						float currentPulseDistance = (1 - _ImpactTimes[j]) * (staticExplodePulseDist);
 						
 						float distBetweenImpactAndPulse = abs(currentPulseDistance - distToImpact);
 						float shockEffect = 0.0f;
 						if(distBetweenImpactAndPulse < 0.2f)
 						{
-							shockEffect = _ImpactTimes[j] * ((0.2f - distBetweenImpactAndPulse) / 0.2f);
+							shockEffect = _ImpactTimes[j] * ((0.2f - distBetweenImpactAndPulse) / 0.2f) * (_ImpactMagnitudes[j] / 15.0f);
 						}
 						
 						//Add them together

@@ -121,6 +121,19 @@ public class GameStateController : MonoBehaviour
 		//Debug.LogWarning ("Couldn't find player with owner: " + np.ToString());
 		return null;
 	}
+	public float GetDeathTimerFromNetworkPlayer(NetworkPlayer np)
+	{
+		foreach(DeadPlayer player in m_deadPlayers)
+		{
+			if(player.m_playerObject.m_netPlayer == np)
+			{
+				return player.m_deadTimer;
+			}
+		}
+
+		Debug.LogWarning("Couldn't find dead player: " + GetNameFromNetworkPlayer(np) + ".");
+		return 0.0f;
+	}
 	
 	public List<Player> m_connectedPlayers;
 	string ownName;
@@ -407,12 +420,13 @@ public class GameStateController : MonoBehaviour
 		m_deadPlayers = new List<DeadPlayer>();
 	}
 
-	public void PlayerRequestsToHostGame(string name)
+	public void PlayerRequestsToHostGame(string name, bool spec)
 	{
 		ownName = name;
 		Debug.Log ("Starting server on port: 6677");
 		Network.InitializeServer(10, 6677, false);
-		m_connectedPlayers.Add (new Player(Network.player, ownName));
+		if(!spec)
+			m_connectedPlayers.Add (new Player(Network.player, ownName));
 		ChangeGameState(GameState.HostMenu);
 	}
 	public void PlayerRequestsToJoinGame(string IP, string name, int port)
@@ -668,7 +682,7 @@ public class GameStateController : MonoBehaviour
 		numDeadPCs++;
 		m_deadPlayers.Add(new DeadPlayer(GetPlayerObjectFromNP(info.sender)));
 		Debug.Log ("Host has been informed that player '" + GetNameFromNetworkPlayer(info.sender) + "' has died.");
-		networkView.RPC ("PropagateDeadPlayer", RPCMode.Others, info.sender);
+		networkView.RPC ("PropagateDeadPlayer", RPCMode.All, info.sender);
 		//Let dead players remain dead. If the CShip gets through without them, good job!
 		/*if(numDeadPCs >= Network.connections.Length + 1)
 		{
@@ -687,6 +701,11 @@ public class GameStateController : MonoBehaviour
 		Debug.Log ("Recieved notification that player: " + np + ", aka '" + name + "' has died.");
 		DeadPlayer deadP = new DeadPlayer(GetPlayerObjectFromNP(np));
 		m_deadPlayers.Add (deadP);
+
+		if(GetPlayerFromNetworkPlayer(np) != null)
+		{
+			Destroy (GetPlayerFromNetworkPlayer(np));
+		}
 	}
 	[RPC]
 	void PropagateNonDeadPlayer(NetworkPlayer np)

@@ -97,8 +97,7 @@ public class CameraScript : MonoBehaviour
 	bool m_playerIsDocked = false;
 	bool m_shouldAllowInput = true;
 
-	// Update is called once per frame
-	void FixedUpdate () 
+	void LateUpdate()
 	{
 		Vector3 startPos = this.transform.position;
 
@@ -113,7 +112,7 @@ public class CameraScript : MonoBehaviour
 						//If this player is null, try to find it in the scene again
 						m_players[m_trackedPlayerID] = m_gameController.GetPlayerFromNetworkPlayer (m_gameController.GetNetworkPlayerFromID (m_trackedPlayerID));
 					}
-
+					
 					//NOTE: Do NOT make else if!
 					if(m_players[m_trackedPlayerID] != null)
 					{
@@ -121,7 +120,7 @@ public class CameraScript : MonoBehaviour
 						pos.z = -10;
 						this.transform.position = pos;
 					}
-
+					
 					//Switch to manual control
 					if(Input.GetKey(KeyCode.W) || Input.GetKey (KeyCode.S) || Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.D))
 					{
@@ -150,7 +149,7 @@ public class CameraScript : MonoBehaviour
 						this.transform.position += this.transform.right * 15.0f * Time.deltaTime;
 					}
 				}
-
+				
 				if(Input.GetKeyDown(KeyCode.Tab))
 				{
 					m_gui.ToggleMap();
@@ -160,7 +159,7 @@ public class CameraScript : MonoBehaviour
 					// Toggle the map type
 					m_gui.m_isOnFollowMap  = !m_gui.m_isOnFollowMap;
 				}
-
+				
 				if(Input.GetKeyDown (KeyCode.Space))
 				{
 					m_isInFollowMode = true;
@@ -169,10 +168,10 @@ public class CameraScript : MonoBehaviour
 						m_trackedPlayerID = 0;
 					else if(m_trackedPlayerID < 0)
 						m_trackedPlayerID = 0;
-
+					
 					m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
 				}
-
+				
 				if (m_gameController.m_currentGameState == GameState.InGame)
 				{
 					
@@ -192,10 +191,24 @@ public class CameraScript : MonoBehaviour
 							m_currentOrthoSize = 15;
 					}
 				}
-
+				
 				camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, m_currentOrthoSize, Time.deltaTime);
 			}
-			else
+		}
+
+		Vector3 endPos = transform.position;
+		if(m_backgroundHolder != null && m_shouldParallax)
+			m_backgroundHolder.GetComponent<ParallaxHolder>().Move(endPos - startPos, transform.position);
+	}
+
+	// Update is called once per frame
+	void FixedUpdate () 
+	{
+		Vector3 startPos = this.transform.position;
+
+		if(m_shouldAllowInput)
+		{
+			if(!m_isInSpectatorMode)
 			{
 				//Keep track of the player
 				if(m_currentPlayer != null && m_currentPlayer.activeSelf)
