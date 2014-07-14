@@ -3608,7 +3608,7 @@ public class GUIManager : MonoBehaviour
 		}
 
 		m_isRequestingItem = false;
-	}
+	}*/
 
 	void RequestServerRespawnPlayer(NetworkPlayer player)
 	{

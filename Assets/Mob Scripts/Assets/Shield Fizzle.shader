@@ -3,14 +3,24 @@
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _ImpactPos1 ("Impact1", Vector) = (0, 0, 0, 0)
         _ImpactTime1 ("Time1", float) = 0.0
+        _ImpactTypes1 ("Type1", int) = 0
+        _ImpactMagnitude1 ("Magnitude1", float) = 0.0
         _ImpactPos2 ("Impact2", Vector) = (0, 0, 0, 0)
         _ImpactTime2 ("Time2", float) = 0.0
+        _ImpactTypes2 ("Type2", int) = 0
+        _ImpactMagnitude2 ("Magnitude2", float) = 0.0
         _ImpactPos3 ("Impact3", Vector) = (0, 0, 0, 0)
         _ImpactTime3 ("Time3", float) = 0.0
+        _ImpactTypes3 ("Type3", int) = 0
+        _ImpactMagnitude3 ("Magnitude3", float) = 0.0
         _ImpactPos4 ("Impact4", Vector) = (0, 0, 0, 0)
         _ImpactTime4 ("Time4", float) = 0.0
+        _ImpactTypes4 ("Type4", int) = 0
+        _ImpactMagnitude4 ("Magnitude4", float) = 0.0
         _ImpactPos5 ("Impact5", Vector) = (0, 0, 0, 0)
         _ImpactTime5 ("Time5", float) = 0.0
+        _ImpactTypes5 ("Type5", int) = 0
+        _ImpactMagnitude5 ("Magnitude5", float) = 0.0
     }
     SubShader {
     Tags{"Queue"="Transparent" "RenderType"="Transparent"}
@@ -29,14 +39,24 @@
             uniform sampler2D _MainTex;
             uniform float4 _ImpactPos1;
             uniform float _ImpactTime1;
+            uniform int _ImpactTypes1;
+            uniform float _ImpactMagnitude1;
             uniform float4 _ImpactPos2;
             uniform float _ImpactTime2;
+            uniform int _ImpactTypes2;
+            uniform float _ImpactMagnitude2;
             uniform float4 _ImpactPos3;
             uniform float _ImpactTime3;
+            uniform int _ImpactTypes3;
+            uniform float _ImpactMagnitude3;
             uniform float4 _ImpactPos4;
             uniform float _ImpactTime4;
+            uniform int _ImpactTypes4;
+            uniform float _ImpactMagnitude4;
             uniform float4 _ImpactPos5;
             uniform float _ImpactTime5;
+            uniform int _ImpactTypes5;
+            uniform float _ImpactMagnitude5;
             
             struct vertexInput {
             	float4 vertex : POSITION;
@@ -61,28 +81,11 @@
 			float4 frag(fragmentInput i) : COLOR 
 			{
 				float4 _ImpactPositions[5] = {_ImpactPos1, _ImpactPos2, _ImpactPos3, _ImpactPos4, _ImpactPos5};
-				//float4 _ImpactPositions[5];
-				//_ImpactPositions[0] = _ImpactPos1;
-				//_ImpactPositions[1] = _ImpactPos2;
-				//_ImpactPositions[2] = _ImpactPos3;
-				//_ImpactPositions[3] = _ImpactPos4;
-				//_ImpactPositions[4] = _ImpactPos5;
-				
 				float _ImpactTimes[5] = {_ImpactTime1, _ImpactTime2, _ImpactTime3, _ImpactTime4, _ImpactTime5};
-				//float _ImpactTimes[5];
-				//_ImpactTimes[0] = _ImpactTime1;
-				//_ImpactTimes[1] = _ImpactTime2;
-				//_ImpactTimes[2] = _ImpactTime3;
-				//_ImpactTimes[3] = _ImpactTime4;
-				//_ImpactTimes[4] = _ImpactTime5;
+				int _ImpactTypes[5] = {_ImpactTypes1, _ImpactTypes2, _ImpactTypes3, _ImpactTypes4, _ImpactTypes5};
+				float _ImpactMagnitudes[5] = {_ImpactMagnitude1, _ImpactMagnitude2, _ImpactMagnitude3, _ImpactMagnitude4, _ImpactMagnitude5};
 			
 				float effects[5] = {0, 0, 0, 0, 0};
-				//float effects[5];
-				//effects[0] = 0;
-				//effects[1] = 0;
-				//effects[2] = 0;
-				//effects[3] = 0;
-				//effects[4] = 0;
 				
 				float staticExplodePulseDist = 3.0f;
 

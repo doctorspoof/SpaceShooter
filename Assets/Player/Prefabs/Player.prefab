@@ -605,15 +605,9 @@ MonoBehaviour:
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
   m_currentSpaceBucks: 300
-<<<<<<< HEAD
-  m_equippedWeaponItem: {fileID: 100000, guid: 22c6dc7be06d3f1448312bc61d2b5681, type: 2}
-  m_equippedShieldItem: {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
-  m_equippedEngineItem: {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
-=======
   m_equippedWeaponItem: {fileID: 100000, guid: da374091b5468994295d9c203a0223f1, type: 2}
   m_equippedShieldItem: {fileID: 100000, guid: 7ea0ae0dc3d236947a5d3e422f83bfd7, type: 2}
   m_equippedEngineItem: {fileID: 100000, guid: bc473d29b92f5b24ea8bbd26b4a0bc1a, type: 2}
->>>>>>> Completed spectator mode GUI rehaul
   m_equippedPlatingItem: {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
     type: 2}
   m_playerInventory: []
