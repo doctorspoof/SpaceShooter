@@ -86,17 +86,78 @@
 				
 				for(int j = 0; j < 5; j++)
 				{
-					float4 imageSpPos = float4(_ImpactPositions[j].x + 0.5, _ImpactPositions[j].y + 0.5, _ImpactPositions[j].z + 0.5, _ImpactPositions[j].w);
-					
-					float distToImpact = distance(imageSpPos.xy, i.usePos.xy);
-					float distDiff = 2.0 - distToImpact;
-					float effect = 0;
-					if(distDiff <= 0)
-						effect = 0;
-					else
-						effect = distDiff / 2.0;
+					if(_ImpactTypes[j] == 0)
+					{
+						//If physical, do the standard 'block'
+						float4 imageSpPos = float4(_ImpactPositions[j].x + 0.5, _ImpactPositions[j].y + 0.5, _ImpactPositions[j].z + 0.5, _ImpactPositions[j].w);
 						
-					effects[j] = effect * _ImpactTimes[j];
+						float distToImpact = distance(imageSpPos.xy, i.usePos.xy);
+						float distDiff = 2.0 - distToImpact;
+						float effect = 0;
+						if(distDiff <= 0)
+							effect = 0;
+						else
+							effect = distDiff / 2.0;
+							
+						effects[j] = effect * _ImpactTimes[j];
+					}
+					else if(_ImpactTypes[j] == 1)
+					{
+						//If energy, maybe do something different? For now just do default block
+						float4 imageSpPos = float4(_ImpactPositions[j].x + 0.5, _ImpactPositions[j].y + 0.5, _ImpactPositions[j].z + 0.5, _ImpactPositions[j].w);
+						
+						float distToImpact = distance(imageSpPos.xy, i.usePos.xy);
+						float distDiff = 2.0 - distToImpact;
+						float effect = 0;
+						if(distDiff <= 0)
+							effect = 0;
+						else
+							effect = distDiff / 2.0;
+							
+						effects[j] = effect * _ImpactTimes[j];
+					}
+					else if(_ImpactTypes[j] == 2)
+					{
+						//Do laser fizzle - default to standard block for now
+						float4 imageSpPos = float4(_ImpactPositions[j].x + 0.5, _ImpactPositions[j].y + 0.5, _ImpactPositions[j].z + 0.5, _ImpactPositions[j].w);
+						
+						float distToImpact = distance(imageSpPos.xy, i.usePos.xy);
+						float distDiff = 2.0 - distToImpact;
+						float effect = 0;
+						if(distDiff <= 0)
+							effect = 0;
+						else
+							effect = distDiff / 2.0;
+							
+						effects[j] = effect * _ImpactTimes[j];
+					}
+					else if(_ImpactTypes[j] == 3)
+					{
+						//Do explode pulse
+						float4 imageSpPos = float4(_ImpactPositions[j].x + 0.5, _ImpactPositions[j].y + 0.5, _ImpactPositions[j].z + 0.5, _ImpactPositions[j].w);
+						
+						//Basic block stuff
+						float distToImpact = distance(imageSpPos.xy, i.usePos.xy);
+						float distDiff = 2.0 - distToImpact;
+						float effect = 0;
+						if(distDiff <= 0)
+							effect = 0;
+						else
+							effect = distDiff / 2.0;
+						
+						//Shockwave stuff
+						float currentPulseDistance = (1 - _ImpactTimes[j]) * (staticExplodePulseDist * _ImpactMagnitudes[j]);
+						
+						float distBetweenImpactAndPulse = abs(currentPulseDistance - distToImpact);
+						float shockEffect = 0.0f;
+						if(distBetweenImpactAndPulse < 0.2f)
+						{
+							shockEffect = _ImpactTimes[j] * ((0.2f - distBetweenImpactAndPulse) / 0.2f);
+						}
+						
+						//Add them together
+						effects[j] = shockEffect + (effect * _ImpactTimes[j]);
+					}
 				}
 							
 				//Take localPosition from CShip, change to imageSpace
