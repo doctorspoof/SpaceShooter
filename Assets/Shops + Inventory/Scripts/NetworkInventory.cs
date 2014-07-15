@@ -370,24 +370,26 @@ public sealed class NetworkInventory : MonoBehaviour
 	// Searches for the corresponding index of the m_requestedTickets list for the given ticket
 	int DetermineTicketIndex (ItemTicket ticket)
 	{
-		// The index of ticket
-		int index = ticket.itemIndex;
-
 		// Ideally the itemIndex will contain the perfect value
-		if (IsDesiredIndex (ticket.itemIndex, ticket.itemID, RequestCheck.Requested) && m_requestTickets[index].Equals(ticket))
+		if (IsDesiredIndex (ticket.itemIndex, ticket.itemID, RequestCheck.Requested) && m_requestTickets[ticket.itemIndex].Equals(ticket))
 		{
-			index = ticket.itemIndex;
+			return ticket.itemIndex;
 		}
 		
 		else
 		{
-			// Use the functionality of List to find the ticket
-			index = m_requestTickets.IndexOf (ticket);
+			// Manually search for the ticket
+			for (int i = 0; i < m_requestTickets.Count; ++i)
+			{
+				if (m_requestTickets[i].Equals (ticket))
+				{
+					return i;
+				}
+			}
 		}
 
 		Debug.LogError ("Couldn't determine index of " + ticket + " in " + name + ".NetworkInventory");
-
-		return index;
+		return -1;
 	}
 
 
@@ -396,6 +398,7 @@ public sealed class NetworkInventory : MonoBehaviour
 	{
 		if (IsValidIndex (index))
 		{
+			Debug.Log (m_inventory.Count + " " + m_isItemRequested.Count + " " + m_requestTickets.Count);
 			// Ensure the previous ticket gets reset so it's invalid
 			m_requestTickets[index].Reset();
 
@@ -412,6 +415,8 @@ public sealed class NetworkInventory : MonoBehaviour
 	// This function should be called using Invoke() after the desired period of time
 	IEnumerator ExpireItemTicket (ItemTicket toExpire, float timeToWait)
 	{
+		Debug.Log ("Waiting to expire ticket: " + toExpire + " in " + timeToWait);
+
 		// Wait for the desired amount of time
 		yield return new WaitForSeconds (timeToWait);
 
@@ -571,8 +576,6 @@ public sealed class NetworkInventory : MonoBehaviour
 				}
 			}
 
-			//Debug.Log ("Responding to RequestAdd with ticket: " + ticket.uniqueID + " " + ticket.itemID + " " + ticket.itemIndex);
-
 			// Silly workaround for RPC sending limitation
 			if (info.Equals (m_blankMessage))
 			{
@@ -630,8 +633,8 @@ public sealed class NetworkInventory : MonoBehaviour
 				if (IsValidIndex (index))
 				{
 					// Reset the ticket
-					m_requestTickets[ticket.itemIndex].Reset();
-					m_isItemRequested[ticket.itemIndex] = false;
+					m_requestTickets[index].Reset();
+					m_isItemRequested[index] = false;
 
 					// Check to see if the desired index was a null item, this means that it was an add requests
 					if (!m_inventory[index])
@@ -868,8 +871,7 @@ public sealed class NetworkInventory : MonoBehaviour
 					// Reset the ticket so the expiration coroutine knows it has been removed
 					m_requestTickets.RemoveAt (index);
 				}
-				
-				Debug.Log ("WHAT THE CRAP IS HAPPENING!");
+
 				// Propagate the change to the clients
 				if (Network.isServer)
 				{
@@ -1019,6 +1021,7 @@ public sealed class NetworkInventory : MonoBehaviour
 	// Causes the server to cancel a request so that others can request the item
 	public void RequestServerCancel (ItemTicket ticket)
 	{
+		Debug.Log ("Cancelling ticket: " + ticket);
 		// Ensure we are not wasting time by checking if the ticket is valid
 		if (ticket && ticket.IsValid())
 		{

@@ -2655,6 +2655,12 @@ public class GUIManager : MonoBehaviour
 					inventory.RequestServerAdd(m_currentDraggedItem);
 					StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
 				}
+
+				else
+				{
+					inventory.RequestServerCancel (m_currentTicket);
+				}
+
 				m_currentDraggedItem = null;
 				m_currentDraggedItemIsFromPlayerInv = false;
 				m_currentDraggedItemInventoryId = -1;	
@@ -2762,6 +2768,13 @@ public class GUIManager : MonoBehaviour
 					inventory.RequestServerAdd(m_currentDraggedItem);
 					StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
 				}
+
+				else
+				{
+					// Ensure the ticket is cancelled since the item must have been requested at this point
+					inventory.RequestServerCancel (m_currentTicket);
+				}
+
 				m_currentDraggedItem = null;
 				m_currentDraggedItemIsFromPlayerInv = false;
 				m_currentDraggedItemInventoryId = -1;	
@@ -3378,16 +3391,12 @@ public class GUIManager : MonoBehaviour
 				m_currentTicket = inventory.GetItemAddResponse();
 				if(m_currentTicket.IsValid())
 				{
-				int itemID = m_currentTicket.itemID;
+					int itemID = m_currentTicket.itemID;
 					if(inventory.AddItemToServer(m_currentTicket))
 					{
 //						if(m_currentDraggedItem != null)
 						thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
 					}
-
-					m_currentDraggedItem = null;
-					m_currentDraggedItemInventoryId = -1;
-					m_currentDraggedItemIsFromPlayerInv = false;
 				}
 				break;	
 			}
@@ -3416,10 +3425,6 @@ public class GUIManager : MonoBehaviour
 							Debug.Log ("Yes!");
 							thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory(m_currentDraggedItem.gameObject);
 						}
-
-						m_currentDraggedItem = null;
-						m_currentDraggedItemInventoryId = -1;
-						m_currentDraggedItemIsFromPlayerInv = false;
 					}
 					else
 					{
@@ -3435,6 +3440,13 @@ public class GUIManager : MonoBehaviour
 		}
 
 		m_isRequestingItem = false;
+		
+		if (!m_currentTicket.IsValid())
+		{
+			m_currentDraggedItem = null;
+			m_currentDraggedItemInventoryId = -1;
+			m_currentDraggedItemIsFromPlayerInv = false;
+		}
 	}
 
 	/*IEnumerator WaitForItemRequestReply (NetworkInventory inventory, bool )
