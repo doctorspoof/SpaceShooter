@@ -95,7 +95,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
-                SetWormholeSize((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
+				networkView.RPC ("SetWormholeSize", (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
 
                 if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
                 {
@@ -110,7 +110,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
-                SetWormholeSize(1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
+				networkView.RPC ("SetWormholeSize", RPCMode.All, 1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
 
                 if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
                 {
@@ -289,7 +289,8 @@ public class EnemySpawnPointScript : MonoBehaviour
             {
                 for (int i = 0; i < info.wave.Length; ++i)
                 {
-                    networkView.RPC("PropagateNewSpawnLocation", RPCMode.All, Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole, this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));
+                    networkView.RPC("PropagateNewSpawnLocation", RPCMode.All, Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole, 
+					                this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));
                 }
             }
         }
@@ -323,6 +324,7 @@ public class EnemySpawnPointScript : MonoBehaviour
         modifier = modifier_;
     }
 
+	[RPC]
     void SetWormholeSize(float t_)
     {
         Vector3 newScale = Vector3.Lerp(Vector3.zero, wormholeOriginalScale, t_);

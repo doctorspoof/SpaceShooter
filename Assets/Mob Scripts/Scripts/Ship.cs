@@ -115,16 +115,13 @@ public class Ship : MonoBehaviour
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
         }
 
-        if (thrustersHolder != null && maxThrusterVelocitySeen > 0)
+        if (Network.isServer && thrustersHolder != null && maxThrusterVelocitySeen > 0)
         {
 
             float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
             float clampedDot = Mathf.Clamp(Vector2.Dot(shipTransform.up, shipTransform.rigidbody.velocity.normalized), 0, 1);
-            foreach (Thruster thruster in thrusters)
-            {
-                thruster.SetPercentage(clampedDot * ratio);
-            }
-
+            
+			SetThrusterPercentage(ratio * clampedDot);
         }
 
     }
@@ -251,34 +248,61 @@ public class Ship : MonoBehaviour
 
     public void FireAfterburners()
     {
-        if (!afterburnersFiring && afterburnersRecharged)
-        {
-            afterburnersFiring = true;
-            afterburnersRecharged = false;
-            afterburnersHolder.gameObject.SetActive(true);
-        }
+		networkView.RPC ("PropagateFireAfterburners", RPCMode.All);
     }
+	[RPC]
+	void PropagateFireAfterburners()
+	{
+		if (!afterburnersFiring && afterburnersRecharged)
+		{
+			afterburnersFiring = true;
+			afterburnersRecharged = false;
+			afterburnersHolder.gameObject.SetActive(true);
+		}
+	}
 
-    public void AfterburnerFinished()
+	public void AfterburnerFinished()
     {
-        currentAfterburnerTime = 0;
-        afterburnersFiring = false;
-        afterburnersRecharged = false;
-
-        afterburnersHolder.gameObject.SetActive(false);
+		networkView.RPC ("PropagateAfterburnerFinished", RPCMode.All);
     }
-
-    public virtual float GetMinimumWeaponRange()
+	[RPC]
+	void PropagateAfterburnerFinished()
+	{
+		currentAfterburnerTime = 0;
+		afterburnersFiring = false;
+		afterburnersRecharged = false;
+		
+		afterburnersHolder.gameObject.SetActive(false);
+	}
+	
+	public virtual float GetMinimumWeaponRange()
     {
         return weaponRange;
     }
 
-    public void ResetThrusters()
+	public void SetThrusterPercentage(float percentage)
+	{
+		networkView.RPC ("PropagateNewThrusterPercentage", RPCMode.All, percentage);
+	}
+	[RPC]
+	void PropagateNewThrusterPercentage(float percentage)
+	{
+		foreach (Thruster thruster in thrusters)
+		{
+			thruster.SetPercentage(percentage);
+		}
+	}
+	public void ResetThrusters()
     {
-        ResetThrusterObjects();
-        maxThrusterVelocitySeen = 0;
+		networkView.RPC ("PropagateResetThrusters", RPCMode.All);
     }
-
+	[RPC]
+	void PropagateResetThrusters()
+	{
+		ResetThrusterObjects();
+		maxThrusterVelocitySeen = 0;
+	}
+	
     private Transform GetThrusterHolder()
     {
         return RecursiveSearchForChild(shipTransform, "Thrusters");
