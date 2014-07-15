@@ -159,6 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_bulletDamage: 45
   m_bulletMinDamage: 1
+  m_damageType: 3
   m_bulletSpeed: 12
   m_bulletMinimumSpeed: 2.5
   m_bulletMaxLifetime: 6
@@ -220,6 +221,7 @@ MonoBehaviour:
     localPosition: {x: 0, y: 0, z: 0}
     localScale: {x: 1.25, y: 1.25, z: 1}
     timeAfterDeathThatExplosionStarts: 0
+  fragments: []
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1
