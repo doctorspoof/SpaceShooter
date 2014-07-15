@@ -27,8 +27,7 @@ public class HealthScript : MonoBehaviour
 	GameObject m_shieldCache;
 
     bool isDead = false;
-	
-	
+
 	public void EquipNewPlating(int hullValue)
 	{
 		float percent = GetHPPercentage();
@@ -292,8 +291,10 @@ public class HealthScript : MonoBehaviour
 					BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
 
 					Vector3 position = beam ? beam.beamHit.point : hitter.transform.position;
+					int dType = beam ? (int)beam.m_damageType : (int)hitter.GetComponent<BasicBulletScript>().m_damageType;
+					float magnitude = beam ? beam.GetDamage() : hitter.GetComponent<BasicBulletScript>().GetDamage();
 
-					networkView.RPC ("PropagateShieldWibble", RPCMode.All, position);
+					networkView.RPC ("PropagateShieldWibble", RPCMode.All, position, dType, magnitude);
 				}
 			}
 			else
@@ -352,19 +353,19 @@ public class HealthScript : MonoBehaviour
 	}
 
 	[RPC]
-	void PropagateShieldWibble(Vector3 position)
+	void PropagateShieldWibble(Vector3 position, int type, float magnitude)
 	{
 		if(this.GetComponent<CapitalShipScript>())
 		{
-			this.GetComponent<CapitalShipScript>().BeginShaderCoroutine(position);
+			this.GetComponent<CapitalShipScript>().BeginShaderCoroutine(position, type, magnitude);
 		}
 		else if(this.GetComponent<PlayerControlScript>())
 		{
-			this.GetComponent<PlayerControlScript>().BeginShaderCoroutine(position);
+			this.GetComponent<PlayerControlScript>().BeginShaderCoroutine(position, type, magnitude);
 		}
 		else if(this.GetComponent<EnemyScript>())
 		{
-			this.GetComponent<EnemyScript>().BeginShaderCoroutine(position);
+			this.GetComponent<EnemyScript>().BeginShaderCoroutine(position, type, magnitude);
 		}
 	}
 

@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-
+public enum DamageType
+{
+	Physical = 0,
+	Energy = 1,
+	Laser = 2,
+	Explosive = 3
+}
 
 [RequireComponent(typeof(Rigidbody))]
 public class BasicBulletScript : MonoBehaviour
@@ -21,6 +27,7 @@ public class BasicBulletScript : MonoBehaviour
     int m_bulletDamage = 1;								// The maximum damage dealt by the bullet
     [SerializeField]
     int m_bulletMinDamage = 1;								// The minimum damage, used in AOE and piercing falloff
+	public DamageType m_damageType;
 
     // Speed and Lifetime
     [SerializeField]
@@ -263,7 +270,7 @@ public class BasicBulletScript : MonoBehaviour
         {
             case Layers.playerBullet:
                 m_homingMask = enemy | enemyCollide;
-                m_aoeMask = m_homingMask | player | asteroid;
+                m_aoeMask = m_homingMask | player | asteroid | capital;
                 break;
 
             case Layers.capitalBullet:
