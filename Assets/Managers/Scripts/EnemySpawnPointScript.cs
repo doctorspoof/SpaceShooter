@@ -6,7 +6,6 @@ public class SpawnLocation
 {
     public float timeUntilStart, currentTime = 0;
     public Vector3 location;
-    public GameObject spawner;
 }
 
 public class GroupedWaveInfo
@@ -80,7 +79,8 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (spawnPointActive)
         {
-            CheckSpawning();
+            if (Network.isServer)
+                CheckSpawning();
 
             rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
         }
@@ -95,7 +95,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
-				networkView.RPC ("SetWormholeSize", (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
+                networkView.RPC("SetWormholeSize", RPCMode.All, (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
 
                 if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
                 {
@@ -110,7 +110,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
-				networkView.RPC ("SetWormholeSize", RPCMode.All, 1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
+                networkView.RPC("SetWormholeSize", RPCMode.All, 1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
 
                 if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
                 {
@@ -135,7 +135,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
 
-                GameObject spawnedEffect = (GameObject)Instantiate(spawnEffect, spawn.location, Quaternion.identity);
+                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, enemiesBeingSpawned[i].location, activeTime);
 
                 // move the SpawnLocation from waitingToSpawn to beingSpawned
                 enemiesBeingSpawned.Add(spawn);
@@ -144,7 +144,6 @@ public class EnemySpawnPointScript : MonoBehaviour
                 // reset the values so that they are correct
                 spawn.currentTime = 0;
                 spawn.timeUntilStart = activeTime;
-                spawn.spawner = spawnedEffect;
             }
         }
 
@@ -158,11 +157,9 @@ public class EnemySpawnPointScript : MonoBehaviour
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
 
-                Destroy(spawn.spawner, 3);
-
                 if (Network.isServer)
                 {
-                    GameObject enemy = (GameObject)Network.Instantiate(m_wavesToBeSpawned[0].NextEnemy(), spawn.spawner.transform.position, this.transform.rotation, 0);
+                    GameObject enemy = (GameObject)Network.Instantiate(m_wavesToBeSpawned[0].NextEnemy(), spawn.location, this.transform.rotation, 0);
 
                     EnemyScript script = enemy.GetComponent<EnemyScript>();
                     m_wavesToBeSpawned[0].group.AddEnemyToGroup(script);
@@ -282,41 +279,45 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (Network.isServer)
         {
-            if (enemiesWaitingToSpawn.Count > 0 || enemiesBeingSpawned.Count > 0)
-                networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All, 0.0f);
-
             foreach (GroupedWaveInfo info in m_wavesToBeSpawned)
             {
                 for (int i = 0; i < info.wave.Length; ++i)
                 {
-                    networkView.RPC("PropagateNewSpawnLocation", RPCMode.All, Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole, 
-					                this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));
+                    /*networkView.RPC("PropagateNewSpawnLocation", RPCMode.All, Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole,
+                                    this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));*/
+
+                    NewSpawnLocation(Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole,
+                                    this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));
                 }
             }
         }
-
-
     }
 
-    [RPC]
-    public void PropagateDestroySpawnLocations(float time_)
-    {
-        if (enemiesWaitingToSpawn.Count > 0 && enemiesBeingSpawned.Count > 0)
-            return;
+    //[RPC]
+    //public void PropagateDestroySpawnLocations(float time_)
+    //{
+    //    if (enemiesWaitingToSpawn.Count > 0 && enemiesBeingSpawned.Count > 0)
+    //        return;
 
-        foreach (SpawnLocation spawn in enemiesBeingSpawned)
-        {
-            Destroy(spawn.spawner, time_);
-        }
+    //    foreach (SpawnLocation spawn in enemiesBeingSpawned)
+    //    {
+    //        Destroy(spawn.spawner, time_);
+    //    }
 
-        enemiesWaitingToSpawn.Clear();
-        enemiesBeingSpawned.Clear();
-    }
+    //    enemiesWaitingToSpawn.Clear();
+    //    enemiesBeingSpawned.Clear();
+    //}
 
-    [RPC]
-    private void PropagateNewSpawnLocation(float timeUntilStart_, Vector3 location_)
+    private void NewSpawnLocation(float timeUntilStart_, Vector3 location_)
     {
         enemiesWaitingToSpawn.Add(new SpawnLocation { timeUntilStart = timeUntilStart_, location = location_ });
+    }
+
+    [RPC]
+    private void PropagateNewSpawnEffect(float timeTillDestroy_, Vector3 location_)
+    {
+        GameObject spawnedEffect = (GameObject)Instantiate(spawnEffect, location_, Quaternion.identity);
+        Destroy(spawnedEffect, timeTillDestroy_);
     }
 
     public void SetModifier(float modifier_)
@@ -324,7 +325,7 @@ public class EnemySpawnPointScript : MonoBehaviour
         modifier = modifier_;
     }
 
-	[RPC]
+    [RPC]
     void SetWormholeSize(float t_)
     {
         Vector3 newScale = Vector3.Lerp(Vector3.zero, wormholeOriginalScale, t_);
