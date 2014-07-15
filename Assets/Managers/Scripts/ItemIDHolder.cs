@@ -17,6 +17,8 @@ public class Item
 
 public class ItemIDHolder : MonoBehaviour 
 {
+	public Item[] ItemList;// An array of every single available item in the game. Ideally the .itemID of each element will correspond to the index
+
 	// Use this for initialization
 	void Start () 
 	{
@@ -26,9 +28,6 @@ public class ItemIDHolder : MonoBehaviour
 				ItemList[i].itemObject.GetComponent<ItemScript>().CollectDescription();
 		}
 	}
-	
-	public Item[] ItemList;	// An array of every single available item in the game. Ideally the .itemID of each element will correspond to the index
-	
 	
 	/// <summary>
 	/// Searches through an array of every item in the game looking for the desired itemID.

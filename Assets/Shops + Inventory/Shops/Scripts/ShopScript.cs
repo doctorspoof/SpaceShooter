@@ -123,6 +123,7 @@ public class ShopScript : MonoBehaviour
 	{
 		// Obtain the admin key before anything else does
 		m_inventoryAdminKey = m_shopInventory.GetAdminKey();
+
 		InitialiseItemIDs();
 		InitialiseLootTable();
 	}
@@ -134,7 +135,6 @@ public class ShopScript : MonoBehaviour
 		RotateShop();
 	}
 
-
 	public bool RESETINVENTORY = false;
 	void Update()
 	{
@@ -144,8 +144,7 @@ public class ShopScript : MonoBehaviour
 			RequestNewInventory (Time.timeSinceLevelLoad);
 		}
 	}
-	
-	
+
 	// Update the rotation over the network
 	void OnSerializeNetworkView (BitStream stream, NetworkMessageInfo info)
 	{
@@ -214,6 +213,7 @@ public class ShopScript : MonoBehaviour
 		transform.rotation = Quaternion.Euler (new Vector3 (0, 0, transform.rotation.eulerAngles.z + (m_shopRotationSpeed * Time.deltaTime)));
 	}
 
+
 	// Takes the inputted ID numbers and calls GetItemWithID on each, returns a list of ItemScripts
 	List<ItemScript> ConvertToItemScripts (int[] idNumbers)
 	{
@@ -245,7 +245,7 @@ public class ShopScript : MonoBehaviour
 
 		return scripts;
 	}
-	
+
 	// Performs all the necessary work to add an item to the server
 	void RefillInventory (List<ItemScript> items)
 	{
@@ -273,6 +273,7 @@ public class ShopScript : MonoBehaviour
 			}
 		}
 	}
+
 	
 	/// Public functions
 	// Used by the GUIManager to receive an item from the shop
