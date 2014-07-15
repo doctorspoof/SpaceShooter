@@ -62,10 +62,7 @@ public class Explode : MonoBehaviour
 
             StartExplosionSequence();
 
-            if (Network.isServer)
-            {
-                Invoke("DestroyEntity", removeShipAfterSeconds >= 0 ? removeShipAfterSeconds : GetTimeUntilLastExplosionStarts());
-            }
+        	Invoke("DestroyEntity", removeShipAfterSeconds >= 0 ? removeShipAfterSeconds : GetTimeUntilLastExplosionStarts());
         }
     }
 
@@ -110,7 +107,6 @@ public class Explode : MonoBehaviour
 
     private void StartFragmentSequence()
     {
-
         if(fragments != null)
         {
             GameObject fragmentOriginal = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -154,7 +150,8 @@ public class Explode : MonoBehaviour
     private void DestroyEntity()
     {
         StartFragmentSequence();
-        Network.Destroy(gameObject);
+		if(Network.isServer)
+        	Network.Destroy(gameObject);
     }
 
     public float GetTimeUntilLastExplosionStarts()

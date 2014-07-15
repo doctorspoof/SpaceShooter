@@ -19,6 +19,7 @@ public class StarScript : MonoBehaviour
 				case Layers.player:
 				case Layers.capital:
 				case Layers.enemy:
+				case Layers.enemyCollide:
 				case Layers.asteroid:
 					m_damageDelay += Time.deltaTime;
 					if(m_damageDelay >= m_tickTime)
