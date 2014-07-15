@@ -1,40 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ThrusterObject
-{
-
-    GameObject thruster;
-    Transform thrusterTransform;
-    Vector3 originalScale, originalPosition;
-
-    public ThrusterObject(GameObject object_)
-    {
-        thruster = object_;
-        thrusterTransform = thruster.transform;
-        originalScale = thrusterTransform.localScale;
-        originalPosition = thrusterTransform.localPosition;
-    }
-
-    public void SetPercentage(float percentage_)
-    {
-        float clamped = Mathf.Clamp(percentage_, 0, 1);
-
-        Vector3 newScale = originalScale * clamped;
-        newScale.z = 1;
-        thrusterTransform.localScale = newScale;
-
-        thrusterTransform.localPosition = originalPosition - (new Vector3(0, (newScale.y - originalScale.y) / 2, 0));
-        //Debug.DrawLine(thrusterTransform.parent.position + originalPosition, thrusterTransform.parent.position + thrusterTransform.localPosition, Color.red);
-    }
-
-    public string Name
-    {
-        get { return thruster.name; }
-    }
-
-}
-
 [RequireComponent(typeof(MeshFilter))]
 public class Ship : MonoBehaviour
 {
@@ -78,7 +44,7 @@ public class Ship : MonoBehaviour
 
     float maxThrusterVelocitySeen = 0;
     Transform thrustersHolder = null, afterburnersHolder = null;
-    ThrusterObject[] thrusters = null, afterburners = null;
+    Thruster[] thrusters = null, afterburners = null;
 
     public float GetMaxShipSpeed()
     {
@@ -154,7 +120,7 @@ public class Ship : MonoBehaviour
 
             float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
             float clampedDot = Mathf.Clamp(Vector2.Dot(shipTransform.up, shipTransform.rigidbody.velocity.normalized), 0, 1);
-            foreach (ThrusterObject thruster in thrusters)
+            foreach (Thruster thruster in thrusters)
             {
                 thruster.SetPercentage(clampedDot * ratio);
             }
@@ -354,7 +320,7 @@ public class Ship : MonoBehaviour
         afterburnersHolder = thrustersHolder.transform.FindChild("Afterburners");
 
         //if there are afterburners, take 1 away since the afterburner holder is a child but not a thruster itself
-        thrusters = new ThrusterObject[afterburnersHolder != null ? thrustersHolder.transform.childCount - 1 : thrustersHolder.transform.childCount];
+        thrusters = new Thruster[afterburnersHolder != null ? thrustersHolder.transform.childCount - 1 : thrustersHolder.transform.childCount];
 
 
 
@@ -364,7 +330,7 @@ public class Ship : MonoBehaviour
             ++a;
             if (child != null && !child.name.Equals("Afterburners"))
             {
-                thrusters[i] = new ThrusterObject(child);
+                thrusters[i] = child.GetComponent<Thruster>();
                 ++i;
             }
         }
@@ -372,11 +338,11 @@ public class Ship : MonoBehaviour
 
         if (afterburnersHolder != null)
         {
-            afterburners = new ThrusterObject[afterburnersHolder.childCount];
+            afterburners = new Thruster[afterburnersHolder.childCount];
 
             for (int i = 0; i < afterburners.Length; ++i)
             {
-                afterburners[i] = new ThrusterObject(afterburnersHolder.GetChild(i).gameObject);
+                afterburners[i] = afterburnersHolder.GetChild(i).GetComponent<Thruster>();
             }
         }
 
@@ -387,12 +353,12 @@ public class Ship : MonoBehaviour
     /// Returns thrusters. Do not use if the engine has changed as it will not return the updated thrusters. Use FindThrusters instead
     /// </summary>
     /// <returns></returns>
-    public ThrusterObject[] GetThrusters()
+    public Thruster[] GetThrusters()
     {
         return thrusters;
     }
 
-    public ThrusterObject[] GetAfterburners()
+    public Thruster[] GetAfterburners()
     {
         return afterburners;
     }
