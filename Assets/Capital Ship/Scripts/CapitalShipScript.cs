@@ -469,27 +469,40 @@ public class CapitalShipScript : Ship
         return m_shieldCache;
     }
 
-    int shaderCounter = 0;
-    public void BeginShaderCoroutine(Vector3 position)
-    {
-        //Debug.Log ("Bullet collision, beginning shader coroutine");
-        Vector3 pos = this.transform.InverseTransformPoint(position);
-        pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
-        GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
-        GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
-
-        /*if(coroutineIsRunning)
-        {
-            coroutineIsRunning = false;
-            StartCoroutine(AwaitCoroutineStopped());
-        }
-        else*/
-        StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
-
-        ++shaderCounter;
-        if (shaderCounter >= 4)
-            shaderCounter = 0;
-    }
+	//Do shield fizzle wizzle
+	int shaderCounter = 0;
+	public void BeginShaderCoroutine(Vector3 position, int type, float magnitude)
+	{
+		//Debug.Log ("Bullet collision, beginning shader coroutine");
+		Vector3 pos = this.transform.InverseTransformPoint(position);
+		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
+		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
+		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), type);
+		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), magnitude);
+		
+		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
+		
+		++shaderCounter;
+		if(shaderCounter >= 4)
+			shaderCounter = 0;
+	}
+	public void BeginShaderCoroutine(Vector3 position)
+	{
+		//Debug.Log ("Bullet collision, beginning shader coroutine");
+		Vector3 pos = this.transform.InverseTransformPoint(position);
+		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
+		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
+		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), 0);
+		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), 0.0f);
+		
+		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
+		
+		++shaderCounter;
+		if(shaderCounter >= 4)
+			shaderCounter = 0;
+	}
 
     /*IEnumerator AwaitCoroutineStopped()
     {

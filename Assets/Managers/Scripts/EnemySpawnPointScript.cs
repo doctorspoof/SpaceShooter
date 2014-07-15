@@ -95,7 +95,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
-				networkView.RPC ("SetWormholeSize", (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
+				networkView.RPC ("SetWormholeSize", RPCMode.All, (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
 
                 if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
                 {
