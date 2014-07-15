@@ -35,7 +35,7 @@ public class CapitalShipScript : Ship
 
 	public void RequestItemFromServer (GameObject requested)
 	{
-		ItemScript itemScript = requested.GetComponent<ItemScript>();
+		/*ItemScript itemScript = requested.GetComponent<ItemScript>();
 		int id = itemScript ? itemScript.m_equipmentID : -1;
 
 		if (id != -1 && m_cShipInventory.Contains (requested))
@@ -56,7 +56,7 @@ public class CapitalShipScript : Ship
 		{
 			m_hadItemResponse = true;
 			m_itemRequestResponse = false;
-		}
+		}*/
 	}
 
 
@@ -103,7 +103,7 @@ public class CapitalShipScript : Ship
 	}
 
 
-	[RPC]
+	/*[RPC]
 	void RequestItem (int itemID, NetworkMessageInfo message)
 	{
 		bool reply = false;
@@ -134,7 +134,7 @@ public class CapitalShipScript : Ship
 		{
 			networkView.RPC ("RequestItemReply", message.sender, reply);
 		}
-	}
+	}*/
 
 	[RPC]
 	void RequestItemReply (bool reply)

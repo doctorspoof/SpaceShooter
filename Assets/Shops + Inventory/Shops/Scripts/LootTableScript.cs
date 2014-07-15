@@ -6,7 +6,6 @@ public class LootTableScript : MonoBehaviour
 	[SerializeField]
 	GameObject m_ItemManager;
 
-	[SerializeField]
 	Item[] m_itemList;
 
 	// Use this for initialization
@@ -17,6 +16,11 @@ public class LootTableScript : MonoBehaviour
 		if(m_ItemManager != null)
 		{
 			m_itemList = m_ItemManager.GetComponent<ItemIDHolder>().ItemList;
+		}
+
+		else
+		{
+			Debug.LogError ("Unable to find object with tag: ItemManager");
 		}
 	}
 	
@@ -53,48 +57,6 @@ public class LootTableScript : MonoBehaviour
 
 			//Now that we have an appropiate item type, lets cast it into an enum and work on it
 			ItemType workingType = (ItemType)type;
-			/*switch(workingType)
-			{
-				case ItemType.Weapon:
-				{
-					//Weapons run from 0->29
-					float workingValue = value * rarityMods[type];
-					Item temp = GetWeaponByValue(workingValue);
-					output[i] = temp.itemID;
-					break;
-				}
-				case ItemType.Shield:
-				{
-					//Shields run from 30->59
-					float workingValue = value * rarityMods[type];
-					Item temp = GetShieldByValue(workingValue);
-					output[i] = temp.itemID;
-					break;
-				}
-				case ItemType.Engine:
-				{
-					//Engines run from 60->89
-					float workingValue = value * rarityMods[type];
-					Item temp = GetEngineByValue(workingValue);
-					output[i] = temp.itemID;
-					break;
-				}
-				case ItemType.Plating:
-				{
-					//Platings run from 90->119
-					float workingValue = value * rarityMods[type];
-					Item temp = GetEngineByValue(workingValue);
-					output[i] = temp.itemID;
-					break;
-				}
-				case ItemType.CapitalWeapon:
-				{
-					//CWeapons run from 120->149
-					//Nope
-					break;
-				}
-			}*/
-
 			int[] range = DetermineItemRange(workingType);
 			float workingValue = value * rarityMods[type];
 			Item temp = GetItemByValue(workingValue, range[0], range[1]);
