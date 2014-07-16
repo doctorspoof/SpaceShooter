@@ -816,7 +816,7 @@ public class CapitalShipScript : Ship
 		}
 
 		//Spawn shattered bits
-		//GameObject ship = (GameObject)Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
+		GameObject ship = (GameObject)Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
 
 		//Destroy self
 		Destroy (this.gameObject);

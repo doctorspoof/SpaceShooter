@@ -1202,7 +1202,9 @@ public class GUIManager : MonoBehaviour
         {
             GUI.DrawTexture(new Rect(640, 770, 340, 100), m_SpecCShipImage);
             float hpPercent = CShipHealth.GetHPPercentage();
+			hpPercent = Mathf.Max(0, hpPercent);
             float shieldPercent = CShipHealth.GetShieldPercentage();
+			shieldPercent = Mathf.Max(0, shieldPercent);
 
             GUI.DrawTexture(new Rect(570, 680, 460, 60), m_healthBackground);
             GUI.DrawTextureWithTexCoords(new Rect(570, 680, 460 * hpPercent, 60), m_healthBar, new Rect(0, 0, hpPercent, 1));
@@ -1236,7 +1238,9 @@ public class GUIManager : MonoBehaviour
 
                     //Health
                     float hpPercent = players[i].GetComponent<HealthScript>().GetHPPercentage();
+					hpPercent = Mathf.Max(0, hpPercent);
                     float shieldPercent = players[i].GetComponent<HealthScript>().GetShieldPercentage();
+					shieldPercent = Mathf.Max(0, shieldPercent);
                     GUI.DrawTexture(new Rect(20 + (i * 270), 760, 240, 45), m_healthBackground);
                     GUI.DrawTextureWithTexCoords(new Rect(20 + (i * 270), 760, 240 * hpPercent, 45), m_healthBar, new Rect(0, 0, hpPercent, 1));
                     GUI.DrawTextureWithTexCoords(new Rect(20 + (i * 270), 760, 240 * shieldPercent, 45), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
@@ -1969,7 +1973,9 @@ public class GUIManager : MonoBehaviour
 
             //New New HP Bar
             float healthPercent = thisPlayerHP.GetHPPercentage();
+			healthPercent = Mathf.Max(0, healthPercent);
             float shieldPercent = thisPlayerHP.GetShieldPercentage();
+			shieldPercent = Mathf.Max(0, shieldPercent);
 
             GUI.DrawTexture(new Rect(0, 0, 150, 150), m_iconBorder);
             GUI.DrawTexture(new Rect(0, 0, 150, 150), m_playerIcon);
@@ -2039,7 +2045,9 @@ public class GUIManager : MonoBehaviour
 
             //New New CShip Health
             float healthPercent = CShipHealth.GetHPPercentage();
+			healthPercent = Mathf.Max(0, healthPercent);
             float shieldPercent = CShipHealth.GetShieldPercentage();
+			shieldPercent = Mathf.Max(0, shieldPercent);
 
             GUI.DrawTexture(new Rect(1450, 0, 150, 150), m_iconBorder);
             GUI.DrawTexture(new Rect(1450, 0, 150, 150), m_CShipIcon);
@@ -4196,7 +4204,8 @@ public class GUIManager : MonoBehaviour
         FreezeAllEnemies();
 
         //Tell the player to stop inputting
-        thisPlayerHP.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
+		if(thisPlayerHP != null)
+        	thisPlayerHP.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
 
         //Now tell the camera to start lerping
         Camera.main.gameObject.GetComponent<CameraScript>().TellCameraBeginDeathSequence();

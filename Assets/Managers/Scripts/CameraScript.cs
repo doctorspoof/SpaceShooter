@@ -327,7 +327,7 @@ public class CameraScript : MonoBehaviour
 		m_allowDirectCameraControl = false;
 	}
 
-	Vector3 targetPoint;
+	public Vector3 targetPoint;
 	public void TellCameraBeginDeathSequence()
 	{
 		m_shouldAllowInput = false;
