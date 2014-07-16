@@ -11983,6 +11983,7 @@ MonoBehaviour:
   m_otherPBlob: {fileID: 2800000, guid: 09202667be749984cb4cc9a180a146a6, type: 3}
   m_cShipBlob: {fileID: 2800000, guid: 9ef8ea4bc5ff88046a08a7b1ee9e4425, type: 3}
   m_enemyBlob: {fileID: 2800000, guid: 213588710bea7e24882fbcc0456f6382, type: 3}
+  m_specEnemyBlob: {fileID: 2800000, guid: a40a7992ab2e50d4c97d3a682856deb9, type: 3}
   m_DockBackground: {fileID: 2800000, guid: 424eb3d04c4f3244e89e336d2342ba24, type: 3}
   m_DockCShipImage: {fileID: 2800000, guid: f490e46c7242c304694d17245238a820, type: 3}
   m_DockPlayerImage: {fileID: 2800000, guid: feb0f331ada19a74fa3d1967ac03cfdd, type: 3}
@@ -15091,6 +15092,10 @@ Prefab:
       propertyPath: m_SpecBottomPanel
       value: 
       objectReference: {fileID: 2800000, guid: 3480f946cfd89c14e98c68136ed66233, type: 3}
+    - target: {fileID: 11400000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
+      propertyPath: m_specEnemyBlob
+      value: 
+      objectReference: {fileID: 2800000, guid: a40a7992ab2e50d4c97d3a682856deb9, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
   m_RootGameObject: {fileID: 1614308795}

@@ -83,6 +83,10 @@ public class EnemyScript : Ship
 
     [SerializeField]
     ShipSize shipSize;
+	public ShipSize GetShipSize()
+	{
+		return shipSize;
+	}
 
     /// <summary>
     /// Returns ship type.

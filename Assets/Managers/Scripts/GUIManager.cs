@@ -109,11 +109,29 @@ public class GUIManager : MonoBehaviour
     float m_currentPingTime = 0.0f;
     float m_reqPingTime = 10.0f;
     GameObject[] m_pingedEnemies;
+	GameObject[] m_pingedMissiles;
     void PingForEnemies()
     {
         m_pingedEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+		m_pingedMissiles = GetAllDestructibleMissiles();
         m_currentPingTime = 0;
     }
+
+	GameObject[] GetAllDestructibleMissiles()
+	{
+		GameObject[] temp = GameObject.FindGameObjectsWithTag("Bullet");
+		List<GameObject> output = new List<GameObject>();
+
+		for(int i = 0; i < temp.Length; i++)
+		{
+			if(temp[i].layer == Layers.enemyDestructibleBullet)
+			{
+				output.Add(temp[i]);
+			}
+		}
+
+		return output.ToArray();
+	}
 
     [SerializeField]
     bool m_shouldResetShopsNow = false;
@@ -2199,6 +2217,8 @@ public class GUIManager : MonoBehaviour
     Texture m_cShipBlob;
     [SerializeField]
     Texture m_enemyBlob;
+	[SerializeField]
+	Texture m_specEnemyBlob;
 
     float m_blobSize;
     void DrawMap()
@@ -2261,11 +2281,31 @@ public class GUIManager : MonoBehaviour
                 if (enemy != null)// && )IsEnemyInViewableRange(enemy.transform.position))
                 {
                     Vector2 pingPos = WorldToMapPos(enemy.transform.position);
-                    GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.5f), pingPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_enemyBlob);
+					if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+					{
+						GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.5f), pingPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_specEnemyBlob);
+					}
+					else
+					{
+                    	GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.5f), pingPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_enemyBlob);
+					}
                 }
             }
         }
 
+		//Missiles
+		if(m_pingedMissiles.Length == 0)
+		{
+			foreach(GameObject bullet in m_pingedMissiles)
+			{
+				if(bullet != null)
+				{
+					Vector2 pingPos = WorldToMapPos(bullet.transform.position);
+					GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.2f), pingPos.y - (m_blobSize * 0.2f), m_blobSize, m_blobSize), m_specEnemyBlob);
+				}
+			}
+		}
+		
         //Shops!
         for (int i = 0; i < shops.Length; i++)
         {
@@ -2419,9 +2459,18 @@ public class GUIManager : MonoBehaviour
 
                     if (drawRect.Contains(finalDrawPos))
                     {
-                        GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
-                                                  finalDrawPos.y - (m_blobSize * 0.5f),
-                                                  m_blobSize, m_blobSize), m_enemyBlob);
+						if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+						{
+							GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
+							                         finalDrawPos.y - (m_blobSize * 0.5f),
+							                         m_blobSize, m_blobSize), m_specEnemyBlob);
+						}
+						else
+						{
+							GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
+	                                                  finalDrawPos.y - (m_blobSize * 0.5f),
+	                                                  m_blobSize, m_blobSize), m_enemyBlob);
+						}
                     }
 
                     /*Vector2 pingPos = WorldToSmallMapPos(enemy.transform.position);
@@ -2429,6 +2478,32 @@ public class GUIManager : MonoBehaviour
                 }
             }
         }
+
+		//Missiles
+		if(m_pingedMissiles.Length == 0)
+		{
+			foreach(GameObject bullet in m_pingedMissiles)
+			{
+				if(bullet != null)
+				{
+					Vector2 enemyMapPos = new Vector2(bullet.transform.position.x / mapSize, bullet.transform.position.y / mapSize);
+					enemyMapPos.x -= playerPos.x;
+					enemyMapPos.y -= playerPos.y;
+					
+					Vector3 enemyDrawPos = Vector2.zero;
+					enemyDrawPos.x = enemyMapPos.x * (Screen.height * (0.5f));
+					enemyDrawPos.y = enemyMapPos.y * (Screen.height * (0.5f));
+					
+					Vector2 finalDrawPos = new Vector2((Screen.height * 0.125f) + enemyDrawPos.x,
+					                                   ((Screen.height * 0.125f) * 7.0f) - enemyDrawPos.y);
+
+					if (drawRect.Contains(finalDrawPos))
+					{
+						GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.2f), finalDrawPos.y - (m_blobSize * 0.2f), m_blobSize, m_blobSize), m_specEnemyBlob);
+					}
+				}
+			}
+		}
 
         //Always reset the gui!
         GUI.matrix = oldGUIMat;
@@ -2492,11 +2567,31 @@ public class GUIManager : MonoBehaviour
                     //if(IsEnemyInViewableRange(enemy.transform.position))
                     //{
                     Vector2 pingPos = WorldToSmallMapPos(enemy.transform.position);
-                    GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_enemyBlob);
+					if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+					{
+						GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_specEnemyBlob);
+					}
+					else
+					{
+						GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_enemyBlob);
+					}
                     //}
                 }
             }
         }
+
+		//Missiles
+		if(m_pingedMissiles.Length == 0)
+		{
+			foreach(GameObject bullet in m_pingedMissiles)
+			{
+				if(bullet != null)
+				{
+					Vector2 pingPos = WorldToSmallMapPos(bullet.transform.position);
+					GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.2f), pingPos.y - (m_blobSize * 0.2f), m_blobSize, m_blobSize), m_specEnemyBlob);
+				}
+			}
+		}
 
         GUI.matrix = oldGUIMat;
     }
