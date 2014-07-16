@@ -432,7 +432,8 @@ public class CapitalShipScript : Ship
 		}
 
         //coroutineIsRunning = new bool[5];
-		ResetAttachedTurretsFromWrappers();
+		if(Network.isServer)
+			ResetAttachedTurretsFromWrappers();
     }
 
     GameObject m_shieldCache = null;

@@ -421,7 +421,7 @@ public sealed class NetworkInventory : MonoBehaviour
     // This function should be called using Invoke() after the desired period of time
     IEnumerator ExpireItemTicket(ItemTicket toExpire, float timeToWait)
     {
-        Debug.Log("Waiting to expire ticket: " + toExpire + " in " + timeToWait);
+        //Debug.Log("Waiting to expire ticket: " + toExpire + " in " + timeToWait);
 
         // Wait for the desired amount of time
         yield return new WaitForSeconds(timeToWait);

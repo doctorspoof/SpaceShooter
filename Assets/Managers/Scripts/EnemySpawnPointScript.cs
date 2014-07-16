@@ -134,8 +134,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
-
-                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, enemiesBeingSpawned[i].location, activeTime);
+				networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, enemiesWaitingToSpawn[i].location, activeTime);
 
                 // move the SpawnLocation from waitingToSpawn to beingSpawned
                 enemiesBeingSpawned.Add(spawn);
@@ -270,7 +269,7 @@ public class EnemySpawnPointScript : MonoBehaviour
         else
         {
             // spawn point is idle
-            networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All, 0.0f);
+            //networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All, 0.0f);
         }
     }
 

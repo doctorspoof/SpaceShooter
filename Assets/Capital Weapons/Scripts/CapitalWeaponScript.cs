@@ -584,13 +584,12 @@ public class CapitalWeaponScript : MonoBehaviour
 	
 	GameObject FindClosestTarget (out EnemyScript enemyScript, bool enemyOnly = false, bool targettingShipOnly = false)
 	{
-		int layerMask = enemyOnly ? (1 << Layers.enemy) : (1 << Layers.enemy) | (1 << Layers.asteroid) | (1 << Layers.enemyDestructibleBullet) | (1 << LayerMask.NameToLayer("EnemyCollide"));
+		int layerMask = enemyOnly ? (1 << Layers.enemy) | (1 << Layers.enemyCollide) : (1 << Layers.enemy) | (1 << Layers.asteroid) | (1 << Layers.enemyDestructibleBullet) | (1 << Layers.enemyCollide);
 		//Debug.Log ("[CWeapon]: Checking on layermask " + layerMask.ToString() + ".");
 		//Collider[] colliders = Physics.OverlapSphere(this.transform.position, 20, layerMask);
 		//Debug.Log ("[CWeapon]: Overlap Sphere returned " + colliders.Length + " colliders.");
 		//GameObject[] enemies = colliders.GetAttachedRigidbodies().GetUniqueOnly().GetGameObjects();
 		//Debug.Log ("[CWeapon]: Relating to " + enemies.Length + " unique enemies.");
-
         //Debug.Log("parent = " + (transform.parent != null));
 
         //GameObject enemy = transform.root.GetComponent<CapitalShipScript>().RequestTarget();//transform.position, layerMask);

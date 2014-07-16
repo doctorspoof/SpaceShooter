@@ -281,7 +281,7 @@ public class ShopScript : MonoBehaviour
 	{
 		if (Network.isServer)
 		{
-			Debug.Log ("Recieved request to reset inventory! Elapsed time: " + elapsedTime);
+			//Debug.Log ("Recieved request to reset inventory! Elapsed time: " + elapsedTime);
 			
 			// Obtain IDs
 			int[] returnedIDs = m_lootTable.RequestItemByApproximateValue ((elapsedTime + 150f), m_stockFlags, m_rarityMods, m_shopInventory.GetCapacity());

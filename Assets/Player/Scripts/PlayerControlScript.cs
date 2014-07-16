@@ -774,10 +774,10 @@ public class PlayerControlScript : Ship
 	{
 		ownerSt = owner.ToString();
 		bool recievedInput = false;
+		base.Update();
+
 		if(owner != null && owner == Network.player)
 		{
-            base.Update();
-
 			if((useController && Input.GetButtonDown("X360Start")) || (!useController && Input.GetKeyDown(KeyCode.Escape)))
 			{
 				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMenuState();
