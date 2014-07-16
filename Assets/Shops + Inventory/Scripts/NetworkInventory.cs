@@ -404,7 +404,6 @@ public sealed class NetworkInventory : MonoBehaviour
     {
         if (IsValidIndex(index))
         {
-            Debug.Log(m_inventory.Count + " " + m_isItemRequested.Count + " " + m_requestTickets.Count);
             // Ensure the previous ticket gets reset so it's invalid
             m_requestTickets[index].Reset();
 

@@ -482,7 +482,7 @@ public class PlayerControlScript : Ship
 						Debug.Log ("Weapon is not homing. Alerting GUI.");
 					}
 				
-				//Take new weapon out of inventory
+					//Take new weapon out of inventory
 					//RemoveItemFromInventory(m_playerInventory[slot]);*/
 					RemoveItemFromInventoryLocalOnly(m_playerInventory[slot]);
 					
@@ -1646,6 +1646,32 @@ public class PlayerControlScript : Ship
 	public void ApplyExplosiveForceOverNetwork (float x, float y, float range, float minForce, float maxForce, ForceMode mode = ForceMode.Force)
 	{
 		networkView.RPC ("PropagateExplosiveForce", RPCMode.Others, x, y, range, minForce, maxForce, (int) mode);
+	}
+
+	
+	/// <summary>
+	/// You probably don't want to use this. This will return the weapon, shield, plating or engine based on what number you pass.
+	/// The numbers correspond to how they're displayed in the GUI to the player
+	/// </summary>
+	public GameObject GetEquipmentFromSlot (int slotNumber)
+	{
+		switch (slotNumber)
+		{
+			case 1:
+				return m_equippedWeaponItem;
+				
+			case 2:
+				return m_equippedShieldItem;
+				
+			case 3:
+				return m_equippedPlatingItem;
+				
+			case 4:
+				return m_equippedEngineItem;
+				
+			default:
+				return null;
+		}
 	}
 
 }

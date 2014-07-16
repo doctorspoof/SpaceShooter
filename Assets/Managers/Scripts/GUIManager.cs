@@ -2694,8 +2694,6 @@ public class GUIManager : MonoBehaviour
 
         if (GUI.Button(new Rect(440, 720, 150, 60), "Cancel"))
         {
-            CShip.GetComponent<CapitalShipScript>().CancelItemRequestFromServer(m_selectedTurretItem);
-            m_playerIsSelectingCShipTurret = false;
             Debug.Log("Cancelled request");
         }
     }
@@ -2868,8 +2866,6 @@ public class GUIManager : MonoBehaviour
 
     void HandleItemDrop(bool isLeftPanel, Vector2 mousePos)
     {
-        List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
-        List<GameObject> cshipInv = CShip.GetComponent<CapitalShipScript>().m_cShipInventory;
         NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
 
         //Depending on where the cursor is when the mouse is released, decide what happens to the item
@@ -2885,7 +2881,7 @@ public class GUIManager : MonoBehaviour
                     {
                         //Debug.Log ("<color=blue>Beginning item transfer sequence</color>");
                         inventory.RequestTicketValidityCheck(m_currentTicket);
-                        StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
+                        StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory));
                         return;
                     }
                     else
@@ -2903,7 +2899,7 @@ public class GUIManager : MonoBehaviour
                 if (m_currentDraggedItemIsFromPlayerInv)
                 {
                     inventory.RequestServerAdd(m_currentDraggedItem);
-                    StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
+                    StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd, ItemOwner.PlayerInventory, ItemOwner.NetworkInventory));
                 }
 
                 else
@@ -2925,9 +2921,15 @@ public class GUIManager : MonoBehaviour
                         thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                     else
                     {
-                        //TODO: Add in networkInv stuff
+                        inventory.RequestTicketValidityCheck (m_currentTicket);
+						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 1));
                     }
                 }
+
+				else if (!m_currentDraggedItemIsFromPlayerInv)
+				{
+					inventory.RequestServerCancel (m_currentTicket);
+				}
 
                 m_currentDraggedItem = null;
                 m_currentDraggedItemIsFromPlayerInv = false;
@@ -2941,10 +2943,17 @@ public class GUIManager : MonoBehaviour
                     if (m_currentDraggedItemIsFromPlayerInv)
                         thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                     else
-                    {
-                        //TODO: Add in networkInv stuff
+					{
+						inventory.RequestTicketValidityCheck (m_currentTicket);
+						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 2));
                     }
-                }
+				}
+				
+				else if (!m_currentDraggedItemIsFromPlayerInv)
+				{
+					inventory.RequestServerCancel (m_currentTicket);
+				}
+
 
                 m_currentDraggedItem = null;
                 m_currentDraggedItemIsFromPlayerInv = false;
@@ -2958,10 +2967,17 @@ public class GUIManager : MonoBehaviour
                     if (m_currentDraggedItemIsFromPlayerInv)
                         thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                     else
-                    {
-                        //TODO: Add in networkInv stuff
+					{
+						inventory.RequestTicketValidityCheck (m_currentTicket);
+						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 3));
                     }
-                }
+				}
+				
+				else if (!m_currentDraggedItemIsFromPlayerInv)
+				{
+					inventory.RequestServerCancel (m_currentTicket);
+				}
+
 
                 m_currentDraggedItem = null;
                 m_currentDraggedItemIsFromPlayerInv = false;
@@ -2975,10 +2991,17 @@ public class GUIManager : MonoBehaviour
                     if (m_currentDraggedItemIsFromPlayerInv)
                         thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                     else
-                    {
-                        //TODO: Add in networkInv stuff
+					{
+						inventory.RequestTicketValidityCheck (m_currentTicket);
+						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 4));
                     }
-                }
+				}
+				
+				else if (!m_currentDraggedItemIsFromPlayerInv)
+				{
+					inventory.RequestServerCancel (m_currentTicket);
+				}
+
 
                 m_currentDraggedItem = null;
                 m_currentDraggedItemIsFromPlayerInv = false;
@@ -2996,8 +3019,7 @@ public class GUIManager : MonoBehaviour
                     if (!thisPlayerHP.GetComponent<PlayerControlScript>().InventoryIsFull())
                     {
                         inventory.RequestTicketValidityCheck(m_currentTicket);
-                        Debug.Log("Requesting ticket validity check. Awaiting response...");
-                        StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, true));
+                        StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory));
                         return;
                     }
                     else
@@ -3016,7 +3038,7 @@ public class GUIManager : MonoBehaviour
                 {
                     //CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
                     inventory.RequestServerAdd(m_currentDraggedItem);
-                    StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd));
+                    StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd, ItemOwner.PlayerInventory, ItemOwner.NetworkInventory));
                 }
 
                 else
@@ -3031,55 +3053,68 @@ public class GUIManager : MonoBehaviour
             }
             //If over any equipment slot points try and equip it
             else if (m_RightPanelWeapon1Rect.Contains(mousePos))
-            {
-                if (!m_currentDraggedItemIsFromPlayerInv)
-                {
-                    if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-                        CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(1, m_currentDraggedItem.gameObject);
-                }
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
+			{
+				HandleCShipEquipmentDrop (inventory, 1);
             }
             else if (m_RightPanelWeapon2Rect.Contains(mousePos))
-            {
-                if (!m_currentDraggedItemIsFromPlayerInv)
-                {
-                    if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-                        CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(2, m_currentDraggedItem.gameObject);
-                }
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
+			{
+				HandleCShipEquipmentDrop (inventory, 2);
             }
             else if (m_RightPanelWeapon3Rect.Contains(mousePos))
-            {
-                if (!m_currentDraggedItemIsFromPlayerInv)
-                {
-                    if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-                        CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(3, m_currentDraggedItem.gameObject);
-                }
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
+			{				
+				HandleCShipEquipmentDrop (inventory, 3);
             }
             else if (m_RightPanelWeapon4Rect.Contains(mousePos))
-            {
-                if (!m_currentDraggedItemIsFromPlayerInv)
-                {
-                    if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
-                        CShip.GetComponent<CapitalShipScript>().TellServerEquipTurret(4, m_currentDraggedItem.gameObject);
-                }
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
+			{
+				HandleCShipEquipmentDrop (inventory, 4);
             }
         }
     }
+
+	void HandleCShipEquipmentDrop (NetworkInventory inventory, int turretID)
+	{
+		if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+		{
+			if (m_currentDraggedItemIsFromPlayerInv)
+			{
+				CapitalShipScript cShip = CShip.GetComponent<CapitalShipScript>();
+				GameObject oldTurret = cShip.GetAttachedTurrets()[turretID - 1];
+				PlayerControlScript player = thisPlayerHP.GetComponent<PlayerControlScript>();						
+				
+				cShip.TellServerEquipTurret (turretID, m_currentDraggedItem.gameObject);
+				player.RemoveItemFromInventory (m_currentDraggedItem.gameObject);					
+				
+				if (player.InventoryIsFull())
+				{
+					// Move the item to the CShip inventory since the players inventory is full
+					inventory.RequestServerAdd (oldTurret.GetComponent<ItemScript>());
+					StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, ItemOwner.CShipEquipment, ItemOwner.NetworkInventory));
+				}
+				
+				else
+				{
+					player.AddItemToInventory (oldTurret);
+				}
+				
+			}
+			
+			else
+			{
+				inventory.RequestTicketValidityCheck (m_currentTicket);
+				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.CShipEquipment, turretID));
+			}
+		}
+		
+		else
+		{
+			inventory.RequestServerCancel (m_currentTicket);
+		}
+		
+		
+		m_currentDraggedItem = null;
+		m_currentDraggedItemIsFromPlayerInv = false;
+		m_currentDraggedItemInventoryId = -1;
+	}
 
     [SerializeField]
     Vector2 playerScrollPosition = Vector2.zero;
@@ -3088,7 +3123,7 @@ public class GUIManager : MonoBehaviour
 
     Dictionary<Rect, ItemScript> drawnItems = new Dictionary<Rect, ItemScript>();
 
-    bool m_requestedTicketIsValid = false;
+    //bool m_requestedTicketIsValid = false;
     void DrawCShipDockOverlay()
     {
         Event currentEvent = Event.current;
@@ -3193,7 +3228,7 @@ public class GUIManager : MonoBehaviour
                                 m_currentDraggedItemInventoryId = i;
                                 m_currentDraggedItemIsFromPlayerInv = false;
                                 cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
-                                StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake));
+                                StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
                             }
                         }
                     }
@@ -3304,7 +3339,7 @@ public class GUIManager : MonoBehaviour
                                 m_currentDraggedItemInventoryId = i;
                                 m_currentDraggedItemIsFromPlayerInv = false;
                                 cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
-                                StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake));
+                                StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
                             }
                         }
                     }
@@ -3621,10 +3656,22 @@ public class GUIManager : MonoBehaviour
         GUI.Label(new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, m_hoverBoxTextStyle);
     }
 
+	private enum ItemOwner
+	{
+		PlayerInventory = 1,
+		NetworkInventory = 2,
+		PlayerEquipment = 3,
+		CShipEquipment = 4
+	}
+
     ItemTicket m_currentTicket;
-    IEnumerator AwaitTicketRequestResponse(NetworkInventory inventory, RequestType reqType, bool isToPlayerInv = false)
+
+
+
+	// WARNING! EXTREMELY HAZARDOUS CODE LIES BEYOND THIS POINT! DO NOT LOOK AT THIS FUNCTION OR YOU MAY TURN BLIND!
+    IEnumerator AwaitTicketRequestResponse(NetworkInventory inventory, RequestType reqType, ItemOwner from, ItemOwner to = ItemOwner.NetworkInventory, int equipmentSlot = -1)
     {
-        m_requestedTicketIsValid = false;
+        //m_requestedTicketIsValid = false;
         m_isRequestingItem = true;
 
         while (!inventory.HasServerResponded())
@@ -3633,61 +3680,134 @@ public class GUIManager : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log("Entering switch case with value: " + reqType);
         switch (reqType)
         {
             case RequestType.ItemAdd:
-                {
-                    m_currentTicket = inventory.GetItemAddResponse();
-                    if (m_currentTicket.IsValid())
-                    {
-                        int itemID = m_currentTicket.itemID;
-                        if (inventory.AddItemToServer(m_currentTicket))
-                        {
-                            //						if(m_currentDraggedItem != null)
-                            thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
-                        }
-
-                    }
-                    break;
+	        {
+	            m_currentTicket = inventory.GetItemAddResponse();
+                int itemID = m_currentTicket.itemID;
+                if (inventory.AddItemToServer(m_currentTicket))
+                {    
+					if (from == ItemOwner.PlayerInventory)
+					{
+						thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
+					}
                 }
+
+	            break;
+	        }
             case RequestType.ItemTake:
-                {
-                    m_currentTicket = inventory.GetItemRequestResponse();
-                    Debug.Log("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
-                    break;
-                }
+	        {
+	            m_currentTicket = inventory.GetItemRequestResponse();
+	            Debug.Log("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
+	            break;
+	        }
             case RequestType.TicketValidity:
-                {
-                    Debug.Log("Is the ticket valid?");
-                    if (inventory.GetTicketValidityResponse())
-                    {
-                        Debug.Log("Yes!");
-                        if (isToPlayerInv)
-                        {
-                            Debug.Log("Did the item successfully remove from the server?");
-                            if (!inventory.RemoveItemFromServer(m_currentTicket))
-                            {
-                                Debug.Log("No!");
-                                Debug.LogError("<color=blue>Ticket mismatch!</color>");
-                            }
-                            else
-                            {
-                                Debug.Log("Yes!");
-                                thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory(m_currentDraggedItem.gameObject);
-                            }
-                        }
-                        else
-                        {
+	        {
+	            Debug.Log("Is the ticket valid?");
+	            if (inventory.GetTicketValidityResponse())
+	            {
+	                Debug.Log("Yes!");
+					switch (from)
+					{
+						case ItemOwner.NetworkInventory:
+						{
+							switch (to)
+							{
+								case ItemOwner.PlayerInventory:
+							
+									if (inventory.RemoveItemFromServer (m_currentTicket))
+									{
+										thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (m_currentDraggedItem.gameObject);
+									}
 
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("Nope. Here's the ticket: " + m_currentTicket.uniqueID + ", itemId: " + m_currentTicket.itemID + ".");
-                    }
-                    break;
-                }
+									else
+									{
+										Debug.LogError("<color=blue>Ticket mismatch!</color>");
+									}
+
+									break;
+
+								case ItemOwner.CShipEquipment:
+								{
+									ItemScript item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemScript>();
+									if (item.m_typeOfItem == ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+									{
+										PlayerControlScript player = thisPlayerHP.GetComponent<PlayerControlScript>();
+										CapitalShipScript cShip = CShip.GetComponent<CapitalShipScript>();
+										GameObject oldTurret = cShip.GetAttachedTurrets()[equipmentSlot - 1];
+
+										cShip.TellServerEquipTurret (equipmentSlot, item.gameObject);
+										
+										if (player.InventoryIsFull())
+										{
+											// Move the item to the CShip inventory since the players inventory is full
+											inventory.RequestServerAdd (oldTurret.GetComponent<ItemScript>());
+											StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, to, from));
+										}
+
+										else
+										{
+											player.AddItemToInventory (oldTurret);
+										}
+									}
+
+									break;
+								}
+
+						
+								case ItemOwner.PlayerEquipment:
+								{	
+									ItemScript item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemScript>();
+									if (item.m_typeOfItem != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+									{
+										PlayerControlScript player = thisPlayerHP.GetComponent<PlayerControlScript>();
+										GameObject oldEquipment = player.GetEquipmentFromSlot (equipmentSlot);
+										
+										
+
+										if (player.InventoryIsFull())
+										{
+											GameObject lastItem = player.m_playerInventory[player.m_playerInventory.Count - 1];
+											
+
+											// This little wonder makes me want to vomit and should only be used until the demo night
+											// Remove the last item from the players inventory then equip the new item from that
+											player.RemoveItemFromInventory (lastItem);
+											player.AddItemToInventory (item.gameObject);
+											player.EquipItemInSlot (player.m_playerInventory.Count - 1);
+											player.RemoveItemFromInventory (oldEquipment);
+											player.AddItemToInventory (lastItem);
+
+											// Move the item to the CShip inventory since the players inventory is full
+											inventory.RequestServerAdd (oldEquipment.GetComponent<ItemScript>());
+											StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, to, from));
+										}
+										
+										else
+										{
+											player.AddItemToInventory (item.gameObject);
+											player.EquipItemInSlot (player.m_playerInventory.Count - 1);
+										}
+									}
+									break;
+								}
+
+								default:
+									inventory.RequestServerCancel (m_currentTicket);
+									break;
+							}
+							break;
+						}	
+						default:
+							Debug.LogError ("THIS SHOULD NEVER HAPPEN!");
+							break;
+						
+					}
+
+				}
+				break;
+	        }
         }
 
         m_isRequestingItem = false;
@@ -3700,30 +3820,7 @@ public class GUIManager : MonoBehaviour
         }
     }
 
-    /*IEnumerator WaitForItemRequestReply (NetworkInventory inventory, bool )
-    {
-        bool response = false;
-        m_isRequestingItem = true;
-
-        // Wait until the server has responded
-        while (!inventory.HasServerResponded())
-        {
-            yield return null;
-        }
-
-        if (response)
-        {
-            thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
-            script.RemoveItemFromInventory (item);
-        }
-
-        else
-        {
-            Debug.Log (item.name + " has already been requested by another.");
-        }
-
-        m_isRequestingItem = false;
-    }*/
+	
 
     void RequestServerRespawnPlayer(NetworkPlayer player)
     {
