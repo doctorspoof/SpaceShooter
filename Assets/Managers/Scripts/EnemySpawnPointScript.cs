@@ -80,12 +80,16 @@ public class EnemySpawnPointScript : MonoBehaviour
         if (spawnPointActive)
         {
             if (Network.isServer)
+            {
                 CheckSpawning();
+            }
+
 
             rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
         }
 
-        CheckScalingWormhole();
+        if (Network.isServer)
+            CheckScalingWormhole();
     }
 
     void CheckScalingWormhole()
@@ -134,7 +138,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
-				networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, enemiesWaitingToSpawn[i].location, activeTime);
+                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, enemiesWaitingToSpawn[i].location, activeTime);
 
                 // move the SpawnLocation from waitingToSpawn to beingSpawned
                 enemiesBeingSpawned.Add(spawn);

@@ -1160,13 +1160,13 @@ MonoBehaviour:
     timeAfterDeathThatExplosionStarts: 1.5
   fragments:
   - material: {fileID: 2100000, guid: cc2be09f34298a24c9034fed10013366, type: 2}
-    directionToApplyForce: {x: -.800000012, y: 1, z: 0}
+    directionToApplyForce: {x: -.800000012, y: 1, z: -.0500000007}
   - material: {fileID: 2100000, guid: 67bfd549dbb68194d9a50298e90df5f9, type: 2}
-    directionToApplyForce: {x: 1, y: .300000012, z: 0}
+    directionToApplyForce: {x: 1, y: .300000012, z: -.0500000007}
   - material: {fileID: 2100000, guid: 0bdfcb6a337dd4a45ad5678f6f3e78a8, type: 2}
-    directionToApplyForce: {x: -1, y: -.5, z: 0}
+    directionToApplyForce: {x: -1, y: -.5, z: -.0500000007}
   - material: {fileID: 2100000, guid: 1946d90e29cc097449d4c2193d818a1d, type: 2}
-    directionToApplyForce: {x: 1, y: -1, z: 0}
+    directionToApplyForce: {x: 1, y: -1, z: -.0500000007}
 --- !u!114 &11400016
 MonoBehaviour:
   m_ObjectHideFlags: 1
