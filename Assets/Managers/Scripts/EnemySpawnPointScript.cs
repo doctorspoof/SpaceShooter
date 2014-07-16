@@ -99,6 +99,8 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
+                Debug.Log("Attempting to increase size = " + (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
+
                 networkView.RPC("SetWormholeSize", RPCMode.All, (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
 
                 if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
@@ -114,6 +116,8 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
+                Debug.Log("Attempting to decrease size = " + (1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole)));
+
                 networkView.RPC("SetWormholeSize", RPCMode.All, 1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
 
                 if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
@@ -182,7 +186,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
         }
 
-        Debug.Log("enemiesWaitingToSpawn.Count = " + enemiesWaitingToSpawn.Count + " enemiesBeingSpawned.Count = " + enemiesBeingSpawned.Count);
+        //Debug.Log("enemiesWaitingToSpawn.Count = " + enemiesWaitingToSpawn.Count + " enemiesBeingSpawned.Count = " + enemiesBeingSpawned.Count);
 
         if (enemiesWaitingToSpawn.Count == 0 && enemiesBeingSpawned.Count == 0)
         {
