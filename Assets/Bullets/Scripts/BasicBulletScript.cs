@@ -270,7 +270,7 @@ public class BasicBulletScript : MonoBehaviour
         {
             case Layers.playerBullet:
                 m_homingMask = enemy | enemyCollide;
-                m_aoeMask = m_homingMask | player | asteroid | capital;
+                m_aoeMask = m_homingMask | player | asteroid;
                 break;
 
             case Layers.capitalBullet:

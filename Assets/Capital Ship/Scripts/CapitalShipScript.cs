@@ -322,17 +322,15 @@ public class CapitalShipScript : Ship
         }
     }
 
-    public void TellServerEquipTurret(int turretHolderID, GameObject item)
+    public void TellServerEquipTurret(int turretHolderID, GameObject turret)
     {
-		// Reset the response variables
-		m_hadItemResponse = false;
-		m_itemRequestResponse = false;
-
-        ItemScript script = item.GetComponent<ItemScript>();
+		// Ensure the item is correct
+		ItemScript script = turret ? turret.GetComponent<ItemScript>() : null;
 		int itemID = script ? script.m_equipmentID : -1;
 
-		if (itemID != -1)
+		if (itemID >= 0)
 		{
+			// Can't send an RPC to the server from the server cause that would be helpful!
 			if (Network.isServer)
 			{
 				ReplaceTurretAtPosition (turretHolderID, itemID);
@@ -349,40 +347,44 @@ public class CapitalShipScript : Ship
     void ReplaceTurretAtPosition(int id, int itemID)
     {
         //We should create a temp to store the previously equipped turret, note id-1 for turretId -> array
-        GameObject previousTurr = m_itemIDs.GetItemWithID (m_attachedTurretsItemWrappers[id - 1].GetComponent<ItemScript>().m_equipmentID);
-		GameObject newTurr = m_itemIDs.GetItemWithID (itemID);
+		ItemScript turret = m_itemIDs.GetItemWithID (itemID).GetComponent<ItemScript>();
 
-        /*GameObject newWeapon = m_playerInventory[slot];
-                    m_equippedWeaponItem = newWeapon;
-                    GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
-                    weapon.transform.parent = this.transform;
-                    this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);*/
-
-        //Put the new turret into the item wrapper list
-        m_attachedTurretsItemWrappers[id - 1] = newTurr;
-
-		
-		//Replace inventory slot with old turret
-		int index = m_cShipInventory.IndexOf (newTurr);
-		m_cShipInventory[index] = previousTurr;
-		m_requestedItem[index] = false;
-
-        //Tell the turret holder to spawn the new turret
-        GetCTurretHolderWithId(id).GetComponent<CShipTurretHolder>().ReplaceAttachedTurret(m_attachedTurretsItemWrappers[id - 1].GetComponent<ItemScript>().GetEquipmentReference());
-
-        //Propagate inventory after change
-        networkView.RPC("AlertCShipInventoryHasChanged", RPCMode.Others);
-        for (int i = 0; i < m_cShipInventory.Count; i++)
-        {
-            networkView.RPC("PropagateCShipInventory", RPCMode.Others, i, m_cShipInventory[i].GetComponent<ItemScript>().m_equipmentID);
-        }
-
-        //Propagate equipped items to clients too
-        for (int i = 0; i < m_attachedTurretsItemWrappers.Length; i++)
-        {
-            networkView.RPC("PropagateAttachTurretItemWrappers", RPCMode.Others, i, m_attachedTurretsItemWrappers[i].GetComponent<ItemScript>().m_equipmentID);
-        }
+       	ReplaceTurretAtPosition (id, turret);
     }
+
+
+	void ReplaceTurretAtPosition (int id, ItemScript item)
+	{
+		if (Network.isServer)
+		{
+			if (id >= 0 && id <= m_attachedTurretsItemWrappers.Length && item)
+			{
+				//Put the new turret into the item wrapper list
+				m_attachedTurretsItemWrappers[id - 1] = item.gameObject;
+				
+				//Tell the turret holder to spawn the new turret
+				GetCTurretHolderWithId(id).GetComponent<CShipTurretHolder>().ReplaceAttachedTurret(item.GetEquipmentReference());
+				
+				//Propagate equipped items to clients too
+				for (int i = 0; i < m_attachedTurretsItemWrappers.Length; i++)
+				{
+					networkView.RPC("PropagateAttachTurretItemWrappers", RPCMode.Others, i, m_attachedTurretsItemWrappers[i].GetComponent<ItemScript>().m_equipmentID);
+				}
+			}
+			
+			else
+			{
+				Debug.LogError ("Unable to equip " + item + " at ID #" + id + " on " + name);
+			}
+		}
+
+		else
+		{
+			Debug.LogError ("A client attempted to call " + name + ".CapitalShipScript.ReplaceTurretPosition()");
+		}
+			
+	}
+
     [RPC]
     void PropagateAttachTurretItemWrappers(int position, int turretID)
     {
