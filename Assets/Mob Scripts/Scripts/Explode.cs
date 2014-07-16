@@ -91,6 +91,8 @@ public class Explode : MonoBehaviour
 
     private void StartExplosionSequence()
     {
+        transform.Translate(new Vector3(0, 0, 2));
+
         foreach (Explosion explosion in explosions)
         {
 
@@ -124,7 +126,7 @@ public class Explode : MonoBehaviour
             foreach(Fragment frag in fragments)
             {
 
-                GameObject fragment = (GameObject)Instantiate(fragmentOriginal, transform.position + new Vector3(0,0,10), transform.rotation);
+                GameObject fragment = (GameObject)Instantiate(fragmentOriginal, transform.position, transform.rotation);
                 
                 MeshRenderer renderer = fragment.GetComponent<MeshRenderer>();
                 renderer.material = frag.material;
