@@ -135,6 +135,21 @@ public class PlayerControlScript : Ship
 		GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
 		weapon.transform.parent = this.transform;
 		weapon.transform.localPosition = weapon.GetComponent<WeaponScript>().GetOffset();
+
+		if(owner == Network.player)
+		{
+			if(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<WeaponScript>().m_needsLockon)
+			{
+				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = true;
+				Debug.Log ("New weapon is homing, alerting GUI...");
+			}
+			else
+			{
+				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = false;
+				Debug.Log ("Weapon is not homing. Alerting GUI.");
+			}
+		}
+		
 		//Parenting needs to be broadcast to all clients!
 		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
 		weapon.GetComponent<WeaponScript>().ParentWeaponToOwner(name);
@@ -318,7 +333,7 @@ public class PlayerControlScript : Ship
 						}
 					}
 				
-				GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+					GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
 					weapon.transform.parent = this.transform;
 					weapon.transform.localPosition = weapon.GetComponent<WeaponScript>().GetOffset();
 					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);

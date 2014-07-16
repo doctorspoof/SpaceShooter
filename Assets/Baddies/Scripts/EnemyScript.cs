@@ -223,8 +223,11 @@ public class EnemyScript : Ship
 
     public void NotifyEnemyUnderFire(GameObject attacker)
     {
-        m_parentGroup.CancelAllOrders();
-        m_parentGroup.OrderAttack(attacker.transform.root.gameObject);
+		if(m_parentGroup != null)
+		{
+	        m_parentGroup.CancelAllOrders();
+	        m_parentGroup.OrderAttack(attacker.transform.root.gameObject);
+		}
     }
 
     bool isGoingLeft = false;
