@@ -621,6 +621,10 @@ public class GUIManager : MonoBehaviour
     float nativeHeight = 900;
     void OnGUI()
     {
+		// Update our fake input tracking
+		m_previousMouseZero = m_mouseZero;
+		m_mouseZero = Input.GetMouseButton(0);
+
         float rx = Screen.width / nativeWidth;
         float ry = Screen.height / nativeHeight;
         GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(rx, ry, 1));
@@ -2864,6 +2868,19 @@ public class GUIManager : MonoBehaviour
         }
     }
 
+	bool m_previousMouseZero = false;
+	bool m_mouseZero = false;
+
+	bool IsMouseDownZero()
+	{
+		return !m_previousMouseZero && m_mouseZero;
+	}
+
+	bool IsMouseUpZero()
+	{
+		return m_previousMouseZero && !m_mouseZero;
+	}
+
     void HandleItemDrop(bool isLeftPanel, Vector2 mousePos)
     {
         NetworkInventory inventory = CShip.GetComponent<NetworkInventory>();
@@ -3239,7 +3256,7 @@ public class GUIManager : MonoBehaviour
                     //Handle mouse up if item is selected
                     if (m_currentDraggedItem != null)
                     {
-                        if (Input.GetMouseButtonUp(0) && !m_isRequestingItem)
+						if (IsMouseUpZero() && !m_isRequestingItem)
                         {
                             Debug.Log("Mouse button released, drop the item");
                             HandleItemDrop(false, mousePos);
@@ -3350,7 +3367,7 @@ public class GUIManager : MonoBehaviour
                     //Handle mouse up if item is selected
                     if (m_currentDraggedItem != null)
                     {
-                        if (Input.GetMouseButtonUp(0) && !m_isRequestingItem)
+                        if (IsMouseUpZero() && !m_isRequestingItem)
                         {
                             Debug.Log("Mouse button released, drop the item");
                             HandleItemDrop(true, mousePos);
