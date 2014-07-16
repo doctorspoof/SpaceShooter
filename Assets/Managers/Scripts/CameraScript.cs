@@ -292,7 +292,7 @@ public class CameraScript : MonoBehaviour
 				Vector3 dir = targetPoint - this.transform.position;
 				dir.Normalize();
 
-				this.transform.position += dir * 18.5f * Time.deltaTime;
+				this.transform.position += dir * 26.5f * Time.deltaTime;
 			}
 			else
 			{
