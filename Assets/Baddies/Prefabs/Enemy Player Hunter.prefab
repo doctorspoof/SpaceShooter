@@ -850,7 +850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e312940f5c188749884f611168f43cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_recoilTime: .600000024
+  m_recoilTime: .25
   m_bulletRef: {fileID: 100000, guid: 36120e0dddd5c994d93acb41cdc6d3fc, type: 2}
   m_firePoints: []
   m_burstFireTime: 2
@@ -871,7 +871,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipTransform: {fileID: 0}
   shipRigidbody: {fileID: 0}
-  m_maxShipSpeed: 360
+  m_maxShipSpeed: 415
   m_currentShipSpeed: 0
   afterburnerIncreaseOfSpeed: 0
   afterburnerLength: 0
@@ -904,10 +904,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 100000, guid: 01af7ba42b275f346baf8f22959f0616, type: 2}
-  m_maximumHealth: 100
+  m_maximumHealth: 150
   m_currentHealth: 0
   m_pathToShieldObject: Composite Collider/Shield
-  m_maximumShield: 85
+  m_maximumShield: 115
   m_currentShield: 0
   m_shieldRechargeRate: 2
   m_timeToRechargeShield: 3

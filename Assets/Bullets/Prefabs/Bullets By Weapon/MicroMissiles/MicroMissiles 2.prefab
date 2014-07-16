@@ -158,7 +158,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_bulletDamage: 10
-  m_bulletMinDamage: 1
+  m_bulletMinDamage: 2
   m_damageType: 3
   m_bulletSpeed: 8
   m_bulletMinimumSpeed: 2.5
