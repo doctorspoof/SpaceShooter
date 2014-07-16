@@ -100,7 +100,6 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
-                Debug.Log("Attempting to increase size = " + (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
 
                 networkView.RPC("SetWormholeSize", RPCMode.All, (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
 
@@ -117,7 +116,6 @@ public class EnemySpawnPointScript : MonoBehaviour
             currentScalingTime += Time.deltaTime;
             if (currentScalingTime >= timeBeforeScalingWormhole)
             {
-                Debug.Log("Attempting to decrease size = " + (1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole)));
 
                 networkView.RPC("SetWormholeSize", RPCMode.All, 1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
 
@@ -275,6 +273,8 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (Network.isServer)
         {
+            enemiesWaitingToSpawn.Clear();  
+
             foreach (GroupedWaveInfo info in m_wavesToBeSpawned)
             {
                 for (int i = 0; i < info.wave.Length; ++i)

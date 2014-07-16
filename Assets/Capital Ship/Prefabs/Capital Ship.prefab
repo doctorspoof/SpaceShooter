@@ -2420,7 +2420,7 @@ MonoBehaviour:
   m_maximumHealth: 800
   m_currentHealth: 0
   m_pathToShieldObject: Composite Collider/Shield
-  m_maximumShield: 500
+  m_maximumShield: 5000000
   m_currentShield: 0
   m_shieldRechargeRate: 6
   m_timeToRechargeShield: 4
