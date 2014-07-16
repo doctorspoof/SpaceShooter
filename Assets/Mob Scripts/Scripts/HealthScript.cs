@@ -479,7 +479,9 @@ public class HealthScript : MonoBehaviour
 			{
 				killer.transform.root.GetComponent<PlayerControlScript>().AddSpaceBucks(this.GetComponent<EnemyScript>().GetBounty());
 			}
-            networkView.RPC("PropagateEntityDied", RPCMode.All);
+
+            if(Network.isServer)
+                networkView.RPC("PropagateEntityDied", RPCMode.All);
 			
 			if(m_DeathObjectRef != null)
 			{

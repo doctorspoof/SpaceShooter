@@ -120,8 +120,6 @@ public class Explode : MonoBehaviour
             Rigidbody body = fragmentOriginal.AddComponent<Rigidbody>();
             body.useGravity = false;
 
-            // clean up fragments
-            
 
             foreach(Fragment frag in fragments)
             {
