@@ -138,7 +138,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
-                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, enemiesWaitingToSpawn[i].location, activeTime);
+                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, activeTime, enemiesWaitingToSpawn[i].location);
 
                 // move the SpawnLocation from waitingToSpawn to beingSpawned
                 enemiesBeingSpawned.Add(spawn);
