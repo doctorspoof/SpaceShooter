@@ -3207,7 +3207,7 @@ public class GUIManager : MonoBehaviour
                         if (currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos))
+                            if (modR.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
@@ -3238,7 +3238,7 @@ public class GUIManager : MonoBehaviour
                         if (currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos))
+                            if (modR.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = cshipInv[i];
@@ -3321,7 +3321,7 @@ public class GUIManager : MonoBehaviour
                         if (currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos))
+                            if (modR.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
@@ -3349,7 +3349,7 @@ public class GUIManager : MonoBehaviour
                         if (currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos))
+                            if (modR.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = cshipInv[i];
