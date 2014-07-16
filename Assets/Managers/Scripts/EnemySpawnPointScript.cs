@@ -182,6 +182,8 @@ public class EnemySpawnPointScript : MonoBehaviour
 
         }
 
+        Debug.Log("enemiesWaitingToSpawn.Count = " + enemiesWaitingToSpawn.Count + " enemiesBeingSpawned.Count = " + enemiesBeingSpawned.Count);
+
         if (enemiesWaitingToSpawn.Count == 0 && enemiesBeingSpawned.Count == 0)
         {
             Activate(false);
@@ -265,16 +267,6 @@ public class EnemySpawnPointScript : MonoBehaviour
     void Activate(bool flag_)
     {
         spawnPointActive = flag_;
-
-        //setup with if statement incase any other code is needed
-        if (spawnPointActive)
-        {
-        }
-        else
-        {
-            // spawn point is idle
-            //networkView.RPC("PropagateDestroySpawnLocations", RPCMode.All, 0.0f);
-        }
     }
 
 
