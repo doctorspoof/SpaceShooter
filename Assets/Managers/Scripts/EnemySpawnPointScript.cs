@@ -17,7 +17,8 @@ public class GroupedWaveInfo
 
     public GameObject NextEnemy()
     {
-        return wave[currentPositionInWave++];
+        currentPositionInWave++;
+        return wave[currentPositionInWave - 1];
     }
 
     public bool Finished()
@@ -163,21 +164,17 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
+                GameObject enemy = (GameObject)Network.Instantiate(m_wavesToBeSpawned[0].NextEnemy(), spawn.location, this.transform.rotation, 0);
 
-                if (Network.isServer)
+                EnemyScript script = enemy.GetComponent<EnemyScript>();
+                m_wavesToBeSpawned[0].group.AddEnemyToGroup(script);
+
+                HealthScript health = enemy.GetComponent<HealthScript>();
+                health.SetModifier(modifier);
+
+                if (m_wavesToBeSpawned[0].Finished())
                 {
-                    GameObject enemy = (GameObject)Network.Instantiate(m_wavesToBeSpawned[0].NextEnemy(), spawn.location, this.transform.rotation, 0);
-
-                    EnemyScript script = enemy.GetComponent<EnemyScript>();
-                    m_wavesToBeSpawned[0].group.AddEnemyToGroup(script);
-
-                    HealthScript health = enemy.GetComponent<HealthScript>();
-                    health.SetModifier(modifier);
-
-                    if (m_wavesToBeSpawned[0].Finished())
-                    {
-                        m_wavesToBeSpawned.RemoveAt(0);
-                    }
+                    m_wavesToBeSpawned.RemoveAt(0);
                 }
 
                 enemiesBeingSpawned.RemoveAt(i);
