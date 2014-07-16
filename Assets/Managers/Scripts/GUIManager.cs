@@ -2294,7 +2294,7 @@ public class GUIManager : MonoBehaviour
         }
 
 		//Missiles
-		if(m_pingedMissiles.Length == 0)
+		if(m_pingedMissiles != null && m_pingedMissiles.Length != 0)
 		{
 			foreach(GameObject bullet in m_pingedMissiles)
 			{
@@ -2480,7 +2480,7 @@ public class GUIManager : MonoBehaviour
         }
 
 		//Missiles
-		if(m_pingedMissiles.Length == 0)
+		if(m_pingedMissiles != null && m_pingedMissiles.Length != 0)
 		{
 			foreach(GameObject bullet in m_pingedMissiles)
 			{
@@ -2581,7 +2581,7 @@ public class GUIManager : MonoBehaviour
         }
 
 		//Missiles
-		if(m_pingedMissiles.Length == 0)
+		if(m_pingedMissiles != null && m_pingedMissiles.Length != 0)
 		{
 			foreach(GameObject bullet in m_pingedMissiles)
 			{
