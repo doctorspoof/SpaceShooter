@@ -30,9 +30,7 @@ public class Explode : MonoBehaviour
 {
 
     [SerializeField]
-    bool explodeOnDeath;
-    [SerializeField]
-    float removeShipAfterSeconds = -1;
+    float removeShipAfterSeconds = 0;
 
     [SerializeField]
     Explosion[] explosions;
@@ -42,20 +40,12 @@ public class Explode : MonoBehaviour
     [SerializeField]
     Fragment[] fragments;
 
-    void OnDestroy()
-    {
-        if (explodeOnDeath)
-        {
-            Fire();
-        }
-    }
-
     public void Fire()
     {
         if (!exploding)
         {
             exploding = true;
-            if (!explodeOnDeath)
+            if (removeShipAfterSeconds > 0)
             {
                 DisableAllNonEssentialComponents();
             }
@@ -134,7 +124,7 @@ public class Explode : MonoBehaviour
 
                 Rigidbody rigidbody = fragment.GetComponent<Rigidbody>();
 
-                Vector3 force = frag.directionToApplyForce * Random.Range(0.5f, 1.0f) * 50;
+                Vector3 force = transform.rotation * frag.directionToApplyForce * Random.Range(0.5f, 1.0f) * 50;
                 rigidbody.AddForce(force);
 
                 rigidbody.AddTorque(new Vector3(0, 0, Random.Range(-10f, 10f)));
@@ -150,8 +140,7 @@ public class Explode : MonoBehaviour
     private void DestroyEntity()
     {
         StartFragmentSequence();
-		if(Network.isServer)
-        	Network.Destroy(gameObject);
+        Destroy(gameObject);
     }
 
     public float GetTimeUntilLastExplosionStarts()

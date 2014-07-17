@@ -23,6 +23,7 @@ public class GroupedWaveInfo
 
     public bool Finished()
     {
+        
         return currentPositionInWave >= wave.Length;
     }
 
@@ -170,6 +171,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
                 if (m_wavesToBeSpawned[0].Finished())
                 {
+                    Debug.Log("_____________ FINISHED ____________________________________");
                     m_wavesToBeSpawned.RemoveAt(0);
                 }
 

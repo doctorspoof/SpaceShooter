@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 public enum DamageType
 {
-	Physical = 0,
-	Energy = 1,
-	Laser = 2,
-	Explosive = 3
+    Physical = 0,
+    Energy = 1,
+    Laser = 2,
+    Explosive = 3
 }
 
 [RequireComponent(typeof(Rigidbody))]
@@ -27,7 +27,7 @@ public class BasicBulletScript : MonoBehaviour
     int m_bulletDamage = 1;								// The maximum damage dealt by the bullet
     [SerializeField]
     int m_bulletMinDamage = 1;								// The minimum damage, used in AOE and piercing falloff
-	public DamageType m_damageType;
+    public DamageType m_damageType;
 
     // Speed and Lifetime
     [SerializeField]
@@ -200,62 +200,62 @@ public class BasicBulletScript : MonoBehaviour
 
     // Handle bullet collision including all of its intricacies
     void OnTriggerEnter(Collider other)
-	{
-		if (Network.isServer && (!other.isTrigger || (other.gameObject.layer == Layers.enemyDestructibleBullet)))
-		{
-			switch (other.gameObject.layer)
-			{
-				// Do nothing is layer isn't applicable
-				default:
-					break;
-					
-				// Bullets only need to interact with HealthScript containing GameObject's
-				case Layers.player:
-				case Layers.capital:
-				case Layers.enemy:
-				case Layers.enemyDestructibleBullet:
-				case Layers.asteroid:
+    {
+        if (Network.isServer && (!other.isTrigger || (other.gameObject.layer == Layers.enemyDestructibleBullet)))
+        {
+            switch (other.gameObject.layer)
+            {
+                // Do nothing is layer isn't applicable
+                default:
+                    break;
+
+                // Bullets only need to interact with HealthScript containing GameObject's
+                case Layers.player:
+                case Layers.capital:
+                case Layers.enemy:
+                case Layers.enemyDestructibleBullet:
+                case Layers.asteroid:
                 case Layers.enemyCollide:
-				{
-					try
-					{
-						if (m_isAOE)
-						{
-							DamageAOE();
-						}
-						
-						else
-						{
-							// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-							DamageMob (other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);					
-						}
-					}	
+                    {
+                        try
+                        {
+                            if (m_isAOE)
+                            {
+                                DamageAOE();
+                            }
 
-					catch (System.Exception error)
-					{
-						Debug.LogError ("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
-					}
+                            else
+                            {
+                                // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+                                DamageMob(other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);
+                            }
+                        }
 
-					// This should absolutely always run and should never ever not run ever, literally ever.
-					finally 
-					{
-						// Piercing bullets continue until the end of their lifetime.
-						if (!m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
-						{
-							Network.Destroy (gameObject);
-						}
+                        catch (System.Exception error)
+                        {
+                            Debug.LogError("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
+                        }
 
-						else
-						{
-							Debug.Log ("Didn't destroy " + gameObject.name);
-						}
-					}
-					
-					break;
-				}
-			}
-		}
-	}
+                        // This should absolutely always run and should never ever not run ever, literally ever.
+                        finally
+                        {
+                            // Piercing bullets continue until the end of their lifetime.
+                            if (!m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
+                            {
+                                Network.Destroy(gameObject);
+                            }
+
+                            else
+                            {
+                                Debug.Log("Didn't destroy " + gameObject.name);
+                            }
+                        }
+
+                        break;
+                    }
+            }
+        }
+    }
 
     // This should be called at Awake() or Start() otherwise AoE and homing functionality won't work correctly
     void LayerMaskSetup()
@@ -341,9 +341,11 @@ public class BasicBulletScript : MonoBehaviour
         if (m_isAOE)
         {
             DamageAOE();
-        }
 
-        if (Network.isServer)
+            Explode explodeComponent = GetComponent<Explode>();
+            explodeComponent.Fire();
+        }
+        else if (Network.isServer)
         {
             Network.Destroy(gameObject);
         }
