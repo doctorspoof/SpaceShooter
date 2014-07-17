@@ -1292,7 +1292,7 @@ Prefab:
       objectReference: {fileID: 1337935894}
     - target: {fileID: 11400000, guid: ce373fba91905954f861555449eb39fa, type: 2}
       propertyPath: m_shopType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
@@ -3564,6 +3564,10 @@ Prefab:
       propertyPath: m_Observed
       value: 
       objectReference: {fileID: 779021244}
+    - target: {fileID: 11400000, guid: ce373fba91905954f861555449eb39fa, type: 2}
+      propertyPath: m_shopType
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_RootGameObject: {fileID: 779021240}
@@ -3750,6 +3754,10 @@ Prefab:
       propertyPath: m_Observed
       value: 
       objectReference: {fileID: 1339814084}
+    - target: {fileID: 11400000, guid: ce373fba91905954f861555449eb39fa, type: 2}
+      propertyPath: m_shopType
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_RootGameObject: {fileID: 1339814083}
@@ -4318,7 +4326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 1
+  m_shopType: 0
   m_dockPoint: {fileID: 1204770483}
   m_canStockWeapons: 0
   m_weaponRarityMod: 1.5
@@ -4668,7 +4676,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 1
+  m_shopType: 0
   m_dockPoint: {fileID: 2063122409}
   m_canStockWeapons: 1
   m_weaponRarityMod: 2
@@ -5961,7 +5969,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 0
   removeShipAfterSeconds: 3.5999999
   explosions:
   - explosionPrefabs:
@@ -6658,6 +6665,10 @@ Prefab:
       propertyPath: m_Observed
       value: 
       objectReference: {fileID: 61916495}
+    - target: {fileID: 11400000, guid: ce373fba91905954f861555449eb39fa, type: 2}
+      propertyPath: m_shopType
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_RootGameObject: {fileID: 61916491}
@@ -8299,7 +8310,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 0
   removeShipAfterSeconds: 3.20000005
   explosions:
   - explosionPrefabs:
@@ -8841,7 +8851,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 0
   removeShipAfterSeconds: 3.5
   explosions:
   - explosionPrefabs:
@@ -9041,7 +9050,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 1
+  m_shopType: 0
   m_dockPoint: {fileID: 1608623262}
   m_canStockWeapons: 1
   m_weaponRarityMod: 1
@@ -9199,7 +9208,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 1
+  m_shopType: 0
   m_dockPoint: {fileID: 1256501225}
   m_canStockWeapons: 0
   m_weaponRarityMod: 1.5
@@ -10407,7 +10416,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 0
   removeShipAfterSeconds: 3.29999995
   explosions:
   - explosionPrefabs:
@@ -11978,6 +11986,8 @@ MonoBehaviour:
   m_reloadBar: {fileID: 2800000, guid: 31ad552df7ddb2644bc087097e05976a, type: 3}
   m_currentWeaponNeedsLockon: 0
   m_isOnFollowMap: 1
+  m_shopBaseTexture: {fileID: 2800000, guid: 225c214fb08635948a187813c1f8ec6f, type: 3}
+  m_smallShopTexture: {fileID: 2800000, guid: 48917559ca6eef74abb7ce749d568413, type: 3}
   m_mapOverlay: {fileID: 2800000, guid: 3d949cc67cbce174cbb4d136e4837ac3, type: 3}
   m_selfPBlob: {fileID: 2800000, guid: c7f183f0398bb5a41a901bae350820d9, type: 3}
   m_otherPBlob: {fileID: 2800000, guid: 09202667be749984cb4cc9a180a146a6, type: 3}
@@ -14571,6 +14581,10 @@ Prefab:
       propertyPath: m_Observed
       value: 
       objectReference: {fileID: 800427924}
+    - target: {fileID: 11400000, guid: ce373fba91905954f861555449eb39fa, type: 2}
+      propertyPath: m_shopType
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_RootGameObject: {fileID: 800427920}
@@ -15112,6 +15126,14 @@ Prefab:
       propertyPath: m_hoverBoxTextStyle.m_Padding.m_Bottom
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
+      propertyPath: m_shopBaseTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 225c214fb08635948a187813c1f8ec6f, type: 3}
+    - target: {fileID: 11400000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
+      propertyPath: m_smallShopTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 48917559ca6eef74abb7ce749d568413, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
   m_RootGameObject: {fileID: 1614308795}
