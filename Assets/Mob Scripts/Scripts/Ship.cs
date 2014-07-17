@@ -81,7 +81,9 @@ public class Ship : MonoBehaviour
 
         shipTransform = transform;
         shipRigidbody = rigidbody;
-        SetShipSizes();
+
+        if (GetShipWidth() == 0 || GetShipHeight() == 0)
+            SetShipSizes();
         //ResetThrusters();
     }
 
@@ -120,8 +122,8 @@ public class Ship : MonoBehaviour
 
             float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
             float clampedDot = Mathf.Clamp(Vector2.Dot(shipTransform.up, shipTransform.rigidbody.velocity.normalized), 0, 1);
-            
-			SetThrusterPercentage(ratio * clampedDot);
+
+            SetThrusterPercentage(ratio * clampedDot);
         }
 
     }
@@ -177,6 +179,11 @@ public class Ship : MonoBehaviour
     /// <returns></returns>
     public float GetMaxSize()
     {
+        if (GetShipWidth() == 0 || GetShipHeight() == 0)
+        {
+            SetShipSizes();
+        }
+
         return Mathf.Sqrt(Mathf.Pow(GetShipWidth(), 2) + Mathf.Pow(GetShipHeight(), 2));
     }
 
@@ -248,61 +255,61 @@ public class Ship : MonoBehaviour
 
     public void FireAfterburners()
     {
-		networkView.RPC ("PropagateFireAfterburners", RPCMode.All);
+        networkView.RPC("PropagateFireAfterburners", RPCMode.All);
     }
-	[RPC]
-	void PropagateFireAfterburners()
-	{
-		if (!afterburnersFiring && afterburnersRecharged)
-		{
-			afterburnersFiring = true;
-			afterburnersRecharged = false;
-			afterburnersHolder.gameObject.SetActive(true);
-		}
-	}
-
-	public void AfterburnerFinished()
+    [RPC]
+    void PropagateFireAfterburners()
     {
-		networkView.RPC ("PropagateAfterburnerFinished", RPCMode.All);
+        if (!afterburnersFiring && afterburnersRecharged)
+        {
+            afterburnersFiring = true;
+            afterburnersRecharged = false;
+            afterburnersHolder.gameObject.SetActive(true);
+        }
     }
-	[RPC]
-	void PropagateAfterburnerFinished()
-	{
-		currentAfterburnerTime = 0;
-		afterburnersFiring = false;
-		afterburnersRecharged = false;
-		
-		afterburnersHolder.gameObject.SetActive(false);
-	}
-	
-	public virtual float GetMinimumWeaponRange()
+
+    public void AfterburnerFinished()
+    {
+        networkView.RPC("PropagateAfterburnerFinished", RPCMode.All);
+    }
+    [RPC]
+    void PropagateAfterburnerFinished()
+    {
+        currentAfterburnerTime = 0;
+        afterburnersFiring = false;
+        afterburnersRecharged = false;
+
+        afterburnersHolder.gameObject.SetActive(false);
+    }
+
+    public virtual float GetMinimumWeaponRange()
     {
         return weaponRange;
     }
 
-	public void SetThrusterPercentage(float percentage)
-	{
-		networkView.RPC ("PropagateNewThrusterPercentage", RPCMode.All, percentage);
-	}
-	[RPC]
-	void PropagateNewThrusterPercentage(float percentage)
-	{
-		foreach (Thruster thruster in thrusters)
-		{
-			thruster.SetPercentage(percentage);
-		}
-	}
-	public void ResetThrusters()
+    public void SetThrusterPercentage(float percentage)
     {
-		networkView.RPC ("PropagateResetThrusters", RPCMode.All);
+        networkView.RPC("PropagateNewThrusterPercentage", RPCMode.All, percentage);
     }
-	[RPC]
-	void PropagateResetThrusters()
-	{
-		ResetThrusterObjects();
-		maxThrusterVelocitySeen = 0;
-	}
-	
+    [RPC]
+    void PropagateNewThrusterPercentage(float percentage)
+    {
+        foreach (Thruster thruster in thrusters)
+        {
+            thruster.SetPercentage(percentage);
+        }
+    }
+    public void ResetThrusters()
+    {
+        networkView.RPC("PropagateResetThrusters", RPCMode.All);
+    }
+    [RPC]
+    void PropagateResetThrusters()
+    {
+        ResetThrusterObjects();
+        maxThrusterVelocitySeen = 0;
+    }
+
     private Transform GetThrusterHolder()
     {
         return RecursiveSearchForChild(shipTransform, "Thrusters");

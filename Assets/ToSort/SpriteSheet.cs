@@ -109,4 +109,24 @@ public class SpriteSheet : MonoBehaviour
     {
         shouldDieAfterFirstRun = flag_;
     }
+
+    public void SetCurrentFrame(int index_)
+    {
+        if(_myRenderer == null)
+        {
+            Start();
+        }
+
+        m_currentIndex = index_;
+
+        int uIndex = m_currentIndex % _uvTieX;
+        int vIndex = m_currentIndex / _uvTieY;
+
+        // build offset
+        // v coordinate is the bottom of the image in opengl so we need to invert.
+        Vector2 offset = new Vector2(uIndex * _size.x, 1.0f - _size.y - vIndex * _size.y);
+
+        _myRenderer.material.SetTextureOffset("_MainTex", offset);
+        _myRenderer.material.SetTextureScale("_MainTex", _size);
+    }
 }

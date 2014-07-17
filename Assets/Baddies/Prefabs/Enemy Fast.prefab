@@ -492,8 +492,8 @@ MonoBehaviour:
   m_ramDamageMultiplier: 3
   maunuallySetWidthAndHeight: 0
   weaponRange: 0
-  m_shipWidth: 0
-  m_shipHeight: 0
+  m_shipWidth: .5
+  m_shipHeight: 1.20000005
   shipID: -1
   m_bountyAmount: 15
   m_hasTurrets: 0
@@ -552,7 +552,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 0
+  primitiveQuad: {fileID: 0}
   removeShipAfterSeconds: -1
   explosions:
   - explosionPrefabs:

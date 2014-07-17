@@ -236,118 +236,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1558293152}
---- !u!1 &33311744
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 33311749}
-  - 114: {fileID: 33311748}
-  - 33: {fileID: 33311746}
-  - 23: {fileID: 33311745}
-  - 148: {fileID: 33311747}
-  - 54: {fileID: 33311750}
-  m_Layer: 2
-  m_Name: EnemySpawnPoint
-  m_TagString: SpawnPoint
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!23 &33311745
-Renderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 2300000, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 33311744}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_LightmapIndex: 255
-  m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
-  m_Materials:
-  - {fileID: 2100000, guid: cc87bfedcfb08914da2727f94880c20e, type: 2}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 0
-  m_LightProbeAnchor: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_SortingLayerID: 0
---- !u!33 &33311746
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 3300000, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 33311744}
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!148 &33311747
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 33311744}
-  m_Enabled: 1
-  m_StateSynchronization: 0
-  m_Observed: {fileID: 33311749}
-  m_ViewID:
-    m_ID: 24
-    m_Type: 1
---- !u!114 &33311748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400000, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 33311744}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
---- !u!4 &33311749
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 33311744}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -243.425278, y: -154.492508, z: 10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 872291340}
-  m_Father: {fileID: 247706625}
---- !u!54 &33311750
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 5400000, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 33311744}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: .200000003
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 62
-  m_CollisionDetection: 0
 --- !u!1 &51761967
 GameObject:
   m_ObjectHideFlags: 0
@@ -689,6 +577,7 @@ MonoBehaviour:
   activeTime: 15
   spawnPointActive: 0
   spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  finalEffect: {fileID: 0}
   maxTimeBetweenFirstAndLastSpawn: 10
   wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
   timeBeforeScalingWormhole: 3
@@ -866,7 +755,6 @@ Transform:
   - {fileID: 1607990018}
   - {fileID: 539799790}
   - {fileID: 936720315}
-  - {fileID: 33311749}
   - {fileID: 1087065111}
   - {fileID: 520790229}
   m_Father: {fileID: 0}
@@ -1536,6 +1424,7 @@ MonoBehaviour:
   activeTime: 15
   spawnPointActive: 0
   spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  finalEffect: {fileID: 0}
   maxTimeBetweenFirstAndLastSpawn: 10
   wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
   timeBeforeScalingWormhole: 3
@@ -1825,6 +1714,7 @@ MonoBehaviour:
   activeTime: 15
   spawnPointActive: 0
   spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  finalEffect: {fileID: 0}
   maxTimeBetweenFirstAndLastSpawn: 10
   wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
   timeBeforeScalingWormhole: 3
@@ -2549,6 +2439,7 @@ MonoBehaviour:
   activeTime: 15
   spawnPointActive: 0
   spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  finalEffect: {fileID: 0}
   maxTimeBetweenFirstAndLastSpawn: 10
   wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
   timeBeforeScalingWormhole: 3
@@ -3762,84 +3653,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1558293152}
---- !u!1 &872291339
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 100002, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 872291340}
-  - 33: {fileID: 872291343}
-  - 23: {fileID: 872291342}
-  - 114: {fileID: 872291341}
-  m_Layer: 2
-  m_Name: GlowEffect
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &872291340
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 400002, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 872291339}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -.0500000007}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 33311749}
---- !u!114 &872291341
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400002, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 872291339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
-  m_shouldReverse: 0
-  m_isForwards: 1
-  shouldDieAfterFirstRun: 0
---- !u!23 &872291342
-Renderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 2300002, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 872291339}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_LightmapIndex: 255
-  m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
-  m_Materials:
-  - {fileID: 2100000, guid: 1beb684eebc4cc74e9165a228e89f942, type: 2}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_UseLightProbes: 0
-  m_LightProbeAnchor: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_SortingLayerID: 0
---- !u!33 &872291343
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 3300002, guid: 3673779886a3e6945ae0e81112a29faf,
-    type: 2}
-  m_PrefabInternal: {fileID: 1422460323}
-  m_GameObject: {fileID: 872291339}
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &936720310
 GameObject:
   m_ObjectHideFlags: 0
@@ -3918,6 +3731,7 @@ MonoBehaviour:
   activeTime: 15
   spawnPointActive: 0
   spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  finalEffect: {fileID: 0}
   maxTimeBetweenFirstAndLastSpawn: 10
   wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
   timeBeforeScalingWormhole: 3
@@ -4587,6 +4401,7 @@ MonoBehaviour:
   activeTime: 15
   spawnPointActive: 0
   spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  finalEffect: {fileID: 0}
   maxTimeBetweenFirstAndLastSpawn: 10
   wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
   timeBeforeScalingWormhole: 3
@@ -6276,62 +6091,6 @@ Transform:
   - {fileID: 258042574}
   - {fileID: 1609362648}
   m_Father: {fileID: 1993208354}
---- !u!1001 &1422460323
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 247706625}
-    m_Modifications:
-    - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -243.425278
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: -154.492508
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_ViewID.m_ID
-      value: 24
-      objectReference: {fileID: 0}
-    - target: {fileID: 14800000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_ViewID.m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -.0500000007
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
-  m_RootGameObject: {fileID: 33311744}
-  m_IsPrefabParent: 0
-  m_IsExploded: 1
 --- !u!1 &1428634412
 GameObject:
   m_ObjectHideFlags: 0
@@ -6981,6 +6740,7 @@ MonoBehaviour:
   activeTime: 15
   spawnPointActive: 0
   spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  finalEffect: {fileID: 0}
   maxTimeBetweenFirstAndLastSpawn: 10
   wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
   timeBeforeScalingWormhole: 3

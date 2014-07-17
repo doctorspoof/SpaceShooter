@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 public class SpawnLocation
 {
-    public float timeUntilStart, currentTime = 0;
+    public float timeUntilStart, currentTime = 0, scale;
     public Vector3 location;
+    public GameObject prefab;
+    public EnemyGroup parentGroup;
 }
 
 public class GroupedWaveInfo
@@ -43,7 +45,7 @@ public class EnemySpawnPointScript : MonoBehaviour
     bool spawnPointActive = false;
 
     [SerializeField]
-    GameObject spawnEffect;
+    GameObject spawnEffect, finalEffect;
     [SerializeField]
     float maxTimeBetweenFirstAndLastSpawn;
 
@@ -79,13 +81,16 @@ public class EnemySpawnPointScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (spawnPointActive)
+        {
+            rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
+        }
+
         if (Network.isServer)
         {
             if (spawnPointActive)
             {
                 CheckSpawning();
-
-                rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
             }
 
             CheckScalingWormhole();
@@ -139,7 +144,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
-                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, activeTime, enemiesWaitingToSpawn[i].location);
+                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, activeTime, enemiesWaitingToSpawn[i].location, enemiesWaitingToSpawn[i].scale);
 
                 // move the SpawnLocation from waitingToSpawn to beingSpawned
                 enemiesBeingSpawned.Add(spawn);
@@ -160,18 +165,13 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
-                GameObject enemy = (GameObject)Network.Instantiate(m_wavesToBeSpawned[0].NextEnemy(), spawn.location, this.transform.rotation, 0);
+                GameObject enemy = (GameObject)Network.Instantiate(spawn.prefab, spawn.location, this.transform.rotation, 0);
 
                 EnemyScript script = enemy.GetComponent<EnemyScript>();
-                m_wavesToBeSpawned[0].group.AddEnemyToGroup(script);
+                spawn.parentGroup.AddEnemyToGroup(script);
 
                 HealthScript health = enemy.GetComponent<HealthScript>();
                 health.SetModifier(modifier);
-
-                if (m_wavesToBeSpawned[0].Finished())
-                {
-                    m_wavesToBeSpawned.RemoveAt(0);
-                }
 
                 enemiesBeingSpawned.RemoveAt(i);
 
@@ -200,7 +200,6 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             Activate(true);
         }
-
     }
 
 
@@ -284,10 +283,17 @@ public class EnemySpawnPointScript : MonoBehaviour
                     /*networkView.RPC("PropagateNewSpawnLocation", RPCMode.All, Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole,
                                     this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));*/
 
+                    Ship shipComponent = info.wave[i].GetComponent<Ship>();
+
                     NewSpawnLocation(Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole,
-                                    this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0));
+                                    this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0),
+                                    shipComponent.GetMaxSize(),
+                                    info.wave[i],
+                                    info.group);
                 }
             }
+
+            m_wavesToBeSpawned.Clear();
         }
     }
 
@@ -306,16 +312,20 @@ public class EnemySpawnPointScript : MonoBehaviour
     //    enemiesBeingSpawned.Clear();
     //}
 
-    private void NewSpawnLocation(float timeUntilStart_, Vector3 location_)
+    private void NewSpawnLocation(float timeUntilStart_, Vector3 location_, float scale_, GameObject prefab_, EnemyGroup parentGroup_)
     {
-        enemiesWaitingToSpawn.Add(new SpawnLocation { timeUntilStart = timeUntilStart_, location = location_ });
+        enemiesWaitingToSpawn.Add(new SpawnLocation { timeUntilStart = timeUntilStart_, location = location_, scale = scale_, prefab = prefab_, parentGroup = parentGroup_});
     }
 
     [RPC]
-    private void PropagateNewSpawnEffect(float timeTillDestroy_, Vector3 location_)
+    private void PropagateNewSpawnEffect(float timeTillDestroy_, Vector3 location_, float scale_)
     {
         GameObject spawnedEffect = (GameObject)Instantiate(spawnEffect, location_, Quaternion.identity);
-        Destroy(spawnedEffect, timeTillDestroy_);
+        spawnedEffect.transform.localScale = new Vector3(scale_, scale_, 1);
+
+        RunFinalSpawnEffect script = spawnedEffect.GetComponent<RunFinalSpawnEffect>();
+        script.Run(timeTillDestroy_ - 1.3f);
+        Destroy(spawnedEffect, timeTillDestroy_ - 0.2f);
     }
 
     public void SetModifier(float modifier_)
