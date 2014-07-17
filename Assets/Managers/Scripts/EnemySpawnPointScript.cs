@@ -23,7 +23,7 @@ public class GroupedWaveInfo
 
     public bool Finished()
     {
-        
+
         return currentPositionInWave >= wave.Length;
     }
 
@@ -79,19 +79,18 @@ public class EnemySpawnPointScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (spawnPointActive)
+        if (Network.isServer)
         {
-            if (Network.isServer)
+            if (spawnPointActive)
             {
                 CheckSpawning();
+
+                rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
             }
 
-
-            rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
+            CheckScalingWormhole();
         }
 
-        if (Network.isServer)
-            CheckScalingWormhole();
     }
 
     void CheckScalingWormhole()
@@ -171,7 +170,6 @@ public class EnemySpawnPointScript : MonoBehaviour
 
                 if (m_wavesToBeSpawned[0].Finished())
                 {
-                    Debug.Log("_____________ FINISHED ____________________________________");
                     m_wavesToBeSpawned.RemoveAt(0);
                 }
 
@@ -191,14 +189,18 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     public void AddToSpawnList(List<WaveInfo> waves_)
     {
-        foreach (WaveInfo info in waves_)
+        if (Network.isServer)
         {
-            m_wavesToBeSpawned.Add(CreateGroupedWaveInfo(info));
+            foreach (WaveInfo info in waves_)
+            {
+                m_wavesToBeSpawned.Add(CreateGroupedWaveInfo(info));
+            }
+
+            GenerateSpawnLocations();
+
+            Activate(true);
         }
 
-        GenerateSpawnLocations();
-
-        Activate(true);
     }
 
 
@@ -273,7 +275,7 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         if (Network.isServer)
         {
-            enemiesWaitingToSpawn.Clear();  
+            enemiesWaitingToSpawn.Clear();
 
             foreach (GroupedWaveInfo info in m_wavesToBeSpawned)
             {
