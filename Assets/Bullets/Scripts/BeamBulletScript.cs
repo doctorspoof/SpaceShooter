@@ -162,6 +162,11 @@ public class BeamBulletScript : MonoBehaviour
 					{
 						health.DamageMob (damage, firer, gameObject);
 					}
+
+					else
+					{
+						Debug.LogError ("Can't find HealthScript on " + mob.name);
+					}
 				}
 			}
 		}
