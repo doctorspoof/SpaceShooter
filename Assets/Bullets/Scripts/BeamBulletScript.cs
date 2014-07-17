@@ -6,17 +6,13 @@ public class BeamBulletScript : MonoBehaviour
 {
 	/// Unity modifiable values
 	// Damage
-	[SerializeField] int m_beamDamage = 30; 		// The beam damage dealt per second
-	public DamageType m_damageType;
-	public float m_beamLength = 5;					// How long the beam should be in localScale.y
+	[SerializeField] int m_beamDamage = 30; 			// The beam damage dealt per second
+	public DamageType m_damageType = DamageType.Laser;	// The type of damage this object deals, used for shading
+	public float m_beamLength = 5;						// How long the beam should be in localScale.y
 
-	public float GetDamage()
-	{
-		return m_beamDamage;
-	}
 
 	// Impact attributes
-	[SerializeField] float m_impactForce = 2.5f;	// The amount of force to be applied when hitting a target
+	[SerializeField] float m_impactForce = 2.5f;		// The amount of force to be applied when hitting a target
 	
 	
 	/// Internal data
@@ -32,6 +28,12 @@ public class BeamBulletScript : MonoBehaviour
 	
 	
 	/// Properties, getters and setters
+	public float GetDamage()
+	{
+		return m_beamDamage;
+	}
+
+
 	// Adjusts the local offset
 	public void SetOffset (Vector3 offset)
 	{
