@@ -86,7 +86,7 @@ MonoBehaviour:
   m_beamDamage: 425
   m_damageType: 2
   m_beamLength: 20
-  m_impactForce: 25
+  m_impactForce: 100
   firer: {fileID: 0}
 --- !u!114 &11400002
 MonoBehaviour:
