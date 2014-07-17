@@ -23,55 +23,55 @@ public class BasicBulletScript : MonoBehaviour
 
     /// Unity modifiable values
     // Bullet damage
-    [SerializeField]
-    int m_bulletDamage = 1;								// The maximum damage dealt by the bullet
-    [SerializeField]
-    int m_bulletMinDamage = 1;								// The minimum damage, used in AOE and piercing falloff
+    [SerializeField] 
+    int m_bulletDamage = 1;			                // The maximum damage dealt by the bullet
+    [SerializeField] 
+    int m_bulletMinDamage = 1;		                // The minimum damage, used in AOE and piercing falloff
     public DamageType m_damageType;
 
     // Speed and Lifetime
     [SerializeField]
-    float m_bulletSpeed = 2.5f;							// How fast the bullet should travel
+    float m_bulletSpeed = 2.5f;	    	            // How fast the bullet should travel
     [SerializeField]
-    float m_bulletMinimumSpeed = 2.5f;						// The minimum speed after modifiers
+    float m_bulletMinimumSpeed = 2.5f;              // The minimum speed after modifiers
     [SerializeField, Range(0f, 60f)]
-    float m_bulletMaxLifetime = 1f;		// How long the bullet can survive before destroying itself
+    float m_bulletMaxLifetime = 1f;		            // How long the bullet can survive before destroying itself
 
     // Self-propulsion
     [SerializeField]
-    bool m_isSelfPropelled = false;						// If a bullet is self propelled, it should only be affect initially by the player's move speed
+    bool m_isSelfPropelled = false;		            // If a bullet is self propelled, it should only be affect initially by the player's move speed
 
     // Piercing attributes
     [SerializeField]
-    bool m_isPiercing = false;								// Whether the bullet should pierce through enemy hulls or not
+    bool m_isPiercing = false;			            // Whether the bullet should pierce through enemy hulls or not
     [SerializeField, Range(0, 100)]
-    int m_maxPierceHits = 5;				// How many times the bullet can pierce through targets
+    int m_maxPierceHits = 5;				        // How many times the bullet can pierce through targets
     [SerializeField, Range(0f, 1f)]
-    float m_pierceDamageModifier = 0.4f;	// Reduces the bullet damage by this factor
+    float m_pierceDamageModifier = 0.4f;	        // Reduces the bullet damage by this factor
     [SerializeField, Range(0f, 1f)]
-    float m_pierceSpeedModifier = 0.7f;	// Reduces the bullet speed by this factor
+    float m_pierceSpeedModifier = 0.7f;	            // Reduces the bullet speed by this factor
 
     // Homing attributes
     [SerializeField]
-    bool m_isHoming = false;								// Whether the bullet should track targets or not
+    bool m_isHoming = false;				        // Whether the bullet should track targets or not
     [SerializeField]
-    float m_homingRange = 5.0f;							// How far away a target should be tracked
+    float m_homingRange = 5.0f;				        // How far away a target should be tracked
     [SerializeField]
-    float m_homingRotateSpeed = 0.5f;						// How quickly the bullet should rotate to chase its target
+    float m_homingRotateSpeed = 0.5f;		        // How quickly the bullet should rotate to chase its target
 
     // Area of effect attributes
     [SerializeField]
-    bool m_isAOE = false;									// Whether the bullet should damage an area or not
+    bool m_isAOE = false;							// Whether the bullet should damage an area or not
     [SerializeField]
-    Accuracy m_aoeDamageAccuracy = Accuracy.High;			// How accurate the AoE damage should be based on the enemies distance
+    Accuracy m_aoeDamageAccuracy = Accuracy.High;	// How accurate the AoE damage should be based on the enemies distance
     [SerializeField, Range(0f, 100f)]
-    float m_aoeRange = 2f;				// How far away the enemies can be from the explosion
+    float m_aoeRange = 2f;				            // How far away the enemies can be from the explosion
     [SerializeField, Range(0f, 100f)]
-    float m_aoeMaxDamageRange = 0.25f;	// The margin between the explosion and the target for them to receive maximum damage
+    float m_aoeMaxDamageRange = 0.25f;	            // The margin between the explosion and the target for them to receive maximum damage
     [SerializeField, Range(0f, 1000f)]
-    float m_aoeMaxExplosiveForce = 15f;	// How much force can be applied
+    float m_aoeMaxExplosiveForce = 15f;	            // How much force can be applied
     [SerializeField, Range(0f, 1000f)]
-    float m_aoeMinExplosiveForce = 5f;	// The minimum amount of force which must be applied
+    float m_aoeMinExplosiveForce = 5f;	            // The minimum amount of force which must be applied
 
 
 
@@ -85,7 +85,7 @@ public class BasicBulletScript : MonoBehaviour
     int m_aoeMask = 0;										// The layer mask used for AoE functionality, it gets set up at the same time as m_homingMask
 
     [HideInInspector]
-    public GameObject firer = null;		// A reference to which GameObject fired the bullet
+    public GameObject firer = null;		                    // A reference to which GameObject fired the bullet
     public GameObject m_homingTarget = null;				// A reference to the targetted enemy for homing purposes
     List<GameObject> m_pastHits = new List<GameObject>();	// Keeps a reference to GameObject's that have been damaged previously, solves composite collider issues
 
@@ -192,8 +192,11 @@ public class BasicBulletScript : MonoBehaviour
             m_currentLifetime += Time.deltaTime;
             if (m_currentLifetime >= m_bulletMaxLifetime)
             {
-                DetonateBullet();
-            }
+                if (Network.isServer)
+				{
+					DetonateBullet();
+				}
+			}
         }
     }
 
@@ -201,7 +204,7 @@ public class BasicBulletScript : MonoBehaviour
     // Handle bullet collision including all of its intricacies
     void OnTriggerEnter(Collider other)
     {
-        if (Network.isServer && (!other.isTrigger || (other.gameObject.layer == Layers.enemyDestructibleBullet)))
+        if (Network.isServer && (!other.isTrigger || other.gameObject.layer == Layers.enemyDestructibleBullet))
         {
             switch (other.gameObject.layer)
             {
@@ -216,43 +219,38 @@ public class BasicBulletScript : MonoBehaviour
                 case Layers.enemyDestructibleBullet:
                 case Layers.asteroid:
                 case Layers.enemyCollide:
-                    {
-                        try
-                        {
-                            if (m_isAOE)
-                            {
-                                DamageAOE();
-                            }
+	            {
+	                try
+	                {
+	                    if (!m_isAOE)
+	                    {
+	                        // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+	                        DamageMob(other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);
+	                    }
+	                }
 
-                            else
-                            {
-                                // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-                                DamageMob(other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);
-                            }
-                        }
+	                catch (System.Exception error)
+	                {
+	                    Debug.LogError("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
+	                }
 
-                        catch (System.Exception error)
-                        {
-                            Debug.LogError("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
-                        }
+	                // This should absolutely always run and should never ever not run ever, literally ever.
+	                finally
+	                {
+	                    // Piercing bullets continue until the end of their lifetime.
+	                    if (m_isAOE || !m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
+	                    {
+							DetonateBullet();
+	                    }
 
-                        // This should absolutely always run and should never ever not run ever, literally ever.
-                        finally
-                        {
-                            // Piercing bullets continue until the end of their lifetime.
-                            if (!m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
-                            {
-                                Network.Destroy(gameObject);
-                            }
+	                    else
+	                    {
+	                        Debug.Log("Didn't destroy " + gameObject.name);
+	                    }
+	                }
 
-                            else
-                            {
-                                Debug.Log("Didn't destroy " + gameObject.name);
-                            }
-                        }
-
-                        break;
-                    }
+	                break;
+	            }
             }
         }
     }
@@ -260,7 +258,7 @@ public class BasicBulletScript : MonoBehaviour
     // This should be called at Awake() or Start() otherwise AoE and homing functionality won't work correctly
     void LayerMaskSetup()
     {
-        const int player = (1 << Layers.player),
+        const int 	player = (1 << Layers.player),
                     capital = (1 << Layers.capital),
                     enemy = (1 << Layers.enemy),
                     asteroid = (1 << Layers.asteroid),
@@ -336,20 +334,35 @@ public class BasicBulletScript : MonoBehaviour
     }
 
 
-    public void DetonateBullet()
+    [RPC] public void DetonateBullet()
     {
-        if (m_isAOE)
+        if (Network.isServer)
         {
+            networkView.RPC ("DetonateBullet", RPCMode.Others);
+        }
+
+		// AOE bullets get destroyed by the ExplodeBullet() function
+		if (m_isAOE)
+        {
+            
             DamageAOE();
 
-            Explode explodeComponent = GetComponent<Explode>();
-            explodeComponent.Fire();
+            ExplodeBullet();
         }
-        else if (Network.isServer)
+
+		// Ensures bullet is completely destroyed
+        else 
         {
-            Network.Destroy(gameObject);
+            Destroy(gameObject);
         }
     }
+
+
+	void ExplodeBullet()
+	{
+		Explode explode = GetComponent<Explode>();
+		explode.Fire();
+	}
 
 
     // Attempts to damage the passed GameObject whilst managing the piercing state of the bullet
@@ -404,22 +417,25 @@ public class BasicBulletScript : MonoBehaviour
     // The central AoE function which will call the correct AoE function based on the set accuracy level
     void DamageAOE()
     {
-        switch (m_aoeDamageAccuracy)
-        {
-            case Accuracy.High:
-                HighAccuracyAOE();
-                break;
-
-            case Accuracy.Low:
-            case Accuracy.Off:
-                LowAccuracyAOE(m_aoeDamageAccuracy == Accuracy.Low);
-                break;
-        }
-
-        if (m_isPiercing)
-        {
-            ApplyPierceModifiers();
-        }
+		if (Network.isServer)
+		{
+			switch (m_aoeDamageAccuracy)
+			{
+				case Accuracy.High:
+					HighAccuracyAOE();
+					break;
+					
+				case Accuracy.Low:
+				case Accuracy.Off:
+					LowAccuracyAOE(m_aoeDamageAccuracy == Accuracy.Low);
+					break;
+			}
+			
+			if (m_isPiercing)
+			{
+				ApplyPierceModifiers();
+			}
+		}
     }
 
 
