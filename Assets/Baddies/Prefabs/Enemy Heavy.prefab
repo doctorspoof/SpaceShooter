@@ -1496,7 +1496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 0
+  primitiveQuad: {fileID: 100000, guid: d145322cb4a27da41a8cdcf083f7c8d6, type: 2}
   removeShipAfterSeconds: 3.29999995
   explosions:
   - explosionPrefabs:
@@ -1528,14 +1528,19 @@ MonoBehaviour:
   fragments:
   - material: {fileID: 2100000, guid: d2d0fc5ad4ec71143be3681fe708cc01, type: 2}
     directionToApplyForce: {x: .5, y: 1, z: -.0500000007}
+    fragmentObject: {fileID: 0}
   - material: {fileID: 2100000, guid: 83383a4b0831b064890f1453d73fce73, type: 2}
     directionToApplyForce: {x: -1, y: 1, z: -.0500000007}
+    fragmentObject: {fileID: 0}
   - material: {fileID: 2100000, guid: 34967ff6ffad61941bdc26a843d4e626, type: 2}
     directionToApplyForce: {x: -1, y: 0, z: -.0500000007}
+    fragmentObject: {fileID: 0}
   - material: {fileID: 2100000, guid: 5b63caf88896bcc4f9495ba3b126cfba, type: 2}
     directionToApplyForce: {x: 1, y: -.5, z: -.0500000007}
+    fragmentObject: {fileID: 0}
   - material: {fileID: 2100000, guid: 666cfd884118e1444b95557ddca47b40, type: 2}
     directionToApplyForce: {x: 0, y: -1, z: -.0500000007}
+    fragmentObject: {fileID: 0}
 --- !u!114 &11400024
 MonoBehaviour:
   m_ObjectHideFlags: 1

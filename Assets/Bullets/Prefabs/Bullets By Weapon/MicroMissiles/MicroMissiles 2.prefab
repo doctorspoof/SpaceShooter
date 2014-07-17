@@ -208,8 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 1
-  removeShipAfterSeconds: -1
+  removeShipAfterSeconds: 0
   explosions:
   - explosionPrefabs:
     - {fileID: 100000, guid: 657be5f271159824185adcd4946a589e, type: 2}

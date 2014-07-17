@@ -24,10 +24,14 @@ public class Fragment
 
     public Vector3 directionToApplyForce;
 
+    public GameObject fragmentObject;
+
 }
 
 public class Explode : MonoBehaviour
 {
+    [SerializeField]
+    GameObject primitiveQuad;
 
     [SerializeField]
     float removeShipAfterSeconds = 0;
@@ -51,6 +55,7 @@ public class Explode : MonoBehaviour
             }
 
             StartExplosionSequence();
+            CreateFragments();
 
         	Invoke("DestroyEntity", removeShipAfterSeconds >= 0 ? removeShipAfterSeconds : GetTimeUntilLastExplosionStarts());
         }
@@ -62,6 +67,18 @@ public class Explode : MonoBehaviour
         if(shipComponent)
         {
             shipComponent.enabled = false;
+        }
+
+        MeshRenderer render = GetComponent<MeshRenderer>();
+        if(render)
+        {
+            render.enabled = false;
+        }
+
+        Rigidbody rigidbody = GetComponent<Rigidbody>();
+        if(rigidbody)
+        {
+            rigidbody.Sleep();
         }
 
         for(int i = 0; i < transform.childCount; ++i)
@@ -81,12 +98,12 @@ public class Explode : MonoBehaviour
 
     private void StartExplosionSequence()
     {
-        transform.Translate(new Vector3(0, 0, 2));
-
         foreach (Explosion explosion in explosions)
         {
+            Vector3 newPosition = transform.position;
+            newPosition.z = 10.1f;
 
-            GameObject obj = (GameObject)Instantiate(explosion.explosionPrefabs[Random.Range(0, explosion.explosionPrefabs.Length)], this.transform.position + explosion.localPosition, Quaternion.identity);
+            GameObject obj = (GameObject)Instantiate(explosion.explosionPrefabs[Random.Range(0, explosion.explosionPrefabs.Length)], newPosition + explosion.localPosition, Quaternion.identity);
             obj.transform.localScale = explosion.localScale;
 
             Delay delay = obj.GetComponent<Delay>();
@@ -97,49 +114,52 @@ public class Explode : MonoBehaviour
         }
     }
 
-    private void StartFragmentSequence()
+    void CreateFragments()
     {
-        if(fragments != null)
+        if (fragments.Length > 0)
         {
-            GameObject fragmentOriginal = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            MeshCollider col = fragmentOriginal.GetComponent<MeshCollider>();
-            DestroyImmediate(col);
-
+            GameObject fragmentOriginal = (GameObject)Instantiate(primitiveQuad);
             fragmentOriginal.transform.localScale = transform.localScale;
 
-            Rigidbody body = fragmentOriginal.AddComponent<Rigidbody>();
-            body.useGravity = false;
-
-
-            foreach(Fragment frag in fragments)
+            foreach (Fragment frag in fragments)
             {
+                Vector3 newPosition = transform.position;
+                newPosition.z = 10.1f;
 
-                GameObject fragment = (GameObject)Instantiate(fragmentOriginal, transform.position, transform.rotation);
-                
-                MeshRenderer renderer = fragment.GetComponent<MeshRenderer>();
+                frag.fragmentObject = (GameObject)Instantiate(fragmentOriginal, newPosition, transform.rotation);
+
+                MeshRenderer renderer = frag.fragmentObject.GetComponent<MeshRenderer>();
                 renderer.material = frag.material;
 
-                FadeOut fade = fragment.AddComponent<FadeOut>();
+                FadeOut fade = frag.fragmentObject.AddComponent<FadeOut>();
                 fade.SetTimes(4, 5);
-
-                Rigidbody rigidbody = fragment.GetComponent<Rigidbody>();
-
-                Vector3 force = transform.rotation * frag.directionToApplyForce * Random.Range(0.5f, 1.0f) * 50;
-                rigidbody.AddForce(force);
-
-                rigidbody.AddTorque(new Vector3(0, 0, Random.Range(-10f, 10f)));
-
             }
 
             Destroy(fragmentOriginal);
 
         }
+    }
 
+    void MoveFragements()
+    {
+        foreach (Fragment frag in fragments)
+        {
+            Rigidbody rigidbody = frag.fragmentObject.GetComponent<Rigidbody>();
+
+            Vector3 force = transform.rotation * frag.directionToApplyForce * Random.Range(0.5f, 1.0f) * 50;
+            rigidbody.AddForce(force);
+
+            rigidbody.AddTorque(new Vector3(0, 0, Random.Range(-10f, 10f)));
+
+            FadeOut fade = frag.fragmentObject.GetComponent<FadeOut>();
+            fade.StartFadeOut();
+
+        }
     }
 
     private void DestroyEntity()
     {
-        StartFragmentSequence();
+        MoveFragements();
         Destroy(gameObject);
     }
 

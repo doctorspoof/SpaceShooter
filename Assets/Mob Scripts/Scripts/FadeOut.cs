@@ -10,6 +10,8 @@ public class FadeOut : MonoBehaviour
 
     Material mat;
 
+    bool started = false;
+
     // Use this for initialization
     void Start()
     {
@@ -19,29 +21,35 @@ public class FadeOut : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        currentTime += Time.deltaTime;
-        if (currentTime >= timeBeforeFadeOutStarts)
+        if (started)
         {
-            if (mat != null)
+            currentTime += Time.deltaTime;
+            if (currentTime >= timeBeforeFadeOutStarts)
             {
-                float t = ((timeBeforeFadeOutStarts + fadeOutTime - currentTime) / fadeOutTime);
-                mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, t);
+                if (mat != null)
+                {
+                    float t = ((timeBeforeFadeOutStarts + fadeOutTime - currentTime) / fadeOutTime);
+                    mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, t);
+                }
+
+            }
+
+            if (currentTime >= timeBeforeFadeOutStarts + fadeOutTime)
+            {
+                Destroy(gameObject);
             }
 
         }
-
-        if(currentTime >= timeBeforeFadeOutStarts + fadeOutTime)
-        {
-            Destroy(gameObject);
-        }
-
-
     }
 
     public void SetTimes(float fadeOutTime_, float timeBeforeFadeOutStarts_)
     {
         fadeOutTime = fadeOutTime_;
         timeBeforeFadeOutStarts = timeBeforeFadeOutStarts_;
+    }
+
+    public void StartFadeOut()
+    {
+        started = true;
     }
 }
