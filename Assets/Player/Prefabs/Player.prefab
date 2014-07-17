@@ -610,7 +610,8 @@ MonoBehaviour:
   m_equippedEngineItem: {fileID: 100000, guid: bc473d29b92f5b24ea8bbd26b4a0bc1a, type: 2}
   m_equippedPlatingItem: {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
     type: 2}
-  m_playerInventory: []
+  m_playerInventory:
+  - {fileID: 100000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
   m_currentVelocity: {x: 0, y: 0, z: 0}
   m_isInRangeOfCapitalDock: 0
   m_isInRangeOfTradingDock: 0
@@ -664,7 +665,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explodeOnDeath: 0
   removeShipAfterSeconds: -1
   explosions:
   - explosionPrefabs:

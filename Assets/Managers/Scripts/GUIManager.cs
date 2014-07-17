@@ -1524,6 +1524,15 @@ public class GUIManager : MonoBehaviour
     public bool m_isOnFollowMap = true;
     bool m_shipyardScreen = true;
 
+	/* Shop textures */
+	[SerializeField]
+	Texture m_shopBaseTexture;
+	[SerializeField]
+	Texture m_smallShopTexture;
+
+	bool m_shopConfirmBuy = false;
+	ItemScript m_confirmBuyItem = null;
+
     void DrawInGame()
     {
         if (m_isSpecMode)
@@ -1562,10 +1571,9 @@ public class GUIManager : MonoBehaviour
             {
                 if (m_shopDockedAt != null)
                 {
-                    GUI.Box(new Rect(400, 100, 800, 700), "");
+                    /*GUI.Box(new Rect(400, 100, 800, 700), "");
                     if (m_shipyardScreen)
                     {
-                        //m_shopDockedAt.GetComponent<ShopScript>().DrawGUI();
                         ShopScript script = m_shopDockedAt.GetComponent<ShopScript>();
                         NetworkInventory shopInv = script.GetShopInventory();
                         int itemCost = 0;
@@ -1643,22 +1651,240 @@ public class GUIManager : MonoBehaviour
                         {
                             m_shipyardScreen = true;
                         }
-                    }
+                    }*/
 
+					//Grab useful things
+					Event currentEvent = Event.current;
+					Vector3 mousePos = currentEvent.mousePosition;
+					drawnItems.Clear();
 
+					//Undertex
+					GUI.DrawTexture(new Rect(396, 86, 807, 727), m_shopBaseTexture);
 
-                    //We'll handle the close button
-                    if (GUI.Button(new Rect(440, 720, 150, 60), "Leave Shop"))
-                    {
-                        m_PlayerHasDockedAtShop = false;
-                        m_shopDockedAt = null;
-                        m_shipyardScreen = true;
-                        thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().nearbyShop = null;
-                        thisPlayerHP.transform.parent = null;
-                        thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
-                        thisPlayerHP.rigidbody.isKinematic = false;
-                        Screen.showCursor = false;
-                    }
+					/*Do the two inventory lists*/
+					//Player - left
+					GUI.Label(new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
+					List<GameObject> playerInv = thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+					Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
+					playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
+					for (int i = 0; i < playerInv.Count; i++)
+					{
+						GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
+						Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+						GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+						Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+						
+						if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+							drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
+						
+						if (currentEvent.type == EventType.MouseDown && m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Shipyard)
+						{
+							bool insideModR = modR.Contains(mousePos);
+							if (!m_shopConfirmBuy && modR.Contains(mousePos) && !m_isRequestingItem)
+							{
+								//Begin drag & drop
+								m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
+								m_currentDraggedItemInventoryId = i;
+								m_currentDraggedItemIsFromPlayerInv = true;
+							}
+						}
+					}
+					GUI.EndScrollView();
+
+					//Shop - right
+					GUI.Label(new Rect(1020, 270, 164, 40), "Shop:", m_nonBoxStyle);
+					//NetworkInventory cshipInv = CShip.GetComponent<NetworkInventory>();
+					NetworkInventory shopInv = m_shopDockedAt.GetComponent<NetworkInventory>();
+					Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
+					cshipScrollPosition = GUI.BeginScrollView(scrollAreaRect, cshipScrollPosition, new Rect(0, 0, 150, 52 * shopInv.GetCount()));
+					for (int i = 0; i < shopInv.GetCount(); i++)
+					{
+                        if(shopInv[i] != null)
+                        {
+    						GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), shopInv[i].GetIcon());
+    						Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+    						GUI.Label(lastR, shopInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+    						Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
+    						
+    						if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+    							drawnItems.Add(modR, shopInv[i]);
+    						
+    						if (currentEvent.type == EventType.MouseDown)
+    						{
+    							bool insideModR = modR.Contains(mousePos);
+    							if (!m_shopConfirmBuy && thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(i)) && modR.Contains(mousePos) && !m_isRequestingItem)
+    							{
+    								//Since we're a shop, on mouseDown, open the item confirmation box
+                                    shopInv.RequestServerItem(shopInv[i].m_equipmentID, i);
+                                    StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.ItemTake, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
+    								//m_confirmBuyItem = shopInv[i];
+    								//m_shopConfirmBuy = true;
+    							}
+    						}
+                        }
+					}
+					GUI.EndScrollView();
+
+                    Rect weaponTemp = new Rect(605, 301, 63, 63);
+                    Rect shieldTemp = new Rect(605, 367, 63, 63);
+                    Rect platingTemp = new Rect(605, 442, 63, 63);
+                    Rect engineTemp = new Rect(605, 588, 63, 63);
+                    
+					//Do shop type specific stuff
+					if(m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Basic)
+					{
+						GUI.DrawTexture(new Rect(396, 221, 403, 460), m_smallShopTexture);
+						int hpPercent = (int)(thisPlayerHP.GetHPPercentage() * 100.0f);
+						GUI.Button (new Rect(695, 440, 90, 40), hpPercent.ToString() + "%", m_nonBoxStyle);
+					}
+					else
+					{
+						float playerSourceWidth = m_playerPanelXWidth / 408.0f;
+						GUI.DrawTexture(new Rect(396, 221, 403, 460), m_DockInventoryBorder);
+						GUI.DrawTexture(new Rect(396, 221, 403, 460), m_DockPlayerImage);
+						
+						//Equipped icons:
+						float iconLeftX = 602.0f - (408.0f - m_playerPanelXWidth);
+						if (iconLeftX >= 324.0f)
+						{
+							
+							drawnItems.Add(weaponTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>());
+							drawnItems.Add(shieldTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>());
+							drawnItems.Add(platingTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>());
+							drawnItems.Add(engineTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>());
+
+							GUI.DrawTexture(weaponTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon());
+							GUI.DrawTexture(shieldTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon());
+							GUI.DrawTexture(platingTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon());
+							GUI.DrawTexture(engineTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon());
+						}
+					}
+
+					//Hover text
+					if (m_currentDraggedItem == null)
+					{
+						foreach (Rect key in drawnItems.Keys)
+						{
+							if (key.Contains(mousePos))
+							{
+								string text = drawnItems[key].GetShopText();
+								DrawHoverText(text, mousePos);
+							}
+						}
+					}
+					else
+					{
+						GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemScript>().GetIcon());
+                        
+                        if(!Input.GetMouseButton(0))
+                        {
+                            //Drop item whereever you are
+                            if(weaponTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Weapon)
+                                {
+                                    thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else if(shieldTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Shield)
+                                {
+                                    thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else if(platingTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Plating)
+                                {
+                                    thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else if(engineTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Engine)
+                                {
+                                    thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else
+                            {
+                                m_currentDraggedItem = null;
+                                m_currentDraggedItemInventoryId = -1;
+                                m_currentDraggedItemIsFromPlayerInv = false;
+                            }
+                        }
+					}
+
+					//Do confirm box if appropriate
+					if(m_shopConfirmBuy)
+					{
+						GUI.DrawTexture(new Rect(632, 328, 337, 200), m_menuBackground);
+						GUI.Label(new Rect(662, 350, 277, 50), "Buy '" + m_confirmBuyItem.GetItemName() + "' for $" + m_confirmBuyItem.m_cost + "?", m_nonBoxStyle);
+
+						if(GUI.Button (new Rect(700, 440, 70, 40), "Confirm"))
+						{
+                            int cost = m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex);
+                            shopInv.RequestTicketValidityCheck(m_currentTicket);
+                            StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
+						}
+
+						if(GUI.Button (new Rect(830, 440, 70, 40), "Cancel"))
+						{
+                            shopInv.RequestServerCancel(m_currentTicket);
+							m_shopConfirmBuy = false;
+							m_confirmBuyItem = null;
+						}
+					}
+
+					//Finally, Leave button
+					if (!m_shopConfirmBuy && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
+					{
+						m_PlayerHasDockedAtShop = false;
+						m_shopDockedAt = null;
+						m_shipyardScreen = true;
+						thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().nearbyShop = null;
+						thisPlayerHP.transform.parent = null;
+						thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
+						thisPlayerHP.rigidbody.isKinematic = false;
+						Screen.showCursor = false;
+					}
                 }
             }
             else
@@ -3023,7 +3249,7 @@ public class GUIManager : MonoBehaviour
 			else
 			{
 				inventory.RequestTicketValidityCheck (m_currentTicket);
-				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, equipmentSlot));
+				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, false, equipmentSlot));
 			}
 		}
 		
@@ -3068,7 +3294,7 @@ public class GUIManager : MonoBehaviour
 			else
 			{
 				inventory.RequestTicketValidityCheck (m_currentTicket);
-				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.CShipEquipment, turretID));
+				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.CShipEquipment, false, turretID));
 			}
 		}
 		
@@ -3636,7 +3862,7 @@ public class GUIManager : MonoBehaviour
 
 
 	// WARNING! EXTREMELY HAZARDOUS CODE LIES BEYOND THIS POINT! DO NOT LOOK AT THIS FUNCTION OR YOU MAY TURN BLIND!
-    IEnumerator AwaitTicketRequestResponse(NetworkInventory inventory, RequestType reqType, ItemOwner from, ItemOwner to = ItemOwner.NetworkInventory, int equipmentSlot = -1)
+    IEnumerator AwaitTicketRequestResponse(NetworkInventory inventory, RequestType reqType, ItemOwner from, ItemOwner to = ItemOwner.NetworkInventory, bool fromShop = false, int equipmentSlot = -1)
     {
         //m_requestedTicketIsValid = false;
         m_isRequestingItem = true;
@@ -3667,6 +3893,13 @@ public class GUIManager : MonoBehaviour
 	        {
 	            m_currentTicket = inventory.GetItemRequestResponse();
 	            Debug.Log("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
+                
+                if(fromShop && m_currentTicket.IsValid())
+                {
+                    m_shopConfirmBuy = true;
+                    m_confirmBuyItem = inventory[m_currentTicket.itemIndex];
+                }
+            
 	            break;
 	        }
             case RequestType.TicketValidity:
@@ -3678,14 +3911,24 @@ public class GUIManager : MonoBehaviour
 					switch (from)
 					{
 						case ItemOwner.NetworkInventory:
-						{
+                        {
+                            ItemScript item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemScript>();
 							switch (to)
 							{
 								case ItemOwner.PlayerInventory:
-							
+                                {
+                                    int costIfShop = fromShop ? inventory.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex) : -1;
+                        
 									if (inventory.RemoveItemFromServer (m_currentTicket))
 									{
-										thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (m_currentDraggedItem.gameObject);
+										thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item.gameObject);
+                            
+                                        if(fromShop)
+                                        {
+                                            m_shopConfirmBuy = false;
+                                            m_confirmBuyItem = null;
+                                            thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(costIfShop);
+                                        }
 									}
 
 									else
@@ -3694,10 +3937,9 @@ public class GUIManager : MonoBehaviour
 									}
 
 									break;
-
+                                }
 								case ItemOwner.CShipEquipment:
 								{
-									ItemScript item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemScript>();
 									if (item.m_typeOfItem == ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
 									{
 										PlayerControlScript player = thisPlayerHP.GetComponent<PlayerControlScript>();
@@ -3725,7 +3967,6 @@ public class GUIManager : MonoBehaviour
 						
 								case ItemOwner.PlayerEquipment:
 								{	
-									ItemScript item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemScript>();
 									if (item.m_typeOfItem != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
 									{
 										PlayerControlScript player = thisPlayerHP.GetComponent<PlayerControlScript>();
