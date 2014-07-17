@@ -2930,100 +2930,21 @@ public class GUIManager : MonoBehaviour
             }
             //If over any equipment slot points try and equip it
             else if (m_LeftPanelWeaponRect.Contains(mousePos))
-            {
-                if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Weapon)
-                {
-                    //if the item is a weapon, equip plz!
-                    if (m_currentDraggedItemIsFromPlayerInv)
-                        thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
-                    else
-                    {
-                        inventory.RequestTicketValidityCheck (m_currentTicket);
-						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 1));
-                    }
-                }
-
-				else if (!m_currentDraggedItemIsFromPlayerInv)
-				{
-					inventory.RequestServerCancel (m_currentTicket);
-				}
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
+			{
+				HandlePlayerEquipmentDrop (inventory, 1, ItemType.Weapon);
             }
             else if (m_LeftPanelShieldRect.Contains(mousePos))
-            {
-                if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Shield)
-                {
-                    //if the item is a weapon, equip plz!
-                    if (m_currentDraggedItemIsFromPlayerInv)
-                        thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
-                    else
-					{
-						inventory.RequestTicketValidityCheck (m_currentTicket);
-						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 2));
-                    }
-				}
-				
-				else if (!m_currentDraggedItemIsFromPlayerInv)
-				{
-					inventory.RequestServerCancel (m_currentTicket);
-				}
-
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
+			{
+				HandlePlayerEquipmentDrop (inventory, 2, ItemType.Shield);
             }
             else if (m_LeftPanelPlatingRect.Contains(mousePos))
-            {
-                if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Plating)
-                {
-                    //if the item is a weapon, equip plz!
-                    if (m_currentDraggedItemIsFromPlayerInv)
-                        thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
-                    else
-					{
-						inventory.RequestTicketValidityCheck (m_currentTicket);
-						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 3));
-                    }
-				}
-				
-				else if (!m_currentDraggedItemIsFromPlayerInv)
-				{
-					inventory.RequestServerCancel (m_currentTicket);
-				}
-
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
+			{
+				HandlePlayerEquipmentDrop (inventory, 3, ItemType.Plating);
             }
             else if (m_LeftPanelEngineRect.Contains(mousePos))
             {
-                if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.Engine)
-                {
-                    //if the item is a weapon, equip plz!
-                    if (m_currentDraggedItemIsFromPlayerInv)
-                        thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
-                    else
-					{
-						inventory.RequestTicketValidityCheck (m_currentTicket);
-						StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, 4));
-                    }
-				}
-				
-				else if (!m_currentDraggedItemIsFromPlayerInv)
-				{
-					inventory.RequestServerCancel (m_currentTicket);
-				}
-
-
-                m_currentDraggedItem = null;
-                m_currentDraggedItemIsFromPlayerInv = false;
-                m_currentDraggedItemInventoryId = -1;
-            }
+                HandlePlayerEquipmentDrop (inventory, 4, ItemType.Engine);
+			}
         }
         else
         {
@@ -3087,6 +3008,35 @@ public class GUIManager : MonoBehaviour
             }
         }
     }
+
+
+	void HandlePlayerEquipmentDrop (NetworkInventory inventory, int equipmentSlot, ItemType checkIs)
+	{
+		if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == checkIs)
+		{
+			//if the item is a weapon, equip plz!
+			if (m_currentDraggedItemIsFromPlayerInv)
+			{
+				thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot (m_currentDraggedItemInventoryId);
+			}
+
+			else
+			{
+				inventory.RequestTicketValidityCheck (m_currentTicket);
+				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, equipmentSlot));
+			}
+		}
+		
+		else if (!m_currentDraggedItemIsFromPlayerInv)
+		{
+			inventory.RequestServerCancel (m_currentTicket);
+		}
+		
+		m_currentDraggedItem = null;
+		m_currentDraggedItemIsFromPlayerInv = false;
+		m_currentDraggedItemInventoryId = -1;
+	}
+
 
 	void HandleCShipEquipmentDrop (NetworkInventory inventory, int turretID)
 	{
