@@ -304,6 +304,11 @@ public class Ship : MonoBehaviour
         afterburnersHolder.gameObject.SetActive(false);
     }
 
+    public bool AfterburnersRecharging()
+    {
+        return (afterburnersFiring == false && afterburnersRecharged == false);
+    }
+
     public virtual float GetMinimumWeaponRange()
     {
         return weaponRange;
