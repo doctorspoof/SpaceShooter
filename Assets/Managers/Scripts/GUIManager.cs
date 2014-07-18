@@ -167,9 +167,10 @@ public class GUIManager : MonoBehaviour
 
         if (m_currentGameState == GameState.InGame)
         {
-            if (playerShips == null || playerShips.Length == 0 || playerShips.Length < GameStateController.GetComponent<GameStateController>().m_connectedPlayers.Count)
+            GameStateController controller = GameStateController.GetComponent<GameStateController>();
+            if (playerShips == null || playerShips.Length == 0 || playerShips.Length < controller.m_connectedPlayers.Count - controller.m_deadPlayers.Count)
             {
-                Debug.Log("Resetting player array.");
+                Debug.Log("Resetting player array. Length vs Count == " + playerShips.Length + " vs " + (controller.m_connectedPlayers.Count - controller.m_deadPlayers.Count));
                 playerShips = GameObject.FindGameObjectsWithTag("Player");
             }
 
