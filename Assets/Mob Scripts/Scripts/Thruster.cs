@@ -59,6 +59,10 @@ public class Thruster : MonoBehaviour
 
     public void Calculate(/*Vector2 velocity_,*/ float maxVelocitySeen_, float currentAngularAcceleration_, float maxAngularAccelerationSeen_)
     {
+        if(parentShipTransform == null)
+        {
+            return;
+        }
 
         float percentFromVelocity = 0;
 
@@ -82,13 +86,6 @@ public class Thruster : MonoBehaviour
             {
                 percentFromAngular = Mathf.Abs(currentAngularAcceleration_) / maxAngularAccelerationSeen_;
             }
-        }
-
-        if (parentShipTransform.tag.Equals("Player"))
-        {
-
-            //Debug.Log("parentShipTransform.rigidbody.velocity.magnitude = " + parentShipTransform.rigidbody.velocity.magnitude + " maxVelocitySeen_ = " + maxVelocitySeen_);
-            //Debug.Log("currentAngularAcceleration_ = " + currentAngularAcceleration_ + " maxAngularAccelerationSeen_ = " + maxAngularAccelerationSeen_);
         }
 
         float passedPercentage = Mathf.Max(percentFromVelocity, percentFromAngular);
