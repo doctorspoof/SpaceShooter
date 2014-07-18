@@ -179,8 +179,6 @@ public class EnemySpawnPointScript : MonoBehaviour
 
         }
 
-        //Debug.Log("enemiesWaitingToSpawn.Count = " + enemiesWaitingToSpawn.Count + " enemiesBeingSpawned.Count = " + enemiesBeingSpawned.Count);
-
         if (enemiesWaitingToSpawn.Count == 0 && enemiesBeingSpawned.Count == 0)
         {
             Activate(false);
