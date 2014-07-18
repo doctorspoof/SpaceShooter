@@ -161,7 +161,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_bulletDamage: 40
   m_bulletMinDamage: 1
-  m_damageType: 0
+  m_damageType: 3
   m_bulletSpeed: 6
   m_bulletMinimumSpeed: .25
   m_bulletMaxLifetime: 50

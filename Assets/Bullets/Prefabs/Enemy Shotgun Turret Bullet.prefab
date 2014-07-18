@@ -100,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_bulletDamage: 10
   m_bulletMinDamage: 1
+  m_damageType: 1
   m_bulletSpeed: 7
   m_bulletMinimumSpeed: .25
   m_bulletMaxLifetime: 3
@@ -115,7 +116,8 @@ MonoBehaviour:
   m_aoeDamageAccuracy: 1
   m_aoeRange: 2
   m_aoeMaxDamageRange: .25
-  m_explosiveAOEForce: 15
+  m_aoeMaxExplosiveForce: 15
+  m_aoeMinExplosiveForce: 5
   firer: {fileID: 0}
   m_homingTarget: {fileID: 0}
 --- !u!148 &14800000

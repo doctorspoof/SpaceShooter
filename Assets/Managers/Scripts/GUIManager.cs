@@ -2058,7 +2058,7 @@ public class GUIManager : MonoBehaviour
             }
         }*/
 
-        if (m_PlayerHasDied)
+        if (m_PlayerHasDied && !m_cshipDying)
         {
             GUI.DrawTexture(new Rect(650, 100, 300, 250), m_menuBackground);
             GUI.Label(new Rect(700, 130, 200, 80), "You have been destroyed", m_nonBoxBigStyle);
@@ -4705,6 +4705,8 @@ public class GUIManager : MonoBehaviour
     {
         m_cshipDying = true;
         Screen.showCursor = false;
+
+        m_PlayerHasDied = false;
 
         //Make sure we unset all popup bools
         m_isOnMap = false;
