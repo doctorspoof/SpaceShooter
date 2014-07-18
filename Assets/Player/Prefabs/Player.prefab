@@ -313,7 +313,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: .00109656586, w: .999999464}
-  m_LocalPosition: {x: -205.490738, y: -121.757469, z: 10}
+  m_LocalPosition: {x: 74.1014862, y: 107.42057, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400004}
@@ -986,9 +986,9 @@ MonoBehaviour:
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
   m_currentSpaceBucks: 300
-  m_equippedWeaponItem: {fileID: 100000, guid: da374091b5468994295d9c203a0223f1, type: 2}
-  m_equippedShieldItem: {fileID: 100000, guid: 7ea0ae0dc3d236947a5d3e422f83bfd7, type: 2}
-  m_equippedEngineItem: {fileID: 100000, guid: bc473d29b92f5b24ea8bbd26b4a0bc1a, type: 2}
+  m_equippedWeaponItem: {fileID: 100000, guid: d8e1271c27ab7ae4793d51be5149f688, type: 2}
+  m_equippedShieldItem: {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
+  m_equippedEngineItem: {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
   m_equippedPlatingItem: {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
     type: 2}
   m_playerInventory:

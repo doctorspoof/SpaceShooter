@@ -692,7 +692,7 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100028}
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 0}
 --- !u!33 &3300006
 MeshFilter:
   m_ObjectHideFlags: 1
@@ -872,8 +872,8 @@ MonoBehaviour:
   m_ramDamageMultiplier: 3
   maunuallySetWidthAndHeight: 0
   weaponRange: 0
-  m_shipWidth: 0
-  m_shipHeight: 0
+  m_shipWidth: 6
+  m_shipHeight: 6
   shipID: -1
   m_bountyAmount: 40
   m_hasTurrets: 0
