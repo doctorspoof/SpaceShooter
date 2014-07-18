@@ -385,6 +385,10 @@ public class Ship : MonoBehaviour
             thrusterCount += rcsholder.childCount;
         }
 
+        //if(tag.Equals("Capital"))
+        //{
+        //    Debug.Log(thrusterCount);
+        //}
 
         thrusters = new Thruster[thrusterCount];
         int position = 0;
