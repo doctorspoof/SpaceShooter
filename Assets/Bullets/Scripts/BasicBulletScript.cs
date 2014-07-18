@@ -231,7 +231,8 @@ public class BasicBulletScript : MonoBehaviour
 
 	                catch (System.Exception error)
 	                {
-	                    Debug.LogError("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
+	                    Debug.LogError ("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
+                        Debug.LogError ("Attempted to hit: " + other.transform.root.name);
 	                }
 
 	                // This should absolutely always run and should never ever not run ever, literally ever.

@@ -204,7 +204,7 @@ public class AsteroidScript : MonoBehaviour
 		while(t < 1)
 		{
 			t += Time.deltaTime;
-
+            
 			rigidbody.MovePosition(rigidbody.position + (rigidbody.velocity * Time.deltaTime * Time.deltaTime));
 			yield return 0;
 		}
@@ -226,8 +226,8 @@ public class AsteroidScript : MonoBehaviour
 								shotDirection * m_fragmentSplitForce;
 
 			PerformSplit (shotDirection, impactForce);
-		}
-	}
+        }
+    }
 
 
 	public void SplitAsteroid (Vector3 hitterPosition)
@@ -317,9 +317,9 @@ public class AsteroidScript : MonoBehaviour
 			AsteroidScript script = asteroid.GetComponent<AsteroidScript>();
 			if (script)
 			{
-				script.isFirstAsteroid = false;
 				script.TellToPropagateScaleAndMass (transform.localScale / m_splittingFragments, rigidbody.mass / m_splittingFragments);
-				script.DelayedVelocitySync (Time.fixedDeltaTime);
+                script.DelayedVelocitySync (Time.fixedDeltaTime);
+                script.isFirstAsteroid = false;
 			}
 		}
 		
@@ -398,6 +398,6 @@ public class AsteroidScript : MonoBehaviour
 	void PropagateScaleAndMassMultiply (float multiplier)
 	{
 		this.rigidbody.mass *= multiplier;
-		this.transform.localScale *= multiplier;
+		this.transform.localScale = new Vector3 (transform.localScale.x * multiplier, transform.localScale.y * multiplier, transform.localScale.z);
 	}
 }
