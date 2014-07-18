@@ -401,7 +401,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 10}
+  m_LocalPosition: {x: 80.1891479, y: 95.7566605, z: 10}
   m_LocalScale: {x: 3.79999995, y: 3.79999995, z: 1}
   m_Children:
   - {fileID: 400014}
@@ -1017,8 +1017,8 @@ MonoBehaviour:
   m_ramDamageMultiplier: 2.5
   maunuallySetWidthAndHeight: 0
   weaponRange: 0
-  m_shipWidth: 0
-  m_shipHeight: 0
+  m_shipWidth: 3.79999995
+  m_shipHeight: 3.79999995
   shipID: -1
   m_bountyAmount: 60
   m_hasTurrets: 0
