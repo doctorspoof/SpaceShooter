@@ -1694,9 +1694,9 @@ public class GUIManager : MonoBehaviour
 						Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
 						
 						if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-							drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
+							drawnItemsSecondary.Add(modR, playerInv[i].GetComponent<ItemScript>());
 						
-						if (currentEvent.type == EventType.MouseDown && m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Shipyard)
+                        if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown && m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Shipyard)
 						{
 							bool insideModR = modR.Contains(mousePos);
 							if (!m_shopConfirmBuy && modR.Contains(mousePos) && !m_isRequestingItem)
@@ -1728,7 +1728,7 @@ public class GUIManager : MonoBehaviour
     						if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
     							drawnItems.Add(modR, shopInv[i]);
     						
-    						if (currentEvent.type == EventType.MouseDown)
+                            if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
     						{
     							bool insideModR = modR.Contains(mousePos);
     							if (!m_shopConfirmBuy && modR.Contains(mousePos) && !m_isRequestingItem)
@@ -1785,7 +1785,7 @@ public class GUIManager : MonoBehaviour
 					}
 
 					//Hover text
-					if (m_currentDraggedItem == null)
+                    if (!m_inGameMenuIsOpen && m_currentDraggedItem == null)
 					{
 						foreach (Rect key in drawnItems.Keys)
 						{
@@ -1806,7 +1806,7 @@ public class GUIManager : MonoBehaviour
                             }
                         }
 					}
-					else
+                    else if(!m_inGameMenuIsOpen)
 					{
 						GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemScript>().GetIcon());
                         
@@ -1908,7 +1908,7 @@ public class GUIManager : MonoBehaviour
 					}
 
 					//Finally, Leave button
-					if (!m_shopConfirmBuy && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
+                    if (!m_inGameMenuIsOpen && !m_shopConfirmBuy && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
 					{
 						m_PlayerHasDockedAtShop = false;
 						m_shopDockedAt = null;
@@ -3390,14 +3390,14 @@ public class GUIManager : MonoBehaviour
         {
             case CShipScreen.DualPanel:
                 {
-                    if (GUI.Button(new Rect(394, 250, m_playerPanelXWidth, 400), ""))
+                    if (!m_inGameMenuIsOpen && GUI.Button(new Rect(394, 250, m_playerPanelXWidth, 400), ""))
                     {
                         //If player is selected, CShip should animate away
                         StartCoroutine(AnimateCShipPanel(1204));
                         m_currentCShipPanel = CShipScreen.PanelsAnimating;
                     }
 
-                    if (GUI.Button(new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), ""))
+                    if (!m_inGameMenuIsOpen && GUI.Button(new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), ""))
                     {
                         //If CShip is selected, player should animate away
                         StartCoroutine(AnimatePlayerPanel(0));
@@ -3428,7 +3428,7 @@ public class GUIManager : MonoBehaviour
                         if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
                             drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
 
-                        if (currentEvent.type == EventType.MouseDown)
+                        if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
                             if (modR.Contains(mousePos) && !m_isRequestingItem)
@@ -3459,7 +3459,7 @@ public class GUIManager : MonoBehaviour
                         if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
                             drawnItems.Add(modR, cshipInv[i]);
 
-                        if (currentEvent.type == EventType.MouseDown)
+                        if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
                             if (modR.Contains(mousePos) && !m_isRequestingItem)
@@ -3478,7 +3478,7 @@ public class GUIManager : MonoBehaviour
                     DrawLeftPanel();
 
                     //Handle mouse up if item is selected
-                    if (m_currentDraggedItem != null)
+                    if (!m_inGameMenuIsOpen && m_currentDraggedItem != null)
                     {
 						if (IsMouseUpZero() && !m_isRequestingItem)
                         {
@@ -3492,7 +3492,7 @@ public class GUIManager : MonoBehaviour
                             GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemScript>().GetIcon());
                         }
                     }
-                    else
+                    else if(!m_inGameMenuIsOpen)
                     {
                         GameObject[] turrets = CShip.GetComponent<CapitalShipScript>().GetAttachedTurrets();
                         if (m_RightPanelWeapon1Rect.Contains(mousePos))
@@ -3542,7 +3542,7 @@ public class GUIManager : MonoBehaviour
                         if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
                             drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
 
-                        if (currentEvent.type == EventType.MouseDown)
+                        if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
                             if (modR.Contains(mousePos) && !m_isRequestingItem)
@@ -3570,7 +3570,7 @@ public class GUIManager : MonoBehaviour
                         if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
                             drawnItems.Add(modR, cshipInv[i]);
 
-                        if (currentEvent.type == EventType.MouseDown)
+                        if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
                             bool insideModR = modR.Contains(mousePos);
                             if (modR.Contains(mousePos) && !m_isRequestingItem)
@@ -3589,7 +3589,7 @@ public class GUIManager : MonoBehaviour
                     DrawRightPanel();
 
                     //Handle mouse up if item is selected
-                    if (m_currentDraggedItem != null)
+                    if (!m_inGameMenuIsOpen && m_currentDraggedItem != null)
                     {
                         if (IsMouseUpZero() && !m_isRequestingItem)
                         {
@@ -3604,7 +3604,7 @@ public class GUIManager : MonoBehaviour
                         }
 
                     }
-                    else
+                    else if(!m_inGameMenuIsOpen)
                     {
                         //Hovers
                         if (m_LeftPanelWeaponRect.Contains(mousePos))
@@ -3651,7 +3651,7 @@ public class GUIManager : MonoBehaviour
         }
 
         //Hover text
-        if (m_currentDraggedItem == null)
+        if (!m_inGameMenuIsOpen && m_currentDraggedItem == null)
         {
             foreach (Rect key in drawnItems.Keys)
             {
@@ -3686,7 +3686,7 @@ public class GUIManager : MonoBehaviour
         }
 
         //Leave button
-        if (GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
+        if (!m_inGameMenuIsOpen && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
         {
             m_PlayerHasDockedAtCapital = false;
             Screen.showCursor = false;
@@ -3694,6 +3694,12 @@ public class GUIManager : MonoBehaviour
             m_currentCShipPanel = CShipScreen.DualPanel;
             StartCoroutine(AnimateCShipPanel(796));
             StartCoroutine(AnimatePlayerPanel(408));
+            
+            //Clear dragged item
+            m_currentDraggedItem = null;
+            m_currentDraggedItemInventoryId = -1;
+            m_currentDraggedItemIsFromPlayerInv = false;
+            CShip.GetComponent<NetworkInventory>().RequestServerCancel(m_currentTicket);
         }
 
         /*for(int i = 0; i < 4; i++)
