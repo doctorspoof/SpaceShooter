@@ -82,7 +82,16 @@ public class Thruster : MonoBehaviour
             }
         }
 
-        SetPercentage(percentFromVelocity + percentFromAngular);
+        if(transform.root.tag.Equals("Player"))
+        {
+
+            //Debug.Log("transform.root.rigidbody.velocity.magnitude = " + transform.root.rigidbody.velocity.magnitude + " maxVelocitySeen_ = " + maxVelocitySeen_);
+            //Debug.Log("currentAngularAcceleration_ = " + currentAngularAcceleration_ + " maxAngularAccelerationSeen_ = " + maxAngularAccelerationSeen_);
+        }
+
+        float passedPercentage = Mathf.Max(percentFromVelocity, percentFromAngular);
+
+        SetPercentage(passedPercentage);
 
     }
 

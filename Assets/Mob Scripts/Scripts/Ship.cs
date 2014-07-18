@@ -119,6 +119,7 @@ public class Ship : MonoBehaviour
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
         }
 
+        //maxAngularVelocitySeen -= 0.05f;
         if (maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity))
         {
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
