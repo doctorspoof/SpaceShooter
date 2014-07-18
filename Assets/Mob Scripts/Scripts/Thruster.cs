@@ -18,7 +18,7 @@ public class Thruster : MonoBehaviour
 
     ShipManoeuvre firesWithTurn;
 
-    Transform thrusterTransform;
+    Transform thrusterTransform, parentShipTransform;
     Vector3 originalScale, originalPosition;
 
     // Use this for initialization
@@ -27,6 +27,8 @@ public class Thruster : MonoBehaviour
         thrusterTransform = transform;
         originalScale = thrusterTransform.localScale;
         originalPosition = thrusterTransform.localPosition;
+
+        parentShipTransform = thrusterTransform.root;
 
         //foreach(ShipManoeuvre mano in directionsToFireWith)
         //{
@@ -62,8 +64,8 @@ public class Thruster : MonoBehaviour
 
         if (maxVelocitySeen_ > 0)
         {
-            float ratio = transform.root.rigidbody.velocity.magnitude / maxVelocitySeen_;
-            float clampedDot = Mathf.Clamp(Vector2.Dot(thrusterTransform.up, transform.root.rigidbody.velocity.normalized), 0, 1);
+            float ratio = parentShipTransform.rigidbody.velocity.magnitude / maxVelocitySeen_;
+            float clampedDot = Mathf.Clamp(Vector2.Dot(thrusterTransform.up, parentShipTransform.rigidbody.velocity.normalized), 0, 1);
 
             percentFromVelocity = ratio * clampedDot;
         }
@@ -82,7 +84,16 @@ public class Thruster : MonoBehaviour
             }
         }
 
-        SetPercentage(percentFromVelocity + percentFromAngular);
+        if (parentShipTransform.tag.Equals("Player"))
+        {
+
+            //Debug.Log("parentShipTransform.rigidbody.velocity.magnitude = " + parentShipTransform.rigidbody.velocity.magnitude + " maxVelocitySeen_ = " + maxVelocitySeen_);
+            //Debug.Log("currentAngularAcceleration_ = " + currentAngularAcceleration_ + " maxAngularAccelerationSeen_ = " + maxAngularAccelerationSeen_);
+        }
+
+        float passedPercentage = Mathf.Max(percentFromVelocity, percentFromAngular);
+
+        SetPercentage(passedPercentage);
 
     }
 
