@@ -488,7 +488,7 @@ MonoBehaviour:
   afterburnerIncreaseOfSpeed: 0
   afterburnerLength: 0
   afterburnerRechargeTime: 0
-  m_rotateSpeed: 2
+  m_rotateSpeed: 140
   m_ramDamageMultiplier: 3
   maunuallySetWidthAndHeight: 0
   weaponRange: 0
@@ -574,6 +574,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firesWithTurn: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1
