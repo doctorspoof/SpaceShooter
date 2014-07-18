@@ -295,7 +295,7 @@ public class GameStateController : MonoBehaviour
 
 								//Remove them from the deadList
 								networkView.RPC ("PropagateNonDeadPlayer", RPCMode.Others, m_deadPlayers[i].m_playerObject.m_netPlayer);
-								m_deadPlayers.RemoveAt(i);
+								m_deadPlayers.RemoveAt(i--);
 							}
 							else
 							{
