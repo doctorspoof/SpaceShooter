@@ -1373,27 +1373,6 @@ public class PlayerControlScript : Ship
 		}
 	}
 
-    public override void RotateTowards(Vector3 targetPosition)
-    {
-        Vector2 targetDirection = targetPosition - transform.position;
-        float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
-        float currentAngle = transform.rotation.eulerAngles.z;
-
-        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
-        {
-            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
-        }
-        else
-        {
-            Quaternion rotate = Quaternion.LookRotation(targetDirection, Vector3.back);
-            rotate.x = 0;
-            rotate.y = 0;
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() / 50 * Time.deltaTime);
-        }
-    }
-
 	void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
 	{
 		float magnitude = moveTo.magnitude;

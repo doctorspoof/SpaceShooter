@@ -42,7 +42,8 @@ public class Ship : MonoBehaviour
     [SerializeField]
     float m_shipHeight;
 
-    float maxThrusterVelocitySeen = 0;
+    float currentAngularVelocity = 0;
+    float maxThrusterVelocitySeen = 0, maxAngularVelocitySeen = 0;
     Transform thrustersHolder = null, afterburnersHolder = null;
     Thruster[] thrusters = null, afterburners = null;
 
@@ -84,6 +85,7 @@ public class Ship : MonoBehaviour
 
         if (GetShipWidth() == 0 || GetShipHeight() == 0)
             SetShipSizes();
+
         //ResetThrusters();
     }
 
@@ -117,14 +119,17 @@ public class Ship : MonoBehaviour
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
         }
 
-        if (Network.isServer && thrustersHolder != null && maxThrusterVelocitySeen > 0)
+        if (maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity))
         {
-
-            float ratio = shipRigidbody.velocity.magnitude / maxThrusterVelocitySeen;
-            float clampedDot = Mathf.Clamp(Vector2.Dot(shipTransform.up, shipTransform.rigidbody.velocity.normalized), 0, 1);
-
-            SetThrusterPercentage(ratio * clampedDot);
+            maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
         }
+
+        SetThrusterPercentage();
+        //if (Network.isServer && thrustersHolder != null && maxThrusterVelocitySeen > 0)
+        //{
+
+        //    SetThrusterPercentage(ratio * clampedDot);
+        //}
 
     }
 
@@ -227,11 +232,27 @@ public class Ship : MonoBehaviour
 
     }
 
-    public virtual void RotateTowards(Vector3 position)
+    public virtual void RotateTowards(Vector3 targetPosition)
     {
-        Vector3 dir = Vector3.Normalize(position - shipTransform.position);
-        Quaternion lookRotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-        rigidbody.MoveRotation(Quaternion.Slerp(shipTransform.rotation, lookRotation, GetRotateSpeed() * Time.deltaTime));
+        Vector2 targetDirection = targetPosition - transform.position;
+        float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
+        float currentAngle = transform.rotation.eulerAngles.z;
+
+        float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
+        currentAngularVelocity = nextAngle - currentAngle;
+
+        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
+        }
+        else
+        {
+            Quaternion rotate = Quaternion.LookRotation(targetDirection, Vector3.back);
+            rotate.x = 0;
+            rotate.y = 0;
+
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() / 50 * Time.deltaTime);
+        }
     }
 
     public float GetCalculatedSizeByPosition(Vector2 position_)
@@ -287,16 +308,17 @@ public class Ship : MonoBehaviour
         return weaponRange;
     }
 
-    public void SetThrusterPercentage(float percentage)
+    public void SetThrusterPercentage()
     {
-        networkView.RPC("PropagateNewThrusterPercentage", RPCMode.All, percentage);
+        networkView.RPC("PropagateNewThrusterPercentage", RPCMode.All, maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
     }
+
     [RPC]
-    void PropagateNewThrusterPercentage(float percentage)
+    void PropagateNewThrusterPercentage(float maxThrusterVelocitySeen_, float currentAngularVelocity_, float maxAngularVelocitySeen_)
     {
         foreach (Thruster thruster in thrusters)
         {
-            thruster.SetPercentage(percentage);
+            thruster.Calculate(maxThrusterVelocitySeen_, currentAngularVelocity_, maxAngularVelocitySeen_);
         }
     }
     public void ResetThrusters()
@@ -348,24 +370,48 @@ public class Ship : MonoBehaviour
     public void ResetThrusterObjects()
     {
         thrustersHolder = GetThrusterHolder();
-        afterburnersHolder = thrustersHolder.transform.FindChild("Afterburners");
+        afterburnersHolder = thrustersHolder.FindChild("Afterburners");
+        Transform rcsholder = transform.FindChild("RCS");
 
         //if there are afterburners, take 1 away since the afterburner holder is a child but not a thruster itself
-        thrusters = new Thruster[afterburnersHolder != null ? thrustersHolder.transform.childCount - 1 : thrustersHolder.transform.childCount];
-
-
-
-        for (int i = 0, a = 0; i < thrusters.Length; )
+        int thrusterCount = thrustersHolder.childCount;
+        if (afterburnersHolder != null)
         {
-            GameObject child = thrustersHolder.transform.GetChild(a).gameObject;
+            thrusterCount--;
+        }
+        if (rcsholder != null)
+        {
+            thrusterCount += rcsholder.childCount;
+        }
+
+
+        thrusters = new Thruster[thrusterCount];
+        int position = 0;
+
+        for (int a = 0; position < thrusters.Length && a < thrustersHolder.childCount; )
+        {
+            GameObject child = thrustersHolder.GetChild(a).gameObject;
             ++a;
             if (child != null && !child.name.Equals("Afterburners"))
             {
-                thrusters[i] = child.GetComponent<Thruster>();
-                ++i;
+                thrusters[position] = child.GetComponent<Thruster>();
+                ++position;
             }
         }
 
+        if (rcsholder != null)
+        {
+            for (int a = 0; position < thrusters.Length && a < rcsholder.childCount; )
+            {
+                GameObject child = rcsholder.GetChild(a).gameObject;
+                ++a;
+                if (child != null)
+                {
+                    thrusters[position] = child.GetComponent<Thruster>();
+                    ++position;
+                }
+            }
+        }
 
         if (afterburnersHolder != null)
         {
