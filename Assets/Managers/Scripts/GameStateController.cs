@@ -187,19 +187,33 @@ public class GameStateController : MonoBehaviour
 
 	public void RequestFastSpawnOfPlayer(NetworkPlayer player)
 	{
-		Debug.Log ("Player requested fast respawn of player: " + GetNameFromNetworkPlayer(player));
-		networkView.RPC("SpawnAShip", player, player);
-		networkView.RPC ("ChangeToInGame", player);
-
-		networkView.RPC ("PropagateNonDeadPlayer", RPCMode.Others, player);
-		for(int i = 0; i < m_deadPlayers.Count; i++)
-		{
-			if(m_deadPlayers[i].m_playerObject.m_netPlayer == player)
-			{
-				m_deadPlayers.RemoveAt(i);
-				break;
-			}
-		}
+		if (Network.isServer)
+        {
+            Debug.Log ("Player requested fast respawn of player: " + GetNameFromNetworkPlayer(player));
+            
+            // We need to check if we are respawning the host
+            if (player == Network.player)
+            {
+                SpawnAShip (player);
+                ChangeToInGame ();
+            }
+               
+            else
+            {
+                networkView.RPC("SpawnAShip", player, player);
+                networkView.RPC ("ChangeToInGame", player);
+            }
+            
+            networkView.RPC ("PropagateNonDeadPlayer", RPCMode.Others, player);
+            for(int i = 0; i < m_deadPlayers.Count; i++)
+            {
+                if(m_deadPlayers[i].m_playerObject.m_netPlayer == player)
+                {
+                        m_deadPlayers.RemoveAt(i);
+                        break;
+                }
+            }
+        }
 	}
 
 	void OnDisconnectedFromServer(NetworkDisconnection info)
@@ -261,51 +275,52 @@ public class GameStateController : MonoBehaviour
 			//foreach(DeadPlayer deadP in m_deadPlayers)
 			for(int i = 0; i < m_deadPlayers.Count; i++)
 			{
-				if(m_deadPlayers[i].m_needsChecking)
+				m_deadPlayers[i].m_deadTimer = Mathf.Max (0f, m_deadPlayers[i].m_deadTimer - Time.deltaTime);
+				if(Network.isServer)
 				{
-					m_deadPlayers[i].m_deadTimer -= Time.deltaTime;
-					if(Network.isServer)
+					if(m_deadPlayers[i].m_deadTimer <= 0)
 					{
-						if(m_deadPlayers[i].m_deadTimer <= 0)
+						//Try to respawn the player
+						CapitalShipScript cshipSc = m_ingameCapitalShip.GetComponent<CapitalShipScript>();
+						if(cshipSc.CShipCanAfford(500))
 						{
-							//Try to respawn the player
-							CapitalShipScript cshipSc = m_ingameCapitalShip.GetComponent<CapitalShipScript>();
-							if(cshipSc.CShipCanAfford(500))
+							//Debug.Log ("[GSC]: Player: " + m_deadPlayers[i].m_playerObject.m_name + " is respawning...");
+
+							//Spend the respawn cost
+							cshipSc.SpendBankedCash(500);
+
+							//Tell the NetworkPlayer to spawn a new ship for themselves
+
+							//If the server is the dead one, then use the local version
+							if (m_deadPlayers[i].m_playerObject.m_netPlayer == Network.player)
 							{
-								//Debug.Log ("[GSC]: Player: " + m_deadPlayers[i].m_playerObject.m_name + " is respawning...");
-
-								//Spend the respawn cost
-								cshipSc.SpendBankedCash(500);
-
-								//Tell the NetworkPlayer to spawn a new ship for themselves
-
-								//If the server is the dead one, then use the local version
-								if(m_deadPlayers[i].m_playerObject.m_netPlayer == Network.player)
-								{
-									Debug.Log ("Host respawned themselves.");
-									SpawnAShip(Network.player);
-									ChangeToInGame();
-								}
-								else
-								{
-									Debug.Log ("Telling remote player to respawn themselves.");
-									networkView.RPC("SpawnAShip", m_deadPlayers[i].m_playerObject.m_netPlayer, m_deadPlayers[i].m_playerObject.m_netPlayer);
-									networkView.RPC ("ChangeToInGame", m_deadPlayers[i].m_playerObject.m_netPlayer);
-								}
-
-								//Remove them from the deadList
-								networkView.RPC ("PropagateNonDeadPlayer", RPCMode.Others, m_deadPlayers[i].m_playerObject.m_netPlayer);
-								m_deadPlayers.RemoveAt(i--);
+								Debug.Log ("Host respawned themselves.");
+								SpawnAShip(Network.player);
+								ChangeToInGame();
 							}
 							else
 							{
-								//Alert the GUI that there are insufficient funds to respawn, then stop checking if we can afford
-								m_GUIManager.GetComponent<GUIManager>().AlertGUINoMoneyToRespawn(m_deadPlayers[i].m_playerObject.m_netPlayer);
-								m_deadPlayers[i].m_needsChecking = false;
+								Debug.Log ("Telling remote player to respawn themselves.");
+								networkView.RPC("SpawnAShip", m_deadPlayers[i].m_playerObject.m_netPlayer, m_deadPlayers[i].m_playerObject.m_netPlayer);
+								networkView.RPC ("ChangeToInGame", m_deadPlayers[i].m_playerObject.m_netPlayer);
+							}
+
+							//Remove them from the deadList
+							networkView.RPC ("PropagateNonDeadPlayer", RPCMode.Others, m_deadPlayers[i].m_playerObject.m_netPlayer);
+							m_deadPlayers.RemoveAt(i--);
+						}
+						else
+						{
+							if (m_deadPlayers[i].m_needsChecking)
+                            {
+                                //Alert the GUI that there are insufficient funds to respawn, then stop checking if we can afford
+							    m_GUIManager.GetComponent<GUIManager>().AlertGUINoMoneyToRespawn(m_deadPlayers[i].m_playerObject.m_netPlayer);
+                                m_deadPlayers[i].m_needsChecking = false;
 							}
 						}
 					}
 				}
+				
 			}
 		}
 	}
@@ -669,22 +684,27 @@ public class GameStateController : MonoBehaviour
 		m_GUIManager.GetComponent<GUIManager>().AlertGUIPlayerHasDied();
 		if(Network.isClient)
 		{
-			networkView.RPC("AlertHostPlayerHasDied", RPCMode.Server);
+			networkView.RPC("AlertHostPlayerHasDied", RPCMode.Server, false);
 			//m_deadPlayers.Add (new DeadPlayer(GetPlayerObjectFromNP(Network.player)));
 		}
 		else
-			AlertHostPlayerHasDied(new NetworkMessageInfo());
+        {
+            AlertHostPlayerHasDied (true, new NetworkMessageInfo());
+        }
 	}
 	
 	[RPC]
-	void AlertHostPlayerHasDied(NetworkMessageInfo info)
+	void AlertHostPlayerHasDied(bool isHost, NetworkMessageInfo info)
     {
 		if (Network.isServer)
         {
+            NetworkPlayer player = isHost ? Network.player : info.sender;
+            
             numDeadPCs++;
-            m_deadPlayers.Add(new DeadPlayer(GetPlayerObjectFromNP(info.sender)));
-            Debug.Log ("Host has been informed that player '" + GetNameFromNetworkPlayer(info.sender) + "' has died.");
-            networkView.RPC ("PropagateDeadPlayer", RPCMode.Others, info.sender);
+            
+            m_deadPlayers.Add(new DeadPlayer(GetPlayerObjectFromNP(player)));
+            Debug.Log ("Host has been informed that player '" + GetNameFromNetworkPlayer(player) + "' has died.");
+            networkView.RPC ("PropagateDeadPlayer", RPCMode.Others, player);
         }
         
 		//Let dead players remain dead. If the CShip gets through without them, good job!

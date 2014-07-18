@@ -604,7 +604,15 @@ public class GUIManager : MonoBehaviour
     {
         //m_noRespawnCash = true;
         Debug.Log("Alerting player '" + GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player) + "' that no money is available to respawn now.");
-        networkView.RPC("PropagateMoneyToRespawn", player, false);
+        if (player == Network.player)
+        {
+            PropagateMoneyToRespawn (true);
+        }
+        
+        else
+        {
+            networkView.RPC("PropagateMoneyToRespawn", player, true);
+        }
     }
     [RPC]
     void PropagateMoneyToRespawn(bool value)
@@ -614,9 +622,23 @@ public class GUIManager : MonoBehaviour
     public void AlertGUIMoneyToRespawn(NetworkPlayer player)
     {
         Debug.Log("Alerting player '" + GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player) + "' that money is available to respawn now.");
-        networkView.RPC("PropagateMoneyToRespawn", player, true);
+        
+        if (player == Network.player)
+        {
+            PropagateMoneyToRespawn (false);
+        }
+        
+        else
+        {
+            networkView.RPC("PropagateMoneyToRespawn", player, false);
+        }
     }
     bool m_noRespawnCash = false;
+    
+    public bool GetNoRespawnCash()
+    {
+        return m_noRespawnCash;
+    }
 
     float nativeWidth = 1600;
     float nativeHeight = 900;
