@@ -678,11 +678,15 @@ public class GameStateController : MonoBehaviour
 	
 	[RPC]
 	void AlertHostPlayerHasDied(NetworkMessageInfo info)
-	{
-		numDeadPCs++;
-		m_deadPlayers.Add(new DeadPlayer(GetPlayerObjectFromNP(info.sender)));
-		Debug.Log ("Host has been informed that player '" + GetNameFromNetworkPlayer(info.sender) + "' has died.");
-		networkView.RPC ("PropagateDeadPlayer", RPCMode.All, info.sender);
+    {
+		if (Network.isServer)
+        {
+            numDeadPCs++;
+            m_deadPlayers.Add(new DeadPlayer(GetPlayerObjectFromNP(info.sender)));
+            Debug.Log ("Host has been informed that player '" + GetNameFromNetworkPlayer(info.sender) + "' has died.");
+            networkView.RPC ("PropagateDeadPlayer", RPCMode.Others, info.sender);
+        }
+        
 		//Let dead players remain dead. If the CShip gets through without them, good job!
 		/*if(numDeadPCs >= Network.connections.Length + 1)
 		{
