@@ -1782,7 +1782,7 @@ public class GUIManager : MonoBehaviour
 					{
 						GUI.DrawTexture(new Rect(396, 221, 403, 460), m_smallShopTexture);
 						int hpPercent = (int)(thisPlayerHP.GetHPPercentage() * 100.0f);
-						GUI.Button (new Rect(695, 440, 90, 40), hpPercent.ToString() + "%", m_nonBoxStyle);
+						GUI.Label (new Rect(695, 440, 90, 40), hpPercent.ToString() + "%", m_nonBoxStyle);
 					}
 					else
 					{
@@ -1917,8 +1917,9 @@ public class GUIManager : MonoBehaviour
 
 						if(GUI.Button (new Rect(700, 440, 70, 40), "Confirm"))
 						{
-                            int cost = m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex);
+                            //int cost = m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex);
                             shopInv.RequestTicketValidityCheck(m_currentTicket);
+                            Debug.Log ("Requested confirm buy of item, using ticket: " + m_currentTicket.ToString());
                             StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
 						}
 

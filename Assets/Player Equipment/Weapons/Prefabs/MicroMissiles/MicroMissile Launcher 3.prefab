@@ -130,7 +130,7 @@ MonoBehaviour:
   m_barrelsShouldRecoil: 0
   m_singleFirePointPerShot: 0
   m_fireAllShotsAtOnce: 0
-  m_sequentialFireTime: 2
+  m_sequentialFireTime: .800000012
   m_spreadFactor: 20
   m_evenSpread: 0
   m_shotsPerFire: 18
