@@ -676,6 +676,11 @@ public class GUIManager : MonoBehaviour
                     DrawFailedConnectByName();
                     break;
                 }
+            case GameState.InGameConnectionLost:
+                {
+                    DrawLostConnection();
+                    break;
+                }
         }
     }
 
@@ -694,7 +699,15 @@ public class GUIManager : MonoBehaviour
     [SerializeField]
     GUIStyle m_invisibleStyle;
 
-
+    void DrawLostConnection()
+    {
+        GUI.DrawTexture(new Rect(600, 350, 400, 200), m_menuBackground);
+        GUI.Label(new Rect(650, 400, 300, 50), "The host has disconnected.", m_nonBoxStyle);
+        if (GUI.Button(new Rect(750, 500, 100, 50), "Return to menu", m_sharedGUIStyle))
+        {
+            Application.LoadLevel(0);
+        }
+    }
 
     /* GUI Funcs */
     void DrawFailedConnectByName()
@@ -1657,9 +1670,10 @@ public class GUIManager : MonoBehaviour
 					Event currentEvent = Event.current;
 					Vector3 mousePos = currentEvent.mousePosition;
 					drawnItems.Clear();
+                    drawnItemsSecondary.Clear();
 
 					//Undertex
-					GUI.DrawTexture(new Rect(396, 86, 807, 727), m_shopBaseTexture);
+			        GUI.DrawTexture(new Rect(396, 86, 807, 727), m_shopBaseTexture);
 
 					/*Do the two inventory lists*/
 					//Player - left
@@ -1748,10 +1762,10 @@ public class GUIManager : MonoBehaviour
 						if (iconLeftX >= 324.0f)
 						{
 							
-							drawnItems.Add(weaponTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>());
-							drawnItems.Add(shieldTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>());
-							drawnItems.Add(platingTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>());
-							drawnItems.Add(engineTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>());
+							drawnItemsSecondary.Add(weaponTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>());
+                            drawnItemsSecondary.Add(shieldTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>());
+                            drawnItemsSecondary.Add(platingTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>());
+                            drawnItemsSecondary.Add(engineTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>());
 
 							GUI.DrawTexture(weaponTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon());
 							GUI.DrawTexture(shieldTemp, thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon());
@@ -1767,10 +1781,20 @@ public class GUIManager : MonoBehaviour
 						{
 							if (key.Contains(mousePos))
 							{
-								string text = drawnItems[key].GetShopText();
+                                int id = m_shopDockedAt.GetComponent<ShopScript>().GetIDIfItemPresent(drawnItems[key]);
+                                string text = drawnItems[key].GetShopText(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(id));
 								DrawHoverText(text, mousePos);
 							}
 						}
+                                                
+                        foreach (Rect key in drawnItemsSecondary.Keys)
+                        {
+                            if (key.Contains(mousePos))
+                            {
+                                string text = drawnItemsSecondary[key].GetShopText();
+                                DrawHoverText(text, mousePos);  
+                            }
+                        }
 					}
 					else
 					{
@@ -1972,12 +1996,14 @@ public class GUIManager : MonoBehaviour
         //Warning
         if (m_shouldShowWarningAttack)
         {
-            GUI.Label(new Rect(700, 120, 200, 80), "Capital ship is under attack!");
+            //GUI.Label(new Rect(700, 120, 200, 80), "Capital ship is under attack!");
+            GUI.Label (new Rect(1205, 130, 220, 44), "Capital ship under attack!", m_sharedGUIStyle);
         }
 
         if (m_shopResetDisplayTimer < 7.5f)
         {
-            GUI.Label(new Rect(700, 200, 200, 80), "Shops have restocked their inventories!");
+            //GUI.Label(new Rect(700, 200, 200, 80), "Shops have restocked their inventories!");
+            GUI.Label (new Rect(175, 130, 220, 44), "Shops have restocked!", m_sharedGUIStyle);
         }
 
         //Should round over
@@ -2000,15 +2026,16 @@ public class GUIManager : MonoBehaviour
 
         if (m_PlayerHasDied)
         {
-            GUI.Label(new Rect(700, 130, 200, 80), "You have been destroyed");
+            GUI.DrawTexture(new Rect(650, 100, 300, 250), m_menuBackground);
+            GUI.Label(new Rect(700, 130, 200, 80), "You have been destroyed", m_nonBoxBigStyle);
 
             if (m_noRespawnCash)
             {
-                GUI.Label(new Rect(700, 200, 200, 80), "Not enough banked cash to respawn! You need $500.");
+                GUI.Label(new Rect(700, 200, 200, 80), "Not enough banked cash to respawn! You need $500.", m_nonBoxStyle);
             }
             else
             {
-                GUI.Label(new Rect(700, 200, 200, 80), "Respawn in: " + System.Math.Round(m_deathTimer, System.MidpointRounding.AwayFromZero));
+                GUI.Label(new Rect(700, 200, 200, 80), "Respawn in: " + System.Math.Round(m_deathTimer, System.MidpointRounding.AwayFromZero), m_nonBoxStyle);
             }
         }
 
@@ -2029,16 +2056,17 @@ public class GUIManager : MonoBehaviour
             }
             else if (m_shouldShowLossSplash)
             {
-                GUI.Box(new Rect(400, 100, 800, 700), "");
-                GUI.Label(new Rect(700, 130, 200, 80), "Defeat!");
-                GUI.Label(new Rect(700, 200, 200, 80), "The capital ship was destroyed");
+                //GUI.Box(new Rect(400, 100, 800, 700), "");
+                GUI.DrawTexture(new Rect(600, 100, 400, 400), m_menuBackground);
+                GUI.Label(new Rect(700, 130, 200, 80), "Defeat!", m_nonBoxBigStyle);
+                GUI.Label(new Rect(700, 200, 200, 80), "The capital ship was destroyed", m_nonBoxStyle);
 
                 Time.timeScale = 0.0f;
                 int seconds = (int)m_gameTimer;
                 string displayedTime2 = string.Format("{0:00}:{1:00}", (seconds / 60) % 60, seconds % 60);
-                GUI.Label(new Rect(700, 300, 200, 80), "Final time: " + displayedTime2);
+                GUI.Label(new Rect(700, 300, 200, 80), "Final time: " + displayedTime2, m_nonBoxStyle);
 
-                if (GUI.Button(new Rect(800, 400, 100, 80), "Restart"))
+                if (GUI.Button(new Rect(750, 400, 100, 80), "Restart", m_sharedGUIStyle))
                 {
                     Time.timeScale = 1.0f;
                     Network.Disconnect();
@@ -2068,19 +2096,9 @@ public class GUIManager : MonoBehaviour
             //Overlay if OoB
             if (isOoBCountingDown)
             {
-                GUI.Box(new Rect(600, 350, 400, 200), "");
-                GUI.Label(new Rect(650, 400, 300, 50), "You are leaving the sector, turn back!");
-                GUI.Label(new Rect(750, 500, 100, 50), System.Math.Round(outOfBoundsTimer, System.MidpointRounding.AwayFromZero).ToString());
-            }
-
-            if (m_shouldShowDisconnectedSplash)
-            {
-                GUI.Box(new Rect(600, 350, 400, 200), "");
-                GUI.Label(new Rect(650, 400, 300, 50), "The host has disconnected.");
-                if (GUI.Button(new Rect(750, 500, 100, 50), "Return to menu"))
-                {
-                    Application.LoadLevel(0);
-                }
+                GUI.DrawTexture(new Rect(600, 350, 400, 200), m_menuBackground);
+                GUI.Label(new Rect(650, 400, 300, 50), "You are leaving the sector, turn back!", m_nonBoxStyle);
+                GUI.Label(new Rect(750, 500, 100, 50), System.Math.Round(outOfBoundsTimer, System.MidpointRounding.AwayFromZero).ToString(), m_nonBoxStyle);
             }
 
             if (!Screen.showCursor)
@@ -2240,14 +2258,28 @@ public class GUIManager : MonoBehaviour
         }
         else
         {
-            GUI.Label(new Rect(50, 50, 150, 50), "DESTROYED");
+            GUI.DrawTexture(new Rect(0, 0, 150, 150), m_iconBorder);
+            GUI.DrawTexture(new Rect(0, 0, 150, 150), m_playerIcon);
+            
+            GUI.DrawTexture(new Rect(150, 0, 350, 50), m_healthBackground);
+
+            GUI.DrawTexture(new Rect(175, 80, 10, 50), m_barEnd);
+            GUI.DrawTexture(new Rect(185, 80, 200, 50), m_barMid);
+            GUI.DrawTexture(new Rect(395, 80, -10, 50), m_barEnd);
+            GUI.Label(new Rect(195, 85, 180, 44), "--", m_nonBoxStyle);
         }
 
         //Now show CShip HP
         //GUI.Label (new Rect(1300, 600, 200, 80), "Capital Ship Status");
         if (CShip == null)
         {
-            GUI.Label(new Rect(1300, 700, 200, 80), "DESTROYED");
+            GUI.DrawTexture(new Rect(1450, 0, 150, 150), m_iconBorder);
+            GUI.DrawTexture(new Rect(1450, 0, 150, 150), m_CShipIcon);
+            
+            GUI.DrawTexture(new Rect(1100, 0, 350, 50), m_healthBackground);
+            GUI.DrawTexture(new Rect(1205, 80, 10, 50), m_barEnd);
+            GUI.DrawTexture(new Rect(1215, 80, 200, 50), m_barMid);
+            GUI.DrawTexture(new Rect(1425, 80, -10, 50), m_barEnd);
         }
         else
         {
@@ -3315,6 +3347,7 @@ public class GUIManager : MonoBehaviour
     Vector2 cshipScrollPosition = Vector2.zero;
 
     Dictionary<Rect, ItemScript> drawnItems = new Dictionary<Rect, ItemScript>();
+    Dictionary<Rect, ItemScript> drawnItemsSecondary = new Dictionary<Rect, ItemScript>();
 
     //bool m_requestedTicketIsValid = false;
     void DrawCShipDockOverlay()
@@ -4484,6 +4517,10 @@ public class GUIManager : MonoBehaviour
                     m_maxButton = 1;
                     break;
                 }
+                case GameState.InGameConnectionLost:
+                {
+                    break;
+                }
         }
     }
 
@@ -4591,6 +4628,7 @@ public class GUIManager : MonoBehaviour
     public void AlertGUIDeathSequenceBegins()
     {
         m_cshipDying = true;
+        Screen.showCursor = false;
 
         //Make sure we unset all popup bools
         m_isOnMap = false;

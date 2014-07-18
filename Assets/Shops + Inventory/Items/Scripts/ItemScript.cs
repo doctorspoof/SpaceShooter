@@ -78,4 +78,13 @@ public class ItemScript : MonoBehaviour
 
 		return (m_equipmentName + System.Environment.NewLine + m_equipmentDescription);
 	}
+    public string GetShopText(int price)
+    {
+        if(m_equipmentDescription == null)
+        {
+            m_equipmentDescription = ItemDescriptionHolder.GetDescriptionFromID(m_equipmentID);
+        }
+        
+        return (m_equipmentName + System.Environment.NewLine + "Cost: $" + price.ToString() + System.Environment.NewLine + m_equipmentDescription);
+    }
 }

@@ -101,7 +101,17 @@ public class ShopScript : MonoBehaviour
 		}
 	}
 
-	
+	public int GetIDIfItemPresent(ItemScript item)
+    {
+        for(int i = 0; i < m_shopInventory.GetCount(); i++)
+        {
+            if(m_shopInventory[i] == item)
+                return i;
+        }
+
+        Debug.LogWarning ("Couldn't find item: " + item);
+        return -1;
+    }
 	
 	/// Behaviour functions
 	// Initialise arrays during load

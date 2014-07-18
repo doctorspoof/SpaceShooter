@@ -12,7 +12,8 @@ public enum GameState
 	OptionMenu = 5,
 	AttemptingConnect = 6,
 	FailedConnectName = 7,
-	InGame = 10
+	InGame = 10,
+    InGameConnectionLost = 11
 }
 
 [System.Serializable]
@@ -204,10 +205,12 @@ public class GameStateController : MonoBehaviour
 
 	void OnDisconnectedFromServer(NetworkDisconnection info)
 	{
-		if(info == NetworkDisconnection.LostConnection)
+        //Debug.Log ("Disconnected from server has fired");
+		if(Network.isClient)
 		{
 			Debug.Log ("Lost connection to host...");
-			m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
+            ChangeGameState(GameState.InGameConnectionLost);
+			//m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
 		}
 	}
 

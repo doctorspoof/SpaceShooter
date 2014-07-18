@@ -7343,8 +7343,8 @@ MonoBehaviour:
   m_reloadBar: {fileID: 2800000, guid: 31ad552df7ddb2644bc087097e05976a, type: 3}
   m_currentWeaponNeedsLockon: 0
   m_isOnFollowMap: 1
-  m_shopBaseTexture: {fileID: 0}
-  m_smallShopTexture: {fileID: 0}
+  m_shopBaseTexture: {fileID: 2800000, guid: 225c214fb08635948a187813c1f8ec6f, type: 3}
+  m_smallShopTexture: {fileID: 2800000, guid: 48917559ca6eef74abb7ce749d568413, type: 3}
   m_mapOverlay: {fileID: 2800000, guid: 3d949cc67cbce174cbb4d136e4837ac3, type: 3}
   m_selfPBlob: {fileID: 2800000, guid: c7f183f0398bb5a41a901bae350820d9, type: 3}
   m_otherPBlob: {fileID: 2800000, guid: 09202667be749984cb4cc9a180a146a6, type: 3}
@@ -9357,6 +9357,14 @@ Prefab:
       propertyPath: m_hoverBoxTextStyle.m_Padding.m_Bottom
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
+      propertyPath: m_shopBaseTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 225c214fb08635948a187813c1f8ec6f, type: 3}
+    - target: {fileID: 11400000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
+      propertyPath: m_smallShopTexture
+      value: 
+      objectReference: {fileID: 2800000, guid: 48917559ca6eef74abb7ce749d568413, type: 3}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0f6e4de6af6fa1746821299aa485ff2d, type: 2}
   m_RootGameObject: {fileID: 1614308795}
