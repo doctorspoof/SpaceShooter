@@ -1677,7 +1677,7 @@ public class GUIManager : MonoBehaviour
 
                     if(m_transferFailed)
                     {
-                        GUI.Label(new Rect(700, 200, 200, 50), transferFailedMessage);
+                        GUI.Label(new Rect(600, 180, 400, 50), transferFailedMessage, m_nonBoxStyle);
                     }
 
 					/*Do the two inventory lists*/
@@ -3369,7 +3369,7 @@ public class GUIManager : MonoBehaviour
         
         if(m_transferFailed)
         {
-            GUI.Label(new Rect(700, 200, 200, 50), transferFailedMessage);
+            GUI.Label(new Rect(600, 180, 400, 50), transferFailedMessage, m_nonBoxStyle);
         }
 
         //Show bank status
