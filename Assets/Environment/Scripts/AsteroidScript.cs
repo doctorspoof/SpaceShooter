@@ -204,7 +204,7 @@ public class AsteroidScript : MonoBehaviour
 		while(t < 1)
 		{
 			t += Time.deltaTime;
-
+            
 			rigidbody.MovePosition(rigidbody.position + (rigidbody.velocity * Time.deltaTime * Time.deltaTime));
 			yield return 0;
 		}
@@ -226,8 +226,8 @@ public class AsteroidScript : MonoBehaviour
 								shotDirection * m_fragmentSplitForce;
 
 			PerformSplit (shotDirection, impactForce);
-		}
-	}
+        }
+    }
 
 
 	public void SplitAsteroid (Vector3 hitterPosition)
@@ -317,9 +317,7 @@ public class AsteroidScript : MonoBehaviour
 			AsteroidScript script = asteroid.GetComponent<AsteroidScript>();
 			if (script)
 			{
-                Vector2 newScale = new Vector2 (transform.localScale.x / m_splittingFragments, transform.localScale.y / m_splittingFragments);
-                
-				script.TellToPropagateScaleAndMass (newScale, rigidbody.mass / m_splittingFragments);
+				script.TellToPropagateScaleAndMass (transform.localScale / m_splittingFragments, rigidbody.mass / m_splittingFragments);
                 script.DelayedVelocitySync (Time.fixedDeltaTime);
                 script.isFirstAsteroid = false;
 			}
@@ -359,7 +357,7 @@ public class AsteroidScript : MonoBehaviour
 	}
 
 
-	public void TellToPropagateScaleAndMass (Vector2 scale, float mass)
+	public void TellToPropagateScaleAndMass (Vector3 scale, float mass)
 	{
 		networkView.RPC ("PropagateScaleAndMass", RPCMode.All, scale, mass);
 	}
@@ -389,10 +387,10 @@ public class AsteroidScript : MonoBehaviour
 
 
 	[RPC]
-	void PropagateScaleAndMass (Vector2 scale, float mass)
+	void PropagateScaleAndMass (Vector3 scale, float mass)
 	{
 		this.rigidbody.mass = mass;
-		this.transform.localScale = new Vector3 (scale.x, scale.y, transform.localScale.z);
+		this.transform.localScale = scale;
 	}
 	
 	
