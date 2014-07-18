@@ -1675,6 +1675,11 @@ public class GUIManager : MonoBehaviour
 					//Undertex
 			        GUI.DrawTexture(new Rect(396, 86, 807, 727), m_shopBaseTexture);
 
+                    if(m_transferFailed)
+                    {
+                        GUI.Label(new Rect(700, 200, 200, 50), transferFailedMessage);
+                    }
+
 					/*Do the two inventory lists*/
 					//Player - left
 					GUI.Label(new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
@@ -1726,13 +1731,18 @@ public class GUIManager : MonoBehaviour
     						if (currentEvent.type == EventType.MouseDown)
     						{
     							bool insideModR = modR.Contains(mousePos);
-    							if (!m_shopConfirmBuy && thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(i)) && modR.Contains(mousePos) && !m_isRequestingItem)
+    							if (!m_shopConfirmBuy && modR.Contains(mousePos) && !m_isRequestingItem)
     							{
-    								//Since we're a shop, on mouseDown, open the item confirmation box
-                                    shopInv.RequestServerItem(shopInv[i].m_equipmentID, i);
-                                    StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.ItemTake, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
-    								//m_confirmBuyItem = shopInv[i];
-    								//m_shopConfirmBuy = true;
+                                    if(thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(i)))
+                                    {
+        								//Since we're a shop, on mouseDown, open the item confirmation box
+                                        shopInv.RequestServerItem(shopInv[i].m_equipmentID, i);
+                                        StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.ItemTake, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
+        								//m_confirmBuyItem = shopInv[i];
+        								//m_shopConfirmBuy = true;
+                                    }
+                                    else
+                                        StartCoroutine(CountdownTransferFailedPopup(false));
     							}
     						}
                         }
@@ -3356,6 +3366,11 @@ public class GUIManager : MonoBehaviour
         Vector3 mousePos = currentEvent.mousePosition;
 
         GUI.DrawTexture(new Rect(396, 86, 807, 727), m_DockBackground);
+        
+        if(m_transferFailed)
+        {
+            GUI.Label(new Rect(700, 200, 200, 50), transferFailedMessage);
+        }
 
         //Show bank status
         GUI.Label(new Rect(1012, 140, 134, 40), "$" + CShip.GetComponent<CapitalShipScript>().GetBankedCash(), m_nonBoxStyle);
@@ -3665,6 +3680,8 @@ public class GUIManager : MonoBehaviour
                     CShip.GetComponent<CapitalShipScript>().SpendBankedCash(fastSpawnCost);
                     RequestServerRespawnPlayer(deadPlayers[i].m_playerObject.m_netPlayer);
                 }
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(false));
             }
         }
 
@@ -3919,6 +3936,8 @@ public class GUIManager : MonoBehaviour
 						thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
 					}
                 }
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(true));           
 
 	            break;
 	        }
@@ -3927,11 +3946,16 @@ public class GUIManager : MonoBehaviour
 	            m_currentTicket = inventory.GetItemRequestResponse();
 	            Debug.Log("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
                 
-                if(fromShop && m_currentTicket.IsValid())
+                if(m_currentTicket.IsValid())
                 {
-                    m_shopConfirmBuy = true;
-                    m_confirmBuyItem = inventory[m_currentTicket.itemIndex];
+                    if(fromShop)
+                    {
+                        m_shopConfirmBuy = true;
+                        m_confirmBuyItem = inventory[m_currentTicket.itemIndex];
+                    }
                 }
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(true));
             
 	            break;
 	        }
@@ -4047,6 +4071,8 @@ public class GUIManager : MonoBehaviour
 					}
 
 				}
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(true));
 				break;
 	        }
         }
@@ -4061,7 +4087,26 @@ public class GUIManager : MonoBehaviour
         }
     }
 
-	
+	bool m_transferFailed = false;
+    string transferFailedMessage = "Transfer failed - Item Requested Elsewhere";
+    IEnumerator CountdownTransferFailedPopup(bool transfer)
+    {
+        if(transfer)
+            transferFailedMessage = "Transfer failed - Item Requested Elsewhere";
+        else
+            transferFailedMessage = "Insufficient funds";
+        m_transferFailed = true;
+        float timer = 1.5f;
+        
+        while(timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            m_transferFailed = true;
+            yield return 0;
+        }
+        
+        m_transferFailed = false;
+    }
 
     void RequestServerRespawnPlayer(NetworkPlayer player)
     {
@@ -4519,6 +4564,7 @@ public class GUIManager : MonoBehaviour
                 }
                 case GameState.InGameConnectionLost:
                 {
+                    Screen.showCursor = true;
                     break;
                 }
         }
