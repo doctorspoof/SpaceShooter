@@ -379,7 +379,7 @@ public class HealthScript : MonoBehaviour
 	[RPC]
 	void PropagateDamageAndMaxs(int currentHP, int maxHP, int currentShield, int maxShield)
 	{
-		Debug.Log ("Recieved values: " + currentHP + "/" + maxHP + ".");
+		//Debug.Log ("Recieved values: " + currentHP + "/" + maxHP + ".");
 		m_currentHealth = currentHP;
 		m_maximumHealth = maxHP;
 		m_currentShield = currentShield;

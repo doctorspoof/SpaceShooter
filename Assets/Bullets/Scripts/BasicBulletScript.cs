@@ -76,6 +76,8 @@ public class BasicBulletScript : MonoBehaviour
 
 
     /// Internal data
+    bool m_bulletBeenDestroyed = false;
+    
     float m_bulletDamageOverflow = 0f;						// Used to catch lost damage from piercing due to float -> int casting
     float m_bulletSpeedModifier = 0f; 						// Changes the bullet speed to reflect the speed of the firer, it also maintains the minimum speed if necessary
     float m_currentLifetime = 0f;							// Simply keeps an eye on the current lifetime
@@ -337,15 +339,15 @@ public class BasicBulletScript : MonoBehaviour
 
     [RPC] public void DetonateBullet()
     {
-        if (Network.isServer)
+        if (Network.isServer && !m_bulletBeenDestroyed)
         {
+            m_bulletBeenDestroyed = true;
             networkView.RPC ("DetonateBullet", RPCMode.Others);
         }
 
 		// AOE bullets get destroyed by the ExplodeBullet() function
 		if (m_isAOE)
-        {
-            
+        {   
             DamageAOE();
 
             ExplodeBullet();
