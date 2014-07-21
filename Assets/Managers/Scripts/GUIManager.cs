@@ -3711,6 +3711,45 @@ public class GUIManager : MonoBehaviour
                     StartCoroutine(CountdownTransferFailedPopup(false));
             }
         }
+        
+        //Repair
+        float damagePercent = 1.0f - thisPlayerHP.GetHPPercentage();
+        int damage = thisPlayerHP.GetMaxHP() - thisPlayerHP.GetCurrHP();
+        int cost = damage * 5;
+        
+        if(damage == 0)
+        {
+            GUI.Label (new Rect(430, 130, 120, 83), "Repair -- No damage!", m_sharedGUIStyle);
+        }
+        else
+        {
+            if(thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(cost))
+            {
+                if(GUI.Button(new Rect(430, 130, 120, 83), "Fully repair ship for $" + cost, m_sharedGUIStyle))
+                {
+                    thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(cost);
+                    thisPlayerHP.RepairHP(damage);
+                }
+            }
+            else if(thisPlayerHP.GetComponent<PlayerControlScript>().GetSpaceBucks() == 0)
+            {
+                GUI.Label (new Rect(430, 130, 120, 83), "Repair -- No cash!", m_sharedGUIStyle);
+            }
+            else
+            {
+                //If they can't afford full, work out how much they can afford
+                int cash = thisPlayerHP.GetComponent<PlayerControlScript>().GetSpaceBucks();
+                int damageRepairable = (int)(cash / 5);
+                int finalCost = damageRepairable * 5;
+                int repairPercentage = (int)((float)damageRepairable / (float)thisPlayerHP.GetMaxHP() * 100.0f);
+                
+                if(GUI.Button (new Rect(430, 130, 120, 83), "Repair " + repairPercentage + "% for $" + finalCost, m_sharedGUIStyle))
+                {
+                    thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(finalCost);
+                    thisPlayerHP.RepairHP(damageRepairable);
+                }
+            }
+        }
 
         //Leave button
         if (!m_inGameMenuIsOpen && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
