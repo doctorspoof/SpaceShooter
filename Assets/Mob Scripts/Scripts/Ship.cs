@@ -120,16 +120,15 @@ public class Ship : MonoBehaviour
                 }
             }
         }
-
         // we cant calculate the max velocity neatly so we check to see if its larger
-        if (maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude)
+        if ((maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude) && (owner == Network.player || (!isPlayerControlScript && Network.isServer)))
         {
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
             UpdateThrusterVelocityMax();
         }
 
         //maxAngularVelocitySeen -= 0.05f;
-        if (maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity))
+        if ((maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity)) && (owner == Network.player || (!isPlayerControlScript && Network.isServer)))
         {
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
             UpdateThrusterAngularMax();

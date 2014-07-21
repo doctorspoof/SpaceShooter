@@ -954,8 +954,8 @@ MonoBehaviour:
   m_rotateSpeed: 50
   m_ramDamageMultiplier: 8
   maunuallySetWidthAndHeight: 0
-  minWeaponRange: 0
-  maxWeaponRange: 0
+  minWeaponRange: 40
+  maxWeaponRange: 40
   m_shipWidth: 3.79999995
   m_shipHeight: 3.79999995
   shipID: -1
