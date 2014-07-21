@@ -112,64 +112,67 @@ public class HealthScript : MonoBehaviour
 		//Debug.Log ("Object '" + name + " collided with object: '" + collision.gameObject.name + "'.");
 		//NOTE: This function should only apply damage to the other collider, since the function will be called on
 		// 		both sides
-		if(this.tag == "Enemy")
-		{
-			//If we're an enemy, check if the collider is the capital ship or the player
-			if(collision.gameObject.tag == "Capital" || collision.gameObject.tag == "Player")
-			{
-				//If it's a PC or the capital ship, work out how fast the collision was
-				//TODO: 
-				//Insert sounds here
-                Ship shipComponent = GetComponent<Ship>();
-
-				float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
-                int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
-				//Debug.Log("Applying " + PCdamage + " damage to PC.");
-				collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
-			}
-			else if(collision.gameObject.tag == "Asteroid")
-			{
-				//If the other collider is an asteroid, don't try to apply damage to it, just deal damage to self instead
-				int magnitude = (int)(collision.relativeVelocity.magnitude * 2.0f);
-				//Debug.Log ("Asteroid hit enemy for " + magnitude + " damage.");
-				DamageMob(magnitude, collision.gameObject);
-			}
-		}
-		else if(this.tag == "Capital" || this.tag == "Player")
-		{
-			//If we're the player or the capital ship, check if the collider is the enemy
-			if(collision.gameObject.tag == "Enemy")
-			{
-				//If it's an enemy, work out how fast the collision between the two is
-				float magnitude = collision.relativeVelocity.magnitude;
-				int NMdamage = 0;
-				if(this.GetComponent<PlayerControlScript>() != null)
-				{
-					NMdamage = (int)(magnitude * this.GetComponent<PlayerControlScript>().GetRamDam());
-				}
-				else
-				{
-					//TODO: Maybe parametise capital ship ram damage? (the 1.0f)
-					NMdamage = (int)(magnitude * 5.0f);
-				}
-				//Debug.Log ("Applying " + NMdamage + " damage to enemy.");
-				collision.gameObject.GetComponent<HealthScript>().DamageMob(NMdamage, this.gameObject);
-			}
-			else if(collision.gameObject.tag == "Asteroid")
-			{
-				if(this.gameObject.tag == "Capital" && Network.isClient)
-				{
-					//Do nothing
-				}
-				else
-				{
-					//If the other collider is an asteroid, don't try to apply damage to it, just deal damage to self instead
-					int magnitude = (int)(collision.relativeVelocity.magnitude * 2.0f);
-					//Debug.Log ("Asteroid hit player for " + magnitude + " damage.");
-					DamageMob(magnitude, collision.gameObject);
-				}
-			}
-		}
+        if (Network.isServer)
+        {
+            if(this.tag == "Enemy")
+            {
+                //If we're an enemy, check if the collider is the capital ship or the player
+                if(collision.gameObject.tag == "Capital" || collision.gameObject.tag == "Player")
+                {
+                    //If it's a PC or the capital ship, work out how fast the collision was
+                    //TODO: 
+                    //Insert sounds here
+                    Ship shipComponent = GetComponent<Ship>();
+                    
+                    float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
+                    int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
+                    //Debug.Log("Applying " + PCdamage + " damage to PC.");
+                    collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
+                }
+                else if(collision.gameObject.tag == "Asteroid")
+                {
+                    //If the other collider is an asteroid, don't try to apply damage to it, just deal damage to self instead
+                    int magnitude = (int)(collision.relativeVelocity.magnitude * 2.0f);
+                    //Debug.Log ("Asteroid hit enemy for " + magnitude + " damage.");
+                    DamageMob(magnitude, collision.gameObject);
+                }
+            }
+            else if(this.tag == "Capital" || this.tag == "Player")
+            {
+                //If we're the player or the capital ship, check if the collider is the enemy
+                if(collision.gameObject.tag == "Enemy")
+                {
+                    //If it's an enemy, work out how fast the collision between the two is
+                    float magnitude = collision.relativeVelocity.magnitude;
+                    int NMdamage = 0;
+                    if(this.GetComponent<PlayerControlScript>() != null)
+                    {
+                        NMdamage = (int)(magnitude * this.GetComponent<PlayerControlScript>().GetRamDam());
+                    }
+                    else
+                    {
+                        //TODO: Maybe parametise capital ship ram damage? (the 1.0f)
+                        NMdamage = (int)(magnitude * 5.0f);
+                    }
+                    //Debug.Log ("Applying " + NMdamage + " damage to enemy.");
+                    collision.gameObject.GetComponent<HealthScript>().DamageMob(NMdamage, this.gameObject);
+                }
+                else if(collision.gameObject.tag == "Asteroid")
+                {
+                    if(this.gameObject.tag == "Capital" && Network.isClient)
+                    {
+                        //Do nothing
+                    }
+                    else
+                    {
+                        //If the other collider is an asteroid, don't try to apply damage to it, just deal damage to self instead
+                        int magnitude = (int)(collision.relativeVelocity.magnitude * 2.0f);
+                        //Debug.Log ("Asteroid hit player for " + magnitude + " damage.");
+                        DamageMob(magnitude, collision.gameObject);
+                    }
+                }
+            }
+        }
 	}
 	
 	public void RepairHP(int amount)
