@@ -870,12 +870,12 @@ public sealed class NetworkInventory : MonoBehaviour
     // Used to perform a synchronised removal
     void PropagateRemovalAtIndex(ItemTicket ticket)
     {
-        Debug.Log(ticket.ToString());
+        //Debug.Log(ticket.ToString());
         if (ticket.IsValid())
         {
             // The correct index is guaranteed for the clients so only determine it for the server
             int index = Network.isServer ? DetermineTicketIndex(ticket) : ticket.itemIndex;
-            Debug.Log("Index: " + index);
+            //Debug.Log("Index: " + index);
             // Check if it is valid
             if (IsValidIndex(index))
             {
@@ -888,7 +888,7 @@ public sealed class NetworkInventory : MonoBehaviour
 
                 else
                 {
-                    Debug.Log("Removing at: " + index);
+                    //Debug.Log("Removing at: " + index);
                     m_inventory.RemoveAt(index);
                     m_isItemRequested.RemoveAt(index);
 
