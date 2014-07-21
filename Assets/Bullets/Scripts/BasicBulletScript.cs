@@ -339,24 +339,31 @@ public class BasicBulletScript : MonoBehaviour
 
     [RPC] public void DetonateBullet()
     {
-        if (Network.isServer && !m_bulletBeenDestroyed)
+        /*if (Network.isServer && !m_bulletBeenDestroyed)
         {
             m_bulletBeenDestroyed = true;
             networkView.RPC ("DetonateBullet", RPCMode.Others);
-        }
+        }*/
 
 		// AOE bullets get destroyed by the ExplodeBullet() function
 		if (m_isAOE)
-        {   
+        {  
+            if (Network.isServer && !m_bulletBeenDestroyed)
+            {
+                m_bulletBeenDestroyed = true;
+                networkView.RPC ("DetonateBullet", RPCMode.Others);
+            }  
+          
             DamageAOE();
 
             ExplodeBullet();
         }
 
 		// Ensures bullet is completely destroyed
-        else 
+        else if (Network.isServer && !m_bulletBeenDestroyed)
         {
-            Destroy(gameObject);
+            m_bulletBeenDestroyed = true;
+            Network.Destroy(gameObject);
         }
     }
 
