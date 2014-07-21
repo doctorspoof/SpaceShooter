@@ -167,6 +167,7 @@ public class PlayerControlScript : Ship
 		HealthScript HP = this.GetComponent<HealthScript>();
 		HP.EquipNewShield(ssc.GetShieldMaxCharge(), ssc.GetShieldRechargeRate(), ssc.GetShieldRechargeDelay());
 	}
+
 	public GameObject m_equippedEngineItem;
 	public void ResetEquippedEngine()
 	{
@@ -411,7 +412,9 @@ public class PlayerControlScript : Ship
 					RemoveItemFromInventory(m_playerInventory[slot]);
 
 					//Place old engine into inv
-					AddItemToInventory(temp);
+                    AddItemToInventory(temp);
+                    
+                    ResetThrusters();
 					break;
 				}
 				case ItemType.Plating:
