@@ -265,18 +265,19 @@ public class BasicBulletScript : MonoBehaviour
                     capital = (1 << Layers.capital),
                     enemy = (1 << Layers.enemy),
                     asteroid = (1 << Layers.asteroid),
-                    enemyCollide = (1 << Layers.enemyCollide);
+                    enemyCollide = (1 << Layers.enemyCollide),
+                    enemyDestructibleBullet = (1 << Layers.enemyDestructibleBullet);
 
         switch (this.gameObject.layer)
         {
             case Layers.playerBullet:
                 m_homingMask = enemy | enemyCollide;
-                m_aoeMask = m_homingMask | player | asteroid;
+                m_aoeMask = m_homingMask | enemyDestructibleBullet | player | asteroid;
                 break;
 
             case Layers.capitalBullet:
                 m_homingMask = enemy | enemyCollide;
-                m_aoeMask = m_homingMask | asteroid;
+                m_aoeMask = m_homingMask | enemyDestructibleBullet | asteroid;
                 break;
 
             case Layers.enemyBullet:
@@ -371,7 +372,17 @@ public class BasicBulletScript : MonoBehaviour
 	void ExplodeBullet()
 	{
 		Explode explode = GetComponent<Explode>();
-		explode.Fire();
+        
+        if (explode)
+        {
+            explode.Fire();
+        }
+        
+        else
+        {
+            Debug.LogError ("Unable to find Explode component on: " + name);
+        }
+		
 	}
 
 
