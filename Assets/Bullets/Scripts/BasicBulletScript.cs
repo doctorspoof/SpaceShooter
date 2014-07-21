@@ -394,7 +394,7 @@ public class BasicBulletScript : MonoBehaviour
                     if (incrementPierceCounter)
                     {
                         m_pastHits.Add(mob);
-                        ApplyPierceModifiers();
+                        networkView.RPC ("ApplyPierceModifiers", RPCMode.All);
                     }
                 }
 
@@ -408,7 +408,7 @@ public class BasicBulletScript : MonoBehaviour
 
 
     // Adjust bullet speed, bullet damage and increase the pierce counter
-    void ApplyPierceModifiers()
+    [RPC] void ApplyPierceModifiers()
     {
         // Update speed to correspond to the hit, ensure minimum speed is in effect using the bulletSpeedModifier property
         m_bulletSpeed *= m_pierceSpeedModifier;
@@ -439,11 +439,6 @@ public class BasicBulletScript : MonoBehaviour
 				case Accuracy.Off:
 					LowAccuracyAOE(m_aoeDamageAccuracy == Accuracy.Low);
 					break;
-			}
-			
-			if (m_isPiercing)
-			{
-				ApplyPierceModifiers();
 			}
 		}
     }
