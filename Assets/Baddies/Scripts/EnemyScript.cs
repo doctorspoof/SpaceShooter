@@ -32,6 +32,9 @@ public class EnemyScript : Ship
     [SerializeField]
     bool m_hasTurrets = false;
 
+    [SerializeField]
+    bool ifFireAndMove = false;
+
     EnemyGroup m_parentGroup;
 
     GameObject m_target;
@@ -83,10 +86,10 @@ public class EnemyScript : Ship
 
     [SerializeField]
     ShipSize shipSize;
-	public ShipSize GetShipSize()
-	{
-		return shipSize;
-	}
+    public ShipSize GetShipSize()
+    {
+        return shipSize;
+    }
 
     /// <summary>
     /// Returns ship type.
@@ -227,11 +230,11 @@ public class EnemyScript : Ship
 
     public void NotifyEnemyUnderFire(GameObject attacker)
     {
-		if(m_parentGroup != null)
-		{
-	        m_parentGroup.CancelAllOrders();
-	        m_parentGroup.OrderAttack(attacker.transform.root.gameObject);
-		}
+        if (m_parentGroup != null)
+        {
+            m_parentGroup.CancelAllOrders();
+            m_parentGroup.OrderAttack(attacker.transform.root.gameObject);
+        }
     }
 
     bool isGoingLeft = false;
@@ -270,6 +273,32 @@ public class EnemyScript : Ship
                     {
                         MoveTowardTarget();
 
+                        if (ifFireAndMove)
+                        {
+                            Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
+                            Ray ray = new Ray(shipTransform.position, direction);
+
+                            float shipDimension = 0;
+                            Ship targetShip = m_target.GetComponent<Ship>();
+                            if (targetShip != null)
+                            {
+                                shipDimension = targetShip.GetCalculatedSizeByPosition(shipTransform.position);
+                            }
+
+                            float minWeaponRange = GetMinimumWeaponRange();
+
+                            float totalRange = minWeaponRange <= shipDimension ? minWeaponRange + shipDimension : minWeaponRange;
+
+                            RaycastHit hit;
+                            if (!m_target.collider.Raycast(ray, out hit, totalRange))
+                            {
+                                EnemyWeaponScript weaponScript = GetComponent<EnemyWeaponScript>();
+                                weaponScript.MobRequestsFire();
+                            }
+                        }
+
+
+
                         if (Vector3.SqrMagnitude((Vector2)shipTransform.position - m_moveTarget) < 0.64f || m_parentGroup.HasGroupArrivedAtLocation())
                         {
                             m_currentOrder = Order.Idle;
@@ -285,7 +314,7 @@ public class EnemyScript : Ship
                             m_currentOrder = Order.Idle;
                             break;
                         }
-                        
+
                         Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
                         Ray ray = new Ray(shipTransform.position, direction);
 
@@ -434,8 +463,8 @@ public class EnemyScript : Ship
         EnemyWeaponScript enemyWeaponScript;
         if ((enemyWeaponScript = GetComponent<EnemyWeaponScript>()) != null)
         {
-            weaponRange = enemyWeaponScript.GetRange();
-            return weaponRange;
+            minWeaponRange = enemyWeaponScript.GetRange();
+            return minWeaponRange;
         }
 
         GameObject[] turrets = GetAttachedTurrets();
@@ -444,15 +473,40 @@ public class EnemyScript : Ship
             foreach (GameObject turret in GetAttachedTurrets())
             {
                 EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
-                if (turretScript != null && (weaponRange == 0 || turretScript.GetRange() < weaponRange))
+                if (turretScript != null && (minWeaponRange == 0 || turretScript.GetRange() < minWeaponRange))
                 {
-                    weaponRange = turretScript.GetRange();
+                    minWeaponRange = turretScript.GetRange();
                 }
             }
-            return weaponRange;
         }
 
-        return weaponRange;
+        return minWeaponRange;
+    }
+
+    public override float GetMaximumWeaponRange()
+    {
+        //float weaponRange = 0;
+        EnemyWeaponScript enemyWeaponScript;
+        if ((enemyWeaponScript = GetComponent<EnemyWeaponScript>()) != null)
+        {
+            maxWeaponRange = enemyWeaponScript.GetRange();
+            return maxWeaponRange;
+        }
+
+        GameObject[] turrets = GetAttachedTurrets();
+        if (turrets != null)
+        {
+            foreach (GameObject turret in GetAttachedTurrets())
+            {
+                EnemyTurretScript turretScript = turret.GetComponent<EnemyTurretScript>();
+                if (turretScript != null && (maxWeaponRange == 0 || turretScript.GetRange() > maxWeaponRange))
+                {
+                    maxWeaponRange = turretScript.GetRange();
+                }
+            }
+        }
+
+        return maxWeaponRange;
     }
 
     private void MoveTowardTarget()
@@ -533,40 +587,40 @@ public class EnemyScript : Ship
             m_parentGroup.RemoveEnemyFromGroup(this);
     }
 
-	//Do shield fizzle wizzle
-	int shaderCounter = 0;
-	public void BeginShaderCoroutine(Vector3 position, int type, float magnitude)
-	{
-		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
-		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
-		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
-		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), type);
-		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), magnitude);
-		
-		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
-		
-		++shaderCounter;
-		if(shaderCounter >= 4)
-			shaderCounter = 0;
-	}
-	public void BeginShaderCoroutine(Vector3 position)
-	{
-		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
-		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
-		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
-		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), 0);
-		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), 0.0f);
-		
-		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
-		
-		++shaderCounter;
-		if(shaderCounter >= 4)
-			shaderCounter = 0;
-	}
+    //Do shield fizzle wizzle
+    int shaderCounter = 0;
+    public void BeginShaderCoroutine(Vector3 position, int type, float magnitude)
+    {
+        //Debug.Log ("Bullet collision, beginning shader coroutine");
+        Vector3 pos = this.transform.InverseTransformPoint(position);
+        pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+        GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
+        GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
+        GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), type);
+        GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), magnitude);
+
+        StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
+
+        ++shaderCounter;
+        if (shaderCounter >= 4)
+            shaderCounter = 0;
+    }
+    public void BeginShaderCoroutine(Vector3 position)
+    {
+        //Debug.Log ("Bullet collision, beginning shader coroutine");
+        Vector3 pos = this.transform.InverseTransformPoint(position);
+        pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+        GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
+        GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
+        GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), 0);
+        GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), 0.0f);
+
+        StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
+
+        ++shaderCounter;
+        if (shaderCounter >= 4)
+            shaderCounter = 0;
+    }
 
     bool coroutineIsRunning = false;
     bool coroutineForceStopped = false;

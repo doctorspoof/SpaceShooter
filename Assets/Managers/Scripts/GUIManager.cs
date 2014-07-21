@@ -345,12 +345,13 @@ public class GUIManager : MonoBehaviour
 
     bool CheckPlayerTargetDistanceOver()
     {
+        if (thisPlayerHP)
+        {
+            return ((thisPlayerHP.transform.position - m_lastLockonTarget.transform.position).sqrMagnitude >
+                    (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.5f).Squared());
+        }
 
-        if (Vector3.Distance(thisPlayerHP.transform.position, m_lastLockonTarget.transform.position) >
-           (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.5f))
-            return true;
-        else
-            return false;
+        return false;
     }
 
     float m_dpadScrollPause = 0;
