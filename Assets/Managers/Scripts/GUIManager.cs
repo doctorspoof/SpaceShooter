@@ -1759,6 +1759,7 @@ public class GUIManager : MonoBehaviour
                                     if(thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(i)))
                                     {
         								//Since we're a shop, on mouseDown, open the item confirmation box
+                                        shopInv.RequestServerCancel(m_currentTicket);
                                         shopInv.RequestServerItem(shopInv[i].m_equipmentID, i);
                                         StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.ItemTake, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
         								//m_confirmBuyItem = shopInv[i];
@@ -3492,6 +3493,7 @@ public class GUIManager : MonoBehaviour
                                 m_currentDraggedItem = cshipInv[i];
                                 m_currentDraggedItemInventoryId = i;
                                 m_currentDraggedItemIsFromPlayerInv = false;
+                                cshipInv.RequestServerCancel(m_currentTicket);
                                 cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
                                 StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
                             }
@@ -3603,6 +3605,7 @@ public class GUIManager : MonoBehaviour
                                 m_currentDraggedItem = cshipInv[i];
                                 m_currentDraggedItemInventoryId = i;
                                 m_currentDraggedItemIsFromPlayerInv = false;
+                                cshipInv.RequestServerCancel(m_currentTicket);
                                 cshipInv.RequestServerItem(cshipInv[i].m_equipmentID, i);
                                 StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
                             }
