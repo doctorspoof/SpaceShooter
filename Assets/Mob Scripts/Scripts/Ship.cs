@@ -125,7 +125,7 @@ public class Ship : MonoBehaviour
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
         }
 
-        SetThrusterPercentage();
+        PropagateNewThrusterPercentage(maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
         //if (Network.isServer && thrustersHolder != null && maxThrusterVelocitySeen > 0)
         //{
 
@@ -319,7 +319,7 @@ public class Ship : MonoBehaviour
         networkView.RPC("PropagateNewThrusterPercentage", RPCMode.All, maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
     }
 
-    [RPC]
+    //[RPC]
     void PropagateNewThrusterPercentage(float maxThrusterVelocitySeen_, float currentAngularVelocity_, float maxAngularVelocitySeen_)
     {
         foreach (Thruster thruster in thrusters)
