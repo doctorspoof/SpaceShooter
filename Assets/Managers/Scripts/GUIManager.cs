@@ -2148,7 +2148,7 @@ public class GUIManager : MonoBehaviour
                     //Raycast from cursor pos, if we find a target begin lockon phase
                     RaycastHit info;
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    int mask = 1 << 11;
+                    int mask = (1 << 11 | 1 << 24);
                     if (Physics.Raycast(ray, out info, 200, mask))
                     {
                         m_lastLockonTarget = info.collider.attachedRigidbody.gameObject;
@@ -2161,7 +2161,7 @@ public class GUIManager : MonoBehaviour
                 {
                     RaycastHit info;
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                    int mask = 1 << 11;
+                    int mask = (1 << 11 | 1 << 24);
                     if (Physics.Raycast(ray, out info, 200, mask))
                     {
                         if (info.collider.attachedRigidbody.gameObject != m_lastLockonTarget)
@@ -2190,7 +2190,7 @@ public class GUIManager : MonoBehaviour
                         //See if the player maintains the lock
                         RaycastHit info;
                         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                        int mask = 1 << 11;
+                        int mask = (1 << 11 | 1 << 24);
                         if (Physics.Raycast(ray, out info, 200, mask))
                         {
                             if (info.collider.attachedRigidbody.gameObject == m_lastLockonTarget)
@@ -2205,7 +2205,7 @@ public class GUIManager : MonoBehaviour
                         //See if we should begin lock break
                         RaycastHit info;
                         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                        int mask = 1 << 11;
+                        int mask = (1 << 11 | 1 << 24);
                         if (Physics.Raycast(ray, out info, 200, mask))
                         {
                             if (info.collider.attachedRigidbody.gameObject != m_lastLockonTarget)
