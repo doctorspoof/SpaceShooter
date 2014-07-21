@@ -17,9 +17,7 @@ public class PlayerControlScript : Ship
 	[SerializeField]
 	bool m_shouldRecieveInput = true;
 
-	NetworkPlayer owner;
-	[SerializeField]
-	string ownerSt;
+	
 
 	[SerializeField]
 	float m_baseEngineSpeed = 5.0f;

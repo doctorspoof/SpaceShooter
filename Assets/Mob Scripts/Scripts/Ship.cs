@@ -5,6 +5,13 @@ using System.Collections;
 public class Ship : MonoBehaviour
 {
 
+    protected NetworkPlayer owner;
+    [SerializeField]
+    protected string ownerSt;
+
+    [SerializeField]
+    bool isPlayerControlScript = false;
+
     public Transform shipTransform;
     public Rigidbody shipRigidbody;
 
@@ -86,6 +93,7 @@ public class Ship : MonoBehaviour
         if (GetShipWidth() == 0 || GetShipHeight() == 0)
             SetShipSizes();
 
+        isPlayerControlScript = this.GetType() == typeof(PlayerControlScript);
         //ResetThrusters();
     }
 
@@ -117,16 +125,15 @@ public class Ship : MonoBehaviour
         if (maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude)
         {
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
-            UpdateThrusterVelocity();
+            UpdateThrusterVelocityMax();
         }
 
         //maxAngularVelocitySeen -= 0.05f;
         if (maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity))
         {
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
+            UpdateThrusterAngularMax();
         }
-
-        UpdateThrusterAngular();
 
         UpdateThrusters();
 
@@ -240,6 +247,7 @@ public class Ship : MonoBehaviour
 
         float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
         currentAngularVelocity = nextAngle - currentAngle;
+        UpdateThrusterAngularCurrent();
 
         if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
         {
@@ -313,25 +321,38 @@ public class Ship : MonoBehaviour
         return weaponRange;
     }
 
-    public void UpdateThrusterAngular()
+    public void UpdateThrusterAngularCurrent()
     {
-        networkView.RPC("PropagateNewThrusterAngular", RPCMode.All, currentAngularVelocity, maxAngularVelocitySeen);
+        if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
+            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.Others, currentAngularVelocity);
     }
 
     [RPC]
-    void PropagateNewThrusterAngular(float currentAngularVelocity_, float maxAngularVelocitySeen_)
+    void PropagateNewThrusterAngularCurrent(float currentAngularVelocity_)
     {
         currentAngularVelocity = currentAngularVelocity_;
+    }
+
+    public void UpdateThrusterAngularMax()
+    {
+        if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
+            networkView.RPC("PropagateNewThrusterAngularMax", RPCMode.Others, maxAngularVelocitySeen);
+    }
+
+    [RPC]
+    void PropagateNewThrusterAngularMax(float maxAngularVelocitySeen_)
+    {
         maxAngularVelocitySeen = maxAngularVelocitySeen_;
     }
 
-    public void UpdateThrusterVelocity()
+    public void UpdateThrusterVelocityMax()
     {
-        networkView.RPC("PropagateNewThrusterVelocity", RPCMode.All, maxThrusterVelocitySeen);
+        if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
+            networkView.RPC("PropagateNewThrusterVelocityMax", RPCMode.Others, maxThrusterVelocitySeen);
     }
 
     [RPC]
-    void PropagateNewThrusterVelocity(float maxThrusterVelocitySeen_)
+    void PropagateNewThrusterVelocityMax(float maxThrusterVelocitySeen_)
     {
         maxThrusterVelocitySeen = maxThrusterVelocitySeen_;
     }
