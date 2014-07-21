@@ -319,7 +319,8 @@ public class Ship : MonoBehaviour
     {
         foreach (Thruster thruster in thrusters)
         {
-            thruster.Calculate(maxThrusterVelocitySeen_, currentAngularVelocity_, maxAngularVelocitySeen_);
+            if (thruster != null)
+                thruster.Calculate(maxThrusterVelocitySeen_, currentAngularVelocity_, maxAngularVelocitySeen_);
         }
     }
     public void ResetThrusters()
