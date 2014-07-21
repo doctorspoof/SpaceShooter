@@ -57,7 +57,7 @@ public class Thruster : MonoBehaviour
 
     public void Calculate(/*Vector2 velocity_,*/ float maxVelocitySeen_, float currentAngularAcceleration_, float maxAngularAccelerationSeen_)
     {
-        if(parentShipTransform == null)
+        if(parentShipTransform == null || thrusterTransform == null)
         {
             return;
         }
