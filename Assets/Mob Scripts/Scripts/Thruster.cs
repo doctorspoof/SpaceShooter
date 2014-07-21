@@ -28,8 +28,6 @@ public class Thruster : MonoBehaviour
         originalScale = thrusterTransform.localScale;
         originalPosition = thrusterTransform.localPosition;
 
-        parentShipTransform = thrusterTransform.root;
-
         //foreach(ShipManoeuvre mano in directionsToFireWith)
         //{
         //    manoeuvreToFireWith = manoeuvreToFireWith | (int)mano;
@@ -92,6 +90,11 @@ public class Thruster : MonoBehaviour
 
         SetPercentage(passedPercentage);
 
+    }
+
+    public void SetParentShip(Transform parentShip_)
+    {
+        parentShipTransform = parentShip_;
     }
 
 }

@@ -125,7 +125,7 @@ public class Ship : MonoBehaviour
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
         }
 
-        SetThrusterPercentage();
+        PropagateNewThrusterPercentage(maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
         //if (Network.isServer && thrustersHolder != null && maxThrusterVelocitySeen > 0)
         //{
 
@@ -319,7 +319,7 @@ public class Ship : MonoBehaviour
         networkView.RPC("PropagateNewThrusterPercentage", RPCMode.All, maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
     }
 
-    [RPC]
+    //[RPC]
     void PropagateNewThrusterPercentage(float maxThrusterVelocitySeen_, float currentAngularVelocity_, float maxAngularVelocitySeen_)
     {
         foreach (Thruster thruster in thrusters)
@@ -405,6 +405,7 @@ public class Ship : MonoBehaviour
             if (child != null && !child.name.Equals("Afterburners"))
             {
                 thrusters[position] = child.GetComponent<Thruster>();
+                thrusters[position].SetParentShip(shipTransform);
                 ++position;
             }
         }
@@ -418,6 +419,7 @@ public class Ship : MonoBehaviour
                 if (child != null)
                 {
                     thrusters[position] = child.GetComponent<Thruster>();
+                    thrusters[position].SetParentShip(shipTransform);
                     ++position;
                 }
             }
@@ -430,6 +432,7 @@ public class Ship : MonoBehaviour
             for (int i = 0; i < afterburners.Length; ++i)
             {
                 afterburners[i] = afterburnersHolder.GetChild(i).GetComponent<Thruster>();
+                afterburners[i].SetParentShip(shipTransform);
             }
         }
 
