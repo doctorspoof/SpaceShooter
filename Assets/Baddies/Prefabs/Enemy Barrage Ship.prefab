@@ -1006,6 +1006,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61226d5b1d62304d909df1c10b142f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownerSt: 
+  isPlayerControlScript: 0
   shipTransform: {fileID: 0}
   shipRigidbody: {fileID: 0}
   m_maxShipSpeed: 250
@@ -1016,12 +1018,14 @@ MonoBehaviour:
   m_rotateSpeed: 50
   m_ramDamageMultiplier: 2.5
   maunuallySetWidthAndHeight: 0
-  weaponRange: 0
+  minWeaponRange: 0
+  maxWeaponRange: 0
   m_shipWidth: 3.79999995
   m_shipHeight: 3.79999995
   shipID: -1
   m_bountyAmount: 60
   m_hasTurrets: 0
+  ifFireAndMove: 1
   m_currentOrder: 0
   allowedAttacksForShip:
   - AttackStrafeRight
