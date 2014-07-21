@@ -42,7 +42,7 @@ public class Ship : MonoBehaviour
     bool maunuallySetWidthAndHeight = false;
 
     [SerializeField]
-    protected float weaponRange = 0.0f;
+    protected float minWeaponRange = 0.0f, maxWeaponRange = 0.0f;
 
     [SerializeField]
     float m_shipWidth;
@@ -318,13 +318,18 @@ public class Ship : MonoBehaviour
 
     public virtual float GetMinimumWeaponRange()
     {
-        return weaponRange;
+        return minWeaponRange;
+    }
+
+    public virtual float GetMaximumWeaponRange()
+    {
+        return maxWeaponRange;
     }
 
     public void UpdateThrusterAngularCurrent()
     {
         if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.Others, currentAngularVelocity);
+            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.All, currentAngularVelocity);
     }
 
     [RPC]
@@ -336,7 +341,7 @@ public class Ship : MonoBehaviour
     public void UpdateThrusterAngularMax()
     {
         if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterAngularMax", RPCMode.Others, maxAngularVelocitySeen);
+            networkView.RPC("PropagateNewThrusterAngularMax", RPCMode.All, maxAngularVelocitySeen);
     }
 
     [RPC]
@@ -348,7 +353,7 @@ public class Ship : MonoBehaviour
     public void UpdateThrusterVelocityMax()
     {
         if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterVelocityMax", RPCMode.Others, maxThrusterVelocitySeen);
+            networkView.RPC("PropagateNewThrusterVelocityMax", RPCMode.All, maxThrusterVelocitySeen);
     }
 
     [RPC]

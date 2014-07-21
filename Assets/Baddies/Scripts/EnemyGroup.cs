@@ -246,7 +246,7 @@ public class EnemyGroup : MonoBehaviour
 
     public Vector2 GetPositionForAvoidance(GameObject objectToAvoid, Vector2 targetLocation, Vector2 currentLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
     {
-         
+
         //Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
         float radiusOfObject = Mathf.Sqrt(Mathf.Pow(objectToAvoid.transform.localScale.x, 2) + Mathf.Pow(objectToAvoid.transform.localScale.y, 2)) * objectToAvoid.GetComponent<SphereCollider>().radius;
         float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
@@ -653,6 +653,22 @@ public class EnemyGroup : MonoBehaviour
         }
 
         return minRange;
+    }
+
+    public float GetMaximumRangeOfGroup()
+    {
+        float maxRange = 0;
+        foreach (List<EnemyScript> shipTier in m_children)
+        {
+            foreach (EnemyScript enemy in shipTier)
+            {
+                if (0 == maxRange || enemy.GetMinimumWeaponRange() > maxRange)
+                {
+                    maxRange = enemy.GetMaximumWeaponRange();
+                }
+            }
+        }
+        return maxRange;
     }
 
     /// <summary>
