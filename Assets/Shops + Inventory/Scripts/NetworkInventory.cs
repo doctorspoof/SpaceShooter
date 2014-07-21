@@ -462,17 +462,23 @@ public sealed class NetworkInventory : MonoBehaviour
     [RPC]
     void PropagateResetInventory()
     {
-        // Clear the lists
-        m_inventory.Clear();
-        m_isItemRequested.Clear();
-
-        // Invalidate all tickets before clearing
-        foreach (ItemTicket ticket in m_requestTickets)
+        if (m_nullRemovedItems)
         {
-            ticket.Reset();
+            for (int i = 0; i < m_inventory.Count; ++i)
+            {
+                m_inventory[i] = null;
+                m_isItemRequested[i] = false;
+                m_requestTickets[i].Reset();
+            }
         }
-
-        m_requestTickets.Clear();
+        
+        else
+        {
+            // Clear the lists
+            m_inventory.Clear();
+            m_isItemRequested.Clear();
+            m_requestTickets.Clear();
+        }
 
         // Reset the add request counter and all responses
         ResetResponse(false);
