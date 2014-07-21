@@ -139,6 +139,12 @@ public class GUIManager : MonoBehaviour
 
     float m_shopResetDisplayTimer = 200.0f;
 
+    [RPC]
+    void PropagateRestockShops()
+    {
+        m_shopResetDisplayTimer = 0.0f;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -153,7 +159,9 @@ public class GUIManager : MonoBehaviour
             {
                 m_shouldResetShopsNow = false;
                 m_shopTimer = 0.0f;
-                m_shopResetDisplayTimer = 0.0f;
+                networkView.RPC ("PropagateRestockShops", RPCMode.All);
+                
+                
 
                 //Tell shops to reset their inventories
                 GameObject[] shops = GameObject.FindGameObjectsWithTag("Shop");
@@ -2066,7 +2074,7 @@ public class GUIManager : MonoBehaviour
 
             if (m_noRespawnCash)
             {
-                GUI.Label(new Rect(700, 200, 200, 80), "Not enough banked cash to respawn! You need $500.", m_nonBoxStyle);
+                GUI.Label(new Rect(675, 200, 250, 80), "Not enough banked cash to respawn! You need $500.", m_nonBoxStyle);
             }
             else
             {
@@ -3449,14 +3457,15 @@ public class GUIManager : MonoBehaviour
                         Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
                         GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
                         Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+                        Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
 
                         if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-                            drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
+                            drawnItems.Add(finalRect, playerInv[i].GetComponent<ItemScript>());
 
                         if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
-                            bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos) && !m_isRequestingItem)
+                            //bool insideModR = modR.Contains(mousePos);
+                            if (finalRect.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
@@ -3480,14 +3489,15 @@ public class GUIManager : MonoBehaviour
                         Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
                         GUI.Label(lastR, cshipInv[i].GetItemName(), m_nonBoxSmallStyle);
                         Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
+                        Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
 
                         if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-                            drawnItems.Add(modR, cshipInv[i]);
+                            drawnItems.Add(finalRect, cshipInv[i].GetComponent<ItemScript>());
 
                         if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
-                            bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos) && !m_isRequestingItem)
+                            //bool insideModR = modR.Contains(mousePos);
+                            if (finalRect.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = cshipInv[i];
@@ -3564,14 +3574,15 @@ public class GUIManager : MonoBehaviour
                         Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
                         GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
                         Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - playerScrollPosition.y, lastR.width, lastR.height);
+                        Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
 
                         if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-                            drawnItems.Add(modR, playerInv[i].GetComponent<ItemScript>());
+                            drawnItems.Add(finalRect, playerInv[i].GetComponent<ItemScript>());
 
                         if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
-                            bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos) && !m_isRequestingItem)
+                            //bool insideModR = modR.Contains(mousePos);
+                            if (finalRect.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
@@ -3592,14 +3603,15 @@ public class GUIManager : MonoBehaviour
                         Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
                         GUI.Label(lastR, cshipInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
                         Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - cshipScrollPosition.y, lastR.width, lastR.height);
-
+                        Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+    
                         if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-                            drawnItems.Add(modR, cshipInv[i]);
+                            drawnItems.Add(finalRect, cshipInv[i].GetComponent<ItemScript>());
 
                         if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
                         {
-                            bool insideModR = modR.Contains(mousePos);
-                            if (modR.Contains(mousePos) && !m_isRequestingItem)
+                            //bool insideModR = modR.Contains(mousePos);
+                            if (finalRect.Contains(mousePos) && !m_isRequestingItem)
                             {
                                 //Begin drag & drop
                                 m_currentDraggedItem = cshipInv[i];
