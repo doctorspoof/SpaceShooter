@@ -869,9 +869,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61226d5b1d62304d909df1c10b142f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownerSt: 
+  isPlayerControlScript: 0
   shipTransform: {fileID: 0}
   shipRigidbody: {fileID: 0}
-  m_maxShipSpeed: 415
+  m_maxShipSpeed: 500
   m_currentShipSpeed: 0
   afterburnerIncreaseOfSpeed: 0
   afterburnerLength: 0
@@ -879,12 +881,14 @@ MonoBehaviour:
   m_rotateSpeed: 120
   m_ramDamageMultiplier: 2.5
   maunuallySetWidthAndHeight: 0
-  weaponRange: 0
+  minWeaponRange: 0
+  maxWeaponRange: 0
   m_shipWidth: 2
   m_shipHeight: 2
   shipID: -1
   m_bountyAmount: 15
   m_hasTurrets: 0
+  ifFireAndMove: 0
   m_currentOrder: 0
   allowedAttacksForShip:
   - AttackStrafeRight
@@ -904,10 +908,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 100000, guid: 01af7ba42b275f346baf8f22959f0616, type: 2}
-  m_maximumHealth: 150
+  m_maximumHealth: 200
   m_currentHealth: 0
   m_pathToShieldObject: Composite Collider/Shield
-  m_maximumShield: 115
+  m_maximumShield: 150
   m_currentShield: 0
   m_shieldRechargeRate: 2
   m_timeToRechargeShield: 3

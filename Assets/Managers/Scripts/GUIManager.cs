@@ -149,11 +149,12 @@ public class GUIManager : MonoBehaviour
     void Update()
     {
         m_gameTimer += Time.deltaTime;
+        if (m_shopResetDisplayTimer < 7.5f)
+            m_shopResetDisplayTimer += Time.deltaTime;
+        
         if (Network.isServer)
         {
             m_shopTimer += Time.deltaTime;
-            if (m_shopResetDisplayTimer < 7.5f)
-                m_shopResetDisplayTimer += Time.deltaTime;
 
             if (m_shopTimer > m_shopRestockTime || m_shouldResetShopsNow)
             {

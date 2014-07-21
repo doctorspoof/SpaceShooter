@@ -109,7 +109,7 @@ MonoBehaviour:
   m_isBeam: 1
   m_beamRechargeDelay: 1
   m_currentRechargeDelay: 0
-  m_recoilTime: 3.75
+  m_recoilTime: 2
   m_currentRecoil: 0
   m_bulletRef: {fileID: 100000, guid: 94f6ef5deef6c444591fd6cacd8a29c5, type: 2}
   m_bulletOffset: {x: -.133332998, y: 0, z: .100000001}

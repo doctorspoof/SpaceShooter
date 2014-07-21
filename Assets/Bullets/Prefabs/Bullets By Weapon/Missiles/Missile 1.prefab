@@ -208,6 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  primitiveQuad: {fileID: 0}
   removeShipAfterSeconds: 0
   explosions:
   - explosionPrefabs:
@@ -218,7 +219,7 @@ MonoBehaviour:
     - {fileID: 100000, guid: 379de339833f70c4181e9f28557e86ba, type: 2}
     - {fileID: 100000, guid: 373f52a514d17114eb7d9657670f84ee, type: 2}
     localPosition: {x: 0, y: 0, z: 0}
-    localScale: {x: 1, y: 1, z: 1}
+    localScale: {x: 2, y: 2, z: 1}
     timeAfterDeathThatExplosionStarts: 0
   fragments: []
 --- !u!148 &14800000
