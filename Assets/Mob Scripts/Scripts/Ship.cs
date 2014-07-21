@@ -117,6 +117,7 @@ public class Ship : MonoBehaviour
         if (maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude)
         {
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
+            UpdateThrusterVelocity();
         }
 
         //maxAngularVelocitySeen -= 0.05f;
@@ -125,7 +126,10 @@ public class Ship : MonoBehaviour
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
         }
 
-        SetThrusterPercentage();
+        UpdateThrusterAngular();
+
+        UpdateThrusters();
+
 
     }
 
@@ -309,20 +313,38 @@ public class Ship : MonoBehaviour
         return weaponRange;
     }
 
-    public void SetThrusterPercentage()
+    public void UpdateThrusterAngular()
     {
-        networkView.RPC("PropagateNewThrusterPercentage", RPCMode.All, maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
+        networkView.RPC("PropagateNewThrusterAngular", RPCMode.All, currentAngularVelocity, maxAngularVelocitySeen);
     }
 
     [RPC]
-    void PropagateNewThrusterPercentage(float maxThrusterVelocitySeen_, float currentAngularVelocity_, float maxAngularVelocitySeen_)
+    void PropagateNewThrusterAngular(float currentAngularVelocity_, float maxAngularVelocitySeen_)
+    {
+        currentAngularVelocity = currentAngularVelocity_;
+        maxAngularVelocitySeen = maxAngularVelocitySeen_;
+    }
+
+    public void UpdateThrusterVelocity()
+    {
+        networkView.RPC("PropagateNewThrusterVelocity", RPCMode.All, maxThrusterVelocitySeen);
+    }
+
+    [RPC]
+    void PropagateNewThrusterVelocity(float maxThrusterVelocitySeen_)
+    {
+        maxThrusterVelocitySeen = maxThrusterVelocitySeen_;
+    }
+
+    void UpdateThrusters()
     {
         foreach (Thruster thruster in thrusters)
         {
             if (thruster != null)
-                thruster.Calculate(maxThrusterVelocitySeen_, currentAngularVelocity_, maxAngularVelocitySeen_);
+                thruster.Calculate(maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
         }
     }
+
     public void ResetThrusters()
     {
         networkView.RPC("PropagateResetThrusters", RPCMode.All);
