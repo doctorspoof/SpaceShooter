@@ -3977,7 +3977,7 @@ public class GUIManager : MonoBehaviour
             case RequestType.ItemTake:
 	        {
 	            m_currentTicket = inventory.GetItemRequestResponse();
-	            Debug.Log("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
+	            //Debug.Log("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
                 
                 if(m_currentTicket.IsValid())
                 {
@@ -3994,10 +3994,10 @@ public class GUIManager : MonoBehaviour
 	        }
             case RequestType.TicketValidity:
 	        {
-	            Debug.Log("Is the ticket valid?");
+	            //Debug.Log("Is the ticket valid?");
 	            if (inventory.GetTicketValidityResponse())
 	            {
-	                Debug.Log("Yes!");
+	                //Debug.Log("Yes!");
 					switch (from)
 					{
 						case ItemOwner.NetworkInventory:
@@ -4100,7 +4100,6 @@ public class GUIManager : MonoBehaviour
 						default:
 							Debug.LogError ("THIS SHOULD NEVER HAPPEN!");
 							break;
-						
 					}
 
 				}
