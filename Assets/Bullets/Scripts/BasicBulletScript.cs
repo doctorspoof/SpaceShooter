@@ -551,6 +551,8 @@ public class BasicBulletScript : MonoBehaviour
 
     [RPC] void SyncPosition (Vector3 position)
     {
+        Debug.Log ("Received requested to synchronise the velocity of: " + name);
+    
         rigidbody.MovePosition (position);
         bulletSpeedModifier = 0f;
     }
