@@ -41,8 +41,12 @@ public class AsteroidScript : MonoBehaviour
 
 
 	void OnCollisionEnter(Collision collision)
-	{
-		if(collision.gameObject.layer == Layers.player)
+    {
+        if(Network.isServer && collision.gameObject.tag != "Player")
+        {
+            networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, this.transform.position.x, this.transform.position.y);
+        }
+		/*if(collision.gameObject.layer == Layers.player)
 		{
 			if(collision.transform.root.GetComponent<CapitalShipScript>())
 			{
@@ -56,7 +60,7 @@ public class AsteroidScript : MonoBehaviour
 			{
 				collision.transform.root.GetComponent<EnemyScript>().BeginShaderCoroutine(this.transform.position);
 			}
-		}
+		}*/
 	}
 
 
@@ -67,7 +71,7 @@ public class AsteroidScript : MonoBehaviour
 			networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, this.transform.position.x, this.transform.position.y);
 		}
 
-		if(collision.gameObject.layer == Layers.player)
+		/*if(collision.gameObject.layer == Layers.player)
 		{
 			//Debug.Log ("Shield should wibble!");
 			if(collision.transform.root.GetComponent<CapitalShipScript>())
@@ -82,7 +86,7 @@ public class AsteroidScript : MonoBehaviour
 			{
 				collision.transform.root.GetComponent<EnemyScript>().BeginShaderCoroutine(this.transform.position);
 			}
-		}
+		}*/
 	}
 
 
