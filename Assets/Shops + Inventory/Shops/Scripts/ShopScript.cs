@@ -294,7 +294,8 @@ public class ShopScript : MonoBehaviour
 			//Debug.Log ("Recieved request to reset inventory! Elapsed time: " + elapsedTime);
 			
 			// Obtain IDs
-			int[] returnedIDs = m_lootTable.RequestItemByApproximateValue ((elapsedTime + 150f), m_stockFlags, m_rarityMods, m_shopInventory.GetCapacity());
+			//int[] returnedIDs = m_lootTable.RequestItemByApproximateValue ((elapsedTime + 150f), m_stockFlags, m_rarityMods, m_shopInventory.GetCapacity());
+            int[] returnedIDs = m_lootTable.RequestItemListByTime(elapsedTime, m_stockFlags, m_shopInventory.GetCapacity());
 			List<ItemScript> items = ConvertToItemScripts (returnedIDs);
 
 			// Clear the inventory for convenience

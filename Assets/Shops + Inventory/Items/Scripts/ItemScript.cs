@@ -14,6 +14,7 @@ public enum ItemType
 public class ItemScript : MonoBehaviour 
 {
 	public ItemType m_typeOfItem;
+    public int m_ItemTierID = 1;
 
 	[SerializeField]
 	Texture m_equipmentIcon;
