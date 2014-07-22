@@ -861,8 +861,7 @@ public sealed class NetworkInventory : MonoBehaviour
     {
         // Reconstruct the ticket
         ItemTicket ticket = new ItemTicket(uniqueID, itemID, itemIndex);
-        if (Network.isClient)
-            Debug.Log("Recieved remote item removal request. ItemIndex: " + ticket.itemIndex);
+        
         PropagateRemovalAtIndex(ticket);
     }
 
