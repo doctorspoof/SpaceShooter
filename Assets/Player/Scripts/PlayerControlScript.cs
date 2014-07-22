@@ -212,6 +212,72 @@ public class PlayerControlScript : Ship
 		//Update RB
 		rigidbody.mass = m_baseShipWeight + psc.GetPlatingWeight();
 	}
+    
+    IEnumerator EnsureEquipmentValidity()
+    {
+        if (owner == Network.player)
+        {
+            while (true)
+            {
+                ItemScript script;
+                
+                // Ensure the weapon is valid
+                if (!GetWeaponObject())
+                {
+                    script = m_equippedWeaponItem ? m_equippedWeaponItem.GetComponent<ItemScript>() : null;
+                    
+                    if (!script || script.m_typeOfItem != ItemType.Weapon)
+                    {
+                        m_equippedWeaponItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (0);
+                        Debug.LogError ("Resetting null WeaponObject on: " + name);
+                    }
+                    
+                    ResetEquippedWeapon();
+                }
+                
+                if (!GetShieldObject())
+                {
+                    script = m_equippedShieldItem ? m_equippedShieldItem.GetComponent<ItemScript>() : null;
+                
+                    if (!script || script.m_typeOfItem != ItemType.Shield)
+                    {
+                        m_equippedShieldItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (30);
+                        Debug.LogError ("Resetting null ShieldObject on: " + name);
+                    }
+                                        
+                    ResetEquippedShield();
+                }
+                
+                if (!GetEngineObject())
+                {
+                    script = m_equippedEngineItem ? m_equippedEngineItem.GetComponent<ItemScript>() : null;
+                        
+                    if (!script || script.m_typeOfItem != ItemType.Engine)                       
+                    {
+                        m_equippedEngineItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (60);
+                        Debug.LogError ("Resetting null EngineObject on: " + name);
+                    }
+                    
+                    ResetEquippedEngine();
+                }
+                
+                if (!GetPlatingObject())
+                {
+                    script = m_equippedPlatingItem ? m_equippedPlatingItem.GetComponent<ItemScript>() : null;
+                    
+                    if (!script || script.m_typeOfItem != ItemType.Plating)
+                    {
+                        m_equippedPlatingItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (90);
+                        Debug.LogError ("Resetting null PlatingObject on: " + name);
+                    }
+                    
+                    ResetEquippedPlating();
+                }
+                
+                yield return new WaitForSeconds (1f);
+            }
+        }
+    }
 
 	public List<GameObject> m_playerInventory;
 	public void AddItemToInventoryLocalOnly(GameObject itemWrapper)
@@ -598,6 +664,8 @@ public class PlayerControlScript : Ship
 
 		previousPacketPosition = this.transform.position;
 		predictedPacketPosition = this.transform.position;
+        
+        StartCoroutine (EnsureEquipmentValidity());
 	}
 
 	float timeSinceLastPacket;
