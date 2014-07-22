@@ -326,11 +326,19 @@ public class BasicBulletScript : MonoBehaviour
     //Uses MovePosition() to move the rigidbody forwards by the bullet speed
     void MoveForwards()
     {
-        if (m_isSelfPropelled)
+        if (m_isSelfPropelled && bulletSpeedModifier != 0f)
         {
             if (m_currentLifetime > 0.4f)
             {
-                m_bulletSpeedModifier *= 0.95f;
+                bulletSpeedModifier *= 0.95f;
+                
+                if (bulletSpeedModifier < 0.1f && bulletSpeedModifier > -0.1f)
+                {
+                    if (Network.isServer)
+                    {
+                        networkView.RPC ("SyncPosition", RPCMode.All, rigidbody.position);
+                    }
+                }
             }
         }
 
@@ -538,6 +546,13 @@ public class BasicBulletScript : MonoBehaviour
                 SyncPlayer(mob);
                 break;
         }
+    }
+
+
+    [RPC] void SyncPosition (Vector3 position)
+    {
+        rigidbody.MovePosition (position);
+        bulletSpeedModifier = 0f;
     }
 
 
