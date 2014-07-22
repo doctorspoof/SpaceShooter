@@ -192,12 +192,12 @@ public class EnemyGroup : MonoBehaviour
         moveOrderPositions.Add(position);
 
         // uncomment to show movement paths
-        //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
+        Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
 
-        //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
-        //{
-        //    Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
-        //}
+        for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
+        {
+            Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
+        }
 
         foreach (Vector2 orderPositions in moveOrderPositions)
         {
@@ -236,7 +236,7 @@ public class EnemyGroup : MonoBehaviour
         float distanceToTarget = Vector2.Distance(from, target) + 10;
         RaycastHit hit;
 
-        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget, 1 << LayerMask.NameToLayer("Environmental Damage"));
+        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget);
 
         if (collidedWithSomething)
             collidedObject = hit.collider.gameObject;

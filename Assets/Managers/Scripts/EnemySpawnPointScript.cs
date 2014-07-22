@@ -134,7 +134,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     void CheckSpawning()
     {
-
+        EnemyGroup group = null;
 
         float delta = Time.deltaTime;
         for (int i = enemiesWaitingToSpawn.Count - 1; i >= 0; --i)
@@ -169,6 +169,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
                 EnemyScript script = enemy.GetComponent<EnemyScript>();
                 spawn.parentGroup.AddEnemyToGroup(script);
+                group = spawn.parentGroup;
 
                 HealthScript health = enemy.GetComponent<HealthScript>();
                 health.SetModifier(modifier);
@@ -181,6 +182,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
         if (enemiesWaitingToSpawn.Count == 0 && enemiesBeingSpawned.Count == 0)
         {
+            group.CancelAllOrders();
             Activate(false);
         }
     }
@@ -210,6 +212,8 @@ public class EnemySpawnPointScript : MonoBehaviour
     {
         GameObject groupObject = new GameObject("EnemyGroup");
         groupObject.tag = "EnemyGroup";
+
+        groupObject.transform.position = transform.position;
 
         EnemyGroup spawnedGroup = groupObject.AddComponent<EnemyGroup>();
 
