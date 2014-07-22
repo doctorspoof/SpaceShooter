@@ -311,7 +311,7 @@ public class GUIManager : MonoBehaviour
         {
             lockonTime += Time.deltaTime;
             //TODO: Parametise this later
-            if (lockonTime > 1.0f)
+            if (lockonTime > 0.7f)
             {
                 hasLockedTarget = true;
                 thisPlayerHP.GetComponent<PlayerControlScript>().SetNewTargetLock(m_lastLockonTarget);

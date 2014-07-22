@@ -281,7 +281,7 @@ public class HealthScript : MonoBehaviour
 					ShieldOnOff (false);
 					//if the shield gives out before all the damage is dealt, apply the remainder to the hull
 					m_currentHealth += m_currentShield;
-					if(m_currentHealth < 0)
+					if(m_currentHealth <= 0)
 					{
 						//Mob is dead :(
 						OnMobDies (firer, hitter);
@@ -304,7 +304,7 @@ public class HealthScript : MonoBehaviour
 			{
 				//If no shields, apply damage directly to hull
 				m_currentHealth -= damage;
-				if(m_currentHealth < 0)
+				if(m_currentHealth <= 0)
 				{
 					//Mob is dead :(
 					OnMobDies(firer, hitter);
