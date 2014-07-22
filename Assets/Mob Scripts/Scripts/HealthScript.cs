@@ -117,7 +117,7 @@ public class HealthScript : MonoBehaviour
             if(this.tag == "Enemy")
             {
                 //If we're an enemy, check if the collider is the capital ship or the player
-                if(collision.gameObject.tag == "Capital" || collision.gameObject.tag == "Player")
+                if(collision.gameObject.tag == "Capital")
                 {
                     //If it's a PC or the capital ship, work out how fast the collision was
                     //TODO: 
@@ -127,6 +127,15 @@ public class HealthScript : MonoBehaviour
                     float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
                     int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
                     //Debug.Log("Applying " + PCdamage + " damage to PC.");
+                    collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
+                }
+                else if(collision.gameObject.tag == "Player")
+                {
+                    Ship shipComponent = GetComponent<Ship>();
+
+                    float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
+                    int PCdamage = (int)(magnitude * shipComponent.GetRamDam() * 10);
+                    Debug.Log("Applying " + PCdamage + " damage to PC.");
                     collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
                 }
                 else if(collision.gameObject.tag == "Asteroid")
