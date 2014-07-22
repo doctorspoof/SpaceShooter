@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 034cc28eb28682a4fb132356f2ff4ffd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_beamDamage: 215
+  m_beamDamage: 180
   m_damageType: 2
   m_beamLength: 14.5
   m_impactForce: 75
