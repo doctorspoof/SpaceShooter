@@ -215,9 +215,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_requiredOffset: {x: .00300000003, y: -.0654999986, z: -.00999999978}
-  m_engineMoveSpeed: 750
-  m_engineTurnSpeed: 15
-  m_engineStrafeModifier: .200000003
+  m_engineMoveSpeed: 825
+  m_engineTurnSpeed: 60
+  m_engineStrafeModifier: .150000006
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -265,6 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firesWithTurn: 0
 --- !u!114 &11400008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -276,6 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firesWithTurn: 0
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1
