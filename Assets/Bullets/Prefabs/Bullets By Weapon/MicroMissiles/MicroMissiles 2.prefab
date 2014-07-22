@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c72b8964de465404e898ba8b98d7faca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_bulletDamage: 10
+  m_bulletDamage: 15
   m_bulletMinDamage: 2
   m_damageType: 3
   m_bulletSpeed: 8
@@ -208,6 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  primitiveQuad: {fileID: 0}
   removeShipAfterSeconds: 0
   explosions:
   - explosionPrefabs:

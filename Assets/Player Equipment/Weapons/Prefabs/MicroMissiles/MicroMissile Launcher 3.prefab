@@ -133,11 +133,11 @@ MonoBehaviour:
   m_sequentialFireTime: .800000012
   m_spreadFactor: 20
   m_evenSpread: 0
-  m_shotsPerFire: 18
+  m_shotsPerFire: 30
   m_isBeam: 0
   m_beamRechargeDelay: 1
   m_currentRechargeDelay: 0
-  m_recoilTime: 2.5
+  m_recoilTime: 3
   m_currentRecoil: 0
   m_bulletRef: {fileID: 100000, guid: 6be819ba49d5c7245b18b2b3aa44f015, type: 2}
   m_bulletOffset: {x: 0, y: 0, z: .100000001}

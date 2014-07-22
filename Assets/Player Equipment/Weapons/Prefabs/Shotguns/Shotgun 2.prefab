@@ -163,11 +163,11 @@ MonoBehaviour:
   m_sequentialFireTime: .5
   m_spreadFactor: 10
   m_evenSpread: 1
-  m_shotsPerFire: 7
+  m_shotsPerFire: 11
   m_isBeam: 0
   m_beamRechargeDelay: 1
   m_currentRechargeDelay: 0
-  m_recoilTime: .550000012
+  m_recoilTime: 1.5
   m_currentRecoil: 0
   m_bulletRef: {fileID: 100000, guid: 17c404e74af622646a8a6ce3c3a60f88, type: 2}
   m_bulletOffset: {x: 0, y: 0, z: .100000001}
