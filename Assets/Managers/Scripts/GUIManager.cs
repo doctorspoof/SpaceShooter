@@ -52,7 +52,7 @@ public class GUIManager : MonoBehaviour
     GameObject[] playerShips;
     public GameObject[] shops;
     [SerializeField]
-    float m_shopRestockTime = 150.0f;
+    float m_shopRestockTime = 120.0f;
 
     [SerializeField]
     GameObject GameStateController;

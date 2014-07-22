@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class LootTableScript : MonoBehaviour 
 {
@@ -7,15 +8,53 @@ public class LootTableScript : MonoBehaviour
 	GameObject m_ItemManager;
 
 	Item[] m_itemList;
+    
+    List<Item> m_tier1Items;
+    List<Item> m_tier2Items;
+    List<Item> m_tier3Items;
+    
+    List<Item>[] m_itemTiers;
 
 	// Use this for initialization
 	void Start () 
 	{
 		m_ItemManager = GameObject.FindGameObjectWithTag("ItemManager");
+        m_tier1Items = new List<Item>();
+        m_tier2Items = new List<Item>();
+        m_tier3Items = new List<Item>();
 
 		if(m_ItemManager != null)
 		{
 			m_itemList = m_ItemManager.GetComponent<ItemIDHolder>().ItemList;
+            for(int i = 0; i < m_itemList.Length; i++)
+            {
+                if(m_itemList[i].itemObject != null)
+                {
+                    switch(m_itemList[i].itemObject.GetComponent<ItemScript>().m_ItemTierID)
+                    {
+                        case 1:
+                        {
+                            m_tier1Items.Add(m_itemList[i]);
+                            break;
+                        }
+                        case 2:
+                        {
+                            m_tier2Items.Add(m_itemList[i]);
+                            break;
+                        }
+                        case 3:
+                        {
+                            m_tier3Items.Add(m_itemList[i]);
+                            break;
+                        }   
+                    }
+                }
+            }
+            
+            m_itemTiers = new List<Item>[3];
+            m_itemTiers[0] = m_tier1Items;
+            m_itemTiers[1] = m_tier2Items;
+            m_itemTiers[2] = m_tier3Items;
 		}
 
 		else
@@ -29,6 +68,67 @@ public class LootTableScript : MonoBehaviour
 	{
 	
 	}
+
+    public int[] RequestItemListByTime(float time, bool[] stockFlags, int numItemsReq)
+    {
+        //Bool array, order is:
+        //Weapons - Shields - Engines - Plating - CWeapons
+        
+        //Initialise output array
+        List<int> outputL = new List<int>();
+        //int[] output = new int[numItemsReq];
+        
+        //Work out tier modifiers
+        float tier1 = 1.0f;
+        float tier2 = Mathf.Min(time / 600.0f, 1.0f);
+        float tier3 = Mathf.Min((time - 600.0f) / 600.0f, 1.0f);
+        
+        float totalTier = tier1 + tier2 + tier3;
+        
+        float tier1Effect = tier1 / totalTier;
+        float tier2Effect = tier2 / totalTier;
+        float tier3Effect = tier3 / totalTier;
+        
+        int numTier1 = (int)(numItemsReq * tier1Effect);
+        int numTier2 = (int)(numItemsReq * tier2Effect);
+        int numTier3 = (int)(numItemsReq * tier3Effect);
+        
+        int itemOverflow = numItemsReq - (numTier1 + numTier2 + numTier3);
+        
+        if(itemOverflow != 0)
+        {
+            if(time < 400.0f)
+                numTier1 += itemOverflow;
+            else if(time < 1000.0f)
+                numTier2 += itemOverflow;
+            else
+                numTier3 += itemOverflow;
+        }
+            
+        int[] numByTier = new int[3];
+        
+        while(outputL.Count < numItemsReq)
+        {
+            int currentTier = 0;
+            if(outputL.Count < numTier1)
+                currentTier = 1;
+            else if(outputL.Count < (numTier1 + numTier2))
+                currentTier = 2;
+            else if(outputL.Count < (numTier1 + numTier2 + numTier3))
+                currentTier = 3;
+                
+            //Get an item from the appropriate list
+            int i = Random.Range(0, m_itemTiers[currentTier - 1].Count);
+            ItemScript iSc = m_itemTiers[currentTier - 1][i].itemObject.GetComponent<ItemScript>();
+            if(stockFlags[(int)iSc.m_typeOfItem])
+            {
+                outputL.Add(iSc.m_equipmentID);
+            }
+        }
+        
+        //Output List should now be full, so return the array
+        return outputL.ToArray();
+    }
 
 	public int[] RequestItemByApproximateValue(float value, bool[] stockFlags, float[] rarityMods, int numItemsReq)
 	{
