@@ -592,7 +592,9 @@ public class HealthScript : MonoBehaviour
     public void SetModifier(float modifier_)
     {
         m_maximumHealth = (int)(m_maximumHealth * modifier_);
+        m_currentHealth = m_maximumHealth;
         m_maximumShield = (int)(m_maximumShield * modifier_);
+        m_currentShield = m_maximumShield;
         if (Network.isServer)
         {
             networkView.RPC("PropagateDamageAndMaxs", RPCMode.Others, m_currentHealth, m_maximumHealth, m_currentShield, m_maximumShield);

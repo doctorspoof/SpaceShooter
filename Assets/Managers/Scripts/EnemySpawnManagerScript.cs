@@ -133,6 +133,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
     public void BeginSpawning()
     {
         shouldStart = true;
+        hasBegan = true;
         //if (currentWave == 0)
         //{
         //Spawners haven't been initialised, try again:
@@ -149,9 +150,9 @@ public class EnemySpawnManagerScript : MonoBehaviour
     void Update()
     {
         //-60 seconds so updates once per minute
-        if (Time.time - lastTimeModifier >= 1 && hasBegan)
+        if (Time.timeSinceLevelLoad - lastTimeModifier >= 1 && hasBegan)
         {
-            lastTimeModifier = (int)Time.time;
+            lastTimeModifier = (int)Time.timeSinceLevelLoad ;
             currentHealthModifier *= healthModifierIncrement;
             foreach (GameObject spawn in m_allSpawnPoints)
             {
@@ -160,9 +161,9 @@ public class EnemySpawnManagerScript : MonoBehaviour
             }
         }
 
-        if (Network.isServer && m_allSpawnPoints.Length != 0 && /*!shouldPause && shouldStart &&*/ (Time.time - lastTimeSpawn - secondsBetweenWaves) >= 1)// && hasBegan)
+        if (Network.isServer && m_allSpawnPoints.Length != 0 && /*!shouldPause && shouldStart &&*/ (Time.timeSinceLevelLoad  - lastTimeSpawn - secondsBetweenWaves) >= 1)// && hasBegan)
         {
-            lastTimeSpawn = (int)Time.time;
+            lastTimeSpawn = (int)Time.timeSinceLevelLoad ;
             SendNextWaveToPoints();
         }
     }
