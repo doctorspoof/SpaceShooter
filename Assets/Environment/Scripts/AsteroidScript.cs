@@ -38,6 +38,7 @@ public class AsteroidScript : MonoBehaviour
 	// Stops the asteroids from increasing size when splitting
 	[HideInInspector] 
 	public bool isFirstAsteroid = true;
+    
 
 
 	void OnCollisionEnter(Collision collision)
@@ -97,6 +98,26 @@ public class AsteroidScript : MonoBehaviour
 			networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, this.transform.position.x, this.transform.position.y);
 		}
 	}
+    
+    
+    IEnumerator PersistentAsteroidSync (float startTime, float timeToWait)
+    {
+        if (Network.isServer)
+        {
+            if (startTime > timeToWait)
+            {
+                startTime.Swap (ref startTime, ref timeToWait);
+            }
+            
+            yield return new WaitForSeconds (timeToWait - startTime);
+            
+            while (true)
+            {
+                networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, rigidbody.position.x, rigidbody.position.y);
+                yield return new WaitForSeconds (timeToWait);
+            }
+        }
+    }
 
 
 	[RPC]
@@ -132,6 +153,8 @@ public class AsteroidScript : MonoBehaviour
 			}
 
 			sendCounter = Random.Range(0, 4);
+            
+            StartCoroutine (PersistentAsteroidSync (Random.Range (0f, 9.9f), 10f));
 		}
 	}
 
