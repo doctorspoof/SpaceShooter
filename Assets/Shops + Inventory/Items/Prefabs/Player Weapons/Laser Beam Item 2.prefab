@@ -39,11 +39,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 0
+  m_ItemTierID: 2
   m_equipmentIcon: {fileID: 2800000, guid: f5e4ccfda120cb946902b861cb946011, type: 3}
   m_equipmentName: Regeant Beam
-  m_equipmentDescription: A purple-tinted laser beam. Attuned through rare Plutonian
-    amethysts
-  m_cost: 550
+  m_descriptionID: 0
+  m_cost: 900
   m_equipmentID: 13
   m_equipmentReference: {fileID: 100000, guid: df2df84121c9fa54a8a21596f6e5b689, type: 2}
 --- !u!1001 &100100000

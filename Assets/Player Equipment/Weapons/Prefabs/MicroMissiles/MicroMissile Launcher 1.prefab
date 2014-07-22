@@ -133,7 +133,7 @@ MonoBehaviour:
   m_sequentialFireTime: .699999988
   m_spreadFactor: 20
   m_evenSpread: 0
-  m_shotsPerFire: 10
+  m_shotsPerFire: 12
   m_isBeam: 0
   m_beamRechargeDelay: 1
   m_currentRechargeDelay: 0
