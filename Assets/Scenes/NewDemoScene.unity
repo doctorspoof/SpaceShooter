@@ -1344,6 +1344,10 @@ Prefab:
       propertyPath: m_LocalScale.y
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 630bbf4c5ecfa394c85d78806d29aaa8, type: 2}
+      propertyPath: m_TagString
+      value: Star
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6400000, guid: 630bbf4c5ecfa394c85d78806d29aaa8, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 630bbf4c5ecfa394c85d78806d29aaa8, type: 2}
@@ -9377,7 +9381,7 @@ GameObject:
   - 114: {fileID: 2099994237}
   m_Layer: 20
   m_Name: Star
-  m_TagString: Untagged
+  m_TagString: Star
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

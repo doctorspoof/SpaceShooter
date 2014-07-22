@@ -505,7 +505,7 @@ public class CapitalWeaponScript : MonoBehaviour
 		
 		Quaternion bulletRot = this.transform.rotation * Quaternion.Euler(0, 0,randAngle);
 		Vector3 pos = m_firePoints[currentFirePoint].position;
-		pos.z += 0.2f;
+		pos.z -= 0.2f;
 		GameObject bullet = (GameObject)Network.Instantiate(bulletRef, pos, bulletRot, 0);
 		bullet.GetComponent<BasicBulletScript>().firer = this.transform.parent.gameObject;
 	}

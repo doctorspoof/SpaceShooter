@@ -259,7 +259,7 @@ public class CapitalShipScript : Ship
 
     public bool shouldStart = false;
 
-    int m_bankedCash = 500;
+    int m_bankedCash = 1500;
     public int GetBankedCash()
     {
         return m_bankedCash;

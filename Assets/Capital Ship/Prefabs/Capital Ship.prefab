@@ -2997,13 +2997,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_inventory:
-  - {fileID: 11400000, guid: 06c29fda1f94a174286d4a736f75a752, type: 2}
-  - {fileID: 11400000, guid: ff79a71609e3a3546ba21bb666fc4ef6, type: 2}
-  - {fileID: 11400000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
-  - {fileID: 11400000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
-  - {fileID: 11400000, guid: aa2ed2b9777c2d746b74405771f540b9, type: 2}
-  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
-  - {fileID: 11400000, guid: 4a2edc6e9d340c248a2c2bfde990a7d0, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

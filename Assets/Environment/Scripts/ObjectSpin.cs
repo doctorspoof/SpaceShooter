@@ -44,7 +44,10 @@ public class ObjectSpin : MonoBehaviour {
 			}
 		}
 
-		this.transform.localPosition = Vector3.zero;
+        if(this.tag == "Star")
+            this.transform.localPosition = new Vector3(0, 0, 15.0f);
+        else
+            this.transform.localPosition = Vector3.zero;
 	}
 }
 
