@@ -965,7 +965,7 @@ MonoBehaviour:
   m_currentOrder: 0
   allowedAttacksForShip:
   - AttackRam
-  shipSize: 2
+  shipSize: 0
   m_pathToShieldObject: Composite Collider/Shield
 --- !u!114 &11400002
 MonoBehaviour:
