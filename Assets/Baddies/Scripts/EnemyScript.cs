@@ -243,10 +243,11 @@ public class EnemyScript : Ship
     {
         //m_shipSpeed = 0;
 
+        base.Update();
+        
         if (Network.isServer)
         {
-            base.Update();
-
+            //base.Update();
             //EnemyScript slowestShip = m_parentGroup.GetSlowestShip();
 
             switch (m_currentOrder)

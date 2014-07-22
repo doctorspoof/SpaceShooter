@@ -265,6 +265,11 @@ public class EnemySpawnPointScript : MonoBehaviour
     void Activate(bool flag_)
     {
         spawnPointActive = flag_;
+
+        if(Network.isServer)
+        {
+            networkView.RPC("SetActive", RPCMode.Others, spawnPointActive ? 1 : 0);
+        }
     }
 
 
@@ -337,5 +342,11 @@ public class EnemySpawnPointScript : MonoBehaviour
         Vector3 newScale = Vector3.Lerp(Vector3.zero, wormholeOriginalScale, t_);
         newScale.z = 1;
         wormhole.localScale = newScale;
+    }
+
+    [RPC]
+    void SetActive(int i_)
+    {
+        spawnPointActive = i_ == 1;
     }
 }
