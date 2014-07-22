@@ -313,8 +313,17 @@ public class GUIManager : MonoBehaviour
             //TODO: Parametise this later
             if (lockonTime > 0.7f)
             {
-                hasLockedTarget = true;
-                thisPlayerHP.GetComponent<PlayerControlScript>().SetNewTargetLock(m_lastLockonTarget);
+                if (thisPlayerHP)
+                {
+                    thisPlayerHP.GetComponent<PlayerControlScript>().SetNewTargetLock(m_lastLockonTarget);
+                    hasLockedTarget = true;
+                }
+                
+                else
+                {
+                    lockonTime = 0f;
+                }
+                
             }
         }
 
