@@ -169,6 +169,13 @@ public class PlayerControlScript : Ship
 	public GameObject m_equippedEngineItem;
 	public void ResetEquippedEngine()
 	{
+        GameObject oldEngine = GetEngineObject();
+
+        if(oldEngine != null)
+        {
+            Network.Destroy(oldEngine);
+        }
+
 		GameObject engine = (GameObject)Network.Instantiate(m_equippedEngineItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
 		engine.transform.parent = this.transform;
 
@@ -184,8 +191,6 @@ public class PlayerControlScript : Ship
         SetMaxShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
         SetCurrentShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
         SetRotateSpeed(m_baseEngineTurnSpeed + esc.GetTurnSpeed());
-
-        ResetThrusters();
 
 	}
 
@@ -412,7 +417,6 @@ public class PlayerControlScript : Ship
 					//Place old engine into inv
                     AddItemToInventory(temp);
                     
-                    ResetThrusters();
 					break;
 				}
 				case ItemType.Plating:

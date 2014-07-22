@@ -99,6 +99,11 @@ public class Ship : MonoBehaviour
 
     protected virtual void Update()
     {
+        if(thrustersHolder == null)
+        {
+            ResetThrusters();
+        }
+
         if (afterburnersFiring == true)
         {
             currentAfterburnerTime += Time.deltaTime;
@@ -120,15 +125,16 @@ public class Ship : MonoBehaviour
                 }
             }
         }
+
         // we cant calculate the max velocity neatly so we check to see if its larger
-        if ((maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude) && (owner == Network.player || (!isPlayerControlScript && Network.isServer)))
+        if ((maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude))
         {
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
             UpdateThrusterVelocityMax();
         }
 
         //maxAngularVelocitySeen -= 0.05f;
-        if ((maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity)) && (owner == Network.player || (!isPlayerControlScript && Network.isServer)))
+        if ((maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity)))
         {
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
             UpdateThrusterAngularMax();
@@ -418,10 +424,17 @@ public class Ship : MonoBehaviour
     /// <returns></returns>
     public void ResetThrusterObjects()
     {
+        
+
         thrustersHolder = GetThrusterHolder();
         afterburnersHolder = thrustersHolder.FindChild("Afterburners");
         Transform rcsholder = transform.FindChild("RCS");
 
+        if(tag.Equals("Player"))
+        {
+            Debug.Log("___________ RESETTING PLAYER ENGINE _____________");
+            Debug.Log("name of engine = " + thrustersHolder.parent.name);
+        }
         //if there are afterburners, take 1 away since the afterburner holder is a child but not a thruster itself
         int thrusterCount = thrustersHolder.childCount;
         if (afterburnersHolder != null)
