@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: a43e73c9ad54b084d86ce71e090c3a58, type: 3}
   m_equipmentName: Lion Cannon
   m_descriptionID: 0
-  m_cost: 780
+  m_cost: 1080
   m_equipmentID: 16
   m_equipmentReference: {fileID: 100000, guid: 43b345ad12cf4844da7caeb6158e8323, type: 2}
 --- !u!1001 &100100000
