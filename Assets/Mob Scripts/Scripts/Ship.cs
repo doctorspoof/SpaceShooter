@@ -130,15 +130,17 @@ public class Ship : MonoBehaviour
         if ((maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude))
         {
             maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
-            UpdateThrusterVelocityMax();
+            //UpdateThrusterVelocityMax();
         }
 
         //maxAngularVelocitySeen -= 0.05f;
         if ((maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity)))
         {
             maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
-            UpdateThrusterAngularMax();
+            //UpdateThrusterAngularMax();
         }
+
+        //Debug.Log("Ship id = " + shipID + " has " + maxThrusterVelocitySeen + " __ " + maxAngularVelocitySeen + " __ " + currentAngularVelocity);
 
         UpdateThrusters();
 
@@ -268,6 +270,11 @@ public class Ship : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the radius of the ship based on the angle you are looking at it
+    /// </summary>
+    /// <param name="position_"></param>
+    /// <returns></returns>
     public float GetCalculatedSizeByPosition(Vector2 position_)
     {
 
@@ -334,7 +341,7 @@ public class Ship : MonoBehaviour
     public void UpdateThrusterAngularCurrent()
     {
         if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.All, currentAngularVelocity);
+            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.Others, currentAngularVelocity);
     }
 
     [RPC]
@@ -346,7 +353,7 @@ public class Ship : MonoBehaviour
     public void UpdateThrusterAngularMax()
     {
         if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterAngularMax", RPCMode.All, maxAngularVelocitySeen);
+            networkView.RPC("PropagateNewThrusterAngularMax", RPCMode.Others, maxAngularVelocitySeen);
     }
 
     [RPC]
@@ -358,7 +365,7 @@ public class Ship : MonoBehaviour
     public void UpdateThrusterVelocityMax()
     {
         if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterVelocityMax", RPCMode.All, maxThrusterVelocitySeen);
+            networkView.RPC("PropagateNewThrusterVelocityMax", RPCMode.Others, maxThrusterVelocitySeen);
     }
 
     [RPC]
@@ -375,6 +382,21 @@ public class Ship : MonoBehaviour
                 thruster.Calculate(maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
         }
     }
+
+    //public void UpdateThrusters()
+    //{
+    //    networkView.RPC("PropagateThrusters", RPCMode.All, maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
+    //}
+
+    //[RPC]
+    //void PropagateThrusters(float maxThrusterVelocitySeen_, float currentAngularVelocity_, float maxAngularVelocitySeen_)
+    //{
+    //    foreach (Thruster thruster in thrusters)
+    //    {
+    //        if (thruster != null)
+    //            thruster.Calculate(maxThrusterVelocitySeen_, currentAngularVelocity_, maxAngularVelocitySeen_);
+    //    }
+    //}
 
     public void ResetThrusters()
     {
@@ -424,17 +446,10 @@ public class Ship : MonoBehaviour
     /// <returns></returns>
     public void ResetThrusterObjects()
     {
-        
-
         thrustersHolder = GetThrusterHolder();
         afterburnersHolder = thrustersHolder.FindChild("Afterburners");
         Transform rcsholder = transform.FindChild("RCS");
 
-        if(tag.Equals("Player"))
-        {
-            Debug.Log("___________ RESETTING PLAYER ENGINE _____________");
-            Debug.Log("name of engine = " + thrustersHolder.parent.name);
-        }
         //if there are afterburners, take 1 away since the afterburner holder is a child but not a thruster itself
         int thrusterCount = thrustersHolder.childCount;
         if (afterburnersHolder != null)
