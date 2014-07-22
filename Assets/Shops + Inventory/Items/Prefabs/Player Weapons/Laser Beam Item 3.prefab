@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: 4beb497f929fb5540aa41290b31bdb9d, type: 3}
   m_equipmentName: Crimblade Laser
   m_descriptionID: 0
-  m_cost: 1800
+  m_cost: 3000
   m_equipmentID: 23
   m_equipmentReference: {fileID: 100000, guid: a1e7afc36cf126642be18424aa5d7ff7, type: 2}
 --- !u!1001 &100100000

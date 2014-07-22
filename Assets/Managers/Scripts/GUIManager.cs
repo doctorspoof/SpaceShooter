@@ -135,7 +135,8 @@ public class GUIManager : MonoBehaviour
 
     [SerializeField]
     bool m_shouldResetShopsNow = false;
-    float m_shopTimer = 0;
+    [SerializeField]
+    float m_shopTimer = 0.0f;
 
     float m_shopResetDisplayTimer = 200.0f;
 
@@ -156,7 +157,7 @@ public class GUIManager : MonoBehaviour
         {
             m_shopTimer += Time.deltaTime;
 
-            if (m_shopTimer > m_shopRestockTime || m_shouldResetShopsNow)
+            if (m_shopTimer >= m_shopRestockTime || m_shouldResetShopsNow)
             {
                 m_shouldResetShopsNow = false;
                 m_shopTimer = 0.0f;
@@ -4516,6 +4517,7 @@ public class GUIManager : MonoBehaviour
                     shops = GameObject.FindGameObjectsWithTag("Shop");
                     m_selectedButton = 0;
                     m_selectedSubButton = 0;
+                    m_shouldResetShopsNow = true;
                     break;
                 }
             case GameState.MainMenu:

@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: 83caab32ebd8ce84aa0cf6d3ba5d53e2, type: 3}
   m_equipmentName: Horde Launcher
   m_descriptionID: 0
-  m_cost: 1600
+  m_cost: 3000
   m_equipmentID: 25
   m_equipmentReference: {fileID: 100000, guid: 7e420f00b8c174a41a0fee9efd168b93, type: 2}
 --- !u!1001 &100100000

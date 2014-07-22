@@ -987,7 +987,7 @@ MonoBehaviour:
   m_maxDockingSpeed: 225
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
-  m_currentSpaceBucks: 3000000
+  m_currentSpaceBucks: 300
   m_equippedWeaponItem: {fileID: 100000, guid: d8e1271c27ab7ae4793d51be5149f688, type: 2}
   m_equippedShieldItem: {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
   m_equippedEngineItem: {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}

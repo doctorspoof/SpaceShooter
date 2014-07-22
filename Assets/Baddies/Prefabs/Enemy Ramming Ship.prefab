@@ -946,13 +946,13 @@ MonoBehaviour:
   isPlayerControlScript: 0
   shipTransform: {fileID: 0}
   shipRigidbody: {fileID: 0}
-  m_maxShipSpeed: 360
+  m_maxShipSpeed: 420
   m_currentShipSpeed: 0
-  afterburnerIncreaseOfSpeed: 1080
+  afterburnerIncreaseOfSpeed: 1150
   afterburnerLength: 10
   afterburnerRechargeTime: 10
   m_rotateSpeed: 50
-  m_ramDamageMultiplier: 8
+  m_ramDamageMultiplier: 4
   maunuallySetWidthAndHeight: 0
   minWeaponRange: 40
   maxWeaponRange: 40

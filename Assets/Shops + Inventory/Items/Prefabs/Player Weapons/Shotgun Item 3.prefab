@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: d09b6b186ce9b5d4f8caaf48e94e3743, type: 3}
   m_equipmentName: Overloaded Plasma Spreader
   m_descriptionID: 0
-  m_cost: 1660
+  m_cost: 2980
   m_equipmentID: 21
   m_equipmentReference: {fileID: 100000, guid: 09283883531107e4db83b09a93744bc8, type: 2}
 --- !u!1001 &100100000

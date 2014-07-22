@@ -2062,6 +2062,10 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 757348484}
     m_Modifications:
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.size
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
       propertyPath: m_LocalPosition.x
       value: -100.833595
@@ -2102,6 +2106,45 @@ Prefab:
       propertyPath: m_capacity
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[5]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[6]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[7]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[8]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 15881c0ffbdd9a14fbc3b3442039d539,
+        type: 2}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4,
+        type: 2}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[4]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400004, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+      propertyPath: m_inventory.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: eeb014f2b35b98342b24a2917a1eb246,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
   m_RootGameObject: {fileID: 779021240}
@@ -2684,11 +2727,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_inventory:
+  - {fileID: 11400000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
+  - {fileID: 11400000, guid: 15881c0ffbdd9a14fbc3b3442039d539, type: 2}
   - {fileID: 11400000, guid: 937e0290072b1364485000a2270ef2d4, type: 2}
-  - {fileID: 11400000, guid: 8142212043aaebc4295198753692f6ed, type: 2}
-  - {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
-  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  - {fileID: 11400000, guid: f114e068aea55604e9b19f378071ffa9, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   m_capacity: 9
   m_requestTimeOutSeconds: 120
   m_nullRemovedItems: 1
@@ -6747,6 +6794,7 @@ MonoBehaviour:
   GameStateController: {fileID: 1243518159}
   m_currentPingTime: 0
   m_shouldResetShopsNow: 0
+  m_shopTimer: 0
   m_sharedGUIStyle:
     m_Name: Shared
     m_Normal:

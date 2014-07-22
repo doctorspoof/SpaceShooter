@@ -2444,10 +2444,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
-  m_maximumHealth: 800
+  m_maximumHealth: 1600
   m_currentHealth: 0
   m_pathToShieldObject: Composite Collider/Shield
-  m_maximumShield: 500
+  m_maximumShield: 750
   m_currentShield: 0
   m_shieldRechargeRate: 6
   m_timeToRechargeShield: 4
@@ -2464,6 +2464,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a3a714b5514eba47a21353932d301ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownerSt: 
+  isPlayerControlScript: 0
   shipTransform: {fileID: 0}
   shipRigidbody: {fileID: 0}
   m_maxShipSpeed: 0
@@ -2474,7 +2476,8 @@ MonoBehaviour:
   m_rotateSpeed: 5
   m_ramDamageMultiplier: 2.5
   maunuallySetWidthAndHeight: 1
-  weaponRange: 0
+  minWeaponRange: 0
+  maxWeaponRange: 0
   m_shipWidth: 6
   m_shipHeight: 24
   shipID: -1
@@ -2483,13 +2486,16 @@ MonoBehaviour:
   m_shatteredShip: {fileID: 100018, guid: f2187e9cf94fbb947b5a55afb04a90c9, type: 2}
   targetPoint: {fileID: 0}
   m_cShipInventory:
-  - {fileID: 100000, guid: 4a2edc6e9d340c248a2c2bfde990a7d0, type: 2}
-  - {fileID: 100000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
-  - {fileID: 100000, guid: aa2ed2b9777c2d746b74405771f540b9, type: 2}
-  - {fileID: 100000, guid: ff79a71609e3a3546ba21bb666fc4ef6, type: 2}
-  - {fileID: 100000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
-  - {fileID: 100000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
-  - {fileID: 100000, guid: 06c29fda1f94a174286d4a736f75a752, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   shouldStart: 0
   m_shipSpeed: 15
   m_attachedTurretsItemWrappers:

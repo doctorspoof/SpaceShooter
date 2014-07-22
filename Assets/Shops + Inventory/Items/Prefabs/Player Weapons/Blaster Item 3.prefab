@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: a642e988dada3284ba1344216d94ca62, type: 3}
   m_equipmentName: Ion Pulsar
   m_descriptionID: 0
-  m_cost: 1500
+  m_cost: 2950
   m_equipmentID: 20
   m_equipmentReference: {fileID: 100000, guid: 45296b9ad9f240a4faac1af1a40c197f, type: 2}
 --- !u!1001 &100100000
