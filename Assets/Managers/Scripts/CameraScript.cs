@@ -162,7 +162,40 @@ public class CameraScript : MonoBehaviour
 						    this.transform.position += this.transform.right * 15.0f * Time.deltaTime;
 					}
 				}
-				
+
+                if(Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    if(m_players[0])
+                    {
+                        m_isInFollowMode = true;
+                        m_trackedPlayerID = 1;
+                    }
+                }
+                if(Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    if(m_players[1])
+                    {
+                        m_isInFollowMode = true;
+                        m_trackedPlayerID = 2;
+                    }
+                }
+                if(Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    if(m_players[2])
+                    {
+                        m_isInFollowMode = true;
+                        m_trackedPlayerID = 3;
+                    }
+                }
+                if(Input.GetKeyDown(KeyCode.Alpha4))
+                {
+                    if(m_players[3])
+                    {
+                        m_isInFollowMode = true;
+                        m_trackedPlayerID = 4;
+                    }
+                }
+
 				if(Input.GetKeyDown(KeyCode.Tab))
 				{
 					m_gui.ToggleMap();
@@ -177,6 +210,7 @@ public class CameraScript : MonoBehaviour
                 {
                     m_isInFollowMode = false;
                     transform.position = GameObject.FindGameObjectWithTag("Capital").transform.position + m_SpecOffset;
+                    m_trackedPlayerID = -1;
                 }
                 
 				if(Input.GetKeyDown (KeyCode.Space))
@@ -201,6 +235,8 @@ public class CameraScript : MonoBehaviour
 						m_currentOrthoSize -= 0.5f;
 						if(m_currentOrthoSize < 1)
 							m_currentOrthoSize = 1;
+                            
+                        m_SpecOffset.y = -m_currentOrthoSize / 4.285f;
 					}
 					else if(scroll < 0 || Input.GetButtonDown("X360RightBumper"))
 					{
@@ -208,6 +244,8 @@ public class CameraScript : MonoBehaviour
 						m_currentOrthoSize += 0.5f;
 						if(m_currentOrthoSize > 15)
 							m_currentOrthoSize = 15;
+                            
+                        m_SpecOffset.y = -m_currentOrthoSize / 4.285f;
 					}
 				}
 				
