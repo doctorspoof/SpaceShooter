@@ -39,11 +39,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_typeOfItem: 3
+  m_ItemTierID: 1
   m_equipmentIcon: {fileID: 2800000, guid: cd950be5031ea3c4884587c8498bfa6a, type: 3}
   m_equipmentName: Recon Armour
-  m_equipmentDescription: Thinner sheets of steel form up a common light armour used
-    in reconnaissance craft
-  m_cost: 215
+  m_descriptionID: 0
+  m_cost: 0
   m_equipmentID: 90
   m_equipmentReference: {fileID: 100000, guid: 2a26aacb59143f24e90bd80f11e6b156, type: 2}
 --- !u!1001 &100100000

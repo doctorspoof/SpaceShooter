@@ -123,7 +123,7 @@ public class AsteroidScript : MonoBehaviour
 	[RPC]
 	void SyncVelocity(Vector3 vel, float xPos, float yPos)
     {
-        Debug.Log ("Received requested to synchronise the velocity of: " + name);
+        //Debug.Log ("Received requested to synchronise the velocity of: " + name);
 		rigidbody.velocity = vel;
 		this.transform.position = new Vector3(xPos, yPos, 10.0f);
 	}

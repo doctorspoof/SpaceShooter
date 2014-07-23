@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: d25b0dc89e7d3ab41aeb4ecae38d4d96, type: 3}
   m_equipmentName: Aegis
   m_descriptionID: 0
-  m_cost: 850
+  m_cost: 1450
   m_equipmentID: 52
   m_equipmentReference: {fileID: 100000, guid: 438976b48210fb24c920e1f8e6c93200, type: 2}
 --- !u!1001 &100100000
