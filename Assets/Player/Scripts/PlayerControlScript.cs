@@ -1148,11 +1148,6 @@ public class PlayerControlScript : Ship
 							bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
 							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap = !mapVal;
 						}
-
-						if(Input.GetKeyDown (KeyCode.P))
-						{
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<HealthScript>().RemotePlayerRequestsDirectDamage(150);
-						}
 					}
 					else
 					{
