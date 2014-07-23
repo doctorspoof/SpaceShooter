@@ -96,6 +96,8 @@ public class CameraScript : MonoBehaviour
 	float m_currentOrthoSize;
 	bool m_playerIsDocked = false;
 	bool m_shouldAllowInput = true;
+    
+    Vector3 m_SpecOffset = new Vector3(0, -3.5f, -60.0f);
 
 	void LateUpdate()
 	{
@@ -117,8 +119,7 @@ public class CameraScript : MonoBehaviour
 					if(m_players[m_trackedPlayerID] != null)
 					{
 						Vector3 pos = m_players[m_trackedPlayerID].transform.position;
-						pos.z = -10;
-						this.transform.position = pos;
+						this.transform.position = pos + m_SpecOffset;
 					}
 					
 					//Switch to manual control
@@ -133,20 +134,32 @@ public class CameraScript : MonoBehaviour
 				{
 					if(Input.GetKey(KeyCode.W))
 					{
-						this.transform.position += this.transform.up * 15.0f * Time.deltaTime;
+                        if(Input.GetKey(KeyCode.LeftShift))
+                            this.transform.position += this.transform.up * 30.0f * Time.deltaTime;
+                        else
+						    this.transform.position += this.transform.up * 15.0f * Time.deltaTime;
 					}
 					if(Input.GetKey(KeyCode.S))
 					{
-						this.transform.position -= this.transform.up * 15.0f * Time.deltaTime;
+                        if(Input.GetKey(KeyCode.LeftShift))
+                            this.transform.position -= this.transform.up * 30.0f * Time.deltaTime;
+                        else
+						    this.transform.position -= this.transform.up * 15.0f * Time.deltaTime;
 					}
 					
 					if(Input.GetKey(KeyCode.A))
 					{
-						this.transform.position -= this.transform.right * 15.0f * Time.deltaTime;
+                        if(Input.GetKey(KeyCode.LeftShift))
+                            this.transform.position -= this.transform.right * 30.0f * Time.deltaTime;
+                        else
+						    this.transform.position -= this.transform.right * 15.0f * Time.deltaTime;
 					}
 					if(Input.GetKey(KeyCode.D))
 					{
-						this.transform.position += this.transform.right * 15.0f * Time.deltaTime;
+                        if(Input.GetKey(KeyCode.LeftShift))
+                            this.transform.position += this.transform.right * 30.0f * Time.deltaTime;
+                        else
+						    this.transform.position += this.transform.right * 15.0f * Time.deltaTime;
 					}
 				}
 				
@@ -160,6 +173,12 @@ public class CameraScript : MonoBehaviour
 					m_gui.m_isOnFollowMap  = !m_gui.m_isOnFollowMap;
 				}
 				
+                if(Input.GetKeyDown(KeyCode.LeftControl))
+                {
+                    m_isInFollowMode = false;
+                    transform.position = GameObject.FindGameObjectWithTag("Capital").transform.position + m_SpecOffset;
+                }
+                
 				if(Input.GetKeyDown (KeyCode.Space))
 				{
 					m_isInFollowMode = true;

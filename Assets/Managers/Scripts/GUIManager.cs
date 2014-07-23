@@ -1406,129 +1406,9 @@ public class GUIManager : MonoBehaviour
                 }
             }
         }
-
-        //Show CShip HP top-left
-        /*GUI.Label (new Rect(50, 10, 200, 50), "Capital Ship Status");
-        if(CShip == null)
-        {
-            GUI.Label(new Rect(100, 10, 200, 80), "DESTROYED - Game Over!");
-        }
-        else
-        {*/
-        /*int maxHP = CShip.GetComponent<HealthScript>().GetMaxHP();
-        int numBlips = (maxHP / 10);
-        int totalHPWidth = (numBlips * 8) + ((numBlips + 1) * 4);
-			
-        GUI.DrawTexture(new Rect(50, 50, 10, 50), m_barEnd);
-        GUI.DrawTexture(new Rect(60, 50, totalHPWidth - 15, 50), m_barMid);
-        GUI.DrawTexture(new Rect(52 + totalHPWidth, 50, -10, 50), m_barEnd);
-			
-        int blips = CShip.GetComponent<HealthScript>().GetCurrHP() / 10;
-        for(int i = 0; i < blips; i++)
-        {
-            GUI.DrawTexture(new Rect(55 + (12 * i), 53, 8, 44), m_healthBlip);
-        }
-			
-        //Shields
-        int maxS = CShip.GetComponent<HealthScript>().GetMaxShield();
-        int numBlipsS = (maxS / 10);
-        int totalSWidth = (numBlipsS * 8) + ((numBlipsS + 1) * 4);
-			
-        GUI.DrawTexture(new Rect(50, 105, 10, 50), m_barEnd);
-        GUI.DrawTexture(new Rect(60, 105, totalSWidth - 15, 50), m_barMid);
-        GUI.DrawTexture(new Rect(52 + totalSWidth, 105, -10, 50), m_barEnd);
-			
-        int blipsS = CShip.GetComponent<HealthScript>().GetCurrShield() / 10;
-        for(int i = 0; i < blipsS; i++)
-        {
-            GUI.DrawTexture(new Rect(55 + (12 * i), 108, 8, 44), m_shieldBlip);
-        }*/
-
-        //new hp for cship
-        /*float hpPercent = CShipHealth.GetHPPercentage();
-        float shieldPercent = CShipHealth.GetShieldPercentage();
-
-        GUI.DrawTextureWithTexCoords(new Rect(50, 50, 800 * hpPercent, 80), m_cShipBarHealth, new Rect(0, 0, hpPercent, 1));
-        GUI.DrawTextureWithTexCoords(new Rect(50, 50, 800 * shieldPercent, 80), m_cShipBarShield, new Rect(0, 0, shieldPercent, 1));
-        GUI.DrawTexture(new Rect(50, 50, 800, 80), m_cShipBarBorder);
-    }*/
-
-        //Show timer top-right
-        /*GUI.DrawTexture(new Rect(1350, 40, 10, 50), m_barEnd);
-        GUI.DrawTexture(new Rect(1360, 40, 200, 50), m_barMid);
-        GUI.DrawTexture(new Rect(1570, 40, -10, 50), m_barEnd);
-        int seconds = (int)m_gameTimer;
-        string displayedTime = string.Format("{0:00}:{1:00}", (seconds/60)%60, seconds%60);
-        GUI.Label(new Rect(1360, 43, 180, 44), displayedTime);*/
-
-        //Show all player statuses along bottom
-        /*for(int i = 0; i < players.Length; i++)
-        {
-            if(players[i] == null)
-            {
-                //If the player is null, they're probably dead. Try to see if they're respawned yet, otherwise just write destroyed
-                players[i] = GameStateController.GetComponent<GameStateController>().GetPlayerFromNetworkPlayer(GameStateController.GetComponent<GameStateController>().GetNetworkPlayerFromID(i));
-                if(players[i] == null)
-                    GUI.Label (new Rect(50 + (i * 400), 630, 200, 50), "DESTROYED");
-            }
-
-            //NOTE: DO NOT MAKE ELSE
-            if(players[i] != null)
-            {
-                //If this is the active player, yippee! Draw a nicer box
-                if(i == m_trackedPlayerID)
-                {
-                    GUI.DrawTexture(new Rect(0 + (i * 400), 600, 20, 300), m_barEnd);
-                    GUI.DrawTexture(new Rect(20 + (i * 400), 600, 360, 300), m_barMid);
-                    GUI.DrawTexture(new Rect(400 + (i * 400), 600, -20, 300), m_barEnd);
-                }
-
-                //Draw this players name, HP, shields
-
-                //Draw Name
-                string name = GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(players[i].GetComponent<PlayerControlScript>().GetOwner());
-                GUI.Label (new Rect(50 + (i * 400), 630, 200, 50), name);*/
-
-        //Draw HP
-        /*HealthScript thisHPSc = players[i].GetComponent<HealthScript>();
-        int maxHP = thisHPSc.GetComponent<HealthScript>().GetMaxHP();
-        int numBlips = (maxHP / 10);
-        int totalHPWidth = (numBlips * 8) + ((numBlips + 1) * 4);
-        GUI.DrawTexture(new Rect(20 + (i * 400), 700, 10, 50), m_barEnd);
-        GUI.DrawTexture(new Rect(30 + (i * 400), 700, totalHPWidth - 15, 50), m_barMid);
-        GUI.DrawTexture(new Rect(28 + totalHPWidth + (i * 400), 700, -10, 50), m_barEnd);
-        int blips =thisHPSc.GetCurrHP() / 10;
-        for(int j = 0; j < blips; j++)
-        {
-            GUI.DrawTexture(new Rect(25 + (i * 400) + (12 * j), 703, 8, 44), m_healthBlip);
-        }*/
-
-        /*float hpPercent = players[i].GetComponent<HealthScript>().GetHPPercentage();
-        float shieldPercent = players[i].GetComponent<HealthScript>().GetShieldPercentage();
-
-        GUI.DrawTextureWithTexCoords(new Rect(20 + (400 * i), 700, 360 * hpPercent, 80), m_playerBarHealth, new Rect(0, 0, hpPercent, 1));
-        GUI.DrawTextureWithTexCoords(new Rect(20 + (400 * i), 700, 360 * shieldPercent, 80), m_playerBarShield, new Rect(0, 0, shieldPercent, 1));
-        GUI.DrawTexture(new Rect(20 + (400 * i), 700, 360, 80), m_playerBarBorder);
-
-        //Show player cash
-        GUI.Label (new Rect(50 + (i * 400), 800, 200, 50), "$" + players[i].GetComponent<PlayerControlScript>().GetSpaceBucks());*/
-
-        //Draw Shields
-        /*int maxS = thisHPSc.GetMaxShield();
-        int numBlipsS = (maxS / 10);
-        int totalSWidth = (numBlipsS * 8) + ((numBlipsS + 1) * 4);
-				
-        GUI.DrawTexture(new Rect(20 + (i * 400), 800, 10, 50), m_barEnd);
-        GUI.DrawTexture(new Rect(30 + (i * 400), 800, totalSWidth - 15, 50), m_barMid);
-        GUI.DrawTexture(new Rect(28 + totalSWidth + (i * 400), 800, -10, 50), m_barEnd);
-				
-        int blipsS = thisHPSc.GetCurrShield() / 10;
-        for(int j = 0; j < blipsS; j++)
-        {
-            GUI.DrawTexture(new Rect(25 + (12 * j) + (i * 400), 803, 8, 44), m_shieldBlip);
-        }*/
-        //}
-        //}
+        
+        if (m_isOnMap)
+            DrawMap();
     }
 
     /* Attach ingame Texs here */
@@ -2026,8 +1906,6 @@ public class GUIManager : MonoBehaviour
                 GUI.Box(new Rect(400, 100, 800, 700), "");
                 GUI.Label(new Rect(700, 130, 200, 80), "Victory!");
                 GUI.Label(new Rect(700, 200, 200, 80), "The capital ship survives another sector");
-
-
             }
             else if (m_shouldShowLossSplash)
             {
