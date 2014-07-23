@@ -33,8 +33,12 @@ public class HealthScript : MonoBehaviour
 		float percent = GetHPPercentage();
 		m_maximumHealth = hullValue;
 		
-		//m_currentHealth = (int)(hullValue * percent);
-		m_currentHealth = m_maximumHealth;
+		m_currentHealth = (int)(hullValue * percent);
+		//m_currentHealth = m_maximumHealth;
+        
+        /*if(m_currentHealth > m_maximumHealth)
+            m_currentHealth = m_maximumHealth;*/
+        
 		
 		if(Network.isServer)
 		{
