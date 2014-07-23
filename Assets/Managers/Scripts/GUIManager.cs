@@ -3659,9 +3659,46 @@ public class GUIManager : MonoBehaviour
         //Repair
         float damagePercent = 1.0f - thisPlayerHP.GetHPPercentage();
         int damage = thisPlayerHP.GetMaxHP() - thisPlayerHP.GetCurrHP();
-        int cost = damage * 5;
+        //int cost = damage * 5;
         
-        if(damage == 0)
+        if(damagePercent > 0.0f)
+        {
+            int cost = Mathf.RoundToInt(damagePercent * 500.0f);
+            int cash = thisPlayerHP.GetComponent<PlayerControlScript>().GetSpaceBucks();
+            if(thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(cost))
+            {
+                if(GUI.Button(new Rect(430, 130, 120, 83), "Fully repair ship for $" + cost, m_sharedGUIStyle))
+                {
+                    thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(cost);
+                    thisPlayerHP.RepairHP(damage);
+                }
+            }
+            else if(cash != 0)
+            {
+                //Work out how much the player can afford
+                float percentageAfford = cash / 500.0f;
+                int percent = Mathf.RoundToInt(percentageAfford * 100.0f);
+                float hpPerPercent = thisPlayerHP.GetMaxHP() / 100.0f;
+                int cashToSpend = percent * 5;
+                
+                if(GUI.Button(new Rect(430, 130, 120, 83), "Repair " + percent + "% for $" + cashToSpend, m_sharedGUIStyle))
+                {
+                    int damageHealed = (int)(percent * hpPerPercent);
+                    thisPlayerHP.RepairHP(damageHealed);
+                    thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(cashToSpend);
+                }
+            }
+            else
+            {
+                GUI.Label (new Rect(430, 130, 120, 83), "Repair -- No cash!", m_sharedGUIStyle);
+            }
+        }
+        else
+        {
+            GUI.Label (new Rect(430, 130, 120, 83), "Repair -- No damage!", m_sharedGUIStyle);
+        }
+        
+        /*if(damage == 0)
         {
             GUI.Label (new Rect(430, 130, 120, 83), "Repair -- No damage!", m_sharedGUIStyle);
         }
@@ -3693,7 +3730,7 @@ public class GUIManager : MonoBehaviour
                     thisPlayerHP.RepairHP(damageRepairable);
                 }
             }
-        }
+        }*/
 
         //Leave button
         if (!m_inGameMenuIsOpen && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
