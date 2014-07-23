@@ -165,34 +165,38 @@ public class CameraScript : MonoBehaviour
 
                 if(Input.GetKeyDown(KeyCode.Alpha1))
                 {
-                    if(m_players[0])
+                    if(m_players[0] != null)
                     {
                         m_isInFollowMode = true;
-                        m_trackedPlayerID = 1;
+                        m_trackedPlayerID = 0;
+                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
                 if(Input.GetKeyDown(KeyCode.Alpha2))
                 {
-                    if(m_players[1])
+                    if(m_players[1] != null)
                     {
                         m_isInFollowMode = true;
-                        m_trackedPlayerID = 2;
+                        m_trackedPlayerID = 1;
+                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
                 if(Input.GetKeyDown(KeyCode.Alpha3))
                 {
-                    if(m_players[2])
+                    if(m_players[2] != null)
                     {
                         m_isInFollowMode = true;
-                        m_trackedPlayerID = 3;
+                        m_trackedPlayerID = 2;
+                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
                 if(Input.GetKeyDown(KeyCode.Alpha4))
                 {
-                    if(m_players[3])
+                    if(m_players[3] != null)
                     {
                         m_isInFollowMode = true;
-                        m_trackedPlayerID = 4;
+                        m_trackedPlayerID = 3;
+                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
 
@@ -211,6 +215,7 @@ public class CameraScript : MonoBehaviour
                     m_isInFollowMode = false;
                     transform.position = GameObject.FindGameObjectWithTag("Capital").transform.position + m_SpecOffset;
                     m_trackedPlayerID = -1;
+                    m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                 }
                 
 				if(Input.GetKeyDown (KeyCode.Space))
