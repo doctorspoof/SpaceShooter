@@ -32,9 +32,6 @@ public class EnemyScript : Ship
     [SerializeField]
     bool m_hasTurrets = false;
 
-    [SerializeField]
-    bool ifFireAndMove = false;
-
     EnemyGroup m_parentGroup;
 
     GameObject m_target;
@@ -273,32 +270,6 @@ public class EnemyScript : Ship
                 case Order.Move:
                     {
                         MoveTowardTarget();
-
-                        if (ifFireAndMove)
-                        {
-                            Vector3 direction = Vector3.Normalize(m_target.transform.position - shipTransform.position);
-                            Ray ray = new Ray(shipTransform.position, direction);
-
-                            float shipDimension = 0;
-                            Ship targetShip = m_target.GetComponent<Ship>();
-                            if (targetShip != null)
-                            {
-                                shipDimension = targetShip.GetCalculatedSizeByPosition(shipTransform.position);
-                            }
-
-                            float minWeaponRange = GetMinimumWeaponRange();
-
-                            float totalRange = minWeaponRange <= shipDimension ? minWeaponRange + shipDimension : minWeaponRange;
-
-                            RaycastHit hit;
-                            if (!m_target.collider.Raycast(ray, out hit, totalRange))
-                            {
-                                EnemyWeaponScript weaponScript = GetComponent<EnemyWeaponScript>();
-                                weaponScript.MobRequestsFire();
-                            }
-                        }
-
-
 
                         if (Vector3.SqrMagnitude((Vector2)shipTransform.position - m_moveTarget) < 0.64f || m_parentGroup.HasGroupArrivedAtLocation())
                         {
