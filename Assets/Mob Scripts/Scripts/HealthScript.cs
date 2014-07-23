@@ -34,6 +34,9 @@ public class HealthScript : MonoBehaviour
 		m_maximumHealth = hullValue;
 		
 		m_currentHealth = (int)(hullValue * percent);
+        
+        if(m_currentHealth <= 0)
+            m_currentHealth = m_maximumHealth;
 		//m_currentHealth = m_maximumHealth;
         
         /*if(m_currentHealth > m_maximumHealth)
