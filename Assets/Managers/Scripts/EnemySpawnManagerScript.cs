@@ -122,8 +122,11 @@ public class EnemySpawnManagerScript : MonoBehaviour
         //test = m_waveInfos[0].GetRawWave();
         //test = GetAllRawWavesTogether();
 
+        //float increaseInPercentRequired = multiplierAtTimeRequired - 1;
+        //healthModifierIncrement = Mathf.Exp((Mathf.Log(increaseInPercentRequired) / (timeCountInMinutes * 60)));
+
         float increaseInPercentRequired = multiplierAtTimeRequired - 1;
-        healthModifierIncrement = Mathf.Exp((Mathf.Log(increaseInPercentRequired) / (timeCountInMinutes * 60)));
+        healthModifierIncrement = increaseInPercentRequired / (timeCountInMinutes * 60);
 
         InitSpawnPoints();
 
@@ -153,7 +156,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         if (Time.timeSinceLevelLoad - lastTimeModifier >= 1 && hasBegan)
         {
             lastTimeModifier = (int)Time.timeSinceLevelLoad ;
-            currentHealthModifier *= healthModifierIncrement;
+            currentHealthModifier += healthModifierIncrement;
             foreach (GameObject spawn in m_allSpawnPoints)
             {
                 EnemySpawnPointScript spawnPoint = spawn.GetComponent<EnemySpawnPointScript>();

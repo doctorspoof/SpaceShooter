@@ -219,7 +219,7 @@ MonoBehaviour:
   healthModifierIncrement: 0
   currentHealthModifier: 1
   timeCountInMinutes: 25
-  multiplierAtTimeRequired: 15
+  multiplierAtTimeRequired: 10
   secondsBetweenWaves: 60
   shouldStart: 0
   allDone: 1
@@ -4345,6 +4345,14 @@ Prefab:
     - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
       propertyPath: m_LocalRotation.w
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: timeCountInMinutes
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: multiplierAtTimeRequired
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}

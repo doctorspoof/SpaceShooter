@@ -192,12 +192,12 @@ public class EnemyGroup : MonoBehaviour
         moveOrderPositions.Add(position);
 
         // uncomment to show movement paths
-        //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
+            //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
 
-        //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
-        //{
-        //    Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
-        //}
+            //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
+            //{
+            //    Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
+            //}
 
         foreach (Vector2 orderPositions in moveOrderPositions)
         {
