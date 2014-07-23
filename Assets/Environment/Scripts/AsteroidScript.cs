@@ -156,7 +156,7 @@ public class AsteroidScript : MonoBehaviour
 			sendCounter = Random.Range(0, 4);
         }
         
-        StartCoroutine (PersistentAsteroidSync (Random.Range (0f, 9.9f), 10f));
+        StartCoroutine (PersistentAsteroidSync (Random.Range (0f, 15f), 15f));
     }
     
 
