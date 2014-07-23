@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: 6dd18c52040635249913c991e21e2a56, type: 3}
   m_equipmentName: Advanced Thruster
   m_descriptionID: 0
-  m_cost: 380
+  m_cost: 650
   m_equipmentID: 71
   m_equipmentReference: {fileID: 100000, guid: 3d02f7dc415bd294bb2facbd25fec049, type: 2}
 --- !u!1001 &100100000

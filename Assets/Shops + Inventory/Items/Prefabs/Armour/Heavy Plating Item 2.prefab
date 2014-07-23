@@ -43,7 +43,7 @@ MonoBehaviour:
   m_equipmentIcon: {fileID: 2800000, guid: 786c8e77eddce5c46a5295c25979b1c0, type: 3}
   m_equipmentName: Ceramite Hull
   m_descriptionID: 0
-  m_cost: 560
+  m_cost: 570
   m_equipmentID: 102
   m_equipmentReference: {fileID: 100000, guid: 45236d28e7a15f84f882462f9771af1f, type: 2}
 --- !u!1001 &100100000
