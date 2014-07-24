@@ -156,7 +156,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         if (Time.timeSinceLevelLoad - lastTimeModifier >= 1 && hasBegan)
         {
             lastTimeModifier = (int)Time.timeSinceLevelLoad ;
-            currentHealthModifier += healthModifierIncrement;
+            //currentHealthModifier += healthModifierIncrement;
             foreach (GameObject spawn in m_allSpawnPoints)
             {
                 EnemySpawnPointScript spawnPoint = spawn.GetComponent<EnemySpawnPointScript>();
