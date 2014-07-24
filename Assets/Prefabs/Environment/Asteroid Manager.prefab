@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &100000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400000}
+  - 114: {fileID: 11400000}
+  m_Layer: 0
+  m_Name: Asteroid Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400000
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e29766940ffe0174dac8cd69a2048fbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_asteroidRef:
+  - {fileID: 100000, guid: 0c35fc6f7f7e2c64b820d8c92ebd5a2b, type: 2}
+  - {fileID: 100000, guid: 6a01e0409e2e14d40942c8393eb33efc, type: 2}
+  - {fileID: 100000, guid: 8dbfe283cbaf1d647a62e96a9679bfee, type: 2}
+  - {fileID: 100000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
+  - {fileID: 100002, guid: f8929da04eebe45e391b2e0aef0d04ef, type: 2}
+  - {fileID: 100000, guid: 04139a9891d6746678a5357abafb13a4, type: 2}
+  - {fileID: 100002, guid: 0836eafaaca2d4376ba9637033c6aaa8, type: 2}
+  - {fileID: 100000, guid: bd516ee9db1c842ae8e3f0fba41830db, type: 2}
+  - {fileID: 100000, guid: 28983c26a15ce4e34a04cfa3a691fd77, type: 2}
+  - {fileID: 100002, guid: 9ec4b5185335c49a9ba61ab7ec1aaaef, type: 2}
+  - {fileID: 100000, guid: 87de505aad3584024a074bd703b43c78, type: 2}
+  m_range: 15
+  m_ringThickness: 0
+  m_numAsteroids: 10
+  m_shouldBeRingBelt: 1
+  m_shouldSpawnNow: 0
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 100000}
+  m_IsPrefabParent: 1
+  m_IsExploded: 1

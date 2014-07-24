@@ -1,0 +1,192 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &100000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400000}
+  - 114: {fileID: 11400000}
+  - 135: {fileID: 13500000}
+  - 148: {fileID: 14800000}
+  m_Layer: 19
+  m_Name: Planet Event
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400000
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -26, y: 4, z: 10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c9f85e9f1db6f44bb41d3138a4bb710, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventText: The planet below is teaming with pirate activity. It looks as though
+    they're planning to attack something.
+  m_possibleOptions:
+  - m_isHiddenIfNotAvailable: 0
+    m_optionRequirement: []
+    m_optionGroups:
+    - m_outcomesInThisGroup:
+      - m_typeOfOutcome: 4
+        m_outcomeRequiresSpecificPlayer: 0
+        m_affectedResource: 0
+        m_outcomeMagnitude: 0
+        m_outcomeFocusPoint: {fileID: 400000}
+        m_enemiesAssociated:
+        - defaultOrderTargetTag: Capital
+          m_enemiesOnWave:
+          - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+            m_numEnemy: 10
+          - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+            m_numEnemy: 4
+        - defaultOrderTargetTag: Capital
+          m_enemiesOnWave:
+          - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+            m_numEnemy: 10
+          - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
+            m_numEnemy: 2
+      - m_typeOfOutcome: 5
+        m_outcomeRequiresSpecificPlayer: 0
+        m_affectedResource: 0
+        m_outcomeMagnitude: 0
+        m_outcomeFocusPoint: {fileID: 400000}
+        m_enemiesAssociated:
+        - defaultOrderTargetTag: Capital
+          m_enemiesOnWave:
+          - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+            m_numEnemy: 20
+      m_groupOutcomeText: Swarms of ships suddenly fly towards you from the surface!
+      percentageChance: 70
+    - m_outcomesInThisGroup:
+      - m_typeOfOutcome: 3
+        m_outcomeRequiresSpecificPlayer: 1
+        m_affectedResource: 0
+        m_outcomeMagnitude: 250
+        m_outcomeFocusPoint: {fileID: 0}
+        m_enemiesAssociated: []
+      - m_typeOfOutcome: 2
+        m_outcomeRequiresSpecificPlayer: 0
+        m_affectedResource: 3
+        m_outcomeMagnitude: 50
+        m_outcomeFocusPoint: {fileID: 0}
+        m_enemiesAssociated: []
+      m_groupOutcomeText: Upon seeing your advanced ship, the pirates flee, leaving
+        behind some precious cargo.
+      percentageChance: 30
+    m_optionText: Try to be a hero. Harass the planet
+    m_hoverText: 
+  - m_isHiddenIfNotAvailable: 0
+    m_optionRequirement: []
+    m_optionGroups:
+    - m_outcomesInThisGroup: []
+      m_groupOutcomeText: After a while the activity dies down and nothing seems to
+        happen.
+      percentageChance: 40
+    - m_outcomesInThisGroup:
+      - m_typeOfOutcome: 2
+        m_outcomeRequiresSpecificPlayer: 0
+        m_affectedResource: 3
+        m_outcomeMagnitude: 100
+        m_outcomeFocusPoint: {fileID: 0}
+        m_enemiesAssociated: []
+      m_groupOutcomeText: The activity seems to be coming from a mining operation
+        on a nearby moon. After the pirate's activity dies down you manage to harvest
+        some extra resources from it in their absence.
+      percentageChance: 20
+    - m_outcomesInThisGroup:
+      - m_typeOfOutcome: 5
+        m_outcomeRequiresSpecificPlayer: 0
+        m_affectedResource: 3
+        m_outcomeMagnitude: 0
+        m_outcomeFocusPoint: {fileID: 400000}
+        m_enemiesAssociated:
+        - defaultOrderTargetTag: Capital
+          m_enemiesOnWave:
+          - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+            m_numEnemy: 15
+      m_groupOutcomeText: You're spotted! Fighters are scrambled to engage you
+      percentageChance: 40
+    m_optionText: Attempt to remain unnoticed and figure out what they're up to.
+    m_hoverText: 
+  - m_isHiddenIfNotAvailable: 0
+    m_optionRequirement: []
+    m_optionGroups:
+    - m_outcomesInThisGroup: []
+      m_groupOutcomeText: You safely escape.
+      percentageChance: 70
+    - m_outcomesInThisGroup:
+      - m_typeOfOutcome: 5
+        m_outcomeRequiresSpecificPlayer: 0
+        m_affectedResource: 0
+        m_outcomeMagnitude: 0
+        m_outcomeFocusPoint: {fileID: 400000}
+        m_enemiesAssociated:
+        - defaultOrderTargetTag: Capital
+          m_enemiesOnWave:
+          - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
+            m_numEnemy: 5
+          - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
+            m_numEnemy: 1
+      m_groupOutcomeText: Your hasty retreat attracts the attention of a pirate patrol!
+      percentageChance: 30
+    m_optionText: Flee!
+    m_hoverText: 
+  m_optionVotes: 
+  m_timer: 30
+  selectedPlayer: {fileID: 0}
+--- !u!135 &13500000
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!148 &14800000
+NetworkView:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 400000}
+  m_ViewID:
+    m_ID: 0
+    m_Type: 0
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 100000}
+  m_IsPrefabParent: 1
+  m_IsExploded: 1
