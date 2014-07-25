@@ -5,36 +5,34 @@ using System.Collections;
 public class FadeOut : MonoBehaviour
 {
 
-    float timeBeforeFadeOutStarts = 0, fadeOutTime = 0;
-    float currentTime = 0;
+    float m_timeBeforeFadeOutStarts = 0, m_fadeOutTime = 0;
+    float m_currentTime = 0;
 
-    Material mat;
+    Material m_mat;
 
-    bool started = false;
+    bool m_started = false;
 
-    // Use this for initialization
     void Start()
     {
-        mat = GetComponent<MeshRenderer>().material;
+        m_mat = GetComponent<MeshRenderer>().material;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (started)
+        if (m_started == true)
         {
-            currentTime += Time.deltaTime;
-            if (currentTime >= timeBeforeFadeOutStarts)
+            m_currentTime += Time.deltaTime;
+            if (m_currentTime >= m_timeBeforeFadeOutStarts)
             {
-                if (mat != null)
+                if (m_mat != null)
                 {
-                    float t = ((timeBeforeFadeOutStarts + fadeOutTime - currentTime) / fadeOutTime);
-                    mat.color = new Color(mat.color.r, mat.color.g, mat.color.b, t);
+                    float t = ((m_timeBeforeFadeOutStarts + m_fadeOutTime - m_currentTime) / m_fadeOutTime);
+                    m_mat.color = new Color(m_mat.color.r, m_mat.color.g, m_mat.color.b, t);
                 }
 
             }
 
-            if (currentTime >= timeBeforeFadeOutStarts + fadeOutTime)
+            if (m_currentTime >= m_timeBeforeFadeOutStarts + m_fadeOutTime)
             {
                 Destroy(gameObject);
             }
@@ -42,14 +40,19 @@ public class FadeOut : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the times for how long the fade out takes
+    /// </summary>
+    /// <param name="fadeOutTime_">How long the actual fading takes in seconds</param>
+    /// <param name="timeBeforeFadeOutStarts_">Time before the fading starts in seconds</param>
     public void SetTimes(float fadeOutTime_, float timeBeforeFadeOutStarts_)
     {
-        fadeOutTime = fadeOutTime_;
-        timeBeforeFadeOutStarts = timeBeforeFadeOutStarts_;
+        m_fadeOutTime = fadeOutTime_;
+        m_timeBeforeFadeOutStarts = timeBeforeFadeOutStarts_;
     }
 
     public void StartFadeOut()
     {
-        started = true;
+        m_started = true;
     }
 }

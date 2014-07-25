@@ -19,7 +19,7 @@ public class AttackRam : IAttack
 
             ship.RotateTowards(target.transform.position);
 
-            ship.rigidbody.AddForce(ship.shipTransform.up * ship.GetCurrentMomentum() * Time.deltaTime);
+            ship.rigidbody.AddForce(ship.m_shipTransform.up * ship.GetCurrentMomentum() * Time.deltaTime);
 
             if (ship.AfterburnersRecharging())
             {
@@ -32,10 +32,10 @@ public class AttackRam : IAttack
 
             float weaponRange = ship.GetMinimumWeaponRange();
 
-            if (Vector2.SqrMagnitude(ship.shipTransform.position - target.transform.position) < (weaponRange * weaponRange))
+            if (Vector2.SqrMagnitude(ship.m_shipTransform.position - target.transform.position) < (weaponRange * weaponRange))
             {
 
-                ship.rigidbody.AddForce(-ship.shipTransform.up * ship.GetCurrentMomentum() * Time.deltaTime);
+                ship.rigidbody.AddForce(-ship.m_shipTransform.up * ship.GetCurrentMomentum() * Time.deltaTime);
 
             }
             else

@@ -3,17 +3,20 @@ using System.Collections;
 
 public class RunFinalSpawnEffect : MonoBehaviour
 {
-    [SerializeField]
-    GameObject finalEffectPrefab;
+    [SerializeField] GameObject finalEffectPrefab;
 
-    GameObject finalEffect;
+    GameObject m_finalEffect;
     // Use this for initialization
     void Start()
     {
-        finalEffect = (GameObject)Instantiate(finalEffectPrefab, transform.position, Quaternion.identity);
-        finalEffect.transform.localScale = transform.localScale;
+        m_finalEffect = (GameObject)Instantiate(finalEffectPrefab, transform.position, Quaternion.identity);
+        m_finalEffect.transform.localScale = transform.localScale;
     }
 
+    /// <summary>
+    /// Makes the effect happen after a specified amount of time
+    /// </summary>
+    /// <param name="time_">Time in seconds</param>
     public void Run(float time_)
     {
         Invoke("Fire", time_);
@@ -21,11 +24,11 @@ public class RunFinalSpawnEffect : MonoBehaviour
 
     void Fire()
     {
-        if (finalEffect)
+        if (m_finalEffect != null)
         {
-            finalEffect.GetComponent<MeshRenderer>().enabled = true;
-            finalEffect.GetComponent<SpriteSheet>().enabled = true;
-            finalEffect.GetComponent<SpriteSheet>().SetCurrentFrame(0);
+            m_finalEffect.GetComponent<MeshRenderer>().enabled = true;
+            m_finalEffect.GetComponent<SpriteSheet>().enabled = true;
+            m_finalEffect.GetComponent<SpriteSheet>().SetCurrentFrame(0);
         }
     }
 

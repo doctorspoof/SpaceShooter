@@ -2,38 +2,49 @@
 using UnityEngine;
 using System.Collections;
 
-public class Delay : MonoBehaviour {
+public class Delay : MonoBehaviour
+{
 
-    float timeToDelay = 0, currentTime = 0;
+    float m_timeToDelay = 0, m_currentTime = 0;
 
-    MeshRenderer renderer;
-    SpriteSheet spriteSheet;
+    MeshRenderer m_renderer;
+    SpriteSheet m_spriteSheet;
 
     void Start()
     {
-        renderer = GetComponent<MeshRenderer>();
-        renderer.enabled = false;
+        m_renderer = GetComponent<MeshRenderer>();
+        m_renderer.enabled = false;
 
-        spriteSheet = GetComponent<SpriteSheet>();
-        spriteSheet.enabled = false;
-        //gameObject.SetActive(false);
+        m_spriteSheet = GetComponent<SpriteSheet>();
+        m_spriteSheet.enabled = false;
     }
 
-	// Update is called once per frame
-	void Update () {
+    void Update()
+    {
 
-        currentTime += Time.deltaTime;
-        if(currentTime >= timeToDelay)
+        m_currentTime += Time.deltaTime;
+        if (m_currentTime >= m_timeToDelay)
         {
-            renderer.enabled = true;
-            spriteSheet.enabled = true;
-            spriteSheet._frameOffset = 0;
+            m_renderer.enabled = true;
+            m_spriteSheet.enabled = true;
+            m_spriteSheet._frameOffset = 0;
+
+            if (audio != null)
+            {
+                audio.volume = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
+                audio.Play();
+            }
+
         }
 
-	}
+    }
 
+    /// <summary>
+    /// Time until script activates the renderer and spritesheet
+    /// </summary>
+    /// <param name="delay_">Time in seconds</param>
     public void SetDelay(float delay_)
     {
-        timeToDelay = delay_;
+        m_timeToDelay = delay_;
     }
 }
