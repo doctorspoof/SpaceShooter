@@ -1,40 +1,91 @@
 ﻿using UnityEngine;
 
 
-
-public class BeamBulletScript : MonoBehaviour 
+/// <summary>
+/// The class used to create manage beam damage and length. It keeps a reference to whether the laser has hit anything and applies force to targets it hits.
+/// </summary>
+public sealed class BeamBulletScript : MonoBehaviour 
 {
-	/// Unity modifiable values
-	// Damage
-	[SerializeField] int m_beamDamage = 30; 			// The beam damage dealt per second
-	public DamageType m_damageType = DamageType.Laser;	// The type of damage this object deals, used for shading
-	public float m_beamLength = 5;						// How long the beam should be in localScale.y
+    ///////////////////////////////
+	/// Unity modifiable values ///
+    ///////////////////////////////
+
+
+
+    // Damage
+    [SerializeField] int m_beamDamage = 30; 			            // The beam damage dealt per second
+    [SerializeField, Range (0f, 100f)] float m_beamLength = 5f;     // How long the beam should be in localScale.y
+	[SerializeField] DamageType m_damageType = DamageType.Laser;	// The type of damage this object deals, used for shading
 
 
 	// Impact attributes
-	[SerializeField] float m_impactForce = 2.5f;		// The amount of force to be applied when hitting a target
+	[SerializeField] float m_impactForce = 2.5f;		            // The amount of force to be applied when hitting a target
 	
 	
-	/// Internal data
-	float m_overflow = 0f;											// Simply keeps a reference of any damage overflow for the sake of accurate DPS
-	int m_damageMask;												// A layermask used in raycasting against valid enemy targets
-	
-	Vector3 m_offset = Vector3.zero;								// The position offset used to make the beam reach from the firer to the target
-	Vector3 m_raycastOffset = Vector3.zero;							// Used to work around the problem of Z values effecting the raycast
 
-	[HideInInspector] public RaycastHit beamHit = new RaycastHit();	// The point at which the beam has hit an object 	
-	[HideInInspector] public GameObject firer = null;				// The parent object which fires the beam
+    /////////////////////
+	/// Internal data ///
+    /////////////////////
+
+
+    
+    int m_damageMask = 0;                       // A layermask used in raycasting against valid enemy targets
+    float m_overflow = 0f;						// Simply keeps a reference of any damage overflow for the sake of accurate DPS
+	
+	Vector3 m_offset = Vector3.zero;			// The position offset used to make the beam reach from the firer to the target
+	Vector3 m_raycastOffset = Vector3.zero;		// Used to work around the problem of Z values effecting the raycast
+
+	RaycastHit m_beamHit = new RaycastHit();	// What the raycast has hit, updated every frame
+	GameObject m_firer = null;				    // The parent object which fires the beam
 	
 	
 	
-	/// Properties, getters and setters
+    /////////////////////////
+	/// Getters & setters ///
+    /////////////////////////
+
+
+
 	public float GetDamage()
 	{
 		return m_beamDamage;
 	}
 
 
-	// Adjusts the local offset
+    public DamageType GetDamageType()
+    {
+        return m_damageType;
+    }
+
+
+    public void SetDamageType (DamageType damageType)
+    {
+        m_damageType = damageType;
+    }
+
+
+    public RaycastHit GetBeamHit()
+    {
+        return m_beamHit;
+    }
+
+
+    public GameObject GetFirer()
+    {
+        return m_firer;
+    }
+
+
+    public void SetFirer (GameObject firer)
+    {
+        m_firer = firer;
+    }
+
+
+	/// <summary>
+    /// Adjusts the local offset of the beam so that it lines up correctly with the weapon.
+    /// </summary>
+    /// <param name="offset">The desired offset.</param>
 	public void SetOffset (Vector3 offset)
 	{
 		m_offset = offset;
@@ -46,46 +97,65 @@ public class BeamBulletScript : MonoBehaviour
 	
 	
 	
-	/// Functions
-	// Set up the beam
-	void Start () 
+    //////////////////////////
+	/// Behavior functions ///
+    //////////////////////////
+
+
+   
+	void Awake()
 	{
 		LayerMaskSetup();
 	}
 	
 	
-	// Update is called once per frame
+    /// <summary>
+    /// Checks if the beam is hitting any targets, damages targets and adjusts the beam length to reflect the situation.
+    /// </summary>
 	void Update() 
 	{
-		if (firer)
+		if (m_firer != null)
 		{
-			// Increase the overflow by deltaTime to ensure correct damage is being applied
-			m_overflow += m_beamDamage * Time.deltaTime;
-			
 			// Check if the beam is hitting anything
-			if (Physics.Raycast (firer.transform.position + m_raycastOffset, firer.transform.up, out beamHit, m_beamLength, m_damageMask))
-			{
+			if (Physics.Raycast (m_firer.transform.position + m_raycastOffset, m_firer.transform.up, out m_beamHit, m_beamLength, m_damageMask))
+            {
+                // Increase the overflow by deltaTime to ensure correct damage is being applied
+                m_overflow += m_beamDamage * Time.deltaTime;
+
+
 				// Reset the distance according to the RaycastHit
-				ResetOffset (beamHit.distance);
+				ResetOffset (m_beamHit.distance);
 
 
 				// Only the host should apply damage and only if damage can be dealt
-				if (beamHit.collider && beamHit.collider.attachedRigidbody)
+				if (m_beamHit.collider != null && m_beamHit.collider.attachedRigidbody != null)
 				{
-					DamageHit (beamHit);
+					DamageHit (m_beamHit);
 				}
 			}
 			
 			// Raycast found nothing
 			else
-			{
-				ResetOffset ();
+            {
+                // Reset the damage
+                m_overflow = 0f;
+
+				ResetOffset();
 			}
 		}
 	}
 	
-	
-	// Sets the correct layer for damage according to the beams layer
+
+
+    ///////////////////////////////
+    /// Initial setup functions ///
+    ///////////////////////////////
+
+
+
+	/// <summary>
+	/// Sets the correct layer for damage according to the beams layer.
+    /// </summary>
 	void LayerMaskSetup()
 	{
 		const int 	player = (1 << Layers.player), 
@@ -109,9 +179,77 @@ public class BeamBulletScript : MonoBehaviour
 				break;
 		}
 	}
-	
-	
-	// Calcuates the correct localPosition and localScale for the beam based on the distance given
+
+
+
+    ////////////////////////////
+    /// Damage functionality ///
+    ////////////////////////////
+    
+
+    
+    /// <summary>
+    /// Damage the mob and apply impact force.
+    /// </summary>
+    /// <param name="hit">The RaycastHit to apply damage to.</param>
+    void DamageHit (RaycastHit hit)
+    {
+        // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+        Rigidbody mob = hit.collider.attachedRigidbody;
+        
+        if (hit.collider.tag != "Shield")
+        {
+            // Push the enemy away from the force of the beam
+            mob.AddForceAtPosition (transform.up * m_impactForce * Time.deltaTime, hit.point);
+        }
+        
+        // Only the host should cause damage
+        if (Network.isServer)
+        {
+            if (m_overflow > 1f)
+            {
+                int damage = (int) m_overflow;
+                m_overflow -= damage;
+                
+                if (hit.collider.gameObject.layer == Layers.enemySupportShield)
+                {
+                    EnemySupportShieldScript script = hit.collider.gameObject.GetComponent<EnemySupportShieldScript>();
+                    if (script != null)
+                    {
+                        script.DamageShield (damage);
+                        script.BeginShaderCoroutine (hit.point);
+                    }
+                }
+                
+                else
+                {
+                    HealthScript health = mob.GetComponent<HealthScript>();
+                    if (health != null)
+                    {
+                        health.DamageMob (damage, m_firer, gameObject);
+                    }
+                    
+                    else
+                    {
+                        Debug.LogError ("Can't find HealthScript on " + mob.name);
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
+    /////////////////////////////////
+    /// Beam length functionality ///
+    /////////////////////////////////
+
+
+
+    /// <summary>
+    /// Calcuates the correct localPosition and localScale for the beam based on the distance given. The scale will be converted to real world units.
+    /// </summary>
+    /// <param name="distance">How long the beam should be</param>
 	void ResetOffset (float distance = -1f)
 	{
 		// Calculate the scale modifier based on the parents scale
@@ -127,57 +265,29 @@ public class BeamBulletScript : MonoBehaviour
 		transform.localScale = newScale;
 	}
 	
-	
-	// Damage the mob, apply impact force and sync its position over the network if it's an asteroid
-	void DamageHit (RaycastHit hit)
-	{
-		// Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-		Rigidbody mob = hit.collider.attachedRigidbody;
 
-		if (hit.collider.tag != "Shield")
-		{
-			// Push the enemy away from the force of the beam
-			mob.AddForceAtPosition (transform.up * m_impactForce * Time.deltaTime, hit.point);
-		}
 
-		// Only the host should cause damage
-		if (Network.isServer)
-		{
-			if (m_overflow > 1f)
-			{
-				int damage = (int) m_overflow;
-				m_overflow -= damage;
+    ///////////////////////////////
+    /// Parenting functionality ///
+    ///////////////////////////////
 
-				if (hit.collider.gameObject.layer == Layers.enemySupportShield)
-				{
-					EnemySupportShieldScript script = hit.collider.gameObject.GetComponent<EnemySupportShieldScript>();
-					if (script)
-					{
-						script.DamageShield (damage);
-						script.BeginShaderCoroutine (hit.point);
-					}
-				}
 
-				else
-				{
-					HealthScript health = mob.GetComponent<HealthScript>();
-					if (health)
-					{
-						health.DamageMob (damage, firer, gameObject);
-					}
 
-					else
-					{
-						Debug.LogError ("Can't find HealthScript on " + mob.name);
-					}
-				}
-			}
-		}
-	}
-	
-	
-	// Used to ensure that the beam is properly parented across all clients
-	[RPC] void ParentBeamToFirerOverNetwork(string playerName)
+    /// <summary>
+    /// Inform other clients to parent the beam to the corresponding player.
+    /// </summary>
+    /// <param name="playerName">The player name to search for with the GameStateController.</param>
+    public void ParentBeamToFirer(string playerName)
+    {
+        networkView.RPC("ParentBeamToFirerOverNetwork", RPCMode.Others, playerName);
+    }
+
+
+	/// <summary>
+    /// Used to ensure that the beam is properly parented across all clients.
+    /// </summary>
+    /// <param name="playerName">The player name to search for with the GameStateController.</param>
+	[RPC] void ParentBeamToFirerOverNetwork (string playerName)
 	{
 		GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
 		
@@ -185,29 +295,28 @@ public class BeamBulletScript : MonoBehaviour
 		Debug.Log ("Attaching beam: " + this.name + " to gameObject: " + playerGO.name + ".");
 
 		this.transform.parent = playerGO.GetComponent<PlayerControlScript>().GetWeaponObject().transform;
-		firer = playerGO;
-	}
+		m_firer = playerGO;
+    }
+    
+    
+    /// <summary>
+    /// Inform other clients to parent the beam to the corresponding CShip turret.
+    /// </summary>
+    /// <param name="turretID">The corresponding turret ID.</param>
+    public void ParentBeamToCShipTower (int turretID)
+    {
+        networkView.RPC("ParentBeamToCShipOverNetwork", RPCMode.Others, turretID);
+    }
 	
 	
-	// Used to ensure that the beam is properly parented across all clients
-	[RPC] void ParentBeamToCShipOverNetwork(int id)
+	/// <summary>
+    /// Used to ensure that the beam is properly parented across all clients.
+    /// </summary>
+    /// <param name="turretID">The corresponding turret ID.</param>
+	[RPC] void ParentBeamToCShipOverNetwork (int turretID)
 	{
 		GameObject cship = GameObject.FindGameObjectWithTag("Capital");
-		GameObject turret = cship.GetComponent<CapitalShipScript>().GetCTurretHolderWithId(id);
+		GameObject turret = cship.GetComponent<CapitalShipScript>().GetCTurretHolderWithId(turretID);
 		this.transform.parent = turret.transform.GetChild(0);
-	}
-	
-	
-	// Inform other clients to parent the beam to the corresponding player
-	public void ParentBeamToFirer(string playerName)
-	{
-		networkView.RPC("ParentBeamToFirerOverNetwork", RPCMode.Others, playerName);
-	}
-	
-	
-	// Inform other clients to parent the beam to the corresponding CShip turret
-	public void ParentBeamToCShipTower (int turretID)
-	{
-		networkView.RPC("ParentBeamToCShipOverNetwork", RPCMode.Others, turretID);
 	}
 }
