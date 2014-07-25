@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 
-
 /// <summary>
 /// This script is used to provide extension methods to the current unity library. This provides an easy way to access
 /// general purpose functions which are used in a variety of different places.
@@ -111,20 +110,20 @@ public static class UnityLibraryExtensions
 			for (int i = 0; i < components.Length; ++i)
 			{
 				// Make sure components[i] isn't null as accessing ".gameObject" will throw exceptions
-				objects[i] = components[i] ? components[i].gameObject : null;
+				objects[i] = components[i] != null ? components[i].gameObject : null;
 			}
 			
 			return objects;
 		}
 		
-		return new GameObject[0];
+		return null;
 	}
 
 
 
 	public static void AddCustomExplosionForce (this Rigidbody self, Vector3 position, float range, float minForce, float maxForce, ForceMode mode = ForceMode.Force)
 	{
-		if (self)
+		if (self != null)
 		{
 			// Get the difference/direciton
 			Vector3 difference = self.position - position;
@@ -161,7 +160,7 @@ public static class UnityLibraryExtensions
 			foreach (Collider collider in colliders)
 			{
 				// Pre-condition: Ensure all required attributes exist
-				if (collider && collider.attachedRigidbody)
+                if (collider != null && collider.attachedRigidbody != null)
 				{
 					if (collider.attachedRigidbody == from)
 					{
@@ -197,13 +196,13 @@ public static class UnityLibraryExtensions
 			for (int i = 0; i < colliders.Length; ++i)
 			{
 				// Make sure "colliders[i]" isn't null as accessing ".gameObject" will throw exceptions
-				rigidbodies[i] = colliders[i] ? colliders[i].attachedRigidbody : null;
+                rigidbodies[i] = colliders[i] != null ? colliders[i].attachedRigidbody : null;
 			}
 			
 			return rigidbodies;
 		}
 		
-		return new Rigidbody[0];
+		return null;
 	}
 	
 	
@@ -222,7 +221,7 @@ public static class UnityLibraryExtensions
 			for (int i = 0; i < hits.Length; ++i)
 			{
 				// Make sure "hits[i]" isn't null as accessing ".gameObject" will throw exceptions
-				if (!hits[i].collider || !hits[i].collider.attachedRigidbody)
+				if (hits[i].collider == null || hits[i].collider.attachedRigidbody == null)
 				{
 					rigidbodies[i] = null;
 				}
@@ -236,6 +235,6 @@ public static class UnityLibraryExtensions
 			return rigidbodies;
 		}
 		
-		return new Rigidbody[0];
+		return null;
 	}
 }
