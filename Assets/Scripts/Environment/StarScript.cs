@@ -1,18 +1,42 @@
 ﻿using UnityEngine;
-using System.Collections;
 
+
+/// <summary>
+/// Used to damage destroyable objects. In the future it should include additional functionality like Black Hole features.
+/// </summary>
 public class StarScript : MonoBehaviour 
 {
-	[SerializeField, Range (0, 100)] int m_damagePerTick = 1;
+    ///////////////////////////////
+    /// Unity modifiable values ///
+    ///////////////////////////////
+
+
+
+    // Damage attributes
+	[SerializeField, Range (0, 100)] int m_damagePerTick = 1;       // How much damage to apply per tick
+	[SerializeField, Range (0f, 100f)] float m_tickTime = 0.05f;    // The time in seconds in which to apply damage
 	
-	[SerializeField, Range (0f, 100f)] float m_tickTime = 0.05f;
+
+
+    /////////////////////
+    /// Internal data ///
+    /////////////////////
+
+
+
+	float m_damageDelay = 0.0f; // The current time
 	
-	float m_damageDelay = 0.0f;
 	
-	
+
+    //////////////////////////
+    /// Behavior functions ///
+    //////////////////////////
+
+
+
 	void OnTriggerStay(Collider other)
 	{
-		if (other.attachedRigidbody && other.attachedRigidbody.gameObject)
+		if (other.attachedRigidbody != null && other.attachedRigidbody.gameObject != null)
 		{
 			switch (other.attachedRigidbody.gameObject.layer)
 			{
@@ -27,7 +51,7 @@ public class StarScript : MonoBehaviour
 					{
 						HealthScript script = other.attachedRigidbody.gameObject.GetComponent<HealthScript>();
 
-						if (script)
+						if (script != null)
 						{
 							script.DamageMobHullDirectly (m_damagePerTick);
 						}
