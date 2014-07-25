@@ -3,29 +3,25 @@ using System.Collections;
 
 public class CapitalShipFragmentScript : MonoBehaviour 
 {
-	[SerializeField]
-	Vector3 m_travelDirection;
+    /* Serializable members */
+	[SerializeField] Vector3 m_travelDirection;
+	[SerializeField] bool m_clockwiseSpin;
 
-	[SerializeField]
-	bool m_clockwiseSpin;
+    /* Internal members */
+	float m_rotationAmount;
+	Vector3 m_direction;
+	float m_speed;
 
-	float rotationAmount;
-	Vector3 direction;
-	float speed;
-
-	// Use this for initialization
+	/* Unity functions */
 	void Start () 
 	{
-		rotationAmount = m_clockwiseSpin ? Random.Range(0.0f, 2.5f) : Random.Range (-2.5f, 0.0f);
-		speed = Random.Range(0.0f, 0.1f);
-		direction = new Vector3(Random.Range(m_travelDirection.x - 0.025f, m_travelDirection.x + 0.025f), Random.Range(m_travelDirection.y - 0.025f, m_travelDirection.y + 0.025f), 0);
+		m_rotationAmount = m_clockwiseSpin ? Random.Range(0.0f, 2.5f) : Random.Range (-2.5f, 0.0f);
+		m_speed = Random.Range(0.0f, 0.1f);
+		m_direction = new Vector3(Random.Range(m_travelDirection.x - 0.025f, m_travelDirection.x + 0.025f), Random.Range(m_travelDirection.y - 0.025f, m_travelDirection.y + 0.025f), 0);
 	}
-	
-	// Update is called once per frame
 	void FixedUpdate () 
 	{
-		this.transform.localPosition += direction * Time.deltaTime * speed;
-		
-		this.transform.RotateAround(this.transform.position, this.transform.forward, rotationAmount * Time.deltaTime);
+		this.transform.localPosition += m_direction * Time.deltaTime * m_speed;
+		this.transform.RotateAround(this.transform.position, this.transform.forward, m_rotationAmount * Time.deltaTime);
 	}
 }
