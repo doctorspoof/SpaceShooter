@@ -4,11 +4,11 @@
 /// <summary>
 /// Used to damage destroyable objects. In the future it should include additional functionality like Black Hole features.
 /// </summary>
-public class StarScript : MonoBehaviour 
+public sealed class StarScript : MonoBehaviour 
 {
-    ///////////////////////////////
-    /// Unity modifiable values ///
-    ///////////////////////////////
+    //////////////////////////////////
+    /// Unity modifiable variables ///
+    //////////////////////////////////
 
 
 
