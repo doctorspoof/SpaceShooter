@@ -60,7 +60,7 @@ public sealed class BeamBulletScript : MonoBehaviour
 
     public void SetDamageType (DamageType damageType)
     {
-        m_damageType = DamageType;
+        m_damageType = damageType;
     }
 
 
