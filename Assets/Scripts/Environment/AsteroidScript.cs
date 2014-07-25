@@ -1,105 +1,216 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
-public class AsteroidScript : MonoBehaviour 
+/// <summary>
+/// The class used to provide all asteroid functionality, this includes allowing fragements to be spawned, synchronising velocity/position, etc.
+/// </summary>
+[RequireComponent (typeof (Rigidbody))]
+public sealed class AsteroidScript : MonoBehaviour 
 {
-	// A prefab will randomly be selected from this array
-	[SerializeField]
-	GameObject[] m_asteroidPrefabs;
-	
-	// The range of values the rotation speed can be
-	[SerializeField]
-	float[] m_rotationSpeedRange = new float[2] {-2f, 2f};
-	
-	// The range of values the asteroid scale can be
-	[SerializeField]
-	float[] m_asteroidScaleRange = new float[2] {1f, 2.5f};
-	
-	// How many asteroids to split into upon destruction
-	[SerializeField]
-	int m_splittingFragments = 2;
-	
-	// How small the asteroid can get
-	[SerializeField]
-	float m_minimumMass = 0.02f;
-	
-	// How far away from the parent asteroid the new asteroid should spawn
-	[SerializeField]
-	float m_fragmentDistance = 0.2f;
-	
-	// How much additional force to apply when splitting
-	[SerializeField]
-	float m_fragmentSplitForce = 1.5f;
-	
-	// How much of the original velocity to maintain upon splitting
-	[SerializeField, Range (0f, 1f)]
-	float m_velocityToMaintain = 0.75f;
-	
-	// Stops the asteroids from increasing size when splitting
-	[HideInInspector] 
-	public bool isFirstAsteroid = true;
-    
+    ///////////////////////////////////
+    /// Unity modifiable attributes ///
+    ///////////////////////////////////
 
 
-	void OnCollisionEnter(Collision collision)
+
+    // Initial setup
+	[SerializeField, Range (-10f, 10f)] float[] m_rotationSpeedRange = new float[2] {-2f, 2f};  // The range of values the rotation speed can be
+	[SerializeField, Range (1f, 10f)] float[] m_asteroidScaleRange = new float[2] {1f, 2.5f};   // The range of values the asteroid scale can be
+
+    [SerializeField, Range (0f, 120f)] float m_velocitySyncInterval = 15f;                      // How often to synchronise the velocity of the asteroid over the network
+
+
+    // Fragmentation
+    [SerializeField] GameObject[] m_asteroidPrefabs;                        // A prefab will randomly be selected from this array
+	
+    [SerializeField] int m_splittingFragments = 4;                          // How many asteroids to split into upon destruction
+    [SerializeField] float m_minimumMass = 0.02f;                           // How small the asteroid can get
+	
+    [SerializeField] float m_fragmentDistance = 0.2f;                       // How far away from the parent asteroid the new asteroid should spawn
+	[SerializeField] float m_fragmentSplitForce = 1.5f;                     // How much additional force to apply when splitting
+	
+    [SerializeField, Range (0f, 1f)] float m_velocityToMaintain = 0.75f;    // How much of the original velocity to maintain upon splitting as a percentage
+
+
+
+    /////////////////////
+    /// Internal data ///
+    /////////////////////
+
+
+
+	bool m_isFirstAsteroid = true;  // Stops the asteroids from increasing size when splitting
+    bool m_hasSplit = false;        // Ensures that the asteroid won't attempt to split whilst already splitting
+
+
+
+    //////////////////////////
+    /// Behavior functions ///
+    //////////////////////////
+
+
+
+    void Awake() 
     {
-        if(Network.isServer && collision.gameObject.tag != "Player")
+        // Perform initial setup
+        if (Network.isServer)
+        {
+            if (m_isFirstAsteroid)
+            {
+                // Stop fragments from performing the same operation
+                m_isFirstAsteroid = false;
+                
+                InitialScaleSetup();
+
+                InitialRotationSetup();
+            }
+            
+            // Ensure asteroids stay synchronised over the network
+            StartCoroutine (PersistentAsteroidSync (Random.Range (0f, m_velocitySyncInterval), m_velocitySyncInterval));
+        }
+
+        // Check if any asteroid prefabs exist
+        if (m_asteroidPrefabs.Length == 0)
+        {
+            Debug.LogError ("AsteroidScript has no asteroid prefabs, could cause unwanted problems.");
+        }
+    }
+
+
+	void OnCollisionEnter (Collision collision)
+    {
+        if (Network.isServer && collision.gameObject.tag != "Player")
         {
             networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, this.transform.position.x, this.transform.position.y);
         }
-		/*if(collision.gameObject.layer == Layers.player)
-		{
-			if(collision.transform.root.GetComponent<CapitalShipScript>())
-			{
-				collision.transform.root.GetComponent<CapitalShipScript>().BeginShaderCoroutine(this.transform.position);
-			}
-			else if(collision.transform.root.GetComponent<PlayerControlScript>())
-			{
-				collision.transform.root.GetComponent<PlayerControlScript>().BeginShaderCoroutine(this.transform.position);
-			}
-			else if(collision.transform.root.GetComponent<EnemyScript>())
-			{
-				collision.transform.root.GetComponent<EnemyScript>().BeginShaderCoroutine(this.transform.position);
-			}
-		}*/
 	}
+    
+    
+    void OnCollisionExit (Collision collision)
+    {
+        if (Network.isServer && collision.gameObject.tag != "Player")
+        {
+            networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, this.transform.position.x, this.transform.position.y);
+        }
+    }
 
 
-	void OnCollisionStay(Collision collision)
+	void OnCollisionStay (Collision collision)
 	{
-		if(Network.isServer && collision.gameObject.tag == "Player")
-		{
-			networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, this.transform.position.x, this.transform.position.y);
-		}
-
-		/*if(collision.gameObject.layer == Layers.player)
-		{
-			//Debug.Log ("Shield should wibble!");
-			if(collision.transform.root.GetComponent<CapitalShipScript>())
-			{
-				collision.transform.root.GetComponent<CapitalShipScript>().BeginShaderCoroutine(this.transform.position);
-			}
-			else if(collision.transform.root.GetComponent<PlayerControlScript>())
-			{
-				collision.transform.root.GetComponent<PlayerControlScript>().BeginShaderCoroutine(this.transform.position);
-			}
-			else if(collision.transform.root.GetComponent<EnemyScript>())
-			{
-				collision.transform.root.GetComponent<EnemyScript>().BeginShaderCoroutine(this.transform.position);
-			}
-		}*/
-	}
-
-
-	void OnCollisionExit(Collision collision)
-	{
-		if(Network.isServer && collision.gameObject.tag != "Player")
+		if (Network.isServer && collision.gameObject.tag == "Player")
 		{
 			networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, this.transform.position.x, this.transform.position.y);
 		}
 	}
+
+
+
+    ///////////////////////////////
+    /// Initial setup functions ///
+    ///////////////////////////////
+
+
+
+    /// <summary>
+    /// Determines and propagates the initial size and mass which the asteroid should be based on m_asteroidScaleRange
+    /// </summary>
+    void InitialScaleSetup()
+    {
+        // Ensure enough values are in the array
+        if (m_asteroidScaleRange.Length >= 2)
+        {
+            // Choose a random value for the multiplier
+            float multiplier = Random.Range (m_asteroidScaleRange[0], m_asteroidScaleRange[1]);
+            
+            // Propagate the value to all clients
+            networkView.RPC ("PropagateScaleAndMassMultiply", RPCMode.All, multiplier);
+        }
+        
+        else
+        {
+            Debug.LogError ("Unable to set the intial scale for " + name);
+        }
+    }
     
+
+    /// <summary>
+    /// Determines and propagates the initial rotation for the asteroid based on m_rotationSpeedRange
+    /// </summary>
+    void InitialRotationSetup()
+    {
+        // Ensure enough values exist in the array
+        if (m_rotationSpeedRange.Length >= 2)
+        {
+            // Calculate the correct torque to add
+            float multiplier = Random.Range (m_rotationSpeedRange[0], m_rotationSpeedRange[1]);
+            
+            // Make sure every client gets the correct multiplier
+            networkView.RPC ("PropagateForwardTorqueMultiply", RPCMode.All, multiplier);
+        }
+        
+        else  
+        {
+            Debug.LogError ("Unable to set the initial rotation speed for " + name);
+        }
+    }
     
+
+    /// <summary>
+    /// Allows external propagation of the scale and mass of the asteroid, useful for synchronising fragment sizes.
+    /// </summary>
+    /// <param name="scale">The desired local scale.</param>
+    /// <param name="mass">The desired mass.</param>
+    public void TellToPropagateScaleAndMass (Vector3 scale, float mass)
+    {
+        networkView.RPC ("PropagateScaleAndMass", RPCMode.All, scale, mass);
+    }
+    
+
+    /// <summary>
+    /// Sets the raw values for the local scale and rigidbody mass, useful for synchronising over the network
+    /// </summary>
+    /// <param name="scale">The desired local scale of the object</param>
+    /// <param name="mass">The desired rigidbody mass</param>
+    [RPC] void PropagateScaleAndMass (Vector3 scale, float mass)
+    {
+        this.rigidbody.mass = mass;
+        this.transform.localScale = scale;
+    }
+    
+
+    /// <summary>
+    /// Propagates a multiplier which the rigidbody mass and localScale are multiplied by
+    /// </summary>
+    /// <param name="multiplier">How much the mass and localScale should be multiplied</param>
+    [RPC] void PropagateScaleAndMassMultiply (float multiplier)
+    {
+        this.rigidbody.mass *= multiplier;
+        this.transform.localScale = new Vector3 (transform.localScale.x * multiplier, transform.localScale.y * multiplier, transform.localScale.z);
+    }
+
+
+    /// <summary>
+    /// Propagates a multiplier to create asteroid rotation based on forqard torque
+    /// </summary>
+    /// <param name="multiplier">How much forward torque to apply</param>
+    [RPC] void PropagateForwardTorqueMultiply (float multiplier)
+    {
+        rigidbody.AddTorque (Vector3.forward * multiplier);
+    }
+
+
+
+    ///////////////////////////////
+    /// Network synchronisation ///
+    /// ///////////////////////////
+   
+
+
+    /// <summary>
+    /// A coroutine which ensures that asteroids are synchronised in position and velocity over a period of time.
+    /// </summary>
+    /// <param name="startTime">Allows for a shorter initial wait time so that asteroids synchronisation can be done at different intervals.</param>
+    /// <param name="timeToWait">The actual time to wait before synchronising, this is in seconds.</param>
     IEnumerator PersistentAsteroidSync (float startTime, float timeToWait)
     {
         if (Network.isServer)
@@ -118,134 +229,67 @@ public class AsteroidScript : MonoBehaviour
             }
         }
     }
-
-
-	[RPC]
-	void SyncVelocity(Vector3 vel, float xPos, float yPos)
+    
+    
+    /// <summary>
+    /// Simply calls SyncVelocity if we are the server, only really useful for Invoking after a certain time period.
+    /// </summary>
+    void SyncVelocityWithOthers()
     {
-        //Debug.Log ("Received requested to synchronise the velocity of: " + name);
-		rigidbody.velocity = vel;
-		this.transform.position = new Vector3(xPos, yPos, 10.0f);
-	}
-	
-	// Use this for initialization
-	void Start () 
-	{
-		if (m_splittingFragments > 1 && m_asteroidPrefabs.Length == 0)
-		{
-			Debug.LogError ("AsteroidScript has no asteroid prefabs, could cause unwanted problems.");
-		}
-		
-		if (Network.isServer && isFirstAsteroid)
-		{
-			if (m_asteroidScaleRange.Length > 1)
-			{
-				isFirstAsteroid = false;
-				float multiplier = Random.Range (m_asteroidScaleRange[0], m_asteroidScaleRange[1]);
-				networkView.RPC ("PropagateScaleAndMassMultiply", RPCMode.All, multiplier);
-				Vector3 torque = Vector3.forward * Random.Range (m_rotationSpeedRange[0], m_rotationSpeedRange[1]);
-				rigidbody.AddTorque (torque);
-				networkView.RPC ("PropagateInitialTorque", RPCMode.Others, torque);
-			}
-			
-			else
-			{
-				Debug.LogError ("Incorrect .Length in AsteroidScript.m_asteroidScaleRange");
-			}
-
-			sendCounter = Random.Range(0, 4);
+        if (Network.isServer)
+        {
+            networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, transform.position.x, transform.position.y);
         }
-        
-        StartCoroutine (PersistentAsteroidSync (Random.Range (0f, 15f), 15f));
     }
     
+    /// <summary>
+    /// Allows for the velocity to be synchronised after a delay, useful for when force is externally applied such as explosive force from missiles.
+    /// Setting a delay ensures that the force gets applied THEN synchronised over the network.
+    /// </summary>
+    /// <param name="delay">Delay.</param>
+    public void DelayedVelocitySync (float delay = 0f)
+    {
+        if (Network.isServer)
+        {           
+            if (delay > 0f)
+            {
+                Invoke ("SyncVelocityWithOthers", delay);
+            }
+        }
+    }
 
-	[RPC]
-	void PropagateInitialTorque(Vector3 torque)
-	{
-		rigidbody.AddTorque(torque);
+
+    /// <summary>
+    /// Used to set the position and rigidbody velocity of the asteroid.
+    /// </summary>
+    /// <param name="velocity">The desired velocity.</param>
+    /// <param name="xPos">The desired position on the X axis.</param>
+    /// <param name="yPos">the desired position on the Y axis.</param>
+	[RPC] void SyncVelocity (Vector3 velocity, float xPos, float yPos)
+    {
+		rigidbody.velocity = velocity;
+		this.transform.position = new Vector3 (xPos, yPos, 10.0f);
 	}
 
 
-	/*void FixedUpdate()
-	{
-		if(Network.isClient)
-		{
-			if(rigidbody.velocity != Vector3.zero)
-			{
-				rigidbody.MovePosition(rigidbody.position + (rigidbody.velocity*Time.deltaTime*Time.deltaTime));
-			}
-		}
-	}*/
-	int sendCounter = 0;
-	//Vector3 lastVel = Vector3.zero;
-	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
-	{
-		float posX = this.transform.position.x;
-		float posY = this.transform.position.y;
 
-		//float rotZ = this.transform.rotation.eulerAngles.z;
-
-		//Vector3 velocity = rigidbody.velocity;
-
-		if(stream.isWriting)
-		{
-			sendCounter++;
-			//when counter = 5, turns out to ~1 second between updates (assuming no drops)
-			if(sendCounter > 4)
-			{
-				sendCounter = 0;
-				stream.Serialize(ref posX);
-				stream.Serialize(ref posY);
-				//stream.Serialize(ref rotZ);
-
-				//stream.Serialize(ref velocity);
-
-			}
-		}
-
-		else
-		{
-			stream.Serialize(ref posX);
-			stream.Serialize(ref posY);
-			//stream.Serialize(ref rotZ);
-			//stream.Serialize(ref velocity);
-
-			//Debug.Log ("Recieved velocity:" + velocity);
-
-			this.transform.position = new Vector3(posX, posY, 10.0f);
-			//this.transform.rotation = Quaternion.Euler(0, 0, rotZ);
-
-			//rigidbody.velocity = velocity;
-
-			//Begin interp
-			//StartCoroutine(BeginInterp());
-		}
-	}
+    //////////////////////////
+    /// Asteroid splitting ///
+    //////////////////////////
+     
 
 
-	float t = 0;
-	IEnumerator BeginInterp()
-	{
-		t = 0;
-
-		while(t < 1)
-		{
-			t += Time.deltaTime;
-            
-			rigidbody.MovePosition(rigidbody.position + (rigidbody.velocity * Time.deltaTime * Time.deltaTime));
-			yield return 0;
-		}
-	}
-
-
+    /// <summary>
+    /// Causes the asteroid to split into smaller fragments, assuming the mass isn't below the minimum chosen from m_minimumMass.
+    /// </summary>
+    /// <param name="hitter">Allows the spawn position and directional velocity to be calculated from a Transform.</param>
 	public void SplitAsteroid (Transform hitter)
 	{
 		if (!m_hasSplit)
 		{
 			Vector3 shotDirection, impactForce;
 			
-			shotDirection = hitter ?
+			shotDirection = hitter != null ?
 								(transform.position - hitter.position).normalized :
 								Vector3.forward;
 			
@@ -258,6 +302,10 @@ public class AsteroidScript : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Causes the asteroid to split into smaller fragments, assuming the mass isn't below the minimum chosen from m_minimumMass.
+    /// </summary>
+    /// <param name="hitter">Allows the spawn position and directional velocity to be calculated from a Vector3</param>
 	public void SplitAsteroid (Vector3 hitterPosition)
 	{
 		if (!m_hasSplit)
@@ -273,8 +321,11 @@ public class AsteroidScript : MonoBehaviour
 	}
 
 
-	
-	bool m_hasSplit = false;
+    /// <summary>
+    /// Actually performs the splitting of the asteroid, this will calculate where fragments should be spawned and their intiial velocity.
+    /// </summary>
+    /// <param name="shotDirection">The direction where the asteroid was hit.</param>
+    /// <param name="impactForce">The impact force to be applied.</param>
 	void PerformSplit (Vector3 shotDirection, Vector3 impactForce)
 	{
 		if (!m_hasSplit)
@@ -328,11 +379,17 @@ public class AsteroidScript : MonoBehaviour
 		}
 	}
 	
+
+    /// <summary>
+    /// Spawns an asteroid fragment over the network.
+    /// </summary>
+    /// <param name="spawnModifier">The translation applied to transform.position of the current asteroid.</param>
+    /// <param name="impactForce">The impact force to be applied to the spawned fragment.</param>
 	void SpawnAsteroid (Vector3 spawnModifier, Vector3 impactForce)
 	{
 		// Obtain a random prefab
 		GameObject asteroid = RandomPrefab();
-		if (asteroid)
+		if (asteroid != null)
 		{
 			// Instantiate the asteroid
 			asteroid = (GameObject) Network.Instantiate (asteroid, transform.position + spawnModifier, transform.rotation, 0);
@@ -343,11 +400,11 @@ public class AsteroidScript : MonoBehaviour
 			
 			// Scale the asteroid correctly
 			AsteroidScript script = asteroid.GetComponent<AsteroidScript>();
-			if (script)
+			if (script != null)
 			{
 				script.TellToPropagateScaleAndMass (transform.localScale / m_splittingFragments, rigidbody.mass / m_splittingFragments);
                 script.DelayedVelocitySync (Time.fixedDeltaTime);
-                script.isFirstAsteroid = false;
+                script.m_isFirstAsteroid = false;
 			}
 		}
 		
@@ -358,6 +415,10 @@ public class AsteroidScript : MonoBehaviour
 	}
 	
 	
+    /// <summary>
+    /// Chooses a random asteroid from the m_asteroidPrefabs array for usage by SpawnAsteroid().
+    /// </summary>
+    /// <returns>The selected prefab, returns null if one can't be found.</returns>
 	GameObject RandomPrefab()
 	{
 		// Ensure the prefab array is an appropriate size
@@ -367,7 +428,7 @@ public class AsteroidScript : MonoBehaviour
 			for (int i = 0; i < 5; ++i)
 			{
 				GameObject asteroid = m_asteroidPrefabs[Random.Range (0, m_asteroidPrefabs.Length)];
-				if (asteroid)
+				if (asteroid != null)
 				{
 					return asteroid;
 				}
@@ -376,56 +437,5 @@ public class AsteroidScript : MonoBehaviour
 		
 		// Hopefully this will never happen
 		return null;
-	}
-
-	
-	public void AlertScaleAssigned(float scale)
-	{
-		networkView.RPC ("PropagateScaleAndMassMultiply", RPCMode.All, scale);
-	}
-
-
-	public void TellToPropagateScaleAndMass (Vector3 scale, float mass)
-	{
-		networkView.RPC ("PropagateScaleAndMass", RPCMode.All, scale, mass);
-	}
-
-
-	public void DelayedVelocitySync (float delay = 0f)
-	{
-		if (Network.isServer)
-		{			
-			if (delay > 0f)
-			{
-				Invoke ("SyncVelocityWithOthers", delay);
-			}
-
-			else
-			{
-				SyncVelocityWithOthers();
-			}
-		}
-	}
-
-
-	void SyncVelocityWithOthers()
-	{
-		networkView.RPC ("SyncVelocity", RPCMode.Others, rigidbody.velocity, transform.position.x, transform.position.y);
-	}
-
-
-	[RPC]
-	void PropagateScaleAndMass (Vector3 scale, float mass)
-	{
-		this.rigidbody.mass = mass;
-		this.transform.localScale = scale;
-	}
-	
-	
-	[RPC]
-	void PropagateScaleAndMassMultiply (float multiplier)
-	{
-		this.rigidbody.mass *= multiplier;
-		this.transform.localScale = new Vector3 (transform.localScale.x * multiplier, transform.localScale.y * multiplier, transform.localScale.z);
 	}
 }
