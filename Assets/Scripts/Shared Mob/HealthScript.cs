@@ -4,31 +4,94 @@ using System.Collections;
 public class HealthScript : MonoBehaviour 
 {
 	//Only need to use this for the capital ship
-	[SerializeField]
-	GameObject m_GameStateController;
+	[SerializeField] GameObject m_GameStateController;
 	
-	[SerializeField]
-	GameObject m_DeathObjectRef;
+	[SerializeField] GameObject m_DeathObjectRef;
+
+    [SerializeField] int m_maximumShield = 100;
+    [SerializeField] int m_currentShield;
 	
-	public void SetGameStateController(GameObject controller)
-	{
-		m_GameStateController = controller;
-	}
+	[SerializeField] int m_maximumHealth = 100;
+	[SerializeField] int m_currentHealth;
 	
-	[SerializeField]
-	int m_maximumHealth = 100;
-	[SerializeField]
-	int m_currentHealth;
-	
-	[SerializeField]
-	string m_pathToShieldObject = "Composite Collider/Shield";
+	[SerializeField] string m_pathToShieldObject = "Composite Collider/Shield";
+
+    [SerializeField] int m_shieldRechargeRate = 6;
+    [SerializeField] float m_timeToRechargeShield = 4.0f;
+
 	
 	// Stops the script from repeating searching for the shield GameObject
 	GameObject m_shieldCache;
 
     bool isDead = false;
+    
+    float m_currentShieldDownTime = 0;
+    bool isRegenerating = false;
+    float regenFloatCatch = 0;
 
-	public void EquipNewPlating(int hullValue)
+    bool m_shouldStop = false;
+    bool m_isInvincible = false;
+
+
+
+    bool hasBeenHitAlready = false;
+
+    #region getset
+    public void SetGameStateController(GameObject controller)
+    {
+        m_GameStateController = controller;
+    }
+
+    public bool GetShouldStop()
+    {
+        return m_shouldStop;
+    }
+
+    public void SetShouldStop(bool shouldStop_)
+    {
+        m_shouldStop = shouldStop_;
+    }
+
+    public bool IsInvincible()
+    {
+        return m_isInvincible;
+    }
+
+    public void SetInvincible(bool invincible_)
+    {
+        m_isInvincible = invincible_;
+    }
+
+    public float GetHPPercentage()
+    {
+        float output = (float)m_currentHealth / (float)m_maximumHealth;
+        return output;
+    }
+    public int GetMaxHP()
+    {
+        return m_maximumHealth;
+    }
+    public int GetCurrHP()
+    {
+        return m_currentHealth;
+    }
+    public float GetShieldPercentage()
+    {
+        float output = (float)m_currentShield / (float)GetMaxShield();
+        return output;
+    }
+    public int GetMaxShield()
+    {
+        return m_maximumShield;
+    }
+    public int GetCurrShield()
+    {
+        return m_currentShield;
+    }
+
+    #endregion
+
+    public void EquipNewPlating(int hullValue)
 	{
 		float percent = GetHPPercentage();
 		m_maximumHealth = hullValue;
@@ -37,11 +100,6 @@ public class HealthScript : MonoBehaviour
         
         if(m_currentHealth <= 0)
             m_currentHealth = m_maximumHealth;
-		//m_currentHealth = m_maximumHealth;
-        
-        /*if(m_currentHealth > m_maximumHealth)
-            m_currentHealth = m_maximumHealth;*/
-        
 		
 		if(Network.isServer)
 		{
@@ -49,11 +107,6 @@ public class HealthScript : MonoBehaviour
 			networkView.RPC ("PropagateDamageAndMaxs", RPCMode.Others, m_currentHealth, m_maximumHealth, m_currentShield, m_maximumShield);
 		}
 	}
-	
-	[SerializeField]
-	int m_maximumShield = 100;
-	[SerializeField]
-	int m_currentShield;
 	
 	public void EquipNewShield(int capacity, int rechargeRate, float rechargeDelay)
 	{
@@ -68,18 +121,6 @@ public class HealthScript : MonoBehaviour
 			networkView.RPC ("PropagateShieldRechargeStats", RPCMode.Others, rechargeRate, rechargeDelay);
 		}
 	}
-	
-	[SerializeField]
-	int m_shieldRechargeRate = 6;
-	[SerializeField]
-	float m_timeToRechargeShield = 4.0f;
-	float m_currentShieldDownTime = 0;
-	bool isRegenerating = false;
-	float regenFloatCatch = 0;
-	
-	public bool m_shouldStop = false;
-	[HideInInspector]
-	public bool m_isInvincible = false;
 	
 	// Use this for initialization
 	void Start () 
@@ -115,7 +156,6 @@ public class HealthScript : MonoBehaviour
 	}
 	void OnCollisionEnter(Collision collision)
 	{
-		//if(this.tag == "Asteroid")
 		//Debug.Log ("Object '" + name + " collided with object: '" + collision.gameObject.name + "'.");
 		//NOTE: This function should only apply damage to the other collider, since the function will be called on
 		// 		both sides
@@ -134,7 +174,8 @@ public class HealthScript : MonoBehaviour
                     float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
                     int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
                     //Debug.Log("Applying " + PCdamage + " damage to PC.");
-                    collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
+                    HealthScript health = collision.gameObject.GetComponent<HealthScript>();
+                    health.DamageMob(PCdamage, this.gameObject);
                 }
                 else if(collision.gameObject.tag == "Player")
                 {
@@ -143,7 +184,8 @@ public class HealthScript : MonoBehaviour
                     float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
                     int PCdamage = (int)(magnitude * shipComponent.GetRamDam() * 10);
                     Debug.Log("Applying " + PCdamage + " damage to PC.");
-                    collision.gameObject.GetComponent<HealthScript>().DamageMob(PCdamage, this.gameObject);
+                    HealthScript health = collision.gameObject.GetComponent<HealthScript>();
+                    health.DamageMob(PCdamage, this.gameObject);
                 }
                 else if(collision.gameObject.tag == "Asteroid")
                 {
@@ -163,7 +205,8 @@ public class HealthScript : MonoBehaviour
                     int NMdamage = 0;
                     if(this.GetComponent<PlayerControlScript>() != null)
                     {
-                        NMdamage = (int)(magnitude * this.GetComponent<PlayerControlScript>().GetRamDam());
+                        PlayerControlScript player = GetComponent<PlayerControlScript>();
+                        NMdamage = (int)(magnitude * player.GetRamDam());
                     }
                     else
                     {
@@ -171,7 +214,9 @@ public class HealthScript : MonoBehaviour
                         NMdamage = (int)(magnitude * 5.0f);
                     }
                     //Debug.Log ("Applying " + NMdamage + " damage to enemy.");
-                    collision.gameObject.GetComponent<HealthScript>().DamageMob(NMdamage, this.gameObject);
+
+                    HealthScript health = collision.gameObject.GetComponent<HealthScript>();
+                    health.DamageMob(NMdamage, this.gameObject);
                 }
                 else if(collision.gameObject.tag == "Asteroid")
                 {
@@ -200,34 +245,9 @@ public class HealthScript : MonoBehaviour
 		networkView.RPC ("PropagateDamage", RPCMode.Server, m_currentHealth, m_currentShield);
 		Debug.Log ("Clienting sending new health value of " + m_currentHealth + " to host.");
 	}
-	public float GetHPPercentage()
-	{
-		float output = (float)m_currentHealth / (float)m_maximumHealth;
-		return output;
-	}
-	public int GetMaxHP()
-	{
-		return m_maximumHealth;
-	}
-	public int GetCurrHP()
-	{
-		return m_currentHealth;
-	}
-	public float GetShieldPercentage()
-	{
-        float output = (float)m_currentShield / (float)GetMaxShield();
-		return output;
-	}
-	public int GetMaxShield()
-	{
-		return m_maximumShield;
-	}
-	public int GetCurrShield()
-	{
-		return m_currentShield;
-	}
 	
-	bool hasBeenHitAlready = false;
+	
+	
 	public void RemotePlayerRequestsDirectDamage(int damage)
 	{
 		// Fixes bug where host can't die
@@ -262,15 +282,15 @@ public class HealthScript : MonoBehaviour
 			}
 			
 			//If we're host, propagate the damage to the rest of the clients
-			try 
-			{
-				networkView.RPC ("PropagateDamage", RPCMode.Others, m_currentHealth, m_currentShield);
-			}
-			catch (UnityException e) {}
+			networkView.RPC ("PropagateDamage", RPCMode.Others, m_currentHealth, m_currentShield);
 			
 			//Tell gamecontroller the capital ship is under attack
 			if(this.tag == "Capital")
-				m_GameStateController.GetComponent<GameStateController>().CapitalShipHasTakenDamage();
+            {
+                GameStateController gameState = m_GameStateController.GetComponent<GameStateController>();
+                gameState.CapitalShipHasTakenDamage();
+            }
+				
 		}
 	}
 	public void ResetShieldRecharge()
@@ -305,7 +325,7 @@ public class HealthScript : MonoBehaviour
 					m_currentShield = 0;
 				}
 
-				if (hitter)
+				if (hitter != null)
 				{
 					BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
 
@@ -330,11 +350,7 @@ public class HealthScript : MonoBehaviour
 			if(Network.isServer)
 			{
 				//If we're host, propagate the damage to the rest of the clients
-				try
-				{
-					networkView.RPC ("PropagateDamage", RPCMode.Others, m_currentHealth, m_currentShield);
-				}
-				catch (UnityException e) {}
+				networkView.RPC ("PropagateDamage", RPCMode.Others, m_currentHealth, m_currentShield);
 				
 				//Tell gamecontroller the capital ship is under attack
 				if(this.tag == "Capital")
@@ -374,17 +390,10 @@ public class HealthScript : MonoBehaviour
 	[RPC]
 	void PropagateShieldWibble(Vector3 position, int type, float magnitude)
 	{
-		if(this.GetComponent<CapitalShipScript>())
+        Ship ship;
+        if ((ship = GetComponent<Ship>()) != null)
 		{
-			this.GetComponent<CapitalShipScript>().BeginShaderCoroutine(position, type, magnitude);
-		}
-		else if(this.GetComponent<PlayerControlScript>())
-		{
-			this.GetComponent<PlayerControlScript>().BeginShaderCoroutine(position, type, magnitude);
-		}
-		else if(this.GetComponent<EnemyScript>())
-		{
-			this.GetComponent<EnemyScript>().BeginShaderCoroutine(position, type, magnitude);
+            ship.BeginShaderCoroutine(position, type, magnitude);
 		}
 	}
 
@@ -416,25 +425,13 @@ public class HealthScript : MonoBehaviour
 		ShieldOnOff (isUp);
 	}
 
-	// Shouldn't be necessary anymore, consider deletion
-	Vector3 GetLaserImpactPoint(GameObject laser)
-	{
-		Vector3 output = Vector3.zero;
-		RaycastHit info;
-		if(Physics.Raycast(laser.transform.position, laser.transform.up, out info))
-		{
-			output = info.point;
-		}
-
-		Debug.Log ("Returned position: " + output);
-		return output;
-	}
 	void ShieldOnOff (bool isUp)
 	{
-		GameObject shield = GetShield();
-		if (shield)
+        Ship ship = GetComponent<Ship>();
+        GameObject shield = ship.GetShield();
+		if (shield != null)
 		{
-			if (shield.collider)
+			if (shield.collider != null)
 			{
 				shield.collider.enabled = isUp;
 			}
@@ -453,11 +450,13 @@ public class HealthScript : MonoBehaviour
             return;
         }
 
+        PlayerControlScript ship;
+
 		//Debug.Log ("Mob has died!");
-		if(this.GetComponent<PlayerControlScript>() != null)
+		if((ship = GetComponent<PlayerControlScript>()) != null)
 		{
 			//Only act if we're the owner
-			if(this.GetComponent<PlayerControlScript>().GetOwner() == Network.player)
+            if (ship.GetOwner() == Network.player)
 			{
 				//Object is a player, apply special rules
 				Debug.Log ("[HealthScript]: Player has died!");
@@ -474,7 +473,7 @@ public class HealthScript : MonoBehaviour
 			else
 			{
 				//Tell the client that it's dead
-				networkView.RPC ("PropagatePlayerHasJustDied", this.GetComponent<PlayerControlScript>().GetOwner());
+                networkView.RPC("PropagatePlayerHasJustDied", ship.GetOwner());
                 networkView.RPC("PropagateEntityDied", RPCMode.All);
 			}
 		}
@@ -494,9 +493,10 @@ public class HealthScript : MonoBehaviour
 		else if(this.tag == "Enemy")
 		{
 			//If this mob isn't a player, apply bounty to killer (if pc) and destroy mob
-			if(killer && killer.transform.root.GetComponent<PlayerControlScript>() != null)
+			if(killer != null && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
-				killer.transform.root.GetComponent<PlayerControlScript>().AddSpaceBucks(this.GetComponent<EnemyScript>().GetBounty());
+                PlayerControlScript playerShip = killer.transform.root.GetComponent<PlayerControlScript>();
+                playerShip.AddSpaceBucks(this.GetComponent<EnemyScript>().GetBounty());
 			}
 
             if(Network.isServer)
@@ -509,11 +509,11 @@ public class HealthScript : MonoBehaviour
 		}
 		else if(this.tag == "Asteroid")
 		{
-			if (hitter)
+			if (hitter != null)
 			{
 				BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
 
-				if (beam)
+				if (beam != null)
 				{
 					GetComponent<AsteroidScript>().SplitAsteroid (beam.beamHit.point);
 				}
@@ -549,51 +549,10 @@ public class HealthScript : MonoBehaviour
         GetComponent<Explode>().Fire();
     }
 	
-	/*[RPC]
-	void PropagatePlayerDeath()
-	{
-		Destroy (this.gameObject);
-
-		//this.gameObject.SetActive(false);
-
-		/*this.renderer.enabled = false;
-		this.enabled = false;
-		this.GetComponent<HealthScript>().enabled = false;*/
-	//}
-	
 	public void ResetHPOnRespawn()
 	{
         m_currentShield = GetMaxShield();
 		m_currentHealth = (int)(m_maximumHealth * 0.25f);
-	}
-	
-	GameObject GetShield()
-	{
-		if (!m_shieldCache || m_shieldCache.tag != "Shield")
-		{
-			// Search child objects for the shield.
-			Transform result = transform.Find (m_pathToShieldObject);
-			m_shieldCache = result ? result.gameObject : null;
-			
-			if (!m_shieldCache || m_shieldCache.tag != "Shield")
-			{
-				// Fall back to old method and search
-				foreach (Transform child in this.transform)
-				{
-					if (child.tag == "Shield")
-					{
-						m_shieldCache = child.gameObject;
-					}
-				}
-				
-				if (!m_shieldCache)
-				{
-					Debug.LogWarning ("No shield found for mob " + this.name);
-				}
-			}
-		}
-		
-		return m_shieldCache;
 	}
 
     public void SetModifier(float modifier_)

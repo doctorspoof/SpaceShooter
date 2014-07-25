@@ -5,58 +5,91 @@ using System.Collections;
 public class Ship : MonoBehaviour
 {
 
-    protected NetworkPlayer owner;
-    [SerializeField]
-    protected string ownerSt;
+    [SerializeField] float m_afterburnerIncreaseOfSpeed;
+    [SerializeField] float m_afterburnerLength;
+    [SerializeField] float m_afterburnerRechargeTime;
 
-    [SerializeField]
-    bool isPlayerControlScript = false;
+    [SerializeField] protected string m_ownerSt;
 
-    public Transform shipTransform;
-    public Rigidbody shipRigidbody;
+    [SerializeField] bool m_isPlayerControlScript = false;
 
-    [SerializeField]
-    float m_maxShipSpeed;
+    [SerializeField] float m_maxShipSpeed;
+    [SerializeField] float m_currentShipSpeed = 0.0f;
 
-    [SerializeField]
-    float m_currentShipSpeed = 0.0f;
+    [SerializeField] float m_rotateSpeed = 5.0f;
 
-    bool afterburnersFiring = false, afterburnersRecharged = true;
-    float currentAfterburnerTime = 0.0f, currentAfterburnerRechargeTime = 0.0f;
-    [SerializeField]
-    float afterburnerIncreaseOfSpeed;
-    [SerializeField]
-    float afterburnerLength;
-    [SerializeField]
-    float afterburnerRechargeTime;
-    //[SerializeField]
-    //float decreaseInTurnRateWithAfterburner;
+    [SerializeField] float m_ramDamageMultiplier = 2.5f;
 
-    [SerializeField]
-    float m_rotateSpeed = 5.0f;
+    [SerializeField] bool maunuallySetWidthAndHeight = false;
 
-    [SerializeField]
-    float m_ramDamageMultiplier = 2.5f;
+    [SerializeField] protected float m_minWeaponRange = 0.0f;
+    [SerializeField] protected float m_maxWeaponRange = 0.0f;
 
-    [SerializeField]
-    bool maunuallySetWidthAndHeight = false;
+    [SerializeField] float m_shipWidth;
+    [SerializeField] float m_shipHeight;
 
-    [SerializeField]
-    protected float minWeaponRange = 0.0f, maxWeaponRange = 0.0f;
+    [SerializeField] string m_pathToShieldObject = "Composite Collider/Shield";
 
-    [SerializeField]
-    float m_shipWidth;
-    [SerializeField]
-    float m_shipHeight;
 
-    float currentAngularVelocity = 0;
-    float maxThrusterVelocitySeen = 0, maxAngularVelocitySeen = 0;
-    Transform thrustersHolder = null, afterburnersHolder = null;
-    Thruster[] thrusters = null, afterburners = null;
 
+
+    bool m_afterburnersFiring = false, m_afterburnersRecharged = true;
+    float m_currentAfterburnerTime = 0.0f, m_currentAfterburnerRechargeTime = 0.0f;
+    
+    float m_currentAngularVelocity = 0;
+    float m_maxThrusterVelocitySeen = 0, m_maxAngularVelocitySeen = 0;
+
+    int shaderCounter = 0;
+
+    bool coroutineIsRunning = false;
+    bool coroutineForceStopped = false;
+    
+
+
+
+    Transform m_thrustersHolder = null, m_afterburnersHolder = null;
+    Thruster[] m_thrusters = null, m_afterburners = null;
+
+    protected NetworkPlayer m_owner;
+    
+    protected Transform m_shipTransform;
+    protected Rigidbody m_shipRigidbody;
+
+    GameObject m_shieldCache = null;
+
+    //this was mainly for testing, may be deleted eventually
+    [SerializeField]
+    int shipID = -1;
+    static int ids = 0;
+
+    #region getset
     public float GetMaxShipSpeed()
     {
         return m_maxShipSpeed;
+    }
+
+    public void SetMaxShipSpeed(float maxSpeed_)
+    {
+        m_maxShipSpeed = maxSpeed_;
+    }
+
+    public float GetCurrentShipSpeed()
+    {
+        return m_afterburnersFiring == true ? m_currentShipSpeed + m_afterburnerIncreaseOfSpeed : m_currentShipSpeed;
+    }
+
+    public void SetCurrentShipSpeed(float currentSpeed)
+    {
+        m_currentShipSpeed = Mathf.Clamp(currentSpeed, 0, m_maxShipSpeed);
+    }
+
+    /// <summary>
+    /// Sets the currentShipSpeed based off a momentum value
+    /// </summary>
+    /// <param name="currentMomentum_"></param>
+    public void SetShipMomentum(float currentMomentum_)
+    {
+        m_currentShipSpeed = Mathf.Min(m_maxShipSpeed, currentMomentum_ / rigidbody.mass);
     }
 
     public float GetMaxMomentum()
@@ -74,112 +107,14 @@ public class Ship : MonoBehaviour
         return m_ramDamageMultiplier;
     }
 
-    protected virtual void Awake()
+    public float GetRotateSpeed()
     {
-        Init();
-    }
-
-    [SerializeField]
-    public int shipID = -1;
-    static int ids = 0;
-
-    protected void Init()
-    {
-        shipID = ids++;
-
-        shipTransform = transform;
-        shipRigidbody = rigidbody;
-
-        if (GetShipWidth() == 0 || GetShipHeight() == 0)
-            SetShipSizes();
-
-        isPlayerControlScript = this.GetType() == typeof(PlayerControlScript);
-        //ResetThrusters();
-    }
-
-    protected virtual void Update()
-    {
-        if(thrustersHolder == null)
-        {
-            ResetThrusters();
-        }
-
-        if (afterburnersFiring == true)
-        {
-            currentAfterburnerTime += Time.deltaTime;
-            if (currentAfterburnerTime >= afterburnerLength)
-            {
-                AfterburnerFinished();
-            }
-        }
-
-        if (afterburnersFiring == false)
-        {
-            if (afterburnersRecharged == false)
-            {
-                currentAfterburnerRechargeTime += Time.deltaTime;
-                if (currentAfterburnerRechargeTime >= afterburnerRechargeTime)
-                {
-                    afterburnersRecharged = true;
-                    currentAfterburnerRechargeTime = 0;
-                }
-            }
-        }
-
-        // we cant calculate the max velocity neatly so we check to see if its larger
-        if ((maxThrusterVelocitySeen < shipRigidbody.velocity.magnitude))
-        {
-            maxThrusterVelocitySeen = shipRigidbody.velocity.magnitude;
-            //UpdateThrusterVelocityMax();
-        }
-
-        //maxAngularVelocitySeen -= 0.05f;
-        if ((maxAngularVelocitySeen < Mathf.Abs(currentAngularVelocity)))
-        {
-            maxAngularVelocitySeen = Mathf.Abs(currentAngularVelocity);
-            //UpdateThrusterAngularMax();
-        }
-
-        //Debug.Log("Ship id = " + shipID + " has " + maxThrusterVelocitySeen + " __ " + maxAngularVelocitySeen + " __ " + currentAngularVelocity);
-
-        UpdateThrusters();
-
-
-    }
-
-    public void SetShipMomentum(float currentSpeed)
-    {
-        m_currentShipSpeed = Mathf.Min(m_maxShipSpeed, currentSpeed / rigidbody.mass);
-    }
-
-    public void SetMaxShipSpeed(float maxSpeed_)
-    {
-        m_maxShipSpeed = maxSpeed_;
-    }
-
-    public void SetCurrentShipSpeed(float currentSpeed)
-    {
-        m_currentShipSpeed = Mathf.Clamp(currentSpeed, 0, m_maxShipSpeed);
-    }
-
-    public float GetCurrentShipSpeed()
-    {
-        return afterburnersFiring == true ? m_currentShipSpeed + afterburnerIncreaseOfSpeed : m_currentShipSpeed;
-    }
-
-    public void ResetShipSpeed()
-    {
-        m_currentShipSpeed = m_maxShipSpeed;
+        return m_rotateSpeed;
     }
 
     public void SetRotateSpeed(float rotateSpeed_)
     {
         m_rotateSpeed = rotateSpeed_;
-    }
-
-    public float GetRotateSpeed()
-    {
-        return m_rotateSpeed;
     }
 
     public float GetShipWidth()
@@ -190,6 +125,108 @@ public class Ship : MonoBehaviour
     public float GetShipHeight()
     {
         return m_shipHeight;
+    }
+
+    /// <summary>
+    /// Returns thrusters. Do not use if the engine has changed as it will not return the updated thrusters. Use FindThrusters instead
+    /// </summary>
+    /// <returns></returns>
+    public Thruster[] GetThrusters()
+    {
+        return m_thrusters;
+    }
+
+    public Thruster[] GetAfterburners()
+    {
+        return m_afterburners;
+    }
+
+    public virtual float GetMinimumWeaponRange()
+    {
+        return m_minWeaponRange;
+    }
+
+    public virtual float GetMaximumWeaponRange()
+    {
+        return m_maxWeaponRange;
+    }
+
+    public NetworkPlayer GetOwner()
+    {
+        return m_owner;
+    }
+
+#endregion
+
+    protected virtual void Awake()
+    {
+        Init();
+    }
+
+    protected virtual void Update()
+    {
+        if(m_thrustersHolder == null)
+        {
+            ResetThrusters();
+        }
+
+        if (m_afterburnersFiring == true)
+        {
+            m_currentAfterburnerTime += Time.deltaTime;
+            if (m_currentAfterburnerTime >= m_afterburnerLength)
+            {
+                AfterburnerFinished();
+            }
+        }
+
+        if (m_afterburnersFiring == false)
+        {
+            if (m_afterburnersRecharged == false)
+            {
+                m_currentAfterburnerRechargeTime += Time.deltaTime;
+                if (m_currentAfterburnerRechargeTime >= m_afterburnerRechargeTime)
+                {
+                    m_afterburnersRecharged = true;
+                    m_currentAfterburnerRechargeTime = 0;
+                }
+            }
+        }
+
+        // we cant calculate the max velocity neatly so we check to see if its larger
+        if ((m_maxThrusterVelocitySeen < m_shipRigidbody.velocity.magnitude))
+        {
+            m_maxThrusterVelocitySeen = m_shipRigidbody.velocity.magnitude;
+        }
+
+        //maxAngularVelocitySeen -= 0.05f;
+        if ((m_maxAngularVelocitySeen < Mathf.Abs(m_currentAngularVelocity)))
+        {
+            m_maxAngularVelocitySeen = Mathf.Abs(m_currentAngularVelocity);
+        }
+
+        //Debug.Log("Ship id = " + shipID + " has " + maxThrusterVelocitySeen + " __ " + maxAngularVelocitySeen + " __ " + currentAngularVelocity);
+
+        UpdateThrusters();
+
+
+    }
+
+    void Init()
+    {
+        shipID = ids++;
+
+        m_shipTransform = transform;
+        m_shipRigidbody = rigidbody;
+
+        if (GetShipWidth() == 0 || GetShipHeight() == 0)
+            SetShipSizes();
+
+        m_isPlayerControlScript = this.GetType() == typeof(PlayerControlScript);
+    }
+
+    public void ResetShipSpeed()
+    {
+        m_currentShipSpeed = m_maxShipSpeed;
     }
 
     /// <summary>
@@ -253,7 +290,7 @@ public class Ship : MonoBehaviour
         float currentAngle = transform.rotation.eulerAngles.z;
 
         float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
-        currentAngularVelocity = nextAngle - currentAngle;
+        m_currentAngularVelocity = nextAngle - currentAngle;
         UpdateThrusterAngularCurrent();
 
         if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
@@ -278,7 +315,7 @@ public class Ship : MonoBehaviour
     public float GetCalculatedSizeByPosition(Vector2 position_)
     {
 
-        Vector2 dir = (position_ - (Vector2)shipTransform.position).normalized;
+        Vector2 dir = (position_ - (Vector2)m_shipTransform.position).normalized;
 
         float dot = Vector2.Dot(transform.up, dir);
 
@@ -291,7 +328,7 @@ public class Ship : MonoBehaviour
 
     public bool CanFireAfterburners()
     {
-        return !afterburnersFiring && afterburnersRecharged;
+        return !m_afterburnersFiring && m_afterburnersRecharged;
     }
 
     public void FireAfterburners()
@@ -301,11 +338,11 @@ public class Ship : MonoBehaviour
     [RPC]
     void PropagateFireAfterburners()
     {
-        if (!afterburnersFiring && afterburnersRecharged)
+        if (!m_afterburnersFiring && m_afterburnersRecharged)
         {
-            afterburnersFiring = true;
-            afterburnersRecharged = false;
-            afterburnersHolder.gameObject.SetActive(true);
+            m_afterburnersFiring = true;
+            m_afterburnersRecharged = false;
+            m_afterburnersHolder.gameObject.SetActive(true);
         }
     }
 
@@ -316,102 +353,56 @@ public class Ship : MonoBehaviour
     [RPC]
     void PropagateAfterburnerFinished()
     {
-        currentAfterburnerTime = 0;
-        afterburnersFiring = false;
-        afterburnersRecharged = false;
+        m_currentAfterburnerTime = 0;
+        m_afterburnersFiring = false;
+        m_afterburnersRecharged = false;
 
-        afterburnersHolder.gameObject.SetActive(false);
+        m_afterburnersHolder.gameObject.SetActive(false);
     }
 
     public bool AfterburnersRecharging()
     {
-        return (afterburnersFiring == false && afterburnersRecharged == false);
+        return (m_afterburnersFiring == false && m_afterburnersRecharged == false);
     }
 
-    public virtual float GetMinimumWeaponRange()
-    {
-        return minWeaponRange;
-    }
-
-    public virtual float GetMaximumWeaponRange()
-    {
-        return maxWeaponRange;
-    }
-
+    // TODO: remove all network code. cache the last rotation and base thrusters off that
     public void UpdateThrusterAngularCurrent()
     {
-        if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.Others, currentAngularVelocity);
+        if (m_owner == Network.player || (!m_isPlayerControlScript && Network.isServer))
+            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.Others, m_currentAngularVelocity);
     }
 
     [RPC]
     void PropagateNewThrusterAngularCurrent(float currentAngularVelocity_)
     {
-        currentAngularVelocity = currentAngularVelocity_;
-    }
-
-    public void UpdateThrusterAngularMax()
-    {
-        if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterAngularMax", RPCMode.Others, maxAngularVelocitySeen);
-    }
-
-    [RPC]
-    void PropagateNewThrusterAngularMax(float maxAngularVelocitySeen_)
-    {
-        maxAngularVelocitySeen = maxAngularVelocitySeen_;
-    }
-
-    public void UpdateThrusterVelocityMax()
-    {
-        if (owner == Network.player || (!isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterVelocityMax", RPCMode.Others, maxThrusterVelocitySeen);
-    }
-
-    [RPC]
-    void PropagateNewThrusterVelocityMax(float maxThrusterVelocitySeen_)
-    {
-        maxThrusterVelocitySeen = maxThrusterVelocitySeen_;
+        m_currentAngularVelocity = currentAngularVelocity_;
     }
 
     void UpdateThrusters()
     {
-        foreach (Thruster thruster in thrusters)
+        foreach (Thruster thruster in m_thrusters)
         {
             if (thruster != null)
-                thruster.Calculate(maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
+                thruster.Calculate(m_maxThrusterVelocitySeen, m_currentAngularVelocity, m_maxAngularVelocitySeen);
         }
     }
-
-    //public void UpdateThrusters()
-    //{
-    //    networkView.RPC("PropagateThrusters", RPCMode.All, maxThrusterVelocitySeen, currentAngularVelocity, maxAngularVelocitySeen);
-    //}
-
-    //[RPC]
-    //void PropagateThrusters(float maxThrusterVelocitySeen_, float currentAngularVelocity_, float maxAngularVelocitySeen_)
-    //{
-    //    foreach (Thruster thruster in thrusters)
-    //    {
-    //        if (thruster != null)
-    //            thruster.Calculate(maxThrusterVelocitySeen_, currentAngularVelocity_, maxAngularVelocitySeen_);
-    //    }
-    //}
 
     public void ResetThrusters()
     {
         networkView.RPC("PropagateResetThrusters", RPCMode.All);
     }
+
     [RPC]
     void PropagateResetThrusters()
     {
         ResetThrusterObjects();
-        maxThrusterVelocitySeen = 0;
+        m_maxThrusterVelocitySeen = 0;
+        m_maxAngularVelocitySeen = 0;
     }
 
     private Transform GetThrusterHolder()
     {
-        return RecursiveSearchForChild(shipTransform, "Thrusters");
+        return RecursiveSearchForChild(m_shipTransform, "Thrusters");
     }
 
     static private Transform RecursiveSearchForChild(Transform object_, string name_)
@@ -446,13 +437,13 @@ public class Ship : MonoBehaviour
     /// <returns></returns>
     public void ResetThrusterObjects()
     {
-        thrustersHolder = GetThrusterHolder();
-        afterburnersHolder = thrustersHolder.FindChild("Afterburners");
+        m_thrustersHolder = GetThrusterHolder();
+        m_afterburnersHolder = m_thrustersHolder.FindChild("Afterburners");
         Transform rcsholder = transform.FindChild("RCS");
 
         //if there are afterburners, take 1 away since the afterburner holder is a child but not a thruster itself
-        int thrusterCount = thrustersHolder.childCount;
-        if (afterburnersHolder != null)
+        int thrusterCount = m_thrustersHolder.childCount;
+        if (m_afterburnersHolder != null)
         {
             thrusterCount--;
         }
@@ -461,66 +452,125 @@ public class Ship : MonoBehaviour
             thrusterCount += rcsholder.childCount;
         }
 
-        //if(tag.Equals("Capital"))
-        //{
-        //    Debug.Log(thrusterCount);
-        //}
-
-        thrusters = new Thruster[thrusterCount];
+        m_thrusters = new Thruster[thrusterCount];
         int position = 0;
 
-        for (int a = 0; position < thrusters.Length && a < thrustersHolder.childCount; )
+        for (int a = 0; position < m_thrusters.Length && a < m_thrustersHolder.childCount; )
         {
-            GameObject child = thrustersHolder.GetChild(a).gameObject;
+            GameObject child = m_thrustersHolder.GetChild(a).gameObject;
             ++a;
             if (child != null && !child.name.Equals("Afterburners"))
             {
-                thrusters[position] = child.GetComponent<Thruster>();
-                thrusters[position].SetParentShip(shipTransform);
+                m_thrusters[position] = child.GetComponent<Thruster>();
+                m_thrusters[position].SetParentShip(m_shipTransform);
                 ++position;
             }
         }
 
         if (rcsholder != null)
         {
-            for (int a = 0; position < thrusters.Length && a < rcsholder.childCount; )
+            for (int a = 0; position < m_thrusters.Length && a < rcsholder.childCount; )
             {
                 GameObject child = rcsholder.GetChild(a).gameObject;
                 ++a;
                 if (child != null)
                 {
-                    thrusters[position] = child.GetComponent<Thruster>();
-                    thrusters[position].SetParentShip(shipTransform);
+                    m_thrusters[position] = child.GetComponent<Thruster>();
+                    m_thrusters[position].SetParentShip(m_shipTransform);
                     ++position;
                 }
             }
         }
 
-        if (afterburnersHolder != null)
+        if (m_afterburnersHolder != null)
         {
-            afterburners = new Thruster[afterburnersHolder.childCount];
+            m_afterburners = new Thruster[m_afterburnersHolder.childCount];
 
-            for (int i = 0; i < afterburners.Length; ++i)
+            for (int i = 0; i < m_afterburners.Length; ++i)
             {
-                afterburners[i] = afterburnersHolder.GetChild(i).GetComponent<Thruster>();
-                afterburners[i].SetParentShip(shipTransform);
+                m_afterburners[i] = m_afterburnersHolder.GetChild(i).GetComponent<Thruster>();
+                m_afterburners[i].SetParentShip(m_shipTransform);
+            }
+        }
+    }
+    
+    public void BeginShaderCoroutine(Vector3 position, int type, float magnitude)
+    {
+        //Debug.Log ("Bullet collision, beginning shader coroutine");
+        Vector3 pos = this.transform.InverseTransformPoint(position);
+        pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+        GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
+        GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
+        GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), type);
+        GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), magnitude);
+
+        StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
+
+        ++shaderCounter;
+        if (shaderCounter >= 4)
+            shaderCounter = 0;
+    }
+
+    public void BeginShaderCoroutine(Vector3 position)
+    {
+        //Debug.Log ("Bullet collision, beginning shader coroutine");
+        Vector3 pos = this.transform.InverseTransformPoint(position);
+        pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
+        GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
+        GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
+        GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), 0);
+        GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), 0.0f);
+
+        StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
+
+        ++shaderCounter;
+        if (shaderCounter >= 4)
+            shaderCounter = 0;
+    }
+    
+    IEnumerator ReduceShieldEffectOverTime(int i)
+    {
+        float t = 0;
+        coroutineIsRunning = true;
+        while (t <= 1.0f)
+        {
+            t += Time.deltaTime;
+            GameObject shield = GetShield();
+
+            shield.renderer.material.SetFloat("_ImpactTime" + (i + 1).ToString(), 1.0f - t);
+            yield return 0;
+        }
+
+        coroutineIsRunning = false;
+    }
+
+    public GameObject GetShield()
+    {
+        if (!m_shieldCache || m_shieldCache.tag != "Shield")
+        {
+            // Search child objects for the shield.
+            Transform result = m_shipTransform.Find(m_pathToShieldObject);
+            m_shieldCache = result ? result.gameObject : null;
+
+            if (!m_shieldCache || m_shieldCache.tag != "Shield")
+            {
+                // Fall back to old method and search
+                foreach (Transform child in m_shipTransform)
+                {
+                    if (child.tag == "Shield")
+                    {
+                        m_shieldCache = child.gameObject;
+                    }
+                }
+
+                if (!m_shieldCache)
+                {
+                    Debug.LogWarning("No shield found for mob " + this.name);
+                }
             }
         }
 
-
+        return m_shieldCache;
     }
 
-    /// <summary>
-    /// Returns thrusters. Do not use if the engine has changed as it will not return the updated thrusters. Use FindThrusters instead
-    /// </summary>
-    /// <returns></returns>
-    public Thruster[] GetThrusters()
-    {
-        return thrusters;
-    }
-
-    public Thruster[] GetAfterburners()
-    {
-        return afterburners;
-    }
 }

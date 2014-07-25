@@ -16,20 +16,20 @@ public class AttackFromBehind : IAttack
         Ship targetShip = target.GetComponent<Ship>();
         if (targetShip != null)
         {
-            shipDimension = targetShip.GetCalculatedSizeByPosition(targetShip.shipTransform.position);
+            shipDimension = targetShip.GetCalculatedSizeByPosition(targetShip.m_shipTransform.position);
         }
 
         Vector2 positionBehindTarget = (-target.transform.up * ((weaponRange / 2) + shipDimension)) + target.transform.position;
 
-        float sqrDirectionToBehindTarget = Vector2.SqrMagnitude(positionBehindTarget - (Vector2)ship.shipTransform.position);
-        float sqrDirectionToTarget = Vector2.SqrMagnitude(target.transform.position - ship.shipTransform.position);
+        float sqrDirectionToBehindTarget = Vector2.SqrMagnitude(positionBehindTarget - (Vector2)ship.m_shipTransform.position);
+        float sqrDirectionToTarget = Vector2.SqrMagnitude(target.transform.position - ship.m_shipTransform.position);
 
         if (sqrDirectionToBehindTarget > sqrDirectionToTarget)
         {
             Vector2 moveTowardsBack = GetPositionForAvoidance(ship, target, positionBehindTarget, weaponRange, 0);
 
             ship.RotateTowards(moveTowardsBack);
-            ship.rigidbody.AddForce(ship.shipTransform.up * ship.GetCurrentMomentum() * Time.deltaTime);
+            ship.rigidbody.AddForce(ship.m_shipTransform.up * ship.GetCurrentMomentum() * Time.deltaTime);
         }
         else
         {
@@ -38,7 +38,7 @@ public class AttackFromBehind : IAttack
 
             if (sqrDirectionToBehindTarget > 9) //9 is sqr(3)
             {
-                Vector2 directionToPositionBehind = (positionBehindTarget - (Vector2)ship.shipTransform.position).normalized;
+                Vector2 directionToPositionBehind = (positionBehindTarget - (Vector2)ship.m_shipTransform.position).normalized;
                 ship.rigidbody.AddForce(directionToPositionBehind * ship.GetCurrentMomentum() * Time.deltaTime);
             }
             else
@@ -62,13 +62,13 @@ public class AttackFromBehind : IAttack
         returnee[0] = new Vector2(radius, 0);
         returnee[1] = new Vector2(-radius, 0);
 
-        Vector2 dir = (targetLocation - (Vector2)ship.shipTransform.position).normalized;
+        Vector2 dir = (targetLocation - (Vector2)ship.m_shipTransform.position).normalized;
         Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
 
         returnee[0] = (rotation * returnee[0]) + objectToAvoid.transform.position;
         returnee[1] = (rotation * returnee[1]) + objectToAvoid.transform.position;
 
-        if (Vector2.SqrMagnitude((Vector2)ship.shipTransform.position - returnee[0]) < Vector2.SqrMagnitude((Vector2)ship.shipTransform.position - returnee[1]))
+        if (Vector2.SqrMagnitude((Vector2)ship.m_shipTransform.position - returnee[0]) < Vector2.SqrMagnitude((Vector2)ship.m_shipTransform.position - returnee[1]))
         {
             return returnee[0];
         }

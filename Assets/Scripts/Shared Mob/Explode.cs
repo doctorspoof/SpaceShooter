@@ -4,16 +4,12 @@ using System.Collections;
 [System.Serializable]
 public class Explosion
 {
-    [SerializeField]
     public GameObject[] explosionPrefabs;
 
-    [SerializeField]
     public Vector3 localPosition;
 
-    [SerializeField]
     public Vector3 localScale;
 
-    [SerializeField]
     public float timeAfterDeathThatExplosionStarts;
 }
 
@@ -30,26 +26,22 @@ public class Fragment
 
 public class Explode : MonoBehaviour
 {
-    [SerializeField]
-    GameObject primitiveQuad;
+    [SerializeField] GameObject m_primitiveQuad;
 
-    [SerializeField]
-    float removeShipAfterSeconds = 0;
+    [SerializeField] float m_removeShipAfterSeconds = 0;
 
-    [SerializeField]
-    Explosion[] explosions;
+    [SerializeField] Explosion[] m_explosions;
 
-    bool exploding = false;
+    [SerializeField] Fragment[] m_fragments;
 
-    [SerializeField]
-    Fragment[] fragments;
+    bool m_exploding = false;
 
     public void Fire()
     {
-        if (!exploding)
+        if (!m_exploding)
         {
-            exploding = true;
-            if (removeShipAfterSeconds > 0)
+            m_exploding = true;
+            if (m_removeShipAfterSeconds > 0)
             {
                 DisableAllNonEssentialComponents();
             }
@@ -57,48 +49,39 @@ public class Explode : MonoBehaviour
             StartExplosionSequence();
             CreateFragments();
 
-        	Invoke("DestroyEntity", removeShipAfterSeconds >= 0 ? removeShipAfterSeconds : GetTimeUntilLastExplosionStarts());
+            Invoke("DestroyEntity", m_removeShipAfterSeconds >= 0 ? m_removeShipAfterSeconds : GetTimeUntilLastExplosionStarts());
         }
     }
 
     private void DisableAllNonEssentialComponents()
     {
         Ship shipComponent = GetComponent<Ship>();
-        if(shipComponent)
+        if (shipComponent != null)
         {
             shipComponent.enabled = false;
         }
 
         MeshRenderer render = GetComponent<MeshRenderer>();
-        if(render)
+        if (render != null)
         {
             render.enabled = false;
         }
 
         Rigidbody rigidbody = GetComponent<Rigidbody>();
-        if(rigidbody)
+        if (rigidbody != null)
         {
             rigidbody.Sleep();
         }
 
-        for(int i = 0; i < transform.childCount; ++i)
+        for (int i = 0; i < transform.childCount; ++i)
         {
             transform.GetChild(i).gameObject.SetActive(false);
         }
-        //MonoBehaviour[] monoBehaviours = GetComponents<MonoBehaviour>();
-        //foreach(MonoBehaviour monoBehaviour in monoBehaviours)
-        //{
-        //    System.Type type = monoBehaviour.GetType();
-        //    if(typeof(MeshFilter) != type && typeof(MeshRenderer) != type)
-        //    {
-        //        monoBehaviour.enabled = false;
-        //    }
-        //}
     }
 
     private void StartExplosionSequence()
     {
-        foreach (Explosion explosion in explosions)
+        foreach (Explosion explosion in m_explosions)
         {
             Vector3 newPosition = transform.position;
             newPosition.z = 10.1f;
@@ -116,12 +99,12 @@ public class Explode : MonoBehaviour
 
     void CreateFragments()
     {
-        if (fragments.Length > 0)
+        if (m_fragments.Length > 0)
         {
-            GameObject fragmentOriginal = (GameObject)Instantiate(primitiveQuad);
+            GameObject fragmentOriginal = (GameObject)Instantiate(m_primitiveQuad);
             fragmentOriginal.transform.localScale = transform.localScale;
 
-            foreach (Fragment frag in fragments)
+            foreach (Fragment frag in m_fragments)
             {
                 Vector3 newPosition = transform.position;
                 newPosition.z = 10.1f;
@@ -140,9 +123,9 @@ public class Explode : MonoBehaviour
         }
     }
 
-    void MoveFragements()
+    void MoveFragments()
     {
-        foreach (Fragment frag in fragments)
+        foreach (Fragment frag in m_fragments)
         {
             Rigidbody rigidbody = frag.fragmentObject.GetComponent<Rigidbody>();
 
@@ -159,14 +142,14 @@ public class Explode : MonoBehaviour
 
     private void DestroyEntity()
     {
-        MoveFragements();
+        MoveFragments();
         Destroy(gameObject);
     }
 
     public float GetTimeUntilLastExplosionStarts()
     {
         float returnee = 0;
-        foreach (Explosion explosion in explosions)
+        foreach (Explosion explosion in m_explosions)
         {
             if (explosion.timeAfterDeathThatExplosionStarts > returnee)
             {

@@ -30,7 +30,7 @@ public class CapitalShipScript : Ship
 
     protected override void Awake()
     {
-        Init();
+        base.Awake();
     }
 
 	public void RequestItemFromServer (GameObject requested)
@@ -436,113 +436,6 @@ public class CapitalShipScript : Ship
         //coroutineIsRunning = new bool[5];
 		if(Network.isServer)
 			ResetAttachedTurretsFromWrappers();
-    }
-
-    GameObject m_shieldCache = null;
-
-    [SerializeField]
-    string m_pathToShieldObject = "Composite Collider/Shield";
-
-    GameObject GetShield()
-    {
-        if (!m_shieldCache || m_shieldCache.tag != "Shield")
-        {
-            // Search child objects for the shield.
-            Transform result = transform.Find(m_pathToShieldObject);
-            m_shieldCache = result ? result.gameObject : null;
-
-            if (!m_shieldCache || m_shieldCache.tag != "Shield")
-            {
-                // Fall back to old method and search
-                foreach (Transform child in this.transform)
-                {
-                    if (child.tag == "Shield")
-                    {
-                        m_shieldCache = child.gameObject;
-                    }
-                }
-
-                if (!m_shieldCache)
-                {
-                    Debug.LogWarning("No shield found for mob " + this.name);
-                }
-            }
-        }
-
-        return m_shieldCache;
-    }
-
-	//Do shield fizzle wizzle
-	int shaderCounter = 0;
-	public void BeginShaderCoroutine(Vector3 position, int type, float magnitude)
-	{
-		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
-		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
-		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
-		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), type);
-		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), magnitude);
-		
-		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
-		
-		++shaderCounter;
-		if(shaderCounter >= 4)
-			shaderCounter = 0;
-	}
-	public void BeginShaderCoroutine(Vector3 position)
-	{
-		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
-		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
-		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
-		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), 0);
-		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), 0.0f);
-		
-		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
-		
-		++shaderCounter;
-		if(shaderCounter >= 4)
-			shaderCounter = 0;
-	}
-
-    /*IEnumerator AwaitCoroutineStopped()
-    {
-        while(!coroutineForceStopped)
-        {
-            yield return 0;
-        }
-
-        coroutineForceStopped = false;
-        StartCoroutine(ReduceShieldEffectOverTime());
-    }*/
-
-    //bool[] coroutineIsRunning;
-    bool coroutineIsRunning = false;
-    bool coroutineForceStopped = false;
-    IEnumerator ReduceShieldEffectOverTime(int i)
-    {
-        float t = 0;
-        coroutineIsRunning = true;
-        //while(t <= 1.0f && coroutineIsRunning)
-        while (t <= 1.0f)
-        {
-            t += Time.deltaTime;
-            GameObject shield = GetShield();
-            //float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
-
-            //oldImp.w = 1.0f - t;
-
-            shield.renderer.material.SetFloat("_ImpactTime" + (i + 1).ToString(), 1.0f - t);
-            yield return 0;
-        }
-
-        /*if(!coroutineIsRunning)
-                coroutineForceStopped = true;*/
-
-
-        coroutineIsRunning = false;
     }
 
     // Update is called once per frame
