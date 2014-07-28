@@ -22,7 +22,7 @@ public sealed class Layers
 {
     #region Individual layers
     
-    public const int    player = 8,
+    private const int    player = 8,
                         ignore = 9,
                         enemy = 11,
                         objective = 12,

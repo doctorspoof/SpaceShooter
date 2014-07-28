@@ -394,11 +394,11 @@ public class BasicBulletScript : MonoBehaviour
     {
         // Update speed to correspond to the hit, ensure minimum speed is in effect using the bulletSpeedModifier property
         m_bulletSpeed *= m_pierceSpeedModifier;
-        m_bulletSpeedModifier = m_bulletSpeedModifier;
+        SetBulletSpeedModifier (m_bulletSpeedModifier);
 
         // Apply damage modifier whilst catching the float overflow
         float m_newDamage = m_bulletDamage * m_pierceDamageModifier + m_bulletDamageOverflow;
-        m_bulletDamage = (int)m_newDamage;
+        m_bulletDamage = (int) m_newDamage;
         m_bulletDamageOverflow = m_newDamage - m_bulletDamage;
 
         // Finally increment the pierce counter
