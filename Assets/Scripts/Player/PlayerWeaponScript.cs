@@ -59,12 +59,12 @@ public class PlayerWeaponScript : MonoBehaviour
 	{
 		if(Network.isServer)
 		{
-			if(m_currentWeapon.GetComponent<EquipmentWeapon>().m_isBeam)
+			if(m_currentWeapon.GetComponent<EquipmentWeapon>().GetIsBeam())
 				m_currentWeapon.GetComponent<EquipmentWeapon>().AlertBeamWeaponNotFiring();
 		}
 		else
 		{
-			if(m_currentWeapon.GetComponent<EquipmentWeapon>().m_isBeam)
+            if (m_currentWeapon.GetComponent<EquipmentWeapon>().GetIsBeam())
 			{
 				m_currentWeapon.GetComponent<EquipmentWeapon>().AlertBeamWeaponNotFiring();
 				networkView.RPC ("StopFireOverNetwork", RPCMode.Server);

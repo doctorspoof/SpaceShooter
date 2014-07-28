@@ -48,6 +48,16 @@ public class SpriteSheet : MonoBehaviour
         m_myRenderer.material.SetTextureScale("_MainTex", m_size);
     }
 
+    public int GetFrameOffset()
+    {
+        return m_frameOffset;
+    }
+
+    public void SetFrameOffset(int offset_)
+    {
+        m_frameOffset = offset_;
+    }
+
     #endregion getset
 
     void Start()

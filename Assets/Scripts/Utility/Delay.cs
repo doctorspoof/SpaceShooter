@@ -27,7 +27,7 @@ public class Delay : MonoBehaviour
         {
             m_renderer.enabled = true;
             m_spriteSheet.enabled = true;
-            m_spriteSheet.m_frameOffset = 0;
+            m_spriteSheet.SetFrameOffset(0);
 
             if (audio != null)
             {

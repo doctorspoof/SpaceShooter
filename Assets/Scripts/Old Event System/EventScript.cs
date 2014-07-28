@@ -133,7 +133,35 @@ public class EventScript : MonoBehaviour
 
     #region getset
 
+    public string GetEventText()
+    {
+        return m_eventText;
+    }
 
+    public EventOption[] GetPossibleOptions()
+    {
+        return m_possibleOptions;
+    }
+
+    public int[] GetOptionVotes()
+    {
+        return m_optionVotes;
+    }
+
+    public float GetTimer()
+    {
+        return m_timer;
+    }
+
+    public GameObject GetSelectedPlayer()
+    {
+        return m_selectedPlayer;
+    }
+
+    public void SetSelectedPlayer(GameObject player_)
+    {
+        m_selectedPlayer = player_;
+    }
 
     #endregion getset
 
@@ -191,7 +219,7 @@ public class EventScript : MonoBehaviour
 			m_optionVotes[optionNum]++;
 
 			//Check for >50% here
-			float numPlayers = (float)GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().m_connectedPlayers.Count;
+			float numPlayers = (float)GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetConnectedPlayers().Count;
 			float rawHalf = numPlayers / 2.0f;
 			
 			for(int i = 0; i < m_optionVotes.Length; i++)
@@ -228,7 +256,7 @@ public class EventScript : MonoBehaviour
 		m_optionVotes[optionNum]++;
 
 		//Check for >50% here
-		int numPlayers = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().m_connectedPlayers.Count;
+		int numPlayers = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetConnectedPlayers().Count;
 		float rawHalf = (float)numPlayers / 2.0f;
 
 		for(int i = 0; i < m_optionVotes.Length; i++)

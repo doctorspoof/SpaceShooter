@@ -63,7 +63,7 @@ public class EnemyWeaponScript : MonoBehaviour
             {
                 //Fire!
                 GameObject bullet = (GameObject)Network.Instantiate(m_bulletRef, this.transform.position + new Vector3(0, 0, 0.0f), this.transform.rotation, 0);
-                bullet.GetComponent<BasicBulletScript>().firer = this.gameObject;
+                bullet.GetComponent<BasicBulletScript>().SetFirer(this.gameObject);
 
             }
             else
@@ -96,13 +96,14 @@ public class EnemyWeaponScript : MonoBehaviour
         FireAllPorts();
     }
 
+    // TODO: cache capital ship
     void FireAllPorts()
     {
         for (int i = 0; i < m_firePoints.Length; i++)
         {
             GameObject bullet = (GameObject)Network.Instantiate(m_bulletRef, m_firePoints[i].transform.position, m_firePoints[i].transform.rotation, 0);
-            bullet.GetComponent<BasicBulletScript>().firer = this.gameObject;
-            bullet.GetComponent<BasicBulletScript>().m_homingTarget = GameObject.FindGameObjectWithTag("Capital");
+            bullet.GetComponent<BasicBulletScript>().SetFirer(this.gameObject);
+            bullet.GetComponent<BasicBulletScript>().SetHomingTarget(GameObject.FindGameObjectWithTag("Capital"));
         }
     }
     IEnumerator FireAlternatingPorts()
@@ -121,22 +122,22 @@ public class EnemyWeaponScript : MonoBehaviour
                 if (counter == 0 || counter == 2)
                 {
                     GameObject bullet = (GameObject)Network.Instantiate(m_bulletRef, m_firePoints[0].transform.position, m_firePoints[0].transform.rotation, 0);
-                    bullet.GetComponent<BasicBulletScript>().firer = this.gameObject;
-                    bullet.GetComponent<BasicBulletScript>().m_homingTarget = GameObject.FindGameObjectWithTag("Capital");
+                    bullet.GetComponent<BasicBulletScript>().SetFirer(this.gameObject);
+                    bullet.GetComponent<BasicBulletScript>().SetHomingTarget(GameObject.FindGameObjectWithTag("Capital"));
 
                     GameObject bullet2 = (GameObject)Network.Instantiate(m_bulletRef, m_firePoints[2].transform.position, m_firePoints[2].transform.rotation, 0);
-                    bullet2.GetComponent<BasicBulletScript>().firer = this.gameObject;
-                    bullet2.GetComponent<BasicBulletScript>().m_homingTarget = GameObject.FindGameObjectWithTag("Capital");
+                    bullet2.GetComponent<BasicBulletScript>().SetFirer(this.gameObject);
+                    bullet2.GetComponent<BasicBulletScript>().SetHomingTarget(GameObject.FindGameObjectWithTag("Capital"));
                 }
                 else if (counter == 1 || counter == 3)
                 {
                     GameObject bullet = (GameObject)Network.Instantiate(m_bulletRef, m_firePoints[1].transform.position, m_firePoints[1].transform.rotation, 0);
-                    bullet.GetComponent<BasicBulletScript>().firer = this.gameObject;
-                    bullet.GetComponent<BasicBulletScript>().m_homingTarget = GameObject.FindGameObjectWithTag("Capital");
+                    bullet.GetComponent<BasicBulletScript>().SetFirer(this.gameObject);
+                    bullet.GetComponent<BasicBulletScript>().SetHomingTarget(GameObject.FindGameObjectWithTag("Capital"));
 
                     GameObject bullet2 = (GameObject)Network.Instantiate(m_bulletRef, m_firePoints[3].transform.position, m_firePoints[3].transform.rotation, 0);
-                    bullet2.GetComponent<BasicBulletScript>().firer = this.gameObject;
-                    bullet2.GetComponent<BasicBulletScript>().m_homingTarget = GameObject.FindGameObjectWithTag("Capital");
+                    bullet2.GetComponent<BasicBulletScript>().SetFirer(this.gameObject);
+                    bullet2.GetComponent<BasicBulletScript>().SetHomingTarget(GameObject.FindGameObjectWithTag("Capital"));
                 }
 
                 miniT = 0.0f;

@@ -91,6 +91,8 @@ public sealed class Layers
             case MaskType.AoE:
                 return GetCapitalMask (MaskType.Standard);
         }
+
+        return -1;
     }
     
     
@@ -109,6 +111,8 @@ public sealed class Layers
             case MaskType.AoE:
                 return GetPlayerBulletMask (MaskType.Standard) | (1 << player);
         }
+
+        return -1;
     }
     
     
@@ -127,6 +131,8 @@ public sealed class Layers
             case MaskType.AoE:
                 return GetEnemyBulletMask (MaskType.Standard) | (1 << enemy) | (1 << enemyDestructibleBullet) | (1 << enemyCollide) | (1 << enemySupportShield);
         }
+
+        return -1;
     }
     
     
@@ -145,6 +151,8 @@ public sealed class Layers
             case MaskType.AoE:
                 return GetCapitalBulletMask (MaskType.Standard);
         }
+
+        return -1;
     }
     
     #endregion

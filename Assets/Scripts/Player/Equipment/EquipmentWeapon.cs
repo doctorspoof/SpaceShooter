@@ -35,11 +35,11 @@ public class EquipmentWeapon : MonoBehaviour
 
     int m_currentBarrelNum = 0;
 
-    GameObject[] currentBeams = null;
+    GameObject[] m_currentBeams = null;
 
-    GameObject currTarget = null;
+    GameObject m_currTarget = null;
 
-    bool isBeaming = false;
+    bool m_isBeaming = false;
 
     bool m_coroutineHasFinished = true;
 
@@ -72,16 +72,21 @@ public class EquipmentWeapon : MonoBehaviour
         return m_bulletRef.GetComponent<BasicBulletScript>().CalculateMaxDistance();
     }
 
+    public bool GetIsBeam()
+    {
+        return m_isBeam;
+    }
+
     #endregion getset
 
     void Start()
     {
-        currentBeams = new GameObject[m_shotsPerFire];
+        m_currentBeams = new GameObject[m_shotsPerFire];
     }
 
     void Update()
     {
-        if (isBeaming)
+        if (m_isBeaming)
         {
             m_currentRecoil -= Time.deltaTime;
             if (m_currentRecoil < 0.0f)
@@ -91,7 +96,7 @@ public class EquipmentWeapon : MonoBehaviour
             }
         }
 
-        if (!isBeaming)
+        if (!m_isBeaming)
         {
             if (m_currentRechargeDelay < m_beamRechargeDelay)
             {
@@ -108,7 +113,7 @@ public class EquipmentWeapon : MonoBehaviour
     {
         if (target != null)
         {
-            currTarget = target;
+            m_currTarget = target;
             networkView.RPC("PropagateTarget", RPCMode.Others, target.networkView.viewID, false);
         }
         else
@@ -119,7 +124,7 @@ public class EquipmentWeapon : MonoBehaviour
 
     public void UnsetTarget()
     {
-        currTarget = null;
+        m_currTarget = null;
         networkView.RPC("PropagateTarget", RPCMode.Others, networkView.viewID, true);
     }
 
@@ -145,7 +150,7 @@ public class EquipmentWeapon : MonoBehaviour
     {
         if (m_isBeam)
         {
-            isBeaming = true;
+            m_isBeaming = true;
         }
         else
             m_currentRecoil = 0;
@@ -158,12 +163,12 @@ public class EquipmentWeapon : MonoBehaviour
 
     public void AlertBeamWeaponNotFiring()
     {
-        isBeaming = false;
+        m_isBeaming = false;
         //Network.Destroy(currentBeam);
-        for (int i = 0; i < currentBeams.Length; i++)
-            Network.Destroy(currentBeams[i]);
+        for (int i = 0; i < m_currentBeams.Length; i++)
+            Network.Destroy(m_currentBeams[i]);
 
-        currentBeams = new GameObject[m_shotsPerFire];
+        m_currentBeams = new GameObject[m_shotsPerFire];
         m_currentRechargeDelay = 0.0f;
 
         networkView.RPC("StopPlayingSoundOverNetwork", RPCMode.All);
@@ -221,7 +226,7 @@ public class EquipmentWeapon : MonoBehaviour
 
 
 
-            if (!isBeaming && currentBeams[i] == null)
+            if (!m_isBeaming && m_currentBeams[i] == null)
             {
                 Quaternion bulletRot = this.transform.rotation * Quaternion.Euler(0, 0, -randAngle);
                 //Quaternion bulletRot = this.transform.rotation;
@@ -234,10 +239,10 @@ public class EquipmentWeapon : MonoBehaviour
 
                 GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
                 bullet.GetComponent<BeamBulletScript>().ParentBeamToFirer(gsc.GetNameFromNetworkPlayer(transform.parent.GetComponent<PlayerControlScript>().GetOwner()));
-                currentBeams[i] = bullet;
+                m_currentBeams[i] = bullet;
 
                 if (i >= (m_shotsPerFire - 1))
-                    isBeaming = true;
+                    m_isBeaming = true;
 
                 networkView.RPC("PlaySoundOverNetwork", RPCMode.All);
             }
@@ -310,9 +315,9 @@ public class EquipmentWeapon : MonoBehaviour
         }
 
         GameObject bullet = (GameObject)Instantiate(m_bulletRef, bulletPos + m_bulletOffset, bulletRot);
-        if (currTarget != null)
+        if (m_currTarget != null)
         {
-            bullet.GetComponent<BasicBulletScript>().m_homingTarget = currTarget;
+            bullet.GetComponent<BasicBulletScript>().SetHomingTarget(m_currTarget);
         }
 
         bullet.networkView.viewID = id;
@@ -323,12 +328,12 @@ public class EquipmentWeapon : MonoBehaviour
         }
 
         BasicBulletScript bulletScript = bullet.GetComponent<BasicBulletScript>();
-        bulletScript.firer = transform.parent.gameObject;
+        bulletScript.SetFirer(transform.parent.gameObject);
 
         // If the attached GameObject has a rigidbody use its magnitude.
         if (transform.parent.rigidbody)
         {
-            bulletScript.bulletSpeedModifier = Vector3.Dot(transform.parent.transform.up, transform.parent.rigidbody.velocity);
+            bulletScript.SetBulletSpeedModifier(Vector3.Dot(transform.parent.transform.up, transform.parent.rigidbody.velocity));
         }
     }
 
@@ -384,12 +389,12 @@ public class EquipmentWeapon : MonoBehaviour
         {
             // Search for the target based on NetworkViewID's
             NetworkView found = NetworkView.Find(id);
-            currTarget = found ? found.gameObject : null;
+            m_currTarget = found ? found.gameObject : null;
         }
 
         else
         {
-            currTarget = null;
+            m_currTarget = null;
         }
     }
 

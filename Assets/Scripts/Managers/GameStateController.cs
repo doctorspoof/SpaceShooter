@@ -112,6 +112,16 @@ public class GameStateController : MonoBehaviour
 
     #region getset
 
+    public List<Player> GetConnectedPlayers()
+    {
+        return m_connectedPlayers;
+    }
+
+    public List<DeadPlayer> GetDeadPlayers()
+    {
+        return m_deadPlayers;
+    }
+
     public Player GetPlayerObjectFromNP(NetworkPlayer np)
     {
         for (int i = 0; i < m_connectedPlayers.Count; i++)
@@ -200,6 +210,16 @@ public class GameStateController : MonoBehaviour
     public GameObject GetCapitalShip()
     {
         return m_ingameCapitalShip;
+    }
+
+    public GameState GetCurrentGameState()
+    {
+        return m_currentGameState;
+    }
+
+    public void SetCurrentGameState(GameState state_)
+    {
+        m_currentGameState = state_;
     }
 
     #endregion getset
@@ -431,7 +451,7 @@ public class GameStateController : MonoBehaviour
         GameObject ship = (GameObject)Network.Instantiate(m_playerShip, pos, m_ingameCapitalShip.transform.rotation, 0);
         ship.GetComponent<PlayerControlScript>().InitPlayerOnCShip(m_ingameCapitalShip);
         m_localPlayer = ship;
-        ship.GetComponent<PlayerControlScript>().SetInputMethod(m_GUIManager.GetComponent<GUIManager>().useController);
+        ship.GetComponent<PlayerControlScript>().SetInputMethod(m_GUIManager.GetComponent<GUIManager>().GetUseController());
         //ship.AddComponent<LocalPlayerInterp>();
 
         //ship.GetComponent<PlayerControlScript>().SetOwner(player);
@@ -616,6 +636,7 @@ public class GameStateController : MonoBehaviour
         m_connectedPlayers.Add(new Player(info.sender, name));
     }
     
+    // TODO: this shit needs sorting out as it looks like its fucked
     public void PlayerRequestsRoundStart()
     {
         m_waveTimer = 0;
@@ -628,7 +649,7 @@ public class GameStateController : MonoBehaviour
         networkView.RPC("TellAllClientsRoundHasStarted", RPCMode.Others, true);
 
         m_shouldCheckForFinished = false;
-        m_GUIManager.GetComponent<GUIManager>().m_ArenaClearOfEnemies = false;
+        //m_GUIManager.GetComponent<GUIManager>().m_ArenaClearOfEnemies = false;
         m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldStart(true);
     }
 
@@ -639,7 +660,7 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void TellAllClientsRoundHasStarted(bool started)
     {
-        m_GUIManager.GetComponent<GUIManager>().m_PlayerRequestsRound = started;
+        //m_GUIManager.GetComponent<GUIManager>().m_PlayerRequestsRound = started;
         if (started)
         {
             m_GUIManager.GetComponent<GUIManager>().StartRound();
@@ -849,7 +870,7 @@ public class GameStateController : MonoBehaviour
             if (!m_lossConfirmList[i].confirmed)
             {
                 networkView.RPC("CapitalShipHasBeenDestroyed", m_lossConfirmList[i].player);
-                float timer = m_GUIManager.GetComponent<GUIManager>().m_gameTimer;
+                float timer = m_GUIManager.GetComponent<GUIManager>().GetGameTimer();
                 networkView.RPC("SendTimerToClients", m_lossConfirmList[i].player, timer);
             }
         }
@@ -879,7 +900,7 @@ public class GameStateController : MonoBehaviour
             }
 
             networkView.RPC("CapitalShipHasBeenDestroyed", RPCMode.All);
-            float timer = m_GUIManager.GetComponent<GUIManager>().m_gameTimer;
+            float timer = m_GUIManager.GetComponent<GUIManager>().GetGameTimer();
             networkView.RPC("SendTimerToClients", RPCMode.Others, timer);
             BeginBuildupDestructionSequence();
 
@@ -889,7 +910,7 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void SendTimerToClients(float time)
     {
-        m_GUIManager.GetComponent<GUIManager>().m_gameTimer = time;
+        m_GUIManager.GetComponent<GUIManager>().SetGameTimer(time);
     }
 
     [RPC] void CapitalShipHasBeenDestroyed()
@@ -1038,7 +1059,7 @@ public class GameStateController : MonoBehaviour
     public void NotifyLocalPlayerHasDockedAtCShip()
     {
         m_GUIManager.GetComponent<GUIManager>().CloseMap();
-        m_GUIManager.GetComponent<GUIManager>().m_PlayerHasDockedAtCapital = true;
+        m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtCapital(true);
         Screen.showCursor = true;
         Camera.main.GetComponent<CameraScript>().TellCameraPlayerIsDocked();
     }
@@ -1046,9 +1067,9 @@ public class GameStateController : MonoBehaviour
     public void NotifyLocalPlayerHasDockedAtShop(GameObject shop)
     {
         m_GUIManager.GetComponent<GUIManager>().CloseMap();
-        m_GUIManager.GetComponent<GUIManager>().m_PlayerHasDockedAtShop = true;
+        m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtShop(true);
         Screen.showCursor = true;
-        m_GUIManager.GetComponent<GUIManager>().m_shopDockedAt = shop;
+        m_GUIManager.GetComponent<GUIManager>().SetShopDockedAt(shop);
     }
 
     public void RequestSpawnerPause()

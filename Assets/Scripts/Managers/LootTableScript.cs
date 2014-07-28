@@ -29,7 +29,7 @@ public class LootTableScript : MonoBehaviour
             {
                 if(m_itemList[i].itemObject != null)
                 {
-                    switch(m_itemList[i].itemObject.GetComponent<ItemScript>().m_ItemTierID)
+                    switch(m_itemList[i].itemObject.GetComponent<ItemScript>().GetItemTierID())
                     {
                         case 1:
                         {
@@ -113,7 +113,7 @@ public class LootTableScript : MonoBehaviour
             //Get an item from the appropriate list
             int i = Random.Range(0, m_itemTiers[currentTier - 1].Count);
             ItemScript iSc = m_itemTiers[currentTier - 1][i].itemObject.GetComponent<ItemScript>();
-            if(stockFlags[(int)iSc.m_typeOfItem])
+            if(stockFlags[(int)iSc.GetTypeOfItem()])
             {
                 outputL.Add(iSc.m_equipmentID);
             }

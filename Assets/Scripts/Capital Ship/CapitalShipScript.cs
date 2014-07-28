@@ -735,7 +735,7 @@ public class CapitalShipScript : Ship
     {
         foreach (Transform child in transform)
         {
-            if (child.tag == "CTurretHolder" && child.GetComponent<CShipTurretHolder>().m_cShipTurretID == id)
+            if (child.tag == "CTurretHolder" && child.GetComponent<CShipTurretHolder>().GetShipTurretID() == id)
             {
                 return child.gameObject;
             }

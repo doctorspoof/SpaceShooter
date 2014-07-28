@@ -44,9 +44,9 @@ public sealed class BeamBulletScript : MonoBehaviour
 	/// Getters & setters ///
     /////////////////////////
 
+    #region getset
 
-
-	public float GetDamage()
+    public float GetDamage()
 	{
 		return m_beamDamage;
 	}
@@ -100,9 +100,9 @@ public sealed class BeamBulletScript : MonoBehaviour
 
 		transform.localPosition = offset;
 	}
-	
-	
-	
+
+    #endregion getset
+
     //////////////////////////
 	/// Behavior functions ///
     //////////////////////////

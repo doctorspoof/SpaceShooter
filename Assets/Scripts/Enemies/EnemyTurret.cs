@@ -111,7 +111,7 @@ public class EnemyTurret : MonoBehaviour
             Vector3 pos = this.transform.position;
             pos.z += 0.1f;
             GameObject bullet = (GameObject)Network.Instantiate(m_bulletRef, pos, bulletRot, 0);
-            bullet.GetComponent<BasicBulletScript>().firer = this.transform.parent.gameObject;
+            bullet.GetComponent<BasicBulletScript>().SetFirer(this.transform.parent.gameObject);
         }
 
         m_currentRecoilTime = 0;
