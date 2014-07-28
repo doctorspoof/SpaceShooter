@@ -5,7 +5,7 @@
 /// </summary>
 public sealed class ItemTicket
 {
-	/// Variables
+    #region Member variables
 
 	/// <summary>
 	/// Each ticket should contain a unique ID which is used to identify whether the ticket is valid or not.
@@ -31,9 +31,11 @@ public sealed class ItemTicket
 	/// </summary>
 	public static readonly ItemTicket reset = new ItemTicket().Reset();
 
+    #endregion
 
 
-	/// Functions
+    #region Constructors
+
 	/// <summary>
 	/// The default constructor which will initiate the ItemTicket to default invalid values.
 	/// </summary>
@@ -44,25 +46,68 @@ public sealed class ItemTicket
 		itemIndex = _itemIndex;
 	}
 
+    #endregion
+	
 
-	// Custom equivalence function
+    #region Operators
+
+    /// <summary>
+    /// Allows for statements such as if (ticket) instead of if (ticket != null).
+    /// </summary>
+    public static implicit operator bool (ItemTicket ticket)
+    {
+        return ticket != null;
+    }
+
+    #endregion
+
+
+    #region Object overrides
+
+    /// <summary>
+    /// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="ItemTicket"/>.
+    /// </summary>
+    /// <param name="o">The <see cref="System.Object"/> to compare with the current <see cref="ItemTicket"/>.</param>
+    /// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current <see cref="ItemTicket"/>;
+    /// otherwise, <c>false</c>.</returns>
 	public override bool Equals (object o)
 	{
-		ItemTicket ticket = (ItemTicket)o;
-		return ((this.uniqueID == ticket.uniqueID) && (this.itemID == ticket.itemID) && (this.itemIndex == ticket.itemIndex));
+        // Check that the object is indeed an ItemTicket
+		if (!(o is ItemTicket))
+        {
+            return false;
+        }
+
+        // Check the ticket
+        ItemTicket ticket = (ItemTicket) o;
+		return ((uniqueID == ticket.uniqueID) && (itemID == ticket.itemID) && (itemIndex == ticket.itemIndex));
 	}
-	public override string ToString ()
+
+
+    /// <summary>
+    /// Serves as a hash function for a <see cref="ItemTicket"/> object.
+    /// </summary>
+    /// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
+    public override int GetHashCode()
+    {
+        // Use Microsoft's suggestion of XOR for GetHashCode()
+        return uniqueID ^ itemID ^ itemIndex;
+    }
+
+
+    /// <summary>
+    /// Returns a <see cref="System.String"/> that represents the current <see cref="ItemTicket"/>.
+    /// </summary>
+    /// <returns>A <see cref="System.String"/> that represents the current <see cref="ItemTicket"/>.</returns>
+	public override string ToString()
 	{
-		return string.Format("Ticket: {0}, with itemID: {1} and indexID: {2}", uniqueID, itemID, itemIndex);
+		return string.Format ("Ticket: {0}, with itemID: {1} and indexID: {2}", uniqueID, itemID, itemIndex);
 	}
 
+    #endregion
 
-	// Allows for statements such as if (ticket) instead of if (ticket != null).
-	public static implicit operator bool (ItemTicket ticket)
-	{
-		return ticket != null;
-	}
 
+    #region Helper functions
 
 	/// <summary>
 	/// A simple function which will check to see if any value is equal to -1, making it invalid.
@@ -84,4 +129,6 @@ public sealed class ItemTicket
 
 		return this;
 	}
+
+    #endregion
 }
