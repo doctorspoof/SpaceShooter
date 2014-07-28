@@ -3,30 +3,24 @@ using System.Collections;
 
 public class CapitalShipGlowScript : MonoBehaviour 
 {
-	[SerializeField]
-	int m_turretGlowID = 1;
+    /* Serializable members */
+	[SerializeField] int m_turretGlowID = 1;
 
-	// Use this for initialization
-	void Start () 
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
-	}
+    /* Getters/Setters */
+    public int GetGlowID()
+    {
+        return m_turretGlowID;
+    }
+    public void SetGlowIsActive(bool activeState)
+    {
+        networkView.RPC("PropagateActiveGlow", RPCMode.All, activeState);
+    }
 
-	public int GetGlowID()
-	{
-		return m_turretGlowID;
-	}
-
-	public void SetGlowIsActive(bool activeState)
-	{
-		networkView.RPC("PropagateActiveGlow", RPCMode.All, activeState);
-	}
+	/* Unity functions *
+    
+	//None
+    
+    /*Custom functions */
 	[RPC]
 	void PropagateActiveGlow(bool active)
 	{

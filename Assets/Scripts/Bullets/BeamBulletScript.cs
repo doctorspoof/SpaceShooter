@@ -51,6 +51,12 @@ public sealed class BeamBulletScript : MonoBehaviour
 		return m_beamDamage;
 	}
 
+    
+    public float GetBeamLength()
+    {
+        return m_beamLength;
+    }
+    
 
     public DamageType GetDamageType()
     {
