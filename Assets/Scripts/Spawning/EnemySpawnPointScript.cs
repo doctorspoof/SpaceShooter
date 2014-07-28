@@ -34,61 +34,85 @@ public class GroupedWaveInfo
 [RequireComponent(typeof(MeshRenderer))]
 public class EnemySpawnPointScript : MonoBehaviour
 {
+    
+    [SerializeField] float m_activeTime;
+    
+    [SerializeField] bool m_spawnPointActive = false;
+
+    [SerializeField] GameObject m_spawnEffect, m_finalEffect;
+    [SerializeField] float m_maxTimeBetweenFirstAndLastSpawn;
+
+    [SerializeField] GameObject m_wormholePrefab;
+    [SerializeField] float m_timeBeforeScalingWormhole;
+    [SerializeField] float m_timeTakenToScaleWormhole;
+    
+    [SerializeField] Vector3 m_wormholeOriginalScale;
+    
+
+
     List<GroupedWaveInfo> m_wavesToBeSpawned;
 
-    [SerializeField]
-    float activeTime;
     float m_timeSinceLastRelease;
 
-    MeshRenderer meshRenderer;
-    [SerializeField]
-    bool spawnPointActive = false;
+    MeshRenderer m_meshRenderer;
 
-    [SerializeField]
-    GameObject spawnEffect, finalEffect;
-    [SerializeField]
-    float maxTimeBetweenFirstAndLastSpawn;
+    List<SpawnLocation> m_enemiesWaitingToSpawn, m_enemiesBeingSpawned;
 
-    List<SpawnLocation> enemiesWaitingToSpawn, enemiesBeingSpawned;
+    float m_currentScalingTime = 0, currentT;
 
-    [SerializeField]
-    GameObject wormholePrefab;
-    [SerializeField]
-    float timeBeforeScalingWormhole, timeTakenToScaleWormhole;
-    float currentScalingTime = 0, currentT;
-    Transform wormhole;
-    [SerializeField]
-    Vector3 wormholeOriginalScale;
-    bool wormholeActive = false;
+    bool m_shouldPause = false;
+
+    float m_modifier = 1.0f;
 
 
-    public bool m_shouldPause = false;
 
-    float modifier = 1.0f;
+    Transform m_wormhole;
 
-    // Use this for initialization
-    void Start()
+    bool m_wormholeActive = false;
+
+
+
+    #region getset
+
+    public bool GetShouldPause()
     {
-        wormhole = ((GameObject)Instantiate(wormholePrefab, this.transform.position, this.transform.rotation)).transform;
-        wormhole.localScale = Vector3.zero;
-
-        enemiesWaitingToSpawn = new List<SpawnLocation>();
-        enemiesBeingSpawned = new List<SpawnLocation>();
-        m_wavesToBeSpawned = new List<GroupedWaveInfo>();
-        meshRenderer = GetComponent<MeshRenderer>();
+        return m_shouldPause;
     }
 
-    // Update is called once per frame
+    public void SetShouldPause(bool flag_)
+    {
+        m_shouldPause = flag_;
+    }
+
+    public void SetModifier(float modifier_)
+    {
+        m_modifier = modifier_;
+    }
+
+
+    #endregion getset
+
+    void Start()
+    {
+        m_wormhole = ((GameObject)Instantiate(m_wormholePrefab, this.transform.position, this.transform.rotation)).transform;
+        m_wormhole.localScale = Vector3.zero;
+
+        m_enemiesWaitingToSpawn = new List<SpawnLocation>();
+        m_enemiesBeingSpawned = new List<SpawnLocation>();
+        m_wavesToBeSpawned = new List<GroupedWaveInfo>();
+        m_meshRenderer = GetComponent<MeshRenderer>();
+    }
+
     void Update()
     {
-        if (spawnPointActive)
+        if (m_spawnPointActive)
         {
             rigidbody.AddTorque(new Vector3(0, 0, 200 * Time.deltaTime));
         }
 
         if (Network.isServer)
         {
-            if (spawnPointActive)
+            if (m_spawnPointActive)
             {
                 CheckSpawning();
             }
@@ -98,34 +122,36 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     }
 
+    // TODO: change wormhole scaling to client side with triggers only being sent across network for opening wormholes
+
     void CheckScalingWormhole()
     {
-        if (spawnPointActive && !wormholeActive)
+        if (m_spawnPointActive && !m_wormholeActive)
         {
-            currentScalingTime += Time.deltaTime;
-            if (currentScalingTime >= timeBeforeScalingWormhole)
+            m_currentScalingTime += Time.deltaTime;
+            if (m_currentScalingTime >= m_timeBeforeScalingWormhole)
             {
-                networkView.RPC("SetWormholeSize", RPCMode.All, (currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole);
+                networkView.RPC("SetWormholeSize", RPCMode.All, (m_currentScalingTime - m_timeBeforeScalingWormhole) / m_timeTakenToScaleWormhole);
 
-                if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
+                if (m_currentScalingTime >= m_timeTakenToScaleWormhole + m_timeBeforeScalingWormhole)
                 {
-                    currentScalingTime = 0;
-                    wormholeActive = true;
+                    m_currentScalingTime = 0;
+                    m_wormholeActive = true;
                 }
             }
         }
-        else if (!spawnPointActive && wormholeActive)
+        else if (!m_spawnPointActive && m_wormholeActive)
         {
 
-            currentScalingTime += Time.deltaTime;
-            if (currentScalingTime >= timeBeforeScalingWormhole)
+            m_currentScalingTime += Time.deltaTime;
+            if (m_currentScalingTime >= m_timeBeforeScalingWormhole)
             {
-                networkView.RPC("SetWormholeSize", RPCMode.All, 1 - ((currentScalingTime - timeBeforeScalingWormhole) / timeTakenToScaleWormhole));
+                networkView.RPC("SetWormholeSize", RPCMode.All, 1 - ((m_currentScalingTime - m_timeBeforeScalingWormhole) / m_timeTakenToScaleWormhole));
 
-                if (currentScalingTime >= timeTakenToScaleWormhole + timeBeforeScalingWormhole)
+                if (m_currentScalingTime >= m_timeTakenToScaleWormhole + m_timeBeforeScalingWormhole)
                 {
-                    currentScalingTime = 0;
-                    wormholeActive = false;
+                    m_currentScalingTime = 0;
+                    m_wormholeActive = false;
                 }
             }
         }
@@ -137,30 +163,30 @@ public class EnemySpawnPointScript : MonoBehaviour
         EnemyGroup group = null;
 
         float delta = Time.deltaTime;
-        for (int i = enemiesWaitingToSpawn.Count - 1; i >= 0; --i)
+        for (int i = m_enemiesWaitingToSpawn.Count - 1; i >= 0; --i)
         {
-            SpawnLocation spawn = enemiesWaitingToSpawn[i];
+            SpawnLocation spawn = m_enemiesWaitingToSpawn[i];
             spawn.currentTime += delta;
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
-                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, activeTime, enemiesWaitingToSpawn[i].location, enemiesWaitingToSpawn[i].scale);
+                networkView.RPC("PropagateNewSpawnEffect", RPCMode.All, m_activeTime, m_enemiesWaitingToSpawn[i].location, m_enemiesWaitingToSpawn[i].scale);
 
                 // move the SpawnLocation from waitingToSpawn to beingSpawned
-                enemiesBeingSpawned.Add(spawn);
-                enemiesWaitingToSpawn.RemoveAt(i);
+                m_enemiesBeingSpawned.Add(spawn);
+                m_enemiesWaitingToSpawn.RemoveAt(i);
 
                 // reset the values so that they are correct
                 spawn.currentTime = 0;
-                spawn.timeUntilStart = activeTime;
+                spawn.timeUntilStart = m_activeTime;
             }
         }
 
 
 
-        for (int i = enemiesBeingSpawned.Count - 1; i >= 0; --i)
+        for (int i = m_enemiesBeingSpawned.Count - 1; i >= 0; --i)
         {
-            SpawnLocation spawn = enemiesBeingSpawned[i];
+            SpawnLocation spawn = m_enemiesBeingSpawned[i];
             spawn.currentTime += delta;
 
             if (spawn.currentTime >= spawn.timeUntilStart)
@@ -172,15 +198,15 @@ public class EnemySpawnPointScript : MonoBehaviour
                 group = spawn.parentGroup;
 
                 HealthScript health = enemy.GetComponent<HealthScript>();
-                health.SetModifier(modifier);
+                health.SetModifier(m_modifier);
 
-                enemiesBeingSpawned.RemoveAt(i);
+                m_enemiesBeingSpawned.RemoveAt(i);
 
             }
 
         }
 
-        if (enemiesWaitingToSpawn.Count == 0 && enemiesBeingSpawned.Count == 0)
+        if (m_enemiesWaitingToSpawn.Count == 0 && m_enemiesBeingSpawned.Count == 0)
         {
             group.CancelAllOrders();
             Activate(false);
@@ -268,20 +294,22 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     void Activate(bool flag_)
     {
-        spawnPointActive = flag_;
+        m_spawnPointActive = flag_;
 
         if(Network.isServer)
         {
-            networkView.RPC("SetActive", RPCMode.Others, spawnPointActive ? 1 : 0);
+            networkView.RPC("SetActive", RPCMode.Others, m_spawnPointActive ? 1 : 0);
         }
     }
 
-
-    public void GenerateSpawnLocations()
+    /// <summary>
+    /// Takes all current wavesToBeSpawned and starts the spawning sequence
+    /// </summary>
+    void GenerateSpawnLocations()
     {
         if (Network.isServer)
         {
-            enemiesWaitingToSpawn.Clear();
+            m_enemiesWaitingToSpawn.Clear();
 
             foreach (GroupedWaveInfo info in m_wavesToBeSpawned)
             {
@@ -292,7 +320,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
                     Ship shipComponent = info.wave[i].GetComponent<Ship>();
 
-                    NewSpawnLocation(Random.Range(0, maxTimeBetweenFirstAndLastSpawn) + timeBeforeScalingWormhole + timeTakenToScaleWormhole,
+                    NewSpawnLocation(Random.Range(0, m_maxTimeBetweenFirstAndLastSpawn) + m_timeBeforeScalingWormhole + m_timeTakenToScaleWormhole,
                                     this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0),
                                     shipComponent.GetMaxSize(),
                                     info.wave[i],
@@ -304,30 +332,22 @@ public class EnemySpawnPointScript : MonoBehaviour
         }
     }
 
-    //[RPC]
-    //public void PropagateDestroySpawnLocations(float time_)
-    //{
-    //    if (enemiesWaitingToSpawn.Count > 0 && enemiesBeingSpawned.Count > 0)
-    //        return;
-
-    //    foreach (SpawnLocation spawn in enemiesBeingSpawned)
-    //    {
-    //        Destroy(spawn.spawner, time_);
-    //    }
-
-    //    enemiesWaitingToSpawn.Clear();
-    //    enemiesBeingSpawned.Clear();
-    //}
-
-    private void NewSpawnLocation(float timeUntilStart_, Vector3 location_, float scale_, GameObject prefab_, EnemyGroup parentGroup_)
+    /// <summary>
+    /// Creates a new spawn for a specified prefab
+    /// </summary>
+    /// <param name="timeUntilStart_">Time until the spawning starts</param>
+    /// <param name="location_"></param>
+    /// <param name="scale_"></param>
+    /// <param name="prefab_"></param>
+    /// <param name="parentGroup_"></param>
+    void NewSpawnLocation(float timeUntilStart_, Vector3 location_, float scale_, GameObject prefab_, EnemyGroup parentGroup_)
     {
-        enemiesWaitingToSpawn.Add(new SpawnLocation { timeUntilStart = timeUntilStart_, location = location_, scale = scale_, prefab = prefab_, parentGroup = parentGroup_});
+        m_enemiesWaitingToSpawn.Add(new SpawnLocation { timeUntilStart = timeUntilStart_, location = location_, scale = scale_, prefab = prefab_, parentGroup = parentGroup_});
     }
 
-    [RPC]
-    private void PropagateNewSpawnEffect(float timeTillDestroy_, Vector3 location_, float scale_)
+    [RPC] private void PropagateNewSpawnEffect(float timeTillDestroy_, Vector3 location_, float scale_)
     {
-        GameObject spawnedEffect = (GameObject)Instantiate(spawnEffect, location_, Quaternion.identity);
+        GameObject spawnedEffect = (GameObject)Instantiate(m_spawnEffect, location_, Quaternion.identity);
         spawnedEffect.transform.localScale = new Vector3(scale_, scale_, 1);
 
         RunFinalSpawnEffect script = spawnedEffect.GetComponent<RunFinalSpawnEffect>();
@@ -335,22 +355,17 @@ public class EnemySpawnPointScript : MonoBehaviour
         Destroy(spawnedEffect, timeTillDestroy_ - 0.2f);
     }
 
-    public void SetModifier(float modifier_)
-    {
-        modifier = modifier_;
-    }
+    
 
-    [RPC]
-    void SetWormholeSize(float t_)
+    [RPC] void SetWormholeSize(float t_)
     {
-        Vector3 newScale = Vector3.Lerp(Vector3.zero, wormholeOriginalScale, t_);
+        Vector3 newScale = Vector3.Lerp(Vector3.zero, m_wormholeOriginalScale, t_);
         newScale.z = 1;
-        wormhole.localScale = newScale;
+        m_wormhole.localScale = newScale;
     }
 
-    [RPC]
-    void SetActive(int i_)
+    [RPC] void SetActive(int i_)
     {
-        spawnPointActive = i_ == 1;
+        m_spawnPointActive = i_ == 1;
     }
 }

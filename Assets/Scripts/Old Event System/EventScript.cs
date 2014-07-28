@@ -25,74 +25,74 @@ public enum OutcomeType
 [System.Serializable]
 public class EventOutcome
 {
-	public OutcomeType m_typeOfOutcome;
+	public OutcomeType typeOfOutcome;
 
-	public bool m_outcomeRequiresSpecificPlayer = false;
+	public bool outcomeRequiresSpecificPlayer = false;
 
 	//If it's a resource type, designate it here
-	public ResourceType m_affectedResource;
+	public ResourceType affectedResource;
 
 	// the magnitude is only used for the resource and damage outcome types
-	public int m_outcomeMagnitude;
+	public int outcomeMagnitude;
 
 	//The focus point could be where enemies are spawned, or where the CShip is told to go
-	public Transform m_outcomeFocusPoint;
+	public Transform outcomeFocusPoint;
 
 	//Only applicable for enemy spawnage.
 	//If create new spawn point, this will be the wave list for the spawner
 	//Otherwise, it's the amount of enemies that are immediately created
-	public WaveInfo[] m_enemiesAssociated;
+	public WaveInfo[] enemiesAssociated;
 }
 
 [System.Serializable]
 public class EventOutcomeGroup
 {
-	public EventOutcome[] m_outcomesInThisGroup;
-	public string m_groupOutcomeText = "This is the outcome text";
+	public EventOutcome[] outcomesInThisGroup;
+	public string groupOutcomeText = "This is the outcome text";
 	public int percentageChance = 100;
 }
 
 [System.Serializable]
 public class EventRequirement
 {
-	public ResourceType m_requiredResource;
-	public int m_requiredAmount;
+	public ResourceType requiredResource;
+	public int requiredAmount;
 
 	public bool CheckRequirement(GameObject cship, GameObject player)
 	{
-		switch(m_requiredResource)
+		switch(requiredResource)
 		{
 			case ResourceType.CShipFuel:
 			{
-				if(cship.GetComponent<CapitalShipScript>().GetCurrentResourceFuel() >= m_requiredAmount)
+				if(cship.GetComponent<CapitalShipScript>().GetCurrentResourceFuel() >= requiredAmount)
 					return true;
 				else
 					return false;
 			}
 			case ResourceType.CShipWater:
 			{
-				if(cship.GetComponent<CapitalShipScript>().GetCurrentResourceWater() >= m_requiredAmount)
+				if(cship.GetComponent<CapitalShipScript>().GetCurrentResourceWater() >= requiredAmount)
 					return true;
 				else
 					return false;
 			}
 			case ResourceType.CShipMass:
 			{
-				if(cship.GetComponent<CapitalShipScript>().GetCurrentResourceMass() >= m_requiredAmount)
+				if(cship.GetComponent<CapitalShipScript>().GetCurrentResourceMass() >= requiredAmount)
 					return true;
 				else
 					return false;
 			}
 			case ResourceType.PlayerCash:
 			{
-				if(player.GetComponent<PlayerControlScript>().GetSpaceBucks() >= m_requiredAmount)
+				if(player.GetComponent<PlayerControlScript>().GetCash() >= requiredAmount)
 					return true;
 				else
 					return false;
 			}
 		}
 
-		Debug.LogWarning ("Couldn't find enum type: " + m_requiredResource.ToString ());
+		Debug.LogWarning ("Couldn't find enum type: " + requiredResource.ToString ());
 		return false;
 	}
 }
@@ -100,36 +100,45 @@ public class EventRequirement
 [System.Serializable]
 public class EventOption
 {
-	public bool m_isHiddenIfNotAvailable = false;
-	public EventRequirement[] m_optionRequirement;
+	public bool isHiddenIfNotAvailable = false;
+	public EventRequirement[] optionRequirement;
 	//public EventOutcome[] m_optionOutcome;
-	public EventOutcomeGroup[] m_optionGroups;
-	public string m_optionText = "This is an option";
-	public string m_hoverText = "This option will affect you in these ways: " + System.Environment.NewLine + "- DEATH";
+	public EventOutcomeGroup[] optionGroups;
+	public string optionText = "This is an option";
+	public string hoverText = "This option will affect you in these ways: " + System.Environment.NewLine + "- DEATH";
 }
 
 public class EventScript : MonoBehaviour 
 {
-	public string m_EventText;
-	public EventOption[] m_possibleOptions;
-	public int[] m_optionVotes;
-	int m_hostVote = 0;
-	int m_previousVote = -1;
+	[SerializeField] string m_eventText;
+	[SerializeField] EventOption[] m_possibleOptions;
+	[SerializeField] int[] m_optionVotes;
 
-	public float m_timer = 30.0f;
+	[SerializeField] float m_timer = 30.0f;
+    
+	[SerializeField] GameObject m_selectedPlayer = null;
 
-	bool hasStarted = false;
-	bool hasTriggered = false;
+    int m_hostVote = 0;
+    int m_previousVote = -1;
 
-    float timeBetweenWaves = 20.0f;
+	bool m_hasStarted = false;
+	bool m_hasTriggered = false;
 
-	/*GameObject player;
-	public void SetAffectedPlayer(GameObject play)
-	{
-		player = play;
-	}*/
+    float m_timeBetweenWaves = 20.0f;
 
-	// Use this for initialization
+    bool m_eventShouldSelfDestruct = false;
+
+    string m_delayedOutcomeText = "";
+
+
+    #region getset
+
+
+
+    #endregion getset
+
+
+    // Use this for initialization
 	void Start () 
 	{
 		m_optionVotes = new int[m_possibleOptions.Length];
@@ -137,11 +146,11 @@ public class EventScript : MonoBehaviour
 			m_optionVotes[i] = 0;
 	}
 
-	bool m_eventShouldSelfDestruct = false;
+	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(Network.isServer && hasStarted)
+		if(Network.isServer && m_hasStarted)
 		{
 			m_timer -= Time.deltaTime;
 
@@ -158,14 +167,14 @@ public class EventScript : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
-		if(!hasTriggered)
+		if(!m_hasTriggered)
 		{
 			//If the other is a player, then initiate event
 			if(other.tag == "Player")
 			{
 				//TODO: Change this to all connected players
 				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetActiveEvent(this.gameObject, other.gameObject.GetComponent<PlayerControlScript>().GetOwner());
-				hasStarted = true;
+				m_hasStarted = true;
 			}
 		}
 	}
@@ -209,8 +218,8 @@ public class EventScript : MonoBehaviour
 			m_previousVote = optionNum;
 		}
 	}
-	[RPC]
-	void PropagateClientVote(int optionNum, int previousVote)
+
+	[RPC] void PropagateClientVote(int optionNum, int previousVote)
 	{
 		Debug.Log ("Received client vote for option #" + optionNum);
 		if(previousVote != -1)
@@ -239,8 +248,7 @@ public class EventScript : MonoBehaviour
 		}
 	}
 
-	[RPC]
-	void PropagateVotes(int location, int votes)
+	[RPC] void PropagateVotes(int location, int votes)
 	{
 		m_optionVotes[location] = votes;
 	}
@@ -268,6 +276,7 @@ public class EventScript : MonoBehaviour
 			ActivateOption(highest);
 		//Tell all clients which one happened
 	}
+
 	public string ActivateOption(int optionNum)
 	{
 		//We should assume the requirements are already met, since the gui shouldn't let them click it if they aren't met
@@ -278,7 +287,7 @@ public class EventScript : MonoBehaviour
 
 		//Generate a number from 1 to the total percentage of all outcome groups
 		int totalPercentage = 0;
-		foreach(EventOutcomeGroup group in selectedOption.m_optionGroups)
+		foreach(EventOutcomeGroup group in selectedOption.optionGroups)
 			totalPercentage += group.percentageChance;
 
 
@@ -289,7 +298,7 @@ public class EventScript : MonoBehaviour
 
 		//Find the appropiate outcome group to be triggered
 		EventOutcomeGroup groupToBeTriggered = null;
-		foreach(EventOutcomeGroup group in selectedOption.m_optionGroups)
+		foreach(EventOutcomeGroup group in selectedOption.optionGroups)
 		{
 			if(rand < (group.percentageChance + previous))
 			{
@@ -306,9 +315,9 @@ public class EventScript : MonoBehaviour
 		EventOutcome outcomePlayerReqdFor = null;
 		if(groupToBeTriggered != null)
 		{
-			foreach(EventOutcome outcome in groupToBeTriggered.m_outcomesInThisGroup)
+			foreach(EventOutcome outcome in groupToBeTriggered.outcomesInThisGroup)
 			{
-				if(outcome.m_outcomeRequiresSpecificPlayer)
+				if(outcome.outcomeRequiresSpecificPlayer)
 				{
 					playerReqd = true;
 					outcomePlayerReqdFor = outcome;
@@ -328,9 +337,9 @@ public class EventScript : MonoBehaviour
 
 		if(playerReqd)
 		{
-			selectedPlayer = null;
+			m_selectedPlayer = null;
 			StartCoroutine(ListenForPlayerSelection(outcomePlayerReqdFor));
-			delayedOutcomeText = groupToBeTriggered.m_groupOutcomeText;
+			m_delayedOutcomeText = groupToBeTriggered.groupOutcomeText;
 			GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecievePlayerRequiresSelectingForEvent("A player selection is required");
 			return "A player selection is required";
 		}
@@ -339,26 +348,26 @@ public class EventScript : MonoBehaviour
 			//Return the string so the GUI can draw it
 			string text = "YOU SHOULDN'T SEE THIS";
 			if(groupToBeTriggered != null)
-				text = groupToBeTriggered.m_groupOutcomeText;
+				text = groupToBeTriggered.groupOutcomeText;
 			GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecieveEventTextFromEventCompletion(text);
 			m_eventShouldSelfDestruct = true;
 			return text;
 		}
 	}
-	[RPC]
-	void PropagateTriggered(bool triggered)
+
+	[RPC] void PropagateTriggered(bool triggered)
 	{
-		hasTriggered = triggered;
+		m_hasTriggered = triggered;
 	}
 
 	void FireEventOutcome(EventOutcome outcome)
 	{
-		switch(outcome.m_typeOfOutcome)
+		switch(outcome.typeOfOutcome)
 		{
 			case OutcomeType.AffectsCapitalShipMoveTarget:
 			{
 				//Set CShip target
-				GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().SetTargetPoint(outcome.m_outcomeFocusPoint);
+				GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().SetTargetPoint(outcome.outcomeFocusPoint);
 				break;
 			}
 			case OutcomeType.AffectsCapitalShipObjective:
@@ -368,35 +377,35 @@ public class EventScript : MonoBehaviour
 			}
 			case OutcomeType.AffectsCapitalShipResource:
 			{
-				switch(outcome.m_affectedResource)
+				switch(outcome.affectedResource)
 				{
 					case ResourceType.CShipFuel:
 					{
-						if(outcome.m_outcomeMagnitude < 0)
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceFuel(-outcome.m_outcomeMagnitude);
+						if(outcome.outcomeMagnitude < 0)
+							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceFuel(-outcome.outcomeMagnitude);
 						else
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceFuel(outcome.m_outcomeMagnitude);
+							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceFuel(outcome.outcomeMagnitude);
 						break;
 					}
 					case ResourceType.CShipWater:
 					{
-						if(outcome.m_outcomeMagnitude < 0)
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceWater(-outcome.m_outcomeMagnitude);
+						if(outcome.outcomeMagnitude < 0)
+							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceWater(-outcome.outcomeMagnitude);
 						else
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceWater(outcome.m_outcomeMagnitude);
+							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceWater(outcome.outcomeMagnitude);
 						break;
 					}
 					case ResourceType.CShipMass:
 					{
-						if(outcome.m_outcomeMagnitude < 0)
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceMass(-outcome.m_outcomeMagnitude);
+						if(outcome.outcomeMagnitude < 0)
+							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceMass(-outcome.outcomeMagnitude);
 						else
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceMass(outcome.m_outcomeMagnitude);
+							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceMass(outcome.outcomeMagnitude);
 						break;
 					}
 					default:
 					{
-						Debug.Log ("Couldn't find appropriate capital resource " + outcome.m_affectedResource.ToString());
+						Debug.Log ("Couldn't find appropriate capital resource " + outcome.affectedResource.ToString());
 						break;
 					}
 				}
@@ -405,22 +414,22 @@ public class EventScript : MonoBehaviour
 			case OutcomeType.AffectsPlayerCash:
 			{
 				//We should be passed a player that will be affected, so we'll store that in a temp for now
-				if(outcome.m_outcomeMagnitude < 0)
-					selectedPlayer.GetComponent<PlayerControlScript>().RemoveSpaceBucks(-outcome.m_outcomeMagnitude);
+				if(outcome.outcomeMagnitude < 0)
+					m_selectedPlayer.GetComponent<PlayerControlScript>().RemoveCash(-outcome.outcomeMagnitude);
 				else
-					selectedPlayer.GetComponent<PlayerControlScript>().AddSpaceBucks(outcome.m_outcomeMagnitude);
+					m_selectedPlayer.GetComponent<PlayerControlScript>().AddCash(outcome.outcomeMagnitude);
 				break;
 			}
 			case OutcomeType.CreatesNewSpawnPoint:
 			{
 				GameObject newSpawnPoint = new GameObject();
-				newSpawnPoint.transform.position = outcome.m_outcomeFocusPoint.position;
+				newSpawnPoint.transform.position = outcome.outcomeFocusPoint.position;
 				newSpawnPoint.AddComponent<EnemySpawnPointScript>();
 				newSpawnPoint.tag = "SpawnPoint";
 
 				//Generate list of GOs to spawn
                 List<WaveInfo> enemyWaves = new List<WaveInfo>();
-                foreach (WaveInfo wave in outcome.m_enemiesAssociated)
+                foreach (WaveInfo wave in outcome.enemiesAssociated)
                 {
                     enemyWaves.Add(wave);
                 }
@@ -432,11 +441,11 @@ public class EventScript : MonoBehaviour
 			}
 			case OutcomeType.ImmediatelySpawnsEnemies:
 			{
-				if(outcome.m_outcomeFocusPoint != null)
+				if(outcome.outcomeFocusPoint != null)
 				{
 					//Immediately spawn the enemies at the focus point
 					List<GameObject> enemiesToSpawn = new List<GameObject>();
-					foreach(WaveInfo wave in outcome.m_enemiesAssociated)
+					foreach(WaveInfo wave in outcome.enemiesAssociated)
 					{
 						foreach(GameObject enemy in wave.GetRawWave())
 						{
@@ -446,7 +455,7 @@ public class EventScript : MonoBehaviour
 
 					foreach(GameObject enemy in enemiesToSpawn)
 					{
-						Network.Instantiate(enemy, outcome.m_outcomeFocusPoint.position, outcome.m_outcomeFocusPoint.rotation, 0);
+						Network.Instantiate(enemy, outcome.outcomeFocusPoint.position, outcome.outcomeFocusPoint.rotation, 0);
 					}
 					
 					break;
@@ -455,7 +464,7 @@ public class EventScript : MonoBehaviour
 				{
 					//Otherwise spawn it where the event object is
 					List<GameObject> enemiesToSpawn = new List<GameObject>();
-					foreach(WaveInfo wave in outcome.m_enemiesAssociated)
+					foreach(WaveInfo wave in outcome.enemiesAssociated)
 					{
 						foreach(GameObject enemy in wave.GetRawWave())
 						{
@@ -473,30 +482,29 @@ public class EventScript : MonoBehaviour
 			}
 			case OutcomeType.CausesCShipDamage:
 			{
-				GameObject.FindGameObjectWithTag("Capital").GetComponent<HealthScript>().DamageMobHullDirectly(outcome.m_outcomeMagnitude);
+				GameObject.FindGameObjectWithTag("Capital").GetComponent<HealthScript>().DamageMobHullDirectly(outcome.outcomeMagnitude);
 				break;
 			}
 			case OutcomeType.CausesPlayerDamage:
 			{
 				//selectedPlayer.GetComponent<HealthScript>().DamageMob(outcome.m_outcomeMagnitude, null);
-				selectedPlayer.GetComponent<HealthScript>().DamageMobHullDirectly(outcome.m_outcomeMagnitude);
+				m_selectedPlayer.GetComponent<HealthScript>().DamageMobHullDirectly(outcome.outcomeMagnitude);
 				break;
 			}
 		}
 	}
 
-	string delayedOutcomeText = "";
-	public GameObject selectedPlayer = null;
+	
 	IEnumerator ListenForPlayerSelection(EventOutcome outcome)
 	{
-		while(selectedPlayer == null)
+		while(m_selectedPlayer == null)
 		{
 			yield return 0;
 		}
 
 		//We've been given a player, now fire the outcome
 		FireEventOutcome(outcome);
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecieveEventTextFromEventCompletion(delayedOutcomeText);
+		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecieveEventTextFromEventCompletion(m_delayedOutcomeText);
 		m_eventShouldSelfDestruct = true;
 	}
 }

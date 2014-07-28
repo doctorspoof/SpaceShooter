@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemySupportShieldScript : MonoBehaviour 
+public class EnemySupportShield : MonoBehaviour 
 {
 	/// Unity modifiable variables
 	// Shield capacity
@@ -69,7 +69,7 @@ public class EnemySupportShieldScript : MonoBehaviour
 	{
 		float sqrMagnitude = (transform.position - other.transform.position).sqrMagnitude;
 
-		if (sqrMagnitude > m_vulnerableMagnitude && other.attachedRigidbody)
+		if (sqrMagnitude > m_vulnerableMagnitude && other.attachedRigidbody != null)
 		{
 			if (m_currentShield > 0f)
 			{
@@ -77,7 +77,7 @@ public class EnemySupportShieldScript : MonoBehaviour
 				// Don't handle beam damage
 				BasicBulletScript bullet = other.attachedRigidbody.GetComponent<BasicBulletScript>();
 
-				if (bullet)
+				if (bullet != null)
 				{
 					// Handle the bullet damage
 					DamageShield (bullet.GetDamage());

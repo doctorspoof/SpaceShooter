@@ -358,7 +358,7 @@ public class GUIManager : MonoBehaviour
         if (thisPlayerHP)
         {
             return ((thisPlayerHP.transform.position - m_lastLockonTarget.transform.position).sqrMagnitude >
-                    (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.5f).Squared());
+                    (thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<EquipmentWeapon>().GetBulletMaxDistance() * 0.5f).Squared());
         }
 
         return false;
@@ -4056,7 +4056,7 @@ public class GUIManager : MonoBehaviour
         m_eventIsActive = true;
         m_eventIsOnOutcome = false;
         currEventSc = currEvent.GetComponent<EventScript>();
-        eventText = currEventSc.m_EventText;
+        eventText = currEventSc.m_eventText;
         eventTriggerer = GameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(causer);
 
         //Freeze all the baddies
@@ -4067,7 +4067,7 @@ public class GUIManager : MonoBehaviour
         thisPlayerHP.gameObject.rigidbody.isKinematic = true;
 
         //Stop CShip from moving
-        CShip.GetComponent<CapitalShipScript>().shouldStart = false;
+        CShip.GetComponent<CapitalShipScript>().m_shouldStart = false;
         CShip.rigidbody.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
 
         //Stop spawners from spawning
@@ -4088,7 +4088,7 @@ public class GUIManager : MonoBehaviour
         //Unfreeze CShip
         //CShip.rigidbody.constraints = RigidbodyConstraints.None;
         CShip.rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
-        CShip.GetComponent<CapitalShipScript>().shouldStart = true;
+        CShip.GetComponent<CapitalShipScript>().m_shouldStart = true;
 
         //Purge event vars
         m_eventIsActive = false;
@@ -4233,7 +4233,7 @@ public class GUIManager : MonoBehaviour
 
     void OnPlayerSelected(GameObject player)
     {
-        currEventSc.selectedPlayer = player;
+        currEventSc.m_selectedPlayer = player;
     }
 
     //Continue vars
@@ -4356,7 +4356,7 @@ public class GUIManager : MonoBehaviour
                     //If a button is clicked, activate the relevent option (or vote for it)
                     if (m_hostShouldSelectTiebreaker)
                     {
-                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.m_possibleOptions[i].m_optionText + ": #" + currEventSc.m_optionVotes[i]))
+                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.m_possibleOptions[i].optionText + ": #" + currEventSc.m_optionVotes[i]))
                         {
                             eventText = currEventSc.ActivateOption(i);
                             m_eventIsOnOutcome = true;
@@ -4365,7 +4365,7 @@ public class GUIManager : MonoBehaviour
                     }
                     else
                     {
-                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.m_possibleOptions[i].m_optionText + ": #" + currEventSc.m_optionVotes[i]))
+                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.m_possibleOptions[i].optionText + ": #" + currEventSc.m_optionVotes[i]))
                         {
                             currEventSc.VoteForOption(i);
                         }

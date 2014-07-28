@@ -213,7 +213,7 @@ public sealed class BeamBulletScript : MonoBehaviour
                 
                 if (hit.collider.gameObject.layer == Layers.enemySupportShield)
                 {
-                    EnemySupportShieldScript script = hit.collider.gameObject.GetComponent<EnemySupportShieldScript>();
+                    EnemySupportShield script = hit.collider.gameObject.GetComponent<EnemySupportShield>();
                     if (script != null)
                     {
                         script.DamageShield (damage);

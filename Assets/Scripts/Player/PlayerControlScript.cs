@@ -158,18 +158,7 @@ public class PlayerControlScript : Ship
 
     #endregion
 
-    [RPC] void PropagateCashAmount(int amount)
-	{
-		m_currentCash = amount;
-	}
-
-	public bool CheckCanAffordAmount(int amount)
-	{
-		if(m_currentCash >= amount)
-			return true;
-		else
-			return false;
-	}
+    
 
     protected override void Awake()
     {
@@ -341,6 +330,19 @@ public class PlayerControlScript : Ship
     {
         if (Network.player == m_owner)
             Screen.showCursor = true;
+    }
+
+    [RPC] void PropagateCashAmount(int amount)
+    {
+        m_currentCash = amount;
+    }
+
+    public bool CheckCanAffordAmount(int amount)
+    {
+        if (m_currentCash >= amount)
+            return true;
+        else
+            return false;
     }
 
     private void StartDocking()
@@ -846,13 +848,13 @@ public class PlayerControlScript : Ship
 
 		GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
 		weapon.transform.parent = this.transform;
-		weapon.transform.localPosition = weapon.GetComponent<WeaponScript>().GetOffset();
+		weapon.transform.localPosition = weapon.GetComponent<EquipmentWeapon>().GetOffset();
 
-		networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<WeaponScript>().m_needsLockon);
+		networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<EquipmentWeapon>().m_needsLockon);
 		
 		//Parenting needs to be broadcast to all clients!
 		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
-		weapon.GetComponent<WeaponScript>().ParentWeaponToOwner(name);
+		weapon.GetComponent<EquipmentWeapon>().ParentWeaponToOwner(name);
 		this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);
 	}
 
@@ -1105,7 +1107,7 @@ public class PlayerControlScript : Ship
 
 					if(m_owner == Network.player)
 					{
-						if(newWeapon.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<WeaponScript>().m_needsLockon)
+						if(newWeapon.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<EquipmentWeapon>().m_needsLockon)
 						{
 							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = true;
 							Debug.Log ("New weapon is homing, alerting GUI...");
@@ -1119,9 +1121,9 @@ public class PlayerControlScript : Ship
 				
 					GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
 					weapon.transform.parent = this.transform;
-					weapon.transform.localPosition = weapon.GetComponent<WeaponScript>().GetOffset();
+					weapon.transform.localPosition = weapon.GetComponent<EquipmentWeapon>().GetOffset();
 					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
-					weapon.GetComponent<WeaponScript>().ParentWeaponToOwner(name);
+					weapon.GetComponent<EquipmentWeapon>().ParentWeaponToOwner(name);
 					//Broadcast parenting here too
 					this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);
 
@@ -1251,7 +1253,7 @@ public class PlayerControlScript : Ship
 					GameObject temp = m_equippedWeaponItem;
 					
 					//If it's a homing weapon, alert the GUI
-					if(m_playerInventory[slot].GetComponent<ItemScript>().GetEquipmentReference().GetComponent<WeaponScript>().m_needsLockon)
+					if(m_playerInventory[slot].GetComponent<ItemScript>().GetEquipmentReference().GetComponent<EquipmentWeapon>().m_needsLockon)
 					{
 						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = true;
 						Debug.Log ("New weapon is homing, alerting GUI...");
@@ -1338,18 +1340,18 @@ public class PlayerControlScript : Ship
 
 	public void SetNewTargetLock(GameObject target)
 	{
-		GetWeaponObject().GetComponent<WeaponScript>().SetTarget(target);
+		GetWeaponObject().GetComponent<EquipmentWeapon>().SetTarget(target);
 		//Debug.Log ("Receieved target lock on enemy: " + target.name);
 	}
 
 	public void UnsetTargetLock()
 	{
-		GetWeaponObject().GetComponent<WeaponScript>().UnsetTarget();
+		GetWeaponObject().GetComponent<EquipmentWeapon>().UnsetTarget();
 	}
 
 	public float GetReloadPercentage()
 	{
-		return GetWeaponObject().GetComponent<WeaponScript>().GetReloadPercentage();
+		return GetWeaponObject().GetComponent<EquipmentWeapon>().GetReloadPercentage();
 	}
 
 	/*
@@ -1498,8 +1500,8 @@ public class PlayerControlScript : Ship
 		this.GetComponent<HealthScript>().ResetHPOnRespawn();
 		networkView.RPC ("PropagateRespawn", RPCMode.Others);
 	}
-	[RPC]
-	void PropagateRespawn()
+
+	[RPC] void PropagateRespawn()
 	{
 		//this.gameObject.SetActive(true);
 		this.renderer.enabled = true;
@@ -1539,11 +1541,13 @@ public class PlayerControlScript : Ship
 	{
 		m_shouldRecieveInput = true;
 	}
+
 	public void TellShipStopRecievingInput()
 	{
 		m_shouldRecieveInput = false;
 		//networkView.RPC ("PropagateRecieveInput", RPCMode.Others);
 	}
+
 	[RPC] void PropagateRecieveInput()
 	{
 		m_shouldRecieveInput = false;

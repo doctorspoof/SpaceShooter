@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 public class LootTableScript : MonoBehaviour 
 {
-	[SerializeField]
-	GameObject m_ItemManager;
+	[SerializeField] GameObject m_ItemManager;
 
 	Item[] m_itemList;
     
@@ -61,12 +60,6 @@ public class LootTableScript : MonoBehaviour
 		{
 			Debug.LogError ("Unable to find object with tag: ItemManager");
 		}
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
 	}
 
     public int[] RequestItemListByTime(float time, bool[] stockFlags, int numItemsReq)
@@ -202,6 +195,7 @@ public class LootTableScript : MonoBehaviour
 		}
 		return range;
 	}
+
 	Item GetItemByValue (float value, int rangeMin, int rangeMax)
 	{
 		// Pre-condition: maxRange is infact the upper value
