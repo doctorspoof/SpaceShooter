@@ -24,7 +24,7 @@ public class CapitalWeaponScript : MonoBehaviour
     [SerializeField]                    Vector3 m_posOffset;                    // The offset from the turret point to correctly place this turret instance
     
     //Shot stats
-    [SerializeField,Range(1, 50)]       int m_shotsPerVolley = 1;               // The number of shots per fire
+    [SerializeField, Range(1, 50)]      int m_shotsPerVolley = 1;               // The number of shots per fire
 	[SerializeField, Range(0f, 100.0f)] float m_spreadFactor = 0;               // The amount the individual shots will spread out from the target direction
 	[SerializeField]                    bool m_evenSpread = true;               // Whether or not the shots will spread evenly away from the target direction
     [SerializeField]                    bool m_fireAllShotsAtOnce = true;       // Whether all shots are fired together, or sequentially
@@ -36,33 +36,30 @@ public class CapitalWeaponScript : MonoBehaviour
 	[SerializeField, Range(0.0f, 5.0f)] float m_beamRechargeDelay = 1.0f;       // The delay between ceasing fire with a beam, and the beam beginning to recharge
     
     /* Internal members */
-    
-    
     Vector3 m_flakFiringOffset = Vector3.zero;
-    public bool isForwardFacing;
+    public bool m_isForwardFacing;
     int m_inTurretSlotNum = -1;
     
-    
     // Track fire state
-    GameObject target = null;
+    GameObject m_target = null;
     EnemyScript m_targetEnemyScript = null;
     float m_currentReloadTime = 0.0f;
-    int currentFirePoint = 0;
-    bool coroutineHasFinished = true;
+    int m_currentFirePoint = 0;
+    bool m_coroutineHasFinished = true;
     
     // Beam/Laser stats
-    bool isBeaming = false;
+    bool m_isBeaming = false;
     float m_currentRechargeDelay = 0.0f;
-    GameObject[] currentBeams = null;
+    GameObject[] m_currentBeams = null;
     
 	/* Getters/Setters */
     public bool IsForwardFacing()
     {
-        return isForwardFacing;
+        return m_isForwardFacing;
     }
     public void SetForwardFacing(bool forward)
     {
-        isForwardFacing = forward;
+        m_isForwardFacing = forward;
     }
     
 	public float GetRecoilTime()
@@ -79,7 +76,7 @@ public class CapitalWeaponScript : MonoBehaviour
 	void Start () 
 	{
 		m_currentReloadTime = m_recoilTime;
-		currentBeams = new GameObject[m_shotsPerVolley];
+		m_currentBeams = new GameObject[m_shotsPerVolley];
 	}
 	
 	void Update () 
@@ -88,7 +85,7 @@ public class CapitalWeaponScript : MonoBehaviour
 		{
 			if(m_isBeam)
 			{
-				if(!isBeaming)
+				if(!m_isBeaming)
 				{
 					if(m_currentRechargeDelay >= m_beamRechargeDelay)
 					{
@@ -109,9 +106,9 @@ public class CapitalWeaponScript : MonoBehaviour
 					m_currentReloadTime += Time.deltaTime;
 			}
 			
-			if(target == null || target.GetComponent<HealthScript>() == null)
+			if(m_target == null || m_target.GetComponent<HealthScript>() == null)
 			{
-				if(m_isBeam && isBeaming)
+				if(m_isBeam && m_isBeaming)
 				{
 					StopFiringBeam();
 				}
@@ -134,16 +131,16 @@ public class CapitalWeaponScript : MonoBehaviour
 					}
 					case AimingStyle.Basic:
 					{
-						RotateTowards(target.transform.position);
+						RotateTowards(m_target.transform.position);
 						bool didFire;
-						CheckTargetsAndFire(target.transform.position, out didFire);
+						CheckTargetsAndFire(m_target.transform.position, out didFire);
 						break;
 					}
 					case AimingStyle.Leading:
 					{
 						//Similar to basic, but predict target position at time of impact
-						float timeTakenToTravel = Vector3.Distance(target.transform.position, this.transform.position) / bulletRef.GetComponent<BasicBulletScript>().GetBulletSpeed();
-						Vector3 predictedTargetPos = target.transform.position + (target.rigidbody.velocity * timeTakenToTravel);
+						float timeTakenToTravel = Vector3.Distance(m_target.transform.position, this.transform.position) / bulletRef.GetComponent<BasicBulletScript>().GetBulletSpeed();
+						Vector3 predictedTargetPos = m_target.transform.position + (m_target.rigidbody.velocity * timeTakenToTravel);
 
 						RotateTowards(predictedTargetPos);
 						bool didFire;
@@ -152,7 +149,7 @@ public class CapitalWeaponScript : MonoBehaviour
 					}
 					case AimingStyle.EdgeExplode:
 					{
-						Vector3 targetPos = target.transform.position + m_flakFiringOffset;
+						Vector3 targetPos = m_target.transform.position + m_flakFiringOffset;
 						RotateTowards(targetPos);
 						bool didFire;
 						CheckTargetsAndFire(targetPos, out didFire);
@@ -166,11 +163,11 @@ public class CapitalWeaponScript : MonoBehaviour
 					}
 					case AimingStyle.Beam:
 					{
-						RotateTowards(target.transform.position);
+						RotateTowards(m_target.transform.position);
 						//Ensure we are beam type
 						if(m_isBeam)
 						{
-							if(isBeaming)
+							if(m_isBeaming)
 							{
 								//If we're already firing, check our charge level
 								if(m_currentReloadTime < (m_recoilTime * 0.25f))
@@ -185,7 +182,7 @@ public class CapitalWeaponScript : MonoBehaviour
 								if(m_currentReloadTime >= m_recoilTime)
 								{
 									bool fire = false;
-									CheckTargetsAndFire(target.transform.position, out fire);
+									CheckTargetsAndFire(m_target.transform.position, out fire);
 								}
 							}
 						}
@@ -231,7 +228,7 @@ public class CapitalWeaponScript : MonoBehaviour
 			
 			// If we're aiming at an asteroid, see if any enemies have approached
             GameObject enemyTarget = m_targetEnemyScript ? m_targetEnemyScript.GetTarget() : null; 
-            if (target.tag == "Asteroid")
+            if (m_target.tag == "Asteroid")
             {
                 GameObject newTarget = FindClosestTarget(out m_targetEnemyScript, true);
 
@@ -248,7 +245,7 @@ public class CapitalWeaponScript : MonoBehaviour
                 GameObject newTarget = FindClosestTarget(out m_targetEnemyScript, true, true);
 
                 // Check if a new target has been found
-                if (newTarget && (Vector3.SqrMagnitude(newTarget.transform.position - transform.position) < Vector3.SqrMagnitude(target.transform.position - transform.position)))
+                if (newTarget && (Vector3.SqrMagnitude(newTarget.transform.position - transform.position) < Vector3.SqrMagnitude(m_target.transform.position - transform.position)))
                 {
                     SetTarget(newTarget);
                 }
@@ -270,7 +267,7 @@ public class CapitalWeaponScript : MonoBehaviour
 		// Compare squared distance for the sake of performance
 		float distance = Vector3.Distance(other.transform.position, transform.position);
 		float weaponRange = m_isBeam ?
-										bulletRef.GetComponent<BeamBulletScript>().m_beamLength :
+                                        bulletRef.GetComponent<BeamBulletScript>().GetBeamLength() :
 										bulletRef.GetComponent<BasicBulletScript>().CalculateMaxDistance();
 		
 		Debug.DrawLine (transform.position, transform.position + transform.up * weaponRange * rangeLimiter, Color.cyan);
@@ -282,7 +279,7 @@ public class CapitalWeaponScript : MonoBehaviour
 		// Compare squared distance for the sake of performance
 		float distance = Vector3.Distance(pos, transform.position);
 		float weaponRange = m_isBeam ?
-										bulletRef.GetComponent<BeamBulletScript>().m_beamLength :
+                                        bulletRef.GetComponent<BeamBulletScript>().GetBeamLength() :
 										bulletRef.GetComponent<BasicBulletScript>().CalculateMaxDistance();
 		
 		Debug.DrawLine (transform.position, transform.position + transform.up * weaponRange * rangeLimiter, Color.cyan);
@@ -326,7 +323,7 @@ public class CapitalWeaponScript : MonoBehaviour
 		}
 		else
 		{
-			if(coroutineHasFinished)
+			if(m_coroutineHasFinished)
 			{
 				m_currentReloadTime = 0;
 				StartCoroutine(SequentialFireLoop(m_sequentialFireTime, m_shotsPerVolley, spreadIncrement));
@@ -339,39 +336,37 @@ public class CapitalWeaponScript : MonoBehaviour
 	{
 		for(int i = 0; i < m_shotsPerVolley; i++)
 		{
-			if(!isBeaming && currentBeams[i] == null)
+			if(!m_isBeaming && m_currentBeams[i] == null)
 			{
 				Quaternion bulletRot = this.transform.rotation;
-				float length = bulletRef.GetComponent<BeamBulletScript>().m_beamLength;
+                float length = bulletRef.GetComponent<BeamBulletScript>().GetBeamLength();
 
 				GameObject bullet = (GameObject)Network.Instantiate(bulletRef, this.transform.position, bulletRot, 0);
 				bullet.transform.parent = this.transform.parent;
 				bullet.transform.localScale = new Vector3(bullet.transform.localScale.x, length, bullet.transform.localScale.z);
 				bullet.GetComponent<BeamBulletScript>().SetOffset(new Vector3(0, (length * 0.5f), 0));
-				bullet.GetComponent<BeamBulletScript>().firer = transform.parent.gameObject;
+				bullet.GetComponent<BeamBulletScript>().SetFirer(transform.parent.gameObject);
 				bullet.GetComponent<BeamBulletScript>().ParentBeamToCShipTower(m_inTurretSlotNum);
 
-				//GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
-				//bullet.GetComponent<BeamBulletScript>().ParentBeamToFirer(gsc.GetNameFromNetworkPlayer(transform.parent.GetComponent<PlayerControlScript>().GetOwner()));
-				currentBeams[i] = bullet;
+				m_currentBeams[i] = bullet;
 			}
 		}
-		isBeaming = true;
+		m_isBeaming = true;
 	}
     
 	void StopFiringBeam()
 	{
-		if(isBeaming && currentBeams != null)
+		if(m_isBeaming && m_currentBeams != null)
 		{
 			for(int i = 0; i < m_shotsPerVolley; i++)
 			{
-				if(currentBeams[i] != null)
+				if(m_currentBeams[i] != null)
 				{
-					Network.Destroy(currentBeams[i]);
+					Network.Destroy(m_currentBeams[i]);
 				}
 			}
 
-			isBeaming = false;
+			m_isBeaming = false;
 			m_currentRechargeDelay = 0.0f;
 		}
 	}
@@ -385,16 +380,15 @@ public class CapitalWeaponScript : MonoBehaviour
 			randAngle = Random.Range(-m_spreadFactor, m_spreadFactor + 1.0f);
 		
 		Quaternion bulletRot = this.transform.rotation * Quaternion.Euler(0, 0,randAngle);
-		Vector3 pos = m_firePoints[currentFirePoint].position;
+		Vector3 pos = m_firePoints[m_currentFirePoint].position;
 		pos.z -= 0.2f;
 		GameObject bullet = (GameObject)Network.Instantiate(bulletRef, pos, bulletRot, 0);
 		bullet.GetComponent<BasicBulletScript>().SetFirer(this.transform.parent.gameObject);
 	}
-
 	
 	IEnumerator SequentialFireLoop(float m_time, int m_shots, float m_spreadIncrement)
 	{
-		coroutineHasFinished = false;
+		m_coroutineHasFinished = false;
 
 		float t = 0;
 		bool isDone = false;
@@ -422,12 +416,12 @@ public class CapitalWeaponScript : MonoBehaviour
 			yield return 0;
 		}
 
-		coroutineHasFinished = true;
+		m_coroutineHasFinished = true;
 	}
 
 	[RPC] void PropagateRecoil()
 	{
-		m_cannons[currentFirePoint].GetComponent<BarrelScript>().Recoil();
+		m_cannons[m_currentFirePoint].GetComponent<BarrelScript>().Recoil();
 		SwitchToNextFirePoint();
 	}
 
@@ -435,9 +429,9 @@ public class CapitalWeaponScript : MonoBehaviour
 	{
 		if(m_cannons != null)
 		{
-			if( currentFirePoint < m_cannons.Length && m_cannons[currentFirePoint] != null)
+			if( m_currentFirePoint < m_cannons.Length && m_cannons[m_currentFirePoint] != null)
 			{
-				m_cannons[currentFirePoint].GetComponent<BarrelScript>().Recoil();
+				m_cannons[m_currentFirePoint].GetComponent<BarrelScript>().Recoil();
 				networkView.RPC ("PropagateRecoil", RPCMode.Others);
 				SwitchToNextFirePoint();
 			}
@@ -458,9 +452,9 @@ public class CapitalWeaponScript : MonoBehaviour
     
 	void SwitchToNextFirePoint()
 	{
-		currentFirePoint++;
-		if(currentFirePoint >= m_firePoints.Length)
-			currentFirePoint = 0;
+		m_currentFirePoint++;
+		if(m_currentFirePoint >= m_firePoints.Length)
+			m_currentFirePoint = 0;
 	}
 	
 	GameObject FindClosestTarget (out EnemyScript enemyScript, bool enemyOnly = false, bool targettingShipOnly = false)
@@ -513,9 +507,9 @@ public class CapitalWeaponScript : MonoBehaviour
     public void SetTarget(GameObject target_)
     {
         CapitalShipScript CShip = transform.root.GetComponent<CapitalShipScript>();
-        if(target != null)
+        if(m_target != null)
         {
-            CShip.UnclaimTarget(target);
+            CShip.UnclaimTarget(m_target);
         }
 
         if(target_ != null)
@@ -523,7 +517,7 @@ public class CapitalWeaponScript : MonoBehaviour
             CShip.ClaimTarget(target_);
         }
         
-        target = target_;
+        m_target = target_;
     }
 	
 	public void ParentThisWeaponToCShip(int location)
