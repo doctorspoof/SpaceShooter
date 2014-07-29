@@ -163,9 +163,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1

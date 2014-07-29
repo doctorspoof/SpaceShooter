@@ -415,7 +415,7 @@ public class GameStateController : MonoBehaviour
 
         if (!isSpecMode)
         {
-            Debug.Log("Spawning ship for self.");
+            //Debug.Log("Spawning ship for self.");
             SpawnAShip(Network.player);
         }
         ChangeToInGame();
@@ -463,7 +463,7 @@ public class GameStateController : MonoBehaviour
         GameObject capital = (GameObject)Network.Instantiate(m_capitalShip, spawnPoint.transform.position, spawnPoint.transform.rotation, 0);
         capital.GetComponent<HealthScript>().SetGameStateController(this.gameObject);
         m_ingameCapitalShip = capital;
-        Debug.Log("Spawned a capital ship");
+        //Debug.Log("Spawned a capital ship");
         //GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<EnemySpawnManagerScript>().RecieveInGameCapitalShip(capital);
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
         //capital.GetComponent<CapitalShipScript>().shouldStart = true;
@@ -471,7 +471,7 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void SendCShipRefToClients()
     {
-        Debug.Log("Recieved request to attach CShip");
+        //Debug.Log("Recieved request to attach CShip");
         GameObject cship = GameObject.FindGameObjectWithTag("Capital");
         m_GUIManager.GetComponent<GUIManager>().SetCShip(cship);
     }

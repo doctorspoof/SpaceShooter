@@ -853,7 +853,7 @@ public class PlayerControlScript : Ship
 	
 	public void ResetEquippedWeapon()
 	{
-		Debug.Log ("Recieved request to reset weapon. Re-equipping weapon: " + m_equippedWeaponItem.GetComponent<ItemScript>().GetItemName());
+		//Debug.Log ("Recieved request to reset weapon. Re-equipping weapon: " + m_equippedWeaponItem.GetComponent<ItemScript>().GetItemName());
 
 		GameObject equippedWeap = GetWeaponObject();
 		if(equippedWeap != null)

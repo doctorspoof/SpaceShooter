@@ -321,7 +321,7 @@ public class GUIManager : MonoBehaviour
 
     public void SetCShip(GameObject cship)
     {
-        Debug.Log("Attaching cship to GUI");
+        //Debug.Log("Attaching cship to GUI");
         m_cShipGameObject = cship;
         m_cShipHealth = cship.GetComponent<HealthScript>();
     }

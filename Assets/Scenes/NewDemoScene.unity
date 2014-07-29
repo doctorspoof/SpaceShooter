@@ -78,7 +78,7 @@ NavMeshSettings:
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-  m_PrefabInternal: {fileID: 1043321431}
+  m_PrefabInternal: {fileID: 1905372542}
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 11740236}
@@ -95,21 +95,25 @@ MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214,
     type: 2}
-  m_PrefabInternal: {fileID: 1043321431}
+  m_PrefabInternal: {fileID: 1905372542}
   m_GameObject: {fileID: 11740234}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves: []
+  m_smallMultipleWaves:
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+      m_numEnemy: 48
   m_singleLargeWave: []
   m_specialWaves: []
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1
-  m_timeCountInMinutes: 0
-  m_multiplierAtTimeRequired: 0
+  m_timeCountInMinutes: 25
+  m_multiplierAtTimeRequired: 5
   m_secondsBetweenWaves: 40
   m_lastTimeModifier: 0
   m_lastTimeSpawn: 0
@@ -117,7 +121,7 @@ MonoBehaviour:
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-  m_PrefabInternal: {fileID: 1043321431}
+  m_PrefabInternal: {fileID: 1905372542}
   m_GameObject: {fileID: 11740234}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10.5}
@@ -345,9 +349,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
@@ -1046,9 +1050,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
@@ -1253,9 +1257,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
@@ -4078,54 +4082,6 @@ Prefab:
   m_RootGameObject: {fileID: 846995417}
   m_IsPrefabParent: 0
   m_IsExploded: 1
---- !u!1001 &1043321431
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1558293152}
-    m_Modifications:
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -10.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: timeCountInMinutes
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: multiplierAtTimeRequired
-      value: 5
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-  m_RootGameObject: {fileID: 11740234}
-  m_IsPrefabParent: 0
-  m_IsExploded: 1
 --- !u!1 &1056071217
 GameObject:
   m_ObjectHideFlags: 0
@@ -4973,9 +4929,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
@@ -6470,8 +6426,8 @@ Transform:
   - {fileID: 1614308797}
   - {fileID: 871924831}
   - {fileID: 1846911432}
-  - {fileID: 11740236}
   - {fileID: 1744561043}
+  - {fileID: 11740236}
   m_Father: {fileID: 0}
 --- !u!1001 &1594006177
 Prefab:
@@ -7288,9 +7244,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
@@ -7675,14 +7631,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves: []
+  m_smallMultipleWaves:
+  - defaultOrderTargetTag: Capital
+    m_enemiesOnWave:
+    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
+      m_numEnemy: 48
   m_singleLargeWave: []
   m_specialWaves: []
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1
-  m_timeCountInMinutes: 0
-  m_multiplierAtTimeRequired: 0
+  m_timeCountInMinutes: 25
+  m_multiplierAtTimeRequired: 5
   m_secondsBetweenWaves: 40
   m_lastTimeModifier: 0
   m_lastTimeSpawn: 0
@@ -7738,9 +7698,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
@@ -8008,9 +7968,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
@@ -8245,6 +8205,46 @@ Transform:
   m_Children:
   - {fileID: 1848115362}
   m_Father: {fileID: 321477129}
+--- !u!1001 &1905372542
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1558293152}
+    m_Modifications:
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -10.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+  m_RootGameObject: {fileID: 11740234}
+  m_IsPrefabParent: 0
+  m_IsExploded: 1
 --- !u!1 &1942261619
 GameObject:
   m_ObjectHideFlags: 0
@@ -8822,9 +8822,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
-  m_fps: 10
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
   m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
