@@ -952,11 +952,11 @@ public class PlayerControlScript : Ship
                 ItemScript script;
                 
                 // Ensure the weapon is valid
-                if (GetWeaponObject() != null)
+                if (GetWeaponObject() == null)
                 {
                     script = m_equippedWeaponItem ? m_equippedWeaponItem.GetComponent<ItemScript>() : null;
                     
-                    if (script != null || script.GetTypeOfItem() != ItemType.Weapon)
+                    if (script == null || script.GetTypeOfItem() != ItemType.Weapon)
                     {
                         m_equippedWeaponItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (0);
                         Debug.LogError ("Resetting null WeaponObject on: " + name);
@@ -965,11 +965,11 @@ public class PlayerControlScript : Ship
                     ResetEquippedWeapon();
                 }
                 
-                if (GetShieldObject() != null)
+                if (GetShieldObject() == null)
                 {
                     script = m_equippedShieldItem ? m_equippedShieldItem.GetComponent<ItemScript>() : null;
 
-                    if (script != null || script.GetTypeOfItem() != ItemType.Shield)
+                    if (script == null || script.GetTypeOfItem() != ItemType.Shield)
                     {
                         m_equippedShieldItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (30);
                         Debug.LogError ("Resetting null ShieldObject on: " + name);
@@ -978,11 +978,11 @@ public class PlayerControlScript : Ship
                     ResetEquippedShield();
                 }
                 
-                if (GetEngineObject() != null)
+                if (GetEngineObject() == null)
                 {
                     script = m_equippedEngineItem ? m_equippedEngineItem.GetComponent<ItemScript>() : null;
 
-                    if (script != null || script.GetTypeOfItem() != ItemType.Engine)                       
+                    if (script == null || script.GetTypeOfItem() != ItemType.Engine)                       
                     {
                         m_equippedEngineItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (60);
                         Debug.LogError ("Resetting null EngineObject on: " + name);
@@ -991,11 +991,11 @@ public class PlayerControlScript : Ship
                     ResetEquippedEngine();
                 }
                 
-                if (GetPlatingObject() != null)
+                if (GetPlatingObject() == null)
                 {
                     script = m_equippedPlatingItem ? m_equippedPlatingItem.GetComponent<ItemScript>() : null;
 
-                    if (script != null || script.GetTypeOfItem() != ItemType.Plating)
+                    if (script == null || script.GetTypeOfItem() != ItemType.Plating)
                     {
                         m_equippedPlatingItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (90);
                         Debug.LogError ("Resetting null PlatingObject on: " + name);

@@ -104,8 +104,8 @@ MonoBehaviour:
   m_GUIManager: {fileID: 0}
   m_AsteroidManagers: []
   m_currentGameState: 0
-  playerShip: {fileID: 100000, guid: 14d4555b266c62547a8b355d13620974, type: 2}
-  capitalShip: {fileID: 100012, guid: 0ad7e2e9e4e29664b9507d7323e411aa, type: 2}
+  m_playerShip: {fileID: 100000, guid: 14d4555b266c62547a8b355d13620974, type: 2}
+  m_capitalShip: {fileID: 100012, guid: 0ad7e2e9e4e29664b9507d7323e411aa, type: 2}
   m_ingameCapitalShip: {fileID: 0}
   m_shouldCheckForFinished: 0
   m_waveTimer: 0

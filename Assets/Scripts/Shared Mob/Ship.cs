@@ -5,16 +5,16 @@ using System.Collections;
 public class Ship : MonoBehaviour
 {
 
-    [SerializeField] float m_afterburnerIncreaseOfSpeed;
-    [SerializeField] float m_afterburnerLength;
-    [SerializeField] float m_afterburnerRechargeTime;
-
     [SerializeField] protected string m_ownerSt;
 
     [SerializeField] bool m_isPlayerControlScript = false;
 
     [SerializeField] float m_maxShipSpeed;
     [SerializeField] float m_currentShipSpeed = 0.0f;
+
+    [SerializeField] float m_afterburnerIncreaseOfSpeed;
+    [SerializeField] float m_afterburnerLength;
+    [SerializeField] float m_afterburnerRechargeTime;
 
     [SerializeField] float m_rotateSpeed = 5.0f;
 

@@ -42,14 +42,14 @@ public class CameraScript : MonoBehaviour
 		// Assign a reference to the GameStateController
 		GameObject gameController = GameObject.FindGameObjectWithTag ("GameController");
 
-		if (gameController != null || !(m_gameController = gameController.GetComponent<GameStateController>()))
+		if (gameController == null || !(m_gameController = gameController.GetComponent<GameStateController>()))
 		{
 			Debug.LogError ("Unable to find GameStateController in CameraScript.");
 		}
 
 		GameObject guiManager = GameObject.FindGameObjectWithTag ("GUIManager");
 
-		if (guiManager != null || !(m_gui = guiManager.GetComponent<GUIManager>()))
+		if (guiManager == null || !(m_gui = guiManager.GetComponent<GUIManager>()))
 		{
 			Debug.LogError ("Unable to find GUIManager in CameraScript.");
 		}

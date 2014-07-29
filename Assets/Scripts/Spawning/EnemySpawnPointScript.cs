@@ -89,7 +89,7 @@ public class EnemySpawnPointScript : MonoBehaviour
 
 
     #endregion getset
-
+    
     void Start()
     {
         m_wormhole = ((GameObject)Instantiate(m_wormholePrefab, this.transform.position, this.transform.rotation)).transform;

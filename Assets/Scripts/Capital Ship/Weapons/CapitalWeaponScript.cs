@@ -459,7 +459,8 @@ public class CapitalWeaponScript : MonoBehaviour
 	
 	GameObject FindClosestTarget (out EnemyScript enemyScript, bool enemyOnly = false, bool targettingShipOnly = false)
 	{
-		int layerMask = enemyOnly ? (1 << Layers.enemy) | (1 << Layers.enemyCollide) : (1 << Layers.enemy) | (1 << Layers.asteroid) | (1 << Layers.enemyDestructibleBullet) | (1 << Layers.enemyCollide);
+		//int layerMask = enemyOnly ? (1 << Layers.enemy) | (1 << Layers.enemyCollide) : (1 << Layers.enemy) | (1 << Layers.asteroid) | (1 << Layers.enemyDestructibleBullet) | (1 << Layers.enemyCollide);
+        int layerMask = enemyOnly ? Layers.GetLayerMask(gameObject.layer, MaskType.Targetting) : Layers.GetLayerMask(gameObject.layer);
         GameObject[] enemies = transform.root.GetComponent<CapitalShipScript>().RequestTargets(layerMask).ToArray();
         float shortestDist = Mathf.Pow(999, 2);
         GameObject closestNME = null;

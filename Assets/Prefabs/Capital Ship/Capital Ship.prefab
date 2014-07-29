@@ -2444,15 +2444,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
-  m_maximumHealth: 1600
-  m_currentHealth: 0
-  m_pathToShieldObject: Composite Collider/Shield
   m_maximumShield: 750
   m_currentShield: 0
+  m_maximumHealth: 1600
+  m_currentHealth: 0
   m_shieldRechargeRate: 6
   m_timeToRechargeShield: 4
-  m_shouldStop: 0
-  m_isInvincible: 0
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2464,27 +2461,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a3a714b5514eba47a21353932d301ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ownerSt: 
-  isPlayerControlScript: 0
-  shipTransform: {fileID: 0}
-  shipRigidbody: {fileID: 0}
+  m_ownerSt: 
+  m_isPlayerControlScript: 0
   m_maxShipSpeed: 0
   m_currentShipSpeed: 0
-  afterburnerIncreaseOfSpeed: 0
-  afterburnerLength: 0
-  afterburnerRechargeTime: 0
+  m_afterburnerIncreaseOfSpeed: 10
+  m_afterburnerLength: 0
+  m_afterburnerRechargeTime: 0
   m_rotateSpeed: 5
   m_ramDamageMultiplier: 2.5
   maunuallySetWidthAndHeight: 1
-  minWeaponRange: 0
-  maxWeaponRange: 0
+  m_minWeaponRange: 0
+  m_maxWeaponRange: 0
   m_shipWidth: 6
   m_shipHeight: 24
+  m_pathToShieldObject: Composite Collider/Shield
   shipID: -1
   m_buildUpExplodeRef: {fileID: 100014, guid: 697f6e534d5ab7148a3bf48bdb26c81d, type: 2}
   m_finalExplodeRef: {fileID: 100000, guid: 5563a7198eaee104f8914633f124840e, type: 2}
   m_shatteredShip: {fileID: 100018, guid: f2187e9cf94fbb947b5a55afb04a90c9, type: 2}
-  targetPoint: {fileID: 0}
+  m_targetPoint: {fileID: 0}
+  m_shipSpeed: 15
+  m_attachedTurretsItemWrappers:
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  m_shouldAnchor: 1
+  m_shouldStart: 0
   m_cShipInventory:
   - {fileID: 0}
   - {fileID: 0}
@@ -2496,15 +2500,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  shouldStart: 0
-  m_shipSpeed: 15
-  m_attachedTurretsItemWrappers:
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  m_shouldAnchor: 1
-  m_pathToShieldObject: Composite Collider/Shield
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2581,28 +2576,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2ce60bd4b190eb4b8eccdfa00891c37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_posOffset: {x: 0, y: .677805185, z: .200000003}
-  rotateSpeed: 20
-  m_spreadFactor: 0
-  m_evenSpread: 1
-  m_shotsPerVolley: 1
-  m_fireAllShotsAtOnce: 1
-  m_sequentialFireTime: .5
-  m_isBeam: 0
-  m_beamRechargeDelay: 1
+  m_rotateSpeed: 20
   m_recoilTime: .200000003
-  m_currentReloadTime: 0
   bulletRef: {fileID: 100000, guid: bd7d3399b550b7a4c81e64993e4746b5, type: 2}
-  isForwardFacing: 1
   m_firePoints:
   - {fileID: 400014}
   - {fileID: 400010}
-  m_singleFirePointPerShot: 1
   m_cannons:
   - {fileID: 100014}
   - {fileID: 100010}
   m_turretAimStyle: 2
-  m_inTurretSlotNum: -1
+  m_posOffset: {x: 0, y: .677805185, z: .200000003}
+  m_shotsPerVolley: 1
+  m_spreadFactor: 0
+  m_evenSpread: 1
+  m_fireAllShotsAtOnce: 1
+  m_sequentialFireTime: .5
+  m_singleFirePointPerShot: 1
+  m_isBeam: 0
+  m_beamRechargeDelay: 1
+  m_isForwardFacing: 0
 --- !u!114 &11400016
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2653,28 +2646,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2ce60bd4b190eb4b8eccdfa00891c37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_posOffset: {x: 0, y: .677805185, z: .200000003}
-  rotateSpeed: 20
-  m_spreadFactor: 0
-  m_evenSpread: 1
-  m_shotsPerVolley: 1
-  m_fireAllShotsAtOnce: 1
-  m_sequentialFireTime: .5
-  m_isBeam: 0
-  m_beamRechargeDelay: 1
+  m_rotateSpeed: 20
   m_recoilTime: .200000003
-  m_currentReloadTime: 0
   bulletRef: {fileID: 100000, guid: bd7d3399b550b7a4c81e64993e4746b5, type: 2}
-  isForwardFacing: 1
   m_firePoints:
   - {fileID: 400028}
   - {fileID: 400026}
-  m_singleFirePointPerShot: 1
   m_cannons:
   - {fileID: 100028}
   - {fileID: 100026}
   m_turretAimStyle: 2
-  m_inTurretSlotNum: -1
+  m_posOffset: {x: 0, y: .677805185, z: .200000003}
+  m_shotsPerVolley: 1
+  m_spreadFactor: 0
+  m_evenSpread: 1
+  m_fireAllShotsAtOnce: 1
+  m_sequentialFireTime: .5
+  m_singleFirePointPerShot: 1
+  m_isBeam: 0
+  m_beamRechargeDelay: 1
+  m_isForwardFacing: 0
 --- !u!114 &11400024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2712,28 +2703,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2ce60bd4b190eb4b8eccdfa00891c37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_posOffset: {x: 0, y: .677805185, z: .200000003}
-  rotateSpeed: 20
-  m_spreadFactor: 0
-  m_evenSpread: 1
-  m_shotsPerVolley: 1
-  m_fireAllShotsAtOnce: 1
-  m_sequentialFireTime: .5
-  m_isBeam: 0
-  m_beamRechargeDelay: 1
+  m_rotateSpeed: 20
   m_recoilTime: .200000003
-  m_currentReloadTime: 0
   bulletRef: {fileID: 100000, guid: bd7d3399b550b7a4c81e64993e4746b5, type: 2}
-  isForwardFacing: 1
   m_firePoints:
   - {fileID: 400040}
   - {fileID: 400038}
-  m_singleFirePointPerShot: 1
   m_cannons:
   - {fileID: 100040}
   - {fileID: 100038}
   m_turretAimStyle: 2
-  m_inTurretSlotNum: -1
+  m_posOffset: {x: 0, y: .677805185, z: .200000003}
+  m_shotsPerVolley: 1
+  m_spreadFactor: 0
+  m_evenSpread: 1
+  m_fireAllShotsAtOnce: 1
+  m_sequentialFireTime: .5
+  m_singleFirePointPerShot: 1
+  m_isBeam: 0
+  m_beamRechargeDelay: 1
+  m_isForwardFacing: 0
 --- !u!114 &11400030
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2771,28 +2760,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2ce60bd4b190eb4b8eccdfa00891c37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_posOffset: {x: 0, y: .677805185, z: .200000003}
-  rotateSpeed: 20
-  m_spreadFactor: 0
-  m_evenSpread: 1
-  m_shotsPerVolley: 1
-  m_fireAllShotsAtOnce: 1
-  m_sequentialFireTime: .5
-  m_isBeam: 0
-  m_beamRechargeDelay: 1
+  m_rotateSpeed: 20
   m_recoilTime: .200000003
-  m_currentReloadTime: 0
   bulletRef: {fileID: 100000, guid: bd7d3399b550b7a4c81e64993e4746b5, type: 2}
-  isForwardFacing: 1
   m_firePoints:
   - {fileID: 400050}
   - {fileID: 400048}
-  m_singleFirePointPerShot: 1
   m_cannons:
   - {fileID: 100050}
   - {fileID: 100048}
   m_turretAimStyle: 2
-  m_inTurretSlotNum: -1
+  m_posOffset: {x: 0, y: .677805185, z: .200000003}
+  m_shotsPerVolley: 1
+  m_spreadFactor: 0
+  m_evenSpread: 1
+  m_fireAllShotsAtOnce: 1
+  m_sequentialFireTime: .5
+  m_singleFirePointPerShot: 1
+  m_isBeam: 0
+  m_beamRechargeDelay: 1
+  m_isForwardFacing: 0
 --- !u!114 &11400036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2804,10 +2791,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 3
-  _uvTieY: 3
-  _fps: 8
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -2822,10 +2809,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 7
-  _uvTieY: 1
-  _fps: 10
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -2840,10 +2827,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 3
-  _uvTieY: 3
-  _fps: 8
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -2858,10 +2845,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 3
-  _uvTieY: 3
-  _fps: 8
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -2876,10 +2863,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 3
-  _uvTieY: 3
-  _fps: 8
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -2894,10 +2881,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 3
-  _uvTieY: 3
-  _fps: 8
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -2912,10 +2899,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 3
-  _uvTieY: 3
-  _fps: 8
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -2930,10 +2917,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 3
-  _uvTieY: 3
-  _fps: 8
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0

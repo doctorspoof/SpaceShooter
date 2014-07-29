@@ -803,6 +803,12 @@ public class CapitalShipScript : Ship
         m_potentialTargets.Clear();
 
         GameObject[] objects = Physics.OverlapSphere(transform.position, m_searchRadius, layerMask).GetAttachedRigidbodies().GetUniqueOnly().GetGameObjects();
+
+        if(objects == null)
+        {
+            return;
+        }
+
         m_potentialTargets.AddRange(objects);
 
         for (int i = m_alreadyBeingTargetted.Count - 1; i >= 0; -- i )
