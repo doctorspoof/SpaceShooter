@@ -61,7 +61,6 @@ public class BasicBulletScript : MonoBehaviour
     float m_currentLifetime = 0f;							// Simply keeps an eye on the current lifetime
 
     int m_pierceCounter = 0;								// Keeps a reference to how many times the bullet has pierced through an enemy
-    int m_homingMask = 0;									// The layer mask used for homing functionality, this is set up using SetupLayerMask()
     int m_aoeMask = 0;										// The layer mask used for AoE functionality, it gets set up at the same time as m_homingMask
 
     [HideInInspector]
@@ -192,49 +191,32 @@ public class BasicBulletScript : MonoBehaviour
     {
         if (Network.isServer && (!other.isTrigger || other.gameObject.layer == Layers.enemyDestructibleBullet))
         {
-            //TODO: CHANGE LAYER DETETION SYSTEM
-            switch (other.gameObject.layer)
+            try
             {
-                // Do nothing is layer isn't applicable
-                default:
-                    break;
+                if (!m_isAOE)
+                {
+                    // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+                    DamageMob(other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);
+                }
+            }
 
-                // Bullets only need to interact with HealthScript containing GameObjects
-                case Layers.player:
-                case Layers.capital:
-                case Layers.enemy:
-                case Layers.enemyDestructibleBullet:
-                case Layers.asteroid:
-                case Layers.enemyCollide:
-	            {
-	                try
-	                {
-	                    if (!m_isAOE)
-	                    {
-	                        // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-	                        DamageMob(other.attachedRigidbody.gameObject, m_bulletDamage, m_isPiercing);
-	                    }
-	                }
-	                catch (System.Exception error)
-	                {
-	                    Debug.LogError ("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
-                        Debug.LogError ("Attempted to hit: " + other.transform.root.name);
-	                }
-	                finally
-	                {
-	                    // Piercing bullets continue until the end of their lifetime.
-	                    if (m_isAOE || !m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
-	                    {
-							DetonateBullet();
-	                    }
-	                    else
-	                    {
-	                        Debug.Log("Didn't destroy " + gameObject.name);
-	                    }
-	                }
+            catch (System.Exception error)
+            {
+                Debug.LogError ("Exception Occurred in BasicBulletScript: " + error.Message + " at " + error.Source);
+                Debug.LogError ("Attempted to hit: " + other.transform.root.name);
+            }
 
-	                break;
-	            }
+            finally
+            {
+                // Piercing bullets continue until the end of their lifetime.
+                if (m_isAOE || !m_isPiercing || m_pierceCounter > m_maxPierceHits || m_bulletDamage < 1)
+                {
+					DetonateBullet();
+                }
+                else
+                {
+                    Debug.Log("Didn't destroy " + gameObject.name);
+                }
             }
         }
     }
@@ -242,55 +224,7 @@ public class BasicBulletScript : MonoBehaviour
     // This should be called at Awake() or Start() otherwise AoE and homing functionality won't work correctly
     void LayerMaskSetup()
     {
-        //TODO: CHANGE LAYER DETETION SYSTEM
-        const int 	player = (1 << Layers.player),
-                    capital = (1 << Layers.capital),
-                    enemy = (1 << Layers.enemy),
-                    asteroid = (1 << Layers.asteroid),
-                    enemyCollide = (1 << Layers.enemyCollide),
-                    enemyDestructibleBullet = (1 << Layers.enemyDestructibleBullet);
-
-        switch (this.gameObject.layer)
-        {
-            case Layers.playerBullet:
-                m_homingMask = enemy | enemyCollide;
-                m_aoeMask = m_homingMask | enemyDestructibleBullet | player | asteroid;
-                break;
-
-            case Layers.capitalBullet:
-                m_homingMask = enemy | enemyCollide;
-                m_aoeMask = m_homingMask | enemyDestructibleBullet | asteroid;
-                break;
-
-            case Layers.enemyBullet:
-            case Layers.enemyDestructibleBullet:
-                m_homingMask = player | capital;
-                m_aoeMask = m_homingMask | enemy | enemyCollide | asteroid;
-                break;
-        }
-    }
-
-
-    // Simply finds and returns the closest target
-    GameObject GetClosestTarget(int layerMask)
-    {
-        float shortestDist = float.MaxValue;
-        int closestID = -1;
-
-        Rigidbody[] targets = Physics.OverlapSphere(this.transform.position, m_homingRange, layerMask).GetAttachedRigidbodies().GetUniqueOnly();
-
-        for (int i = 0; i < targets.Length; i++)
-        {
-            // Use sqrMagnitude for the distance to improve performance
-            float distance = (this.transform.position - targets[i].transform.position).sqrMagnitude;
-            if (closestID == -1 || distance < shortestDist)
-            {
-                shortestDist = distance;
-                closestID = i;
-            }
-        }
-
-        return closestID == -1 ? null : targets[closestID].gameObject;
+        m_aoeMask = Layers.GetLayerMask (gameObject.layer, MaskType.AoE);
     }
 
 
@@ -507,6 +441,9 @@ public class BasicBulletScript : MonoBehaviour
 
             case Layers.player:
                 SyncPlayer(mob);
+                break;
+
+            default:
                 break;
         }
     }

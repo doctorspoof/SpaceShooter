@@ -289,7 +289,7 @@ public sealed class NetworkInventory : MonoBehaviour
         {
             m_itemIDs = itemManager.GetComponent<ItemIDHolder>();
 
-            if (!m_itemIDs != null)
+            if (m_itemIDs == null)
             {
                 Debug.LogError ("ItemManager object does not contain an ItemIDHolder component.");
             }
@@ -551,7 +551,7 @@ public sealed class NetworkInventory : MonoBehaviour
                     if (isValidIndex)
                     {
                         // Check to see if the item at the index is null, if so we know it is an add request.
-                        if (!m_inventory[index] != null)
+                        if (m_inventory[index] == null)
                         {
                             if (!IsInventoryFull())
                             {
@@ -719,7 +719,7 @@ public sealed class NetworkInventory : MonoBehaviour
                     m_isItemRequested[index] = false;
                     
                     // Check to see if the desired index was a null item, this means that it was an add requests
-                    if (!m_inventory[index] != null)
+                    if (m_inventory[index] == null)
                     {
                         SetAddRequests (--m_addRequests);
                     }

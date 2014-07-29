@@ -22,7 +22,7 @@ public sealed class Layers
 {
     #region Individual layers
     
-    private const int    player = 8,
+    public const int    player = 8,
                         ignore = 9,
                         enemy = 11,
                         objective = 12,
@@ -50,7 +50,7 @@ public sealed class Layers
     /// <returns>The determined layer mask</returns>
     /// <param name="baseLayer">What layer is the current object?</param>
     /// <param name="type">Do you require any special type of mask?</param>
-    public int GetLayerMask (int baseLayer, MaskType type = MaskType.Standard)
+    public static int GetLayerMask (int baseLayer, MaskType type = MaskType.Standard)
     {
         switch (baseLayer)
         {
@@ -77,7 +77,7 @@ public sealed class Layers
     
     #region Get mask functions
     
-    int GetCapitalMask (MaskType type)
+    static int GetCapitalMask (MaskType type)
     {
         switch (type)
         {
@@ -96,7 +96,7 @@ public sealed class Layers
     }
     
     
-    int GetPlayerBulletMask (MaskType type)
+    static int GetPlayerBulletMask (MaskType type)
     {
         switch (type)
         {
@@ -116,7 +116,7 @@ public sealed class Layers
     }
     
     
-    int GetEnemyBulletMask (MaskType type)
+    static int GetEnemyBulletMask (MaskType type)
     {
         switch (type)
         {
@@ -136,7 +136,7 @@ public sealed class Layers
     }
     
     
-    int GetCapitalBulletMask (MaskType type)
+    static int GetCapitalBulletMask (MaskType type)
     {
         switch (type)
         {
