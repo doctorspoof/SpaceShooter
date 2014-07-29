@@ -118,13 +118,13 @@ public class EventScript : MonoBehaviour
     
 	[SerializeField] GameObject m_selectedPlayer = null;
 
-    int m_hostVote = 0;
+    //int m_hostVote = 0;
     int m_previousVote = -1;
 
 	bool m_hasStarted = false;
 	bool m_hasTriggered = false;
 
-    float m_timeBetweenWaves = 20.0f;
+    //float m_timeBetweenWaves = 20.0f;
 
     bool m_eventShouldSelfDestruct = false;
 
@@ -212,7 +212,7 @@ public class EventScript : MonoBehaviour
 		if(Network.isServer)
 		{
 			//Debug.Log ("Received host vote for option #" + optionNum);
-			m_hostVote = optionNum;
+			//m_hostVote = optionNum;
 			if(m_previousVote != -1)
 				m_optionVotes[m_previousVote]--;
 			m_previousVote = optionNum;

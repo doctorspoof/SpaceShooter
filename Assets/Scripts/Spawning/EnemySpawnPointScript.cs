@@ -54,8 +54,6 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     float m_timeSinceLastRelease;
 
-    MeshRenderer m_meshRenderer;
-
     List<SpawnLocation> m_enemiesWaitingToSpawn, m_enemiesBeingSpawned;
 
     float m_currentScalingTime = 0, currentT;
@@ -100,7 +98,6 @@ public class EnemySpawnPointScript : MonoBehaviour
         m_enemiesWaitingToSpawn = new List<SpawnLocation>();
         m_enemiesBeingSpawned = new List<SpawnLocation>();
         m_wavesToBeSpawned = new List<GroupedWaveInfo>();
-        m_meshRenderer = GetComponent<MeshRenderer>();
     }
 
     void Update()

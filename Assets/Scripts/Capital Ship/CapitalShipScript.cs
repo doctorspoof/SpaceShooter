@@ -20,7 +20,7 @@ public class CapitalShipScript : Ship
 
     [SerializeField] bool m_shouldStart = false;
 
-
+    bool temp;
 
 	ItemIDHolder m_itemIDs;
 
@@ -39,8 +39,8 @@ public class CapitalShipScript : Ship
     int m_maxResourceWater = 1000;
     int m_maxResourceFuel = 1000;
 
-    GameObject m_buildUpExplo;
-    GameObject m_bigExplo;
+    //GameObject m_buildUpExplo;
+    //GameObject m_bigExplo;
 
     List<GameObject> m_potentialTargets = new List<GameObject>();
     List<GameObject> m_alreadyBeingTargetted = new List<GameObject>();
@@ -688,13 +688,13 @@ public class CapitalShipScript : Ship
 	{
 		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position + new Vector3(0, 0, -1.0f), this.transform.rotation);
 		explodeObj1.transform.parent = this.transform;
-		m_buildUpExplo = explodeObj1;
+		//m_buildUpExplo = explodeObj1;
 	}
 
 	public void BeginDeathFinalAnim()
 	{
-		GameObject explodeObj2 = (GameObject)Instantiate(m_finalExplodeRef, this.transform.position + new Vector3(0, 0, -1.5f), this.transform.rotation);
-		m_bigExplo = explodeObj2;
+		/*GameObject explodeObj2 = (GameObject)*/Instantiate(m_finalExplodeRef, this.transform.position + new Vector3(0, 0, -1.5f), this.transform.rotation);
+		//m_bigExplo = explodeObj2;
 
 		//Begin a timer here, and then split the cship into fragments
 		StartCoroutine(SplitCShipDelay());

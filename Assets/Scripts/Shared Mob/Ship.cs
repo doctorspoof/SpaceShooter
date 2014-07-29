@@ -41,8 +41,8 @@ public class Ship : MonoBehaviour
 
     int shaderCounter = 0;
 
-    bool coroutineIsRunning = false;
-    bool coroutineForceStopped = false;
+    //bool coroutineIsRunning = false;
+    //bool coroutineForceStopped = false;
     
 
 
@@ -58,9 +58,10 @@ public class Ship : MonoBehaviour
     GameObject m_shieldCache = null;
 
     //this was mainly for testing, may be deleted eventually
-    [SerializeField]
-    int shipID = -1;
+#pragma warning disable 0414
+    [SerializeField] int shipID = -1;
     static int ids = 0;
+#pragma warning restore 0414
 
     #region getset
     public float GetMaxShipSpeed()
@@ -531,7 +532,7 @@ public class Ship : MonoBehaviour
     IEnumerator ReduceShieldEffectOverTime(int i)
     {
         float t = 0;
-        coroutineIsRunning = true;
+        //coroutineIsRunning = true;
         while (t <= 1.0f)
         {
             t += Time.deltaTime;
@@ -541,7 +542,7 @@ public class Ship : MonoBehaviour
             yield return 0;
         }
 
-        coroutineIsRunning = false;
+        //coroutineIsRunning = false;
     }
 
     public GameObject GetShield()

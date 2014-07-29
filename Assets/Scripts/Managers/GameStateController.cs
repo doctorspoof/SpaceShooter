@@ -85,9 +85,6 @@ public class GameStateController : MonoBehaviour
     int m_numDeadPCs = 0;
 
     string m_ownName;
-    GameObject[] m_PlayerSpawnPoints;
-
-    bool m_gameHasBeenWon = false;
 
     float m_volumeHolder = 1.0f;
 
@@ -230,7 +227,6 @@ public class GameStateController : MonoBehaviour
     {
         m_volumeHolder = PlayerPrefs.GetFloat("MusicVolume", 1.0f);
         this.audio.volume = m_volumeHolder;
-        m_PlayerSpawnPoints = GameObject.FindGameObjectsWithTag("PlayerSpawn");
         m_connectedPlayers = new List<Player>();
         m_deadPlayers = new List<DeadPlayer>();
     }
@@ -468,7 +464,7 @@ public class GameStateController : MonoBehaviour
         capital.GetComponent<HealthScript>().SetGameStateController(this.gameObject);
         m_ingameCapitalShip = capital;
         Debug.Log("Spawned a capital ship");
-        GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<EnemySpawnManagerScript>().RecieveInGameCapitalShip(capital);
+        //GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<EnemySpawnManagerScript>().RecieveInGameCapitalShip(capital);
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
         //capital.GetComponent<CapitalShipScript>().shouldStart = true;
     }

@@ -20,8 +20,8 @@ public class EnemySupportShield : MonoBehaviour
 	
 	int shaderCounter = 0;					// A counter for how many times the shield is wibbling
 
-	bool m_coroutineIsRunning = false;		// Used to regulate the shield wibble
-	bool m_coroutineForceStopped = false;	// Used to regulate the shield wibble
+	//bool m_coroutineIsRunning = false;		// Used to regulate the shield wibble
+	//bool m_coroutineForceStopped = false;	// Used to regulate the shield wibble
 
 
 
@@ -145,7 +145,7 @@ public class EnemySupportShield : MonoBehaviour
 	IEnumerator ReduceShieldEffectOverTime (int i)
 	{
 		float t = 0;
-		m_coroutineIsRunning = true;
+		//m_coroutineIsRunning = true;
 		//while(t <= 1.0f && coroutineIsRunning)
 		while (t <= 1.0f)
 		{
@@ -161,6 +161,6 @@ public class EnemySupportShield : MonoBehaviour
 		/*if(!coroutineIsRunning)
                 coroutineForceStopped = true;*/
 		
-		m_coroutineIsRunning = false;
+		//m_coroutineIsRunning = false;
 	}
 }

@@ -42,7 +42,7 @@ public class BasicBulletScript : MonoBehaviour
 
     // Homing attributes
     [SerializeField]                    bool m_isHoming = false;	                    // Whether the bullet should track targets or not
-    [SerializeField]                    float m_homingRange = 5.0f;                     // How far away a target should be tracked
+    //[SerializeField]                    float m_homingRange = 5.0f;                     // How far away a target should be tracked
     [SerializeField]                    float m_homingRotateSpeed = 0.5f;               // How quickly the bullet should rotate to chase its target
 
     // Area of effect attributes

@@ -47,7 +47,7 @@ public class PlayerControlScript : Ship
 
     float m_dockingTime = 0.0f;				//Used to determine if the player should continue the docking attempt
 
-    bool m_shouldPlaySound = false;
+    //bool m_shouldPlaySound = false;
 
     // Use this for initialization
     float m_volumeHolder = 1.0f;
@@ -207,7 +207,7 @@ public class PlayerControlScript : Ship
 
         m_ownerSt = m_owner.ToString();
 
-        if (m_owner != null && m_owner == Network.player)
+        if (m_owner == Network.player)
         {
             if ((m_useController && Input.GetButtonDown("X360Start")) || (!m_useController && Input.GetKeyDown(KeyCode.Escape)))
             {
@@ -830,7 +830,7 @@ public class PlayerControlScript : Ship
 
 	[RPC] void PropagateIsPlayingSound(bool isPlaying)
 	{
-		m_shouldPlaySound = isPlaying;
+		//m_shouldPlaySound = isPlaying;
 
 		if(isPlaying)
 		{

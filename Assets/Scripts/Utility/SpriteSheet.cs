@@ -16,7 +16,7 @@ public class SpriteSheet : MonoBehaviour
 
     Vector2 m_size;
     Renderer m_myRenderer;
-    int m_lastIndex = -1;
+    //int m_lastIndex = -1;
 
     float m_floatCatch = 0.0f;
     int m_currentIndex = 0;
@@ -98,7 +98,7 @@ public class SpriteSheet : MonoBehaviour
                 m_myRenderer.material.SetTextureOffset("_MainTex", offset);
                 m_myRenderer.material.SetTextureScale("_MainTex", m_size);
 
-                m_lastIndex = m_currentIndex;
+                //m_lastIndex = m_currentIndex;
 
                 if (m_currentIndex > ((m_uvTieX * m_uvTieY) - 2))
                 {

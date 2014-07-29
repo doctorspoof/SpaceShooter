@@ -87,8 +87,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     [SerializeField] GameObject[] m_allSpawnPoints;
 
-    [SerializeField] GameObject m_capitalShip;
-
     [SerializeField] float m_healthModifierIncrement;
     [SerializeField] float m_currentHealthModifier = 1.0f;
     [SerializeField] float m_timeCountInMinutes;
@@ -108,6 +106,8 @@ public class EnemySpawnManagerScript : MonoBehaviour
     bool m_allDone = true;
 
 
+
+    int waveCount = 0;
 
     #region getset
 
@@ -133,12 +133,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     #endregion getset
 
-    public void RecieveInGameCapitalShip(GameObject ship)
-    {
-        m_allSpawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
-        m_capitalShip = ship;
-    }
-
     void Start()
     {
         //float increaseInPercentRequired = multiplierAtTimeRequired - 1;
@@ -156,7 +150,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         if (Time.timeSinceLevelLoad - m_lastTimeModifier >= 1 && m_hasBegan)
         {
             m_lastTimeModifier = (int)Time.timeSinceLevelLoad;
-            //currentHealthModifier += healthModifierIncrement;
+            m_currentHealthModifier += m_healthModifierIncrement;
             foreach (GameObject spawn in m_allSpawnPoints)
             {
                 EnemySpawnPointScript spawnPoint = spawn.GetComponent<EnemySpawnPointScript>();
@@ -164,7 +158,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             }
         }
 
-        if (Network.isServer && m_allSpawnPoints.Length != 0 && /*!shouldPause && shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1)// && hasBegan)
+        if (Network.isServer && m_allSpawnPoints.Length != 0 && !m_shouldPause && /*shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1)// && hasBegan)
         {
             m_lastTimeSpawn = (int)Time.timeSinceLevelLoad;
             SendNextWaveToPoints();
@@ -175,7 +169,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
     {
         m_shouldStart = true;
         m_hasBegan = true;
-        InitSpawnPoints();
     }
 
     public void InitSpawnPoints()
@@ -187,8 +180,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
             SendNextWaveToPoints();
         }
     }
-
-    int waveCount = 0;
 
     void SendNextWaveToPoints()
     {

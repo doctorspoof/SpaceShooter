@@ -24,7 +24,7 @@ public class EnemyScript : Ship
 
     [SerializeField] int m_bountyAmount = 1;
     
-    [SerializeField] bool m_hasTurrets = false;
+    //[SerializeField] bool m_hasTurrets = false;
     
     [SerializeField] Order m_currentOrder = Order.Idle;
 
@@ -42,10 +42,8 @@ public class EnemyScript : Ship
 
     Vector2 m_formationPosition;
 
-    bool m_isGoingLeft = false;
-
     int m_sendCounter = 0;
-    float m_prevZRot = 0.0f;
+    //float m_prevZRot = 0.0f;
 
 
 
@@ -117,7 +115,8 @@ public class EnemyScript : Ship
     {
         m_target = target;
 
-        foreach (GameObject turret in GetAttachedTurrets())
+        GameObject[] turrets = GetAttachedTurrets();
+        foreach (GameObject turret in turrets)
         {
             EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
             turretScript.SetTarget(m_target);
@@ -280,7 +279,7 @@ public class EnemyScript : Ship
         else
         {
             //We're recieving info for this mob
-            m_prevZRot = rotZ;
+            //m_prevZRot = rotZ;
 
             stream.Serialize(ref posX);
             stream.Serialize(ref posY);
@@ -352,15 +351,12 @@ public class EnemyScript : Ship
         }
 
         GameObject[] turrets = GetAttachedTurrets();
-        if (turrets != null)
+        foreach (GameObject turret in turrets)
         {
-            foreach (GameObject turret in GetAttachedTurrets())
+            EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
+            if (turretScript != null && (m_minWeaponRange == 0 || turretScript.GetRange() < m_minWeaponRange))
             {
-                EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
-                if (turretScript != null && (m_minWeaponRange == 0 || turretScript.GetRange() < m_minWeaponRange))
-                {
-                    m_minWeaponRange = turretScript.GetRange();
-                }
+                m_minWeaponRange = turretScript.GetRange();
             }
         }
 
@@ -381,15 +377,12 @@ public class EnemyScript : Ship
         }
 
         GameObject[] turrets = GetAttachedTurrets();
-        if (turrets != null)
+        foreach (GameObject turret in turrets)
         {
-            foreach (GameObject turret in GetAttachedTurrets())
+            EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
+            if (turretScript != null && (m_maxWeaponRange == 0 || turretScript.GetRange() > m_maxWeaponRange))
             {
-                EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
-                if (turretScript != null && (m_maxWeaponRange == 0 || turretScript.GetRange() > m_maxWeaponRange))
-                {
-                    m_maxWeaponRange = turretScript.GetRange();
-                }
+                m_maxWeaponRange = turretScript.GetRange();
             }
         }
 

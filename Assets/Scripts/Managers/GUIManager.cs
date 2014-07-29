@@ -102,25 +102,25 @@ public class GUIManager : MonoBehaviour
     GameObject m_gameStateController;
     bool m_noRespawnCash = false;
     //bool m_PlayerRequestsRound = false;
-    bool m_ArenaClearOfEnemies = true;
+    //bool m_ArenaClearOfEnemies = true;
     bool m_PlayerHasDied = false;
     bool m_CShipHasDied = false;
     bool m_PlayerHasDockedAtCapital = false;
-    bool m_playerIsSelectingCShipTurret = false;
+    //bool m_playerIsSelectingCShipTurret = false;
     bool m_PlayerHasDockedAtShop = false;
     bool m_shouldShowVictorySplash = false;
     bool m_shouldShowLossSplash = false;
-    bool m_playerHasAlreadyLeft = false;
+    //bool m_playerHasAlreadyLeft = false;
     bool m_currentWeaponNeedsLockon = false;
     GameObject m_lastLockonTarget = null;
     bool m_isOnFollowMap = true;
-    bool m_shipyardScreen = true;
+    //bool m_shipyardScreen = true;
     bool m_shopConfirmBuy = false;
     ItemScript m_confirmBuyItem = null;
     bool m_isOnMap = false;
     float m_blobSize;
     bool m_shouldShowWarningAttack = false;
-    bool m_shouldShowDisconnectedSplash = false;
+    //bool m_shouldShowDisconnectedSplash = false;
     bool isOoBCountingDown = false;
     bool m_cshipDying = false;
 
@@ -270,7 +270,7 @@ public class GUIManager : MonoBehaviour
     bool m_shouldResetShopsNow = false;
     float m_shopTimer = 0.0f;
     float m_shopResetDisplayTimer = 200.0f;
-    float m_lockOffTime = 0.0f;
+    //float m_lockOffTime = 0.0f;
     float m_lockOnTime = 0.0f;
     float m_deathTimer = 45.0f;
     float m_continueTimer = 10.0f;
@@ -314,7 +314,7 @@ public class GUIManager : MonoBehaviour
     Rect m_RightPanelWeapon4Rect = new Rect(915, 568, 78, 58);
 
     // Chat Vars
-    List<string> m_chatMessages;
+    //List<string> m_chatMessages;
 
 
     #region getset
@@ -338,7 +338,7 @@ public class GUIManager : MonoBehaviour
         if (control == 1)
             m_useController = true;
 
-        m_chatMessages = new List<string>();
+        //m_chatMessages = new List<string>();
         
 #if UNITY_STANDALONE
         GetClipCursor(ref previousCursorClip);
@@ -982,7 +982,7 @@ public class GUIManager : MonoBehaviour
         }
         
         //Players: show the player's name, hp/shield and equipment icons. Bottom line, left, left mid, right mid & right
-        List<DeadPlayer> deadPlayers = m_gameStateController.GetComponent<GameStateController>().GetDeadPlayers();
+        //List<DeadPlayer> deadPlayers = m_gameStateController.GetComponent<GameStateController>().GetDeadPlayers();
         for (int i = 0; i < m_players.Length; i++)
         {
             if (m_players[i] != null)
@@ -1232,7 +1232,7 @@ public class GUIManager : MonoBehaviour
                     }
                     else
                     {
-                        float playerSourceWidth = m_playerPanelXWidth / 408.0f;
+                        //float playerSourceWidth = m_playerPanelXWidth / 408.0f;
                         GUI.DrawTexture(new Rect(396, 221, 403, 460), m_DockInventoryBorder);
                         GUI.DrawTexture(new Rect(396, 221, 403, 460), m_DockPlayerImage);
                         
@@ -1382,7 +1382,7 @@ public class GUIManager : MonoBehaviour
                     {
                         m_PlayerHasDockedAtShop = false;
                         m_shopDockedAt = null;
-                        m_shipyardScreen = true;
+                        //m_shipyardScreen = true;
                         m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetNearbyShop(null);
                         m_thisPlayerHP.transform.parent = null;
                         m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
@@ -1529,7 +1529,7 @@ public class GUIManager : MonoBehaviour
                             m_lastLockonTarget = info.collider.attachedRigidbody.gameObject;
                             m_isLockingOn = true;
                             m_lockOnTime = 0.0f;
-                            m_lockOffTime = 0.0f;
+                            //m_lockOffTime = 0.0f;
                         }
                     }
                     else
@@ -1537,7 +1537,7 @@ public class GUIManager : MonoBehaviour
                         m_isLockingOn = false;
                         m_lastLockonTarget = null;
                         m_lockOnTime = 0.0f;
-                        m_lockOffTime = 0.0f;
+                        //m_lockOffTime = 0.0f;
                     }
                 }
                 
@@ -1554,7 +1554,7 @@ public class GUIManager : MonoBehaviour
                             if (info.collider.attachedRigidbody.gameObject == m_lastLockonTarget)
                             {
                                 m_beginLockBreak = false;
-                                m_lockOffTime = 0.0f;
+                                //m_lockOffTime = 0.0f;
                             }
                         }
                     }
@@ -2240,11 +2240,12 @@ public class GUIManager : MonoBehaviour
         
         GUI.DrawTexture(new Rect((Screen.height * 0.125f) - (m_blobSize * 0.5f), ((Screen.height * 0.125f) * 7.0f) - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_selfPBlob);
         
-        Vector2 playerNormalDrawPos = Vector2.zero;
+        // TODO: check this shit
+        /*Vector2 playerNormalDrawPos = Vector2.zero;
         if (m_thisPlayerHP)
             playerNormalDrawPos = WorldToSmallMapPos(m_thisPlayerHP.transform.position);
         else
-            playerNormalDrawPos = WorldToSmallMapPos(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 10.0f));
+            playerNormalDrawPos = WorldToSmallMapPos(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 10.0f));*/
         
         //Step three: draw CShip blob
         if (m_cShipGameObject != null)
@@ -3083,9 +3084,10 @@ public class GUIManager : MonoBehaviour
         m_deathTimer = 45.0f;
     }
 
+    // TODO: wtf does this even do anymore?
     [RPC] void TellOtherPlayersPlayerHasLeft()
     {
-        m_playerHasAlreadyLeft = true;
+        //m_playerHasAlreadyLeft = true;
         //m_PlayerRequestsRound = true;
     }
     [RPC] void AskServerToBeginSpawns()
@@ -3974,14 +3976,17 @@ public class GUIManager : MonoBehaviour
         m_shouldShowWarningAttack = true;
         m_attackWarningTimer = 0;
     }
+
     public void ShowDisconnectedSplash()
     {
-        m_shouldShowDisconnectedSplash = true;
+        //m_shouldShowDisconnectedSplash = true;
     }
+
     public void ShowVictorySplash()
     {
         m_shouldShowVictorySplash = true;
     }
+
     public void ShowLossSplash()
     {
         //Unset any overlays that would overwrite loss screen
@@ -4011,7 +4016,7 @@ public class GUIManager : MonoBehaviour
             m_shops = GameObject.FindGameObjectsWithTag("Shop");
             isFirstRound = false;
         }
-        m_ArenaClearOfEnemies = false;
+        //m_ArenaClearOfEnemies = false;
     }
 
     GameObject GetClosestShop()

@@ -13,7 +13,7 @@ public class EnemyWeaponScript : MonoBehaviour
     [SerializeField] float m_burstFireTime = 2.0f;
     [SerializeField] bool m_firesInBursts = false;
     [SerializeField] bool m_firesSequentially = false;
-    [SerializeField] int m_shotsFiredInBurst = 1;
+    //[SerializeField] int m_shotsFiredInBurst = 1;
 
     [SerializeField] bool m_fireNow = false;
     
@@ -21,7 +21,7 @@ public class EnemyWeaponScript : MonoBehaviour
 
     float m_currentRecoil;
 
-    int m_currentFirePoint = 0;
+    //int m_currentFirePoint = 0;
 
 
     #region getset

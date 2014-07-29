@@ -14,8 +14,6 @@ public class HealthScript : MonoBehaviour
 	[SerializeField] int m_maximumHealth = 100;
 	[SerializeField] int m_currentHealth;
 	
-	[SerializeField] string m_pathToShieldObject = "Composite Collider/Shield";
-
     [SerializeField] int m_shieldRechargeRate = 6;
     [SerializeField] float m_timeToRechargeShield = 4.0f;
 

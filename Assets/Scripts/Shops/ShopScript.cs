@@ -27,23 +27,23 @@ public class ShopScript : MonoBehaviour
 
     // Weapons
     [SerializeField] bool m_canStockWeapons = false;				// Can the shop stock weapons
-    [SerializeField] float m_weaponRarityMod = 1.0f;				// The higher the rarity mod the higher chance of good items spawning
+    //[SerializeField] float m_weaponRarityMod = 1.0f;				// The higher the rarity mod the higher chance of good items spawning
 
     // Shields
     [SerializeField] bool m_canStockShields = false;				// See above
-    [SerializeField] float m_shieldRarityMod = 1.0f;
+    //[SerializeField] float m_shieldRarityMod = 1.0f;
 
     // Engines
     [SerializeField] bool m_canStockEngines = false;				// See above
-    [SerializeField] float m_engineRarityMod = 1.0f;
+    //[SerializeField] float m_engineRarityMod = 1.0f;
 
     // Plating
     [SerializeField] bool m_canStockPlating = false;				// See above
-    [SerializeField] float m_platingRarityMod = 1.0f;
+    //[SerializeField] float m_platingRarityMod = 1.0f;
 
     // CShip Weapons
     [SerializeField] bool m_canStockCWeapons = false;				// See above
-    [SerializeField] float m_cWeaponRarityMod = 1.0f;
+    //[SerializeField] float m_cWeaponRarityMod = 1.0f;
 
     [SerializeField] bool RESETINVENTORY = false;
 
@@ -52,7 +52,7 @@ public class ShopScript : MonoBehaviour
     /// Internal data
     bool[] m_stockFlags = null;					// Simply contains each serialized stock flag
 
-    float[] m_rarityMods = null;				// Contains the rarity mod values of each item type
+    //float[] m_rarityMods = null;				// Contains the rarity mod values of each item type
 
     int m_inventoryAdminKey = 0;				// Used in overwriting requested items
 
@@ -127,7 +127,7 @@ public class ShopScript : MonoBehaviour
         m_stockFlags = new bool[5] { m_canStockWeapons, m_canStockShields, m_canStockEngines, m_canStockPlating, m_canStockCWeapons };
 
         // Compile rarityMods
-        m_rarityMods = new float[5] { m_weaponRarityMod, m_shieldRarityMod, m_engineRarityMod, m_platingRarityMod, m_cWeaponRarityMod };
+        //m_rarityMods = new float[5] { m_weaponRarityMod, m_shieldRarityMod, m_engineRarityMod, m_platingRarityMod, m_cWeaponRarityMod };
     }
 
 

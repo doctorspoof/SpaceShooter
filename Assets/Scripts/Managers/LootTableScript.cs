@@ -98,7 +98,7 @@ public class LootTableScript : MonoBehaviour
                 numTier3 += itemOverflow;
         }
             
-        int[] numByTier = new int[3];
+        //int[] numByTier = new int[3];
         
         while(outputL.Count < numItemsReq)
         {
