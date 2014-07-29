@@ -124,6 +124,11 @@ public class BasicBulletScript : MonoBehaviour
         return m_homingTarget;
     }
 
+    public void SetHomingTarget(GameObject target_)
+    {
+        m_homingTarget = target_;
+    }
+
     /* Unity Functions */
     void Start()
     {

@@ -1,18 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FaceStar : MonoBehaviour {
+public class FaceStar : MonoBehaviour
+{
 
-	[SerializeField]
-	GameObject m_SunRef;
-
-	// Use this for initialization
-	void Start () {
+	[SerializeField] GameObject m_SunRef;
 	
-	}
-	
-	// Update is called once per frame
-	void LateUpdate () {
+	void LateUpdate () 
+    {
 		Vector3 direction = this.transform.position - m_SunRef.transform.position;
 		direction.Normalize ();
 		Quaternion rotation = this.transform.rotation * Quaternion.FromToRotation (this.transform.up, direction);

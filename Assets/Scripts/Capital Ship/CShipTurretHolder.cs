@@ -6,13 +6,26 @@ public class CShipTurretHolder : MonoBehaviour
     [SerializeField]            int m_cShipTurretID;         // An assigned ID to indicate where on the CShip this turret is located
 	[SerializeField]            bool m_forwardFacing;        // Whether or not the turret should face forwards by default
 
-    /* Getters/Setters */
+    #region getset
+
+    public int GetShipTurretID()
+    {
+        return m_cShipTurretID;
+    }
+
+    public void SetShipTurretID(int id_)
+    {
+        m_cShipTurretID = id_;
+    }
+
     public GameObject GetAttachedTurret()
     {
         return this.transform.GetChild(0).gameObject;
     }
 
-	/* Unity Functions */
+    #endregion getset
+
+    /* Unity Functions */
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
         float zRot = this.transform.rotation.eulerAngles.z;

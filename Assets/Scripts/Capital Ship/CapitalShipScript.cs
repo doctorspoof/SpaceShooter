@@ -6,31 +6,171 @@ using System.Linq;
 
 public class CapitalShipScript : Ship
 {
-	[SerializeField]
-	GameObject m_buildUpExplodeRef;
-	[SerializeField]
-	GameObject m_finalExplodeRef;
-	[SerializeField]
-	GameObject m_shatteredShip;
+	[SerializeField] GameObject m_buildUpExplodeRef;
+	[SerializeField] GameObject m_finalExplodeRef;
+	[SerializeField] GameObject m_shatteredShip;
 
-    [SerializeField]
-    Transform targetPoint;
+    [SerializeField] Transform m_targetPoint;
+
+    [SerializeField] float m_shipSpeed = 15.0f;
+
+    [SerializeField] GameObject[] m_attachedTurretsItemWrappers;
+
+    [SerializeField] bool m_shouldAnchor = false;
+
+    [SerializeField] bool m_shouldStart = false;
+
+
 
 	ItemIDHolder m_itemIDs;
-
-    public void SetTargetPoint(Transform newTarget)
-    {
-        targetPoint = newTarget;
-    }
 
     public List<GameObject> m_cShipInventory;
 	List<bool> m_requestedItem = new List<bool>(0);
 	bool m_hadItemResponse = false;
 	bool m_itemRequestResponse = false;
 
+    int m_bankedCash = 1500;
+
+    int m_currentResourceMass = 500;
+    int m_currentResourceWater = 500;
+    int m_currentResourceFuel = 500;
+
+    int m_maxResourceMass = 1000;
+    int m_maxResourceWater = 1000;
+    int m_maxResourceFuel = 1000;
+
+    GameObject m_buildUpExplo;
+    GameObject m_bigExplo;
+
+    List<GameObject> m_potentialTargets = new List<GameObject>();
+    List<GameObject> m_alreadyBeingTargetted = new List<GameObject>();
+    int m_searchRadius = 20;
+
+    bool m_updatedTargetListThisFrame = false;
+
+    #region getset
+
+    public void SetTargetPoint(Transform newTarget)
+    {
+        m_targetPoint = newTarget;
+    }
+
+    public bool GetShouldStart()
+    {
+        return m_shouldStart;
+    }
+
+    public void SetShouldStart(bool flag_)
+    {
+        m_shouldStart = flag_;
+    }
+
+    public int GetBankedCash()
+    {
+        return m_bankedCash;
+    }
+
+    public GameObject[] GetAttachedTurrets()
+    {
+        return m_attachedTurretsItemWrappers;
+    }
+
+    public int GetCurrentResourceWater()
+    {
+        return m_currentResourceWater;
+    }
+
+    public int GetMaxResourceWater()
+    {
+        return m_maxResourceWater;
+    }
+
+    public int GetCurrentResourceFuel()
+    {
+        return m_currentResourceFuel;
+    }
+
+    public int GetMaxResourceFuel()
+    {
+        return m_maxResourceFuel;
+    }
+
+    public int GetCurrentResourceMass()
+    {
+        return m_currentResourceMass;
+    }
+
+    public int GetMaxResourceMass()
+    {
+        return m_maxResourceMass;
+    }
+
+    #endregion getset
+
     protected override void Awake()
     {
         base.Awake();
+    }
+
+    void Start()
+    {
+        GameObject temp = null;
+        temp = GameObject.FindGameObjectWithTag("CSTarget");
+        if (temp != null)
+        {
+            m_targetPoint = temp.transform;
+        }
+
+        if (m_cShipInventory == null || m_cShipInventory.Count == 0)
+        {
+            Debug.Log("Telling inventory to initialise");
+            m_cShipInventory = new List<GameObject>();
+        }
+        else
+        {
+            m_requestedItem = Enumerable.Repeat(false, m_cShipInventory.Count).ToList();
+        }
+
+        if (m_shouldAnchor)
+        {
+            this.rigidbody.isKinematic = true;
+        }
+
+        GameObject itemManager = GameObject.FindGameObjectWithTag("ItemManager");
+        if (itemManager != null)
+        {
+            m_itemIDs = itemManager.GetComponent<ItemIDHolder>();
+        }
+        else
+        {
+            Debug.LogError("Unable to find ItemManager from CapitalShipScript.");
+        }
+
+        if (Network.isServer)
+            ResetAttachedTurretsFromWrappers();
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (m_shouldStart && m_targetPoint != null)
+        {
+            var dir = m_targetPoint.position - transform.position;
+            Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
+            transform.rotation = Quaternion.Slerp(transform.rotation, target, 2.0f * Time.deltaTime);
+
+            //rigidbody.AddForce(new Vector3(0, 50.0f, 0));
+            if (!m_shouldAnchor)
+                rigidbody.AddForce(this.transform.up * m_shipSpeed * Time.deltaTime);
+
+            if (!this.audio.isPlaying)
+            {
+                this.audio.volume = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
+                this.audio.Play();
+            }
+        }
+
+        m_updatedTargetListThisFrame = false;
     }
 
 	public void RequestItemFromServer (GameObject requested)
@@ -83,8 +223,7 @@ public class CapitalShipScript : Ship
 	}
 
 
-	[RPC]
-	void CancelItem (int itemID)
+	[RPC] void CancelItem (int itemID)
 	{
 		ItemScript itemScript = null;
 
@@ -136,8 +275,7 @@ public class CapitalShipScript : Ship
 		}
 	}*/
 
-	[RPC]
-	void RequestItemReply (bool reply)
+	[RPC] void RequestItemReply (bool reply)
 	{
 		m_hadItemResponse = true;
 		m_itemRequestResponse = reply;
@@ -191,8 +329,7 @@ public class CapitalShipScript : Ship
 		}
 	}
 
-	[RPC] 
-	void AlertServerInventoryRemoval (int itemID)
+	[RPC] void AlertServerInventoryRemoval (int itemID)
 	{
 		// Determine the GameObject and index
 		GameObject toRemove = m_itemIDs.GetItemWithID (itemID);
@@ -210,8 +347,7 @@ public class CapitalShipScript : Ship
 		}
 	}
 	
-	[RPC] 
-	void AlertServerInventoryAddition (int itemID)
+	[RPC] void AlertServerInventoryAddition (int itemID)
 	{
 		// Find the GameObject
 		GameObject toAdd = m_itemIDs.GetItemWithID (itemID);
@@ -229,41 +365,19 @@ public class CapitalShipScript : Ship
 	}
 
 
-    [RPC]
-    void AlertCShipInventoryHasChanged()
+    [RPC] void AlertCShipInventoryHasChanged()
     {
         //m_cShipInventory = new List<GameObject>();
         m_cShipInventory.Clear();
-        tempList = new GameObject[20];
     }
 
-	/*
-    [RPC]
-    void AlertInventoryPropagateHasFinished()
-    {
-        for (int i = 0; i < tempList.Length; i++)
-        {
-            m_cShipInventory.Add(tempList[i]);
-        }
-    }*/
-    
-    GameObject[] tempList;
-    [RPC]
-    void PropagateCShipInventory(int position, int itemID)
+    [RPC] void PropagateCShipInventory(int position, int itemID)
     {
         GameObject itemToPlace = m_itemIDs.GetItemWithID(itemID);
         Debug.Log ("Requesting that CShip get item: " + itemToPlace.GetComponent<ItemScript>().GetItemName() + " at position " + position);
         m_cShipInventory.Add(itemToPlace);
-        //tempList[position] = itemToPlace;
     }
-
-    public bool shouldStart = false;
-
-    int m_bankedCash = 1500;
-    public int GetBankedCash()
-    {
-        return m_bankedCash;
-    }
+    
     public bool CShipCanAfford(int amount)
     {
         if (m_bankedCash < amount)
@@ -271,6 +385,7 @@ public class CapitalShipScript : Ship
         else
             return true;
     }
+
     public void SpendBankedCash(int amount)
     {
         if (CShipCanAfford(amount))
@@ -278,6 +393,7 @@ public class CapitalShipScript : Ship
 
         networkView.RPC("PropagateCShipCash", RPCMode.Others, m_bankedCash);
     }
+
     public void DepositCashToCShip(int amount)
     {
         m_bankedCash += amount;
@@ -286,30 +402,10 @@ public class CapitalShipScript : Ship
         if ((m_bankedCash - amount) < 500 && m_bankedCash >= 500)
             GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertMoneyAboveRespawn();
     }
-    [RPC]
-    void PropagateCShipCash(int amount)
+
+    [RPC] void PropagateCShipCash(int amount)
     {
         m_bankedCash = amount;
-    }
-
-
-    int m_currentResourceMass = 500;
-    int m_currentResourceWater = 500;
-    int m_currentResourceFuel = 500;
-
-    int m_maxResourceMass = 1000;
-    int m_maxResourceWater = 1000;
-    int m_maxResourceFuel = 1000;
-
-    [SerializeField]
-    float m_shipSpeed = 15.0f;
-
-    /* Turrets */
-    [SerializeField]
-    GameObject[] m_attachedTurretsItemWrappers;
-    public GameObject[] GetAttachedTurrets()
-    {
-        return m_attachedTurretsItemWrappers;
     }
 
     void ResetAttachedTurretsFromWrappers()
@@ -317,7 +413,7 @@ public class CapitalShipScript : Ship
         for (int i = 0; i < m_attachedTurretsItemWrappers.Length; i++)
         {
             GameObject tHolder = GetCTurretHolderWithId(i + 1);
-            Debug.Log("Replacing turret at position #" + (i + 1) + " with equipment " + m_attachedTurretsItemWrappers[i].GetComponent<ItemScript>().GetItemName());
+            //Debug.Log("Replacing turret at position #" + (i + 1) + " with equipment " + m_attachedTurretsItemWrappers[i].GetComponent<ItemScript>().GetItemName());
             tHolder.GetComponent<CShipTurretHolder>().ReplaceAttachedTurret(m_attachedTurretsItemWrappers[i].GetComponent<ItemScript>().GetEquipmentReference());
         }
     }
@@ -335,7 +431,6 @@ public class CapitalShipScript : Ship
 			{
 				ReplaceTurretAtPosition (turretHolderID, itemID);
 			}
-
 			else
 			{
 				networkView.RPC("ReplaceTurretAtPosition", RPCMode.Server, turretHolderID, itemID);
@@ -343,8 +438,7 @@ public class CapitalShipScript : Ship
 		}
     }
 
-    [RPC]
-    void ReplaceTurretAtPosition(int id, int itemID)
+    [RPC] void ReplaceTurretAtPosition(int id, int itemID)
     {
         //We should create a temp to store the previously equipped turret, note id-1 for turretId -> array
 		ItemScript turret = m_itemIDs.GetItemWithID (itemID).GetComponent<ItemScript>();
@@ -352,12 +446,11 @@ public class CapitalShipScript : Ship
        	ReplaceTurretAtPosition (id, turret);
     }
 
-
 	void ReplaceTurretAtPosition (int id, ItemScript item)
 	{
 		if (Network.isServer)
 		{
-			if (id >= 0 && id <= m_attachedTurretsItemWrappers.Length && item)
+			if (id >= 0 && id <= m_attachedTurretsItemWrappers.Length && item != null)
 			{
 				//Put the new turret into the item wrapper list
 				m_attachedTurretsItemWrappers[id - 1] = item.gameObject;
@@ -371,13 +464,11 @@ public class CapitalShipScript : Ship
 					networkView.RPC("PropagateAttachTurretItemWrappers", RPCMode.Others, i, m_attachedTurretsItemWrappers[i].GetComponent<ItemScript>().m_equipmentID);
 				}
 			}
-			
 			else
 			{
 				Debug.LogError ("Unable to equip " + item + " at ID #" + id + " on " + name);
 			}
 		}
-
 		else
 		{
 			Debug.LogError ("A client attempted to call " + name + ".CapitalShipScript.ReplaceTurretPosition()");
@@ -385,81 +476,11 @@ public class CapitalShipScript : Ship
 			
 	}
 
-    [RPC]
-    void PropagateAttachTurretItemWrappers(int position, int turretID)
+    [RPC] void PropagateAttachTurretItemWrappers(int position, int turretID)
     {
         GameObject item = m_itemIDs.GetItemWithID(turretID);
         m_attachedTurretsItemWrappers[position] = item;
-    }
-
-    [SerializeField]
-    bool m_shouldAnchor = false;
-
-    // Use this for initialization
-    void Start()
-    {
-        GameObject temp = null;
-        temp = GameObject.FindGameObjectWithTag("CSTarget");
-        if (temp != null)
-        {
-            targetPoint = temp.transform;
-        }
-
-        if (m_cShipInventory == null || m_cShipInventory.Count == 0)
-        {
-            Debug.Log("Telling inventory to initialise");
-            m_cShipInventory = new List<GameObject>();
-        }
-
-		else
-		{
-			m_requestedItem = Enumerable.Repeat (false, m_cShipInventory.Count).ToList();
-		}
-
-        if (m_shouldAnchor)
-        {
-            this.rigidbody.isKinematic = true;
-        }
-
-
-		GameObject itemManager = GameObject.FindGameObjectWithTag ("ItemManager");
-		if (itemManager)
-		{
-			m_itemIDs = itemManager.GetComponent<ItemIDHolder>();
-		}
-
-		else
-		{
-			Debug.LogError ("Unable to find ItemManager from CapitalShipScript.");
-		}
-
-        //coroutineIsRunning = new bool[5];
-		if(Network.isServer)
-			ResetAttachedTurretsFromWrappers();
-    }
-
-    // Update is called once per frame
-    protected override void Update()
-    {
-        if (shouldStart && targetPoint != null)
-        {
-            var dir = targetPoint.position - transform.position;
-            Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-            transform.rotation = Quaternion.Slerp(transform.rotation, target, 2.0f * Time.deltaTime);
-
-            //rigidbody.AddForce(new Vector3(0, 50.0f, 0));
-            if (!m_shouldAnchor)
-                rigidbody.AddForce(this.transform.up * m_shipSpeed * Time.deltaTime);
-
-            if (!this.audio.isPlaying)
-            {
-                this.audio.volume = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
-                this.audio.Play();
-            }
-        }
-
-        updatedTargetListThisFrame = false;
-    }
+    }    
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
@@ -497,14 +518,7 @@ public class CapitalShipScript : Ship
     }
 
     /* Water funcs */
-    public int GetCurrentResourceWater()
-    {
-        return m_currentResourceWater;
-    }
-    public int GetMaxResourceWater()
-    {
-        return m_maxResourceWater;
-    }
+    
 
     public void ReduceResourceWater(int amount)
     {
@@ -546,6 +560,7 @@ public class CapitalShipScript : Ship
 
         PropagateResourceLevels();
     }
+
     public void IncreaseMaxResourceWater(int amount)
     {
         m_maxResourceWater += amount;
@@ -554,14 +569,7 @@ public class CapitalShipScript : Ship
     }
 
     /* Fuel funcs */
-    public int GetCurrentResourceFuel()
-    {
-        return m_currentResourceFuel;
-    }
-    public int GetMaxResourceFuel()
-    {
-        return m_maxResourceFuel;
-    }
+    
 
     public void ReduceResourceFuel(int amount)
     {
@@ -611,14 +619,7 @@ public class CapitalShipScript : Ship
     }
 
     /* Mass funcs */
-    public int GetCurrentResourceMass()
-    {
-        return m_currentResourceMass;
-    }
-    public int GetMaxResourceMass()
-    {
-        return m_maxResourceMass;
-    }
+    
 
     public void ReduceResourceMass(int amount)
     {
@@ -660,6 +661,7 @@ public class CapitalShipScript : Ship
 
         PropagateResourceLevels();
     }
+
     public void IncreaseMaxResourceMass(int amount)
     {
         m_maxResourceMass += amount;
@@ -670,8 +672,8 @@ public class CapitalShipScript : Ship
     {
         networkView.RPC("ReceiveResourceLevels", RPCMode.Others, m_currentResourceWater, m_currentResourceFuel, m_currentResourceMass, m_maxResourceWater, m_maxResourceFuel, m_maxResourceMass);
     }
-    [RPC]
-    void ReceiveResourceLevels(int water, int fuel, int mass, int waterMax, int fuelMax, int massMax)
+
+    [RPC] void ReceiveResourceLevels(int water, int fuel, int mass, int waterMax, int fuelMax, int massMax)
     {
         m_currentResourceWater = water;
         m_currentResourceFuel = fuel;
@@ -682,19 +684,17 @@ public class CapitalShipScript : Ship
         m_maxResourceMass = massMax;
     }
 
-	GameObject buildUpExplo;
-	GameObject bigExplo;
-	
 	public void BeginDeathBuildUpAnim()
 	{
 		GameObject explodeObj1 = (GameObject)Instantiate(m_buildUpExplodeRef, this.transform.position + new Vector3(0, 0, -1.0f), this.transform.rotation);
 		explodeObj1.transform.parent = this.transform;
-		buildUpExplo = explodeObj1;
+		m_buildUpExplo = explodeObj1;
 	}
+
 	public void BeginDeathFinalAnim()
 	{
 		GameObject explodeObj2 = (GameObject)Instantiate(m_finalExplodeRef, this.transform.position + new Vector3(0, 0, -1.5f), this.transform.rotation);
-		bigExplo = explodeObj2;
+		m_bigExplo = explodeObj2;
 
 		//Begin a timer here, and then split the cship into fragments
 		StartCoroutine(SplitCShipDelay());
@@ -711,12 +711,11 @@ public class CapitalShipScript : Ship
 		}
 
 		//Spawn shattered bits
-		GameObject ship = (GameObject)Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
+		/*GameObject ship = (GameObject)*/Instantiate(m_shatteredShip, this.transform.position, this.transform.rotation);
 
 		//Destroy self
 		Destroy (this.gameObject);
 	}
-
 
     GameObject GetCTurretWithID(int id)
     {
@@ -731,11 +730,12 @@ public class CapitalShipScript : Ship
             return null;
         }
     }
+
     public GameObject GetCTurretHolderWithId(int id)
     {
         foreach (Transform child in transform)
         {
-            if (child.tag == "CTurretHolder" && child.GetComponent<CShipTurretHolder>().m_cShipTurretID == id)
+            if (child.tag == "CTurretHolder" && child.GetComponent<CShipTurretHolder>().GetShipTurretID() == id)
             {
                 return child.gameObject;
             }
@@ -759,9 +759,7 @@ public class CapitalShipScript : Ship
         return null;
     }
 
-    List<GameObject> potentialTargets = new List<GameObject>();
-    List<GameObject> alreadyBeingTargetted = new List<GameObject>();
-    int searchRadius = 20;
+    
 
     public List<GameObject> RequestTargets(int layerMask)//Vector2 position, int layer)
     {
@@ -781,54 +779,42 @@ public class CapitalShipScript : Ship
         //potentialTargets.Remove(closestTarget);
         //alreadyBeingTargetted.Add(closestTarget);
 
-        return potentialTargets;
+        return m_potentialTargets;
     }
 
     public void ClaimTarget(GameObject obj)
     {
-        potentialTargets.Remove(obj);
-        alreadyBeingTargetted.Add(obj);
+        m_potentialTargets.Remove(obj);
+        m_alreadyBeingTargetted.Add(obj);
     }
 
     public void UnclaimTarget(GameObject obj)
     {
-        alreadyBeingTargetted.Remove(obj);
+        m_alreadyBeingTargetted.Remove(obj);
     }
-
-    bool updatedTargetListThisFrame = false;
 
     public void UpdateTargetLists(int layerMask)
     {
-        if (updatedTargetListThisFrame)
+        if (m_updatedTargetListThisFrame)
             return;
 
-        updatedTargetListThisFrame = true;
+        m_updatedTargetListThisFrame = true;
 
-        potentialTargets.Clear();
+        m_potentialTargets.Clear();
 
-        //int layerMask = (1 << Layers.enemy) | (1 << Layers.asteroid);
-        GameObject[] objects = Physics.OverlapSphere(transform.position, searchRadius, layerMask).GetAttachedRigidbodies().GetUniqueOnly().GetGameObjects();
-        potentialTargets.AddRange(objects);
+        GameObject[] objects = Physics.OverlapSphere(transform.position, m_searchRadius, layerMask).GetAttachedRigidbodies().GetUniqueOnly().GetGameObjects();
+        m_potentialTargets.AddRange(objects);
 
-        for (int i = alreadyBeingTargetted.Count - 1; i >= 0; -- i )
+        for (int i = m_alreadyBeingTargetted.Count - 1; i >= 0; -- i )
         {
-            if (alreadyBeingTargetted[i] == null || Vector2.SqrMagnitude(alreadyBeingTargetted[i].transform.position - transform.position) > Mathf.Pow(searchRadius, 2))
+            if (m_alreadyBeingTargetted[i] == null || Vector2.SqrMagnitude(m_alreadyBeingTargetted[i].transform.position - transform.position) > Mathf.Pow(m_searchRadius, 2))
             {
-                alreadyBeingTargetted.RemoveAt(i);
+                m_alreadyBeingTargetted.RemoveAt(i);
             }
             else
             {
-                potentialTargets.Remove(alreadyBeingTargetted[i]);
+                m_potentialTargets.Remove(m_alreadyBeingTargetted[i]);
             }
         }
-
-        //foreach (GameObject obj in objects)
-        //{
-        //    if (!potentialTargets.Contains(obj) && !alreadyBeingTargetted.Contains(obj))
-        //    {
-        //        potentialTargets.Add(obj);
-        //    }
-        //}
-
     }
 }

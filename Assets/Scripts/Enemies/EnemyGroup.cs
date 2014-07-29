@@ -27,7 +27,7 @@ public class EnemyGroup : MonoBehaviour
     List<AIOrder<EnemyGroup>> orderQueue = new List<AIOrder<EnemyGroup>>();
     List<AIOrder<EnemyGroup>> defaultOrders = new List<AIOrder<EnemyGroup>>();
 
-    //An array of lists with indexes based on ShipSize eg. m_children[ShipSize.Medium]
+    //An array of lists with indexes based on GetShipSize() eg. m_children[GetShipSize().Medium]
     List<EnemyScript>[] m_children;
     public List<EnemyScript>[] Children
     {
@@ -212,7 +212,7 @@ public class EnemyGroup : MonoBehaviour
                                    {
                                        foreach (EnemyScript ship in tier)
                                        {
-                                           //int indexOfShip = group.Children[(int)ship.ShipSize].IndexOf(ship);
+                                           //int indexOfShip = group.Children[(int)ship.GetShipSize()].IndexOf(ship);
 
                                            ship.SetMoveTarget((Vector2)pointOfInterest + ship.GetLocalFormationPosition());
 
@@ -353,7 +353,7 @@ public class EnemyGroup : MonoBehaviour
         {
             foreach (EnemyScript ship in tier)
             {
-                if (ship.CurrentOrder != Order.Idle)
+                if (ship.GetCurrentOrder() != Order.Idle)
                     return true;
             }
         }
@@ -374,12 +374,12 @@ public class EnemyGroup : MonoBehaviour
 
         waitForUnitsUntilCheckingToDestroy = false;
 
-        m_children[(int)enemyShip.ShipSize].Add(enemyShip);
-        enemyShip.FormationPosition = new Vector2();
+        m_children[(int)enemyShip.GetShipSize()].Add(enemyShip);
+        enemyShip.SetFormationPosition(new Vector2());
         enemyShip.SetParentGroup(this);
         //enemyShip.transform.parent = transform;
         m_shipCount++;
-        m_bountyTotal += enemyShip.BountyAmount;
+        m_bountyTotal += enemyShip.GetBountyAmount();
 
         if (slowestShip == null || enemyShip.GetMaxShipSpeed() < slowestShip.GetMaxShipSpeed())
         {
@@ -407,11 +407,11 @@ public class EnemyGroup : MonoBehaviour
             return false;
         }
 
-        bool succeeded = m_children[(int)enemyShip.ShipSize].Remove(enemyShip);
+        bool succeeded = m_children[(int)enemyShip.GetShipSize()].Remove(enemyShip);
 
         enemyShip.transform.parent = null;
         m_shipCount--;
-        m_bountyTotal -= enemyShip.BountyAmount;
+        m_bountyTotal -= enemyShip.GetBountyAmount();
 
         if (enemyShip == slowestShip)
         {
@@ -434,7 +434,7 @@ public class EnemyGroup : MonoBehaviour
     /// Splits the groups *evenly* and returns how many you asked for.
     /// May not return fully evenly if the amount of ships cannot be spread evenly. The last group will always have the lowest amount of ships.
     /// 
-    /// TODO change it so it alternates back and forth so that the last group does not have the least amount of ships for each shipsize.
+    /// TODO change it so it alternates back and forth so that the last group does not have the least amount of ships for each GetShipSize().
     /// </summary>
     /// <param name="groupCount">Amount of groups to be created</param>
     /// <returns>All groups asked for.</returns>
@@ -488,7 +488,7 @@ public class EnemyGroup : MonoBehaviour
             {
                 foreach (EnemyScript script in listTier)
                 {
-                    m_children[(int)script.ShipSize].Add(script);
+                    m_children[(int)script.GetShipSize()].Add(script);
                 }
             }
 
@@ -698,7 +698,7 @@ public class EnemyGroup : MonoBehaviour
     /// <summary>
     /// TEMPORARY TEST METHOD FOR DETERMINING WHETHER GENERATING THE WHOLE FORMATION IS BETTER THAN 1 BY 1
     /// </summary>
-    void ResetFormationPositions()
+    void ResetFormationPosition()
     {
         switch (m_formation)
         {
@@ -731,12 +731,12 @@ public class EnemyGroup : MonoBehaviour
     /// </summary>
     public void ResetAllFormationsPositions()
     {
-        ResetFormationPositions();
+        ResetFormationPosition();
         //foreach (List<EnemyScript> shipTier in m_children)
         //{
         //    foreach (EnemyScript enemy in shipTier)
         //    {
-        //        SetShipFormationPosition(enemy);
+        //        SetShipGetFormationPosition()(enemy);
         //    }
         //}
     }
@@ -768,7 +768,7 @@ public class EnemyGroup : MonoBehaviour
                 if (radius == 0 && pointsCount == 1)
                 {
                     skip = true;
-                    m_children[i][0].FormationPosition = new Vector2(0, 0);
+                    m_children[i][0].SetFormationPosition(new Vector2(0, 0));
                 }
 
                 if (largestShipInLastLayer == null)
@@ -788,7 +788,7 @@ public class EnemyGroup : MonoBehaviour
                     {
 
                         Quaternion finalRotation = Quaternion.AngleAxis(j * (360.0f / pointsCount), Vector3.forward);
-                        m_children[i][j].FormationPosition = (Vector2)(finalRotation * new Vector3(radius, 0, 0));
+                        m_children[i][j].SetFormationPosition((Vector2)(finalRotation * new Vector3(radius, 0, 0)));
 
                     }
                 }
@@ -825,7 +825,7 @@ public class EnemyGroup : MonoBehaviour
                     }
 
 
-                    //each ship in a layer needs to be checked individually due to potentially having different sizes in same shipSizeClass
+                    //each ship in a layer needs to be checked individually due to potentially having different sizes in same GetShipSize()Class
                     float layerWidth = 0;
                     foreach (EnemyScript ship in m_children[i])
                     {
@@ -870,7 +870,7 @@ public class EnemyGroup : MonoBehaviour
 
                     if (pointsCount == 1)
                     {
-                        m_children[i][0].FormationPosition = new Vector2(0, spacingBetweenLayers - (height / 2.0f) + (spacingBetweenLayers / 2));
+                        m_children[i][0].SetFormationPosition(new Vector2(0, spacingBetweenLayers - (height / 2.0f) + (spacingBetweenLayers / 2)));
                     }
                     else
                     {
@@ -881,7 +881,7 @@ public class EnemyGroup : MonoBehaviour
                         {
                             //float layerX = spacingBetweenShipsInLayer;
 
-                            m_children[i][j].FormationPosition = new Vector2((spacingBetweenShipsInLayer * j) - (width / 2.0f) + (spacingBetweenShipsInLayer / 2), spacingBetweenLayers - (height / 2.0f) + (spacingBetweenLayers / 2));
+                            m_children[i][j].SetFormationPosition(new Vector2((spacingBetweenShipsInLayer * j) - (width / 2.0f) + (spacingBetweenShipsInLayer / 2), spacingBetweenLayers - (height / 2.0f) + (spacingBetweenLayers / 2)));
                         }
                     }
 
@@ -899,7 +899,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                centre += m_children[i][j].FormationPosition;
+                centre += m_children[i][j].GetFormationPosition();
             }
         }
 
@@ -909,7 +909,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                m_children[i][j].FormationPosition -= centre;
+                m_children[i][j].SetFormationPosition( m_children[i][j].GetFormationPosition() - centre);
             }
         }
     }
@@ -960,7 +960,7 @@ public class EnemyGroup : MonoBehaviour
                 currentX += ((firstHalf[i].GetShipWidth() + firstHalf[i - 1].GetShipWidth()) / 2.0f) + 0.5f;
             }
 
-            ship.FormationPosition = new Vector2(currentX - (widthOfLine / 2.0f), 0);
+            ship.SetFormationPosition(new Vector2(currentX - (widthOfLine / 2.0f), 0));
 
         }
 
@@ -970,7 +970,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                centre += m_children[i][j].FormationPosition;
+                centre += m_children[i][j].GetFormationPosition();
             }
         }
 
@@ -980,7 +980,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                m_children[i][j].FormationPosition -= centre;
+                m_children[i][j].SetFormationPosition(m_children[i][j].GetFormationPosition() - centre);
             }
         }
 
@@ -1002,7 +1002,7 @@ public class EnemyGroup : MonoBehaviour
 
                 foreach (EnemyScript ship in m_children[i])
                 {
-                    centreOfRows[i] += ship.FormationPosition;
+                    centreOfRows[i] += ship.GetFormationPosition();
                 }
                 centreOfRows[i] /= m_children[i].Count;
 
@@ -1022,14 +1022,14 @@ public class EnemyGroup : MonoBehaviour
                 if (pointOffsetFromCentre < 0)
                     arrowheadAngle *= -1;
 
-                Vector2 originalBoxPosition = m_children[i][j].FormationPosition;
+                Vector2 originalBoxPosition = m_children[i][j].GetFormationPosition();
                 Vector2 localisedPoint = originalBoxPosition - centreOfRows[i];
 
-                m_children[i][j].FormationPosition = (Vector2)(Quaternion.AngleAxis(-arrowheadAngle / 2.0f, Vector3.forward) * localisedPoint);
+                m_children[i][j].SetFormationPosition((Vector2)(Quaternion.AngleAxis(-arrowheadAngle / 2.0f, Vector3.forward) * localisedPoint));
 
-                Vector2 tempPoint = m_children[i][j].FormationPosition;
+                Vector2 tempPoint = m_children[i][j].GetFormationPosition();
                 tempPoint.y += originalBoxPosition.y;
-                m_children[i][j].FormationPosition = tempPoint;
+                m_children[i][j].SetFormationPosition(tempPoint);
             }
         }
 
@@ -1039,7 +1039,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                centre += m_children[i][j].FormationPosition;
+                centre += m_children[i][j].GetFormationPosition();
             }
         }
 
@@ -1049,7 +1049,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                m_children[i][j].FormationPosition -= centre;
+                m_children[i][j].SetFormationPosition(m_children[i][j].GetFormationPosition() - centre);
             }
         }
 
@@ -1207,9 +1207,9 @@ public class EnemyGroup : MonoBehaviour
         {
             foreach (EnemyScript ship in list)
             {
-                if (Vector2.Distance(transform.position, ship.FormationPosition) > radius)
+                if (Vector2.Distance(transform.position, ship.GetFormationPosition()) > radius)
                 {
-                    radius = Vector2.Distance(new Vector2(0, 0), ship.FormationPosition);
+                    radius = Vector2.Distance(new Vector2(0, 0), ship.GetFormationPosition());
                 }
             }
         }

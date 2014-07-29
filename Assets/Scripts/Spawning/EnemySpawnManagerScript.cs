@@ -17,14 +17,17 @@ public class WaveEnemyType
 [System.Serializable]
 public class WaveInfo
 {
-    [SerializeField]
-    public string defaultOrderTargetTag = "Capital";
+    [SerializeField] string defaultOrderTargetTag = "Capital";
+
+
+    public WaveEnemyType[] m_enemiesOnWave;
+
+    #region getset
+
     public string GetDefaultOrderTargetTag()
     {
         return defaultOrderTargetTag;
     }
-
-    public WaveEnemyType[] m_enemiesOnWave;
 
     public int GetTotalSize()
     {
@@ -57,6 +60,8 @@ public class WaveInfo
         return output;
     }
 
+    #endregion
+
     public WaveInfo Clone()
     {
         WaveInfo returnee = new WaveInfo();
@@ -74,41 +79,59 @@ public class WaveInfo
 
 public class EnemySpawnManagerScript : MonoBehaviour
 {
-    [SerializeField]
-    WaveInfo[] smallMultipleWaves;
+    [SerializeField] WaveInfo[] m_smallMultipleWaves;
 
-    [SerializeField]
-    WaveInfo[] singleLargeWave;
+    [SerializeField] WaveInfo[] m_singleLargeWave;
 
-    [SerializeField]
-    WaveInfo[] specialWaves;
+    [SerializeField] WaveInfo[] m_specialWaves;
 
-    [SerializeField]
-    GameObject[] test;
+    [SerializeField] GameObject[] m_allSpawnPoints;
 
-    [SerializeField]
-    GameObject[] m_allSpawnPoints;
+    [SerializeField] GameObject m_capitalShip;
 
-    //[SerializeField]
-    //int currentWave = 0;
+    [SerializeField] float m_healthModifierIncrement;
+    [SerializeField] float m_currentHealthModifier = 1.0f;
+    [SerializeField] float m_timeCountInMinutes;
 
-    [SerializeField]
-    GameObject m_capitalShip;
+    [SerializeField] float m_multiplierAtTimeRequired;
 
-    [SerializeField]
-    float healthModifierIncrement;
-    [SerializeField]
-    float currentHealthModifier = 1.0f;
-    [SerializeField]
-    float timeCountInMinutes;
+    [SerializeField] int m_secondsBetweenWaves = 40;
 
-    [SerializeField]
-    float multiplierAtTimeRequired;
+    [SerializeField] int m_lastTimeModifier = 0;
+    [SerializeField] int m_lastTimeSpawn = 0;
 
-    [SerializeField]
-    int secondsBetweenWaves = 40;
 
-    bool shouldPause = false, hasBegan = false;
+
+    bool m_shouldPause = false, m_hasBegan = false;
+
+    bool m_shouldStart = false;
+    bool m_allDone = true;
+
+
+
+    #region getset
+
+    public bool GetShouldStart()
+    {
+        return m_shouldStart;
+    }
+
+    public void SetShouldStart(bool flag_)
+    {
+        m_shouldStart = flag_;
+    }
+
+    public bool GetAllDone()
+    {
+        return m_allDone;
+    }
+
+    public void SetAllDone(bool flag_)
+    {
+        m_allDone = flag_;
+    }
+
+    #endregion getset
 
     public void RecieveInGameCapitalShip(GameObject ship)
     {
@@ -116,85 +139,50 @@ public class EnemySpawnManagerScript : MonoBehaviour
         m_capitalShip = ship;
     }
 
-    // Use this for initialization
     void Start()
     {
-        //test = m_waveInfos[0].GetRawWave();
-        //test = GetAllRawWavesTogether();
-
         //float increaseInPercentRequired = multiplierAtTimeRequired - 1;
         //healthModifierIncrement = Mathf.Exp((Mathf.Log(increaseInPercentRequired) / (timeCountInMinutes * 60)));
 
-        float increaseInPercentRequired = multiplierAtTimeRequired - 1;
-        healthModifierIncrement = increaseInPercentRequired / (timeCountInMinutes * 60);
+        float increaseInPercentRequired = m_multiplierAtTimeRequired - 1;
+        m_healthModifierIncrement = increaseInPercentRequired / (m_timeCountInMinutes * 60);
 
         InitSpawnPoints();
-
-
     }
-
-    public void BeginSpawning()
-    {
-        shouldStart = true;
-        hasBegan = true;
-        //if (currentWave == 0)
-        //{
-        //Spawners haven't been initialised, try again:
-        InitSpawnPoints();
-        //}
-    }
-
-    // Update is called once per frame
-    public bool shouldStart = false;
-    public bool allDone = true;
-
-    [SerializeField]
-    int lastTimeModifier = 0, lastTimeSpawn = 0;
+    
     void Update()
     {
         //-60 seconds so updates once per minute
-        if (Time.timeSinceLevelLoad - lastTimeModifier >= 1 && hasBegan)
+        if (Time.timeSinceLevelLoad - m_lastTimeModifier >= 1 && m_hasBegan)
         {
-            lastTimeModifier = (int)Time.timeSinceLevelLoad ;
+            m_lastTimeModifier = (int)Time.timeSinceLevelLoad;
             //currentHealthModifier += healthModifierIncrement;
             foreach (GameObject spawn in m_allSpawnPoints)
             {
                 EnemySpawnPointScript spawnPoint = spawn.GetComponent<EnemySpawnPointScript>();
-                spawnPoint.SetModifier(currentHealthModifier);
+                spawnPoint.SetModifier(m_currentHealthModifier);
             }
         }
 
-        if (Network.isServer && m_allSpawnPoints.Length != 0 && /*!shouldPause && shouldStart &&*/ (Time.timeSinceLevelLoad  - lastTimeSpawn - secondsBetweenWaves) >= 1)// && hasBegan)
+        if (Network.isServer && m_allSpawnPoints.Length != 0 && /*!shouldPause && shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1)// && hasBegan)
         {
-            lastTimeSpawn = (int)Time.timeSinceLevelLoad ;
+            m_lastTimeSpawn = (int)Time.timeSinceLevelLoad;
             SendNextWaveToPoints();
         }
+    }
+
+    public void BeginSpawning()
+    {
+        m_shouldStart = true;
+        m_hasBegan = true;
+        InitSpawnPoints();
     }
 
     public void InitSpawnPoints()
     {
         if (Network.isServer)
         {
-            //Debug.Log ("Initialising spawn points.");
             m_allSpawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
-
-            //Debug.Log ("WaveInfo is of size: " + m_waveInfos.Length);
-            //if (smallMultipleWaves.Length != 0)
-            //{
-            //    //Debug.Log ("Sending first wave to spawners");
-            //    //Send the first wave over
-            //    foreach (GameObject spawner in m_allSpawnPoints)
-            //    {
-            //        EnemySpawnPointScript spawnPointScript = spawner.GetComponent<EnemySpawnPointScript>();
-
-            //        List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            //        waveToBePassed.Add(smallMultipleWaves[Random.Range(0, smallMultipleWaves.Length)]);
-
-            //        spawnPointScript.SetSpawnList(waveToBePassed, secondsBetweenWaves);
-            //    }
-            //    //currentWave++;
-            //}
-            //waveCount++;
 
             SendNextWaveToPoints();
         }
@@ -205,16 +193,14 @@ public class EnemySpawnManagerScript : MonoBehaviour
     void SendNextWaveToPoints()
     {
         waveCount++;
-        //if (currentWave < m_waveInfos.Length)
-        //{
 
         List<GameObject> spawnersToBeSpawnedAt = null;
-        //spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
+        
         // decide if this is a large or small wave
         if ((waveCount % 5 == 0 && waveCount > 0))
         {
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(singleLargeWave[Random.Range(0, singleLargeWave.Length)]);
+            waveToBePassed.Add(m_singleLargeWave[Random.Range(0, m_singleLargeWave.Length)]);
 
             spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
 
@@ -225,11 +211,8 @@ public class EnemySpawnManagerScript : MonoBehaviour
         else
         {
 
-            int random = Random.Range(0, smallMultipleWaves.Length);
-            WaveInfo newWave = smallMultipleWaves[random].Clone();
-
-            //waveToBePassed.Add(newWave);
-
+            int random = Random.Range(0, m_smallMultipleWaves.Length);
+            WaveInfo newWave = m_smallMultipleWaves[random].Clone();
             spawnersToBeSpawnedAt = GetRandomSpawnPoints(2, m_allSpawnPoints.Length);
 
             float[] ratios = new float[newWave.m_enemiesOnWave.Length];
@@ -270,7 +253,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
         if (waveCount % 4 == 0)
         {
             List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(specialWaves[Random.Range(0, specialWaves.Length)]);
+            waveToBePassed.Add(m_specialWaves[Random.Range(0, m_specialWaves.Length)]);
 
             foreach (GameObject obj in spawnersToBeSpawnedAt)
             {
@@ -279,10 +262,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             }
         }
 
-
         GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertAllClientsNextWaveReady();
-        //currentWave++;
-        //}
 
     }
 
@@ -305,41 +285,12 @@ public class EnemySpawnManagerScript : MonoBehaviour
         return pointsToBeSpawnedAt;
     }
 
-    //public void TellAllSpawnersBegin()
-    //{
-    //    hasBegan = true;
-    //    foreach (GameObject spawner in m_allSpawnPoints)
-    //    {
-    //        //Debug.Log("Telling spawner: " + spawner.name + " to begin spawning wave #" + currentWave);
-    //        spawner.GetComponent<EnemySpawnPointScript>().m_shouldStartSpawning = true;
-    //    }
-    //}
-
-    //GameObject[] GetAllRawWavesTogether()
-    //{
-    //    int size = 0;
-    //    foreach (WaveInfo info in smallMultipleWaves)
-    //    {
-    //        size += info.GetTotalSize();
-    //    }
-
-    //    GameObject[] output = new GameObject[size];
-    //    int endMark = 0;
-    //    foreach (WaveInfo info in smallMultipleWaves)
-    //    {
-    //        info.GetRawWave().CopyTo(output, endMark);
-    //        endMark += info.GetTotalSize();
-    //    }
-
-    //    return output;
-    //}
-
     public void PauseSpawners(bool pauseStatus)
     {
-        shouldPause = pauseStatus;
+        m_shouldPause = pauseStatus;
         foreach (GameObject spawner in m_allSpawnPoints)
         {
-            spawner.GetComponent<EnemySpawnPointScript>().m_shouldPause = pauseStatus;
+            spawner.GetComponent<EnemySpawnPointScript>().SetShouldPause(pauseStatus);
         }
     }
 }

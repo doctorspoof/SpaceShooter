@@ -101,7 +101,7 @@ public class GUIManager : MonoBehaviour
     GameObject[] m_shops;
     GameObject m_gameStateController;
     bool m_noRespawnCash = false;
-    bool m_PlayerRequestsRound = false;
+    //bool m_PlayerRequestsRound = false;
     bool m_ArenaClearOfEnemies = true;
     bool m_PlayerHasDied = false;
     bool m_CShipHasDied = false;
@@ -123,7 +123,46 @@ public class GUIManager : MonoBehaviour
     bool m_shouldShowDisconnectedSplash = false;
     bool isOoBCountingDown = false;
     bool m_cshipDying = false;
-    
+
+    #region getset
+
+    public bool GetCurrentWeaponNeedsLockon()
+    {
+        return m_currentWeaponNeedsLockon;
+    }
+
+    public void SetCurrentWeaponNeedsLockon(bool flag_)
+    {
+        m_currentWeaponNeedsLockon = flag_;
+    }
+
+    public bool GetIsOnFollowMap()
+    {
+        return m_isOnFollowMap;
+    }
+
+    public void SetIsOnFollowMap(bool flag_)
+    {
+        m_isOnFollowMap = flag_;
+    }
+
+    public void FlipIsOnFollowMap()
+    {
+        m_isOnFollowMap = !m_isOnFollowMap;
+    }
+
+    public void SetPlayerHasDockedAtCapital(bool flag_)
+    {
+        m_PlayerHasDockedAtCapital = flag_;
+    }
+
+    public void SetPlayerHasDockedAtShop(bool flag_)
+    {
+        m_PlayerHasDockedAtShop = flag_;
+    }
+
+    #endregion getset
+
     // Events stuff
     string eventText = "You shouldn't see this";
     string eventTriggerer = "NameHere";
@@ -153,7 +192,26 @@ public class GUIManager : MonoBehaviour
     bool m_previousMouseZero = false;
     bool m_mouseZero = false;
     ItemTicket m_currentTicket;
-    
+
+    #region getset
+
+    public void SetShopDockedAt(GameObject shop_)
+    {
+        m_shopDockedAt = shop_;
+    }
+
+    public HealthScript GetThisPlayerHP()
+    {
+        return m_thisPlayerHP;
+    }
+
+    public void SetThisPlayerHP(HealthScript healthScript_)
+    {
+        m_thisPlayerHP = healthScript_;
+    }
+
+    #endregion getset
+
     // Spec mode versions
     bool m_hostShouldStartSpec = false;
     bool m_isSpecMode = false;
@@ -162,7 +220,21 @@ public class GUIManager : MonoBehaviour
     public GameObject[] m_players;
     bool m_beginLockBreak = false;
     bool m_isLockingOn = false;
-    
+
+    #region getset
+
+    public float GetGameTimer()
+    {
+        return m_gameTimer;
+    }
+
+    public void SetGameTimer(float gameTimer_)
+    {
+        m_gameTimer = gameTimer_;
+    }
+
+    #endregion getset
+
     // Enemy radar vars
     float m_nativeWidth = 1600;
     float m_nativeHeight = 900;
@@ -174,7 +246,16 @@ public class GUIManager : MonoBehaviour
     bool m_useController = false;
     GameObject[] m_pingedEnemies;
     GameObject[] m_pingedMissiles;
-    
+
+    #region getset
+
+    public bool GetUseController()
+    {
+        return m_useController;
+    }
+
+    #endregion getset
+
     // Button remembrance
     int m_selectedButton = 0;
     int m_selectedSubButton = 0;
@@ -235,13 +316,19 @@ public class GUIManager : MonoBehaviour
     // Chat Vars
     List<string> m_chatMessages;
 
-    /* Getters/Setters */
+
+    #region getset
+
     public void SetCShip(GameObject cship)
     {
         Debug.Log("Attaching cship to GUI");
         m_cShipGameObject = cship;
         m_cShipHealth = cship.GetComponent<HealthScript>();
     }
+
+    
+
+    #endregion getset
 
     /* Unity Functions */
     void Start()
@@ -258,7 +345,7 @@ public class GUIManager : MonoBehaviour
 
         System.IntPtr window = FindWindow(null, "Galaxodus");
         Rect current = new Rect(0, 0, Screen.width, Screen.height);
-        SetWindowPos(window, 0, 0, 0, current.width, current.height, 0);
+        SetWindowPos(window, 0, 0, 0, (int)current.width, (int)current.height, 0);
 
         RECT cursorLimits;
         cursorLimits.Left = 0;
@@ -317,9 +404,9 @@ public class GUIManager : MonoBehaviour
         if (m_currentGameState == GameState.InGame)
         {
             GameStateController controller = m_gameStateController.GetComponent<GameStateController>();
-            if (m_playerShips == null || m_playerShips.Length == 0 || m_playerShips.Length < controller.m_connectedPlayers.Count - controller.m_deadPlayers.Count)
+            if (m_playerShips == null || m_playerShips.Length == 0 || m_playerShips.Length < controller.GetConnectedPlayers().Count - controller.GetDeadPlayers().Count)
             {
-                Debug.Log("Resetting player array. Length vs Count == " + m_playerShips.Length + " vs " + (controller.m_connectedPlayers.Count - controller.m_deadPlayers.Count));
+                Debug.Log("Resetting player array. Length vs Count == " + m_playerShips.Length + " vs " + (controller.GetConnectedPlayers().Count - controller.GetDeadPlayers().Count));
                 m_playerShips = GameObject.FindGameObjectsWithTag("Player");
             }
             
@@ -449,9 +536,9 @@ public class GUIManager : MonoBehaviour
         
         if (m_isLockingOn && !m_hasLockedTarget)
         {
-            m_lockonTime += Time.deltaTime;
+            m_lockOnTime += Time.deltaTime;
             //TODO: Parametise this later
-            if (m_lockonTime > 0.7f)
+            if (m_lockOnTime > 0.7f)
             {
                 if (m_thisPlayerHP)
                 {
@@ -461,7 +548,7 @@ public class GUIManager : MonoBehaviour
                 
                 else
                 {
-                    m_lockonTime = 0f;
+                    m_lockOnTime = 0f;
                 }
                 
             }
@@ -475,7 +562,7 @@ public class GUIManager : MonoBehaviour
                 m_hasLockedTarget = false;
                 m_lastLockonTarget = null;
                 m_thisPlayerHP.GetComponent<PlayerControlScript>().UnsetTargetLock();
-                m_lockonTime = 0.0f;
+                m_lockOnTime = 0.0f;
                 m_beginLockBreak = false;
             }
         }
@@ -515,7 +602,8 @@ public class GUIManager : MonoBehaviour
             }
             case GameState.MapMenu:
             {
-                DrawMapMenu();
+                // TODO: is this the correct function? used to be DrawMapMenu()
+                DrawMap();
                 break;
             }
             case GameState.InGame:
@@ -769,9 +857,9 @@ public class GUIManager : MonoBehaviour
         
         GUI.Label(new Rect(225, 131, 285, 50), "Connected Players:", m_nonBoxBigStyle);
         GameStateController gsc = m_gameStateController.GetComponent<GameStateController>();
-        for (int i = 0; i < gsc.m_connectedPlayers.Count; i++)
+        for (int i = 0; i < gsc.GetConnectedPlayers().Count; i++)
         {
-            GUI.Label(new Rect(225, 188 + (i * 40), 285, 40), gsc.m_connectedPlayers[i].m_name, m_nonBoxStyle);
+            GUI.Label(new Rect(225, 188 + (i * 40), 285, 40), gsc.GetConnectedPlayers()[i].m_name, m_nonBoxStyle);
         }
         
         if (GUI.Button(new Rect(225, 600, 285, 100), "START", m_sharedGUIStyle))
@@ -855,9 +943,9 @@ public class GUIManager : MonoBehaviour
         
         GUI.Label(new Rect(225, 131, 285, 50), "Connected Players:", m_nonBoxBigStyle);
         GameStateController gsc = m_gameStateController.GetComponent<GameStateController>();
-        for (int i = 0; i < gsc.m_connectedPlayers.Count; i++)
+        for (int i = 0; i < gsc.GetConnectedPlayers().Count; i++)
         {
-            GUI.Label(new Rect(225, 188 + (i * 40), 285, 40), gsc.m_connectedPlayers[i].m_name, m_nonBoxStyle);
+            GUI.Label(new Rect(225, 188 + (i * 40), 285, 40), gsc.GetConnectedPlayers()[i].m_name, m_nonBoxStyle);
         }
         
         if (GUI.Button(new Rect(225, 698, 285, 50), "BACK", m_sharedGUIStyle))
@@ -894,7 +982,7 @@ public class GUIManager : MonoBehaviour
         }
         
         //Players: show the player's name, hp/shield and equipment icons. Bottom line, left, left mid, right mid & right
-        List<DeadPlayer> deadPlayers = m_gameStateController.GetComponent<GameStateController>().m_deadPlayers;
+        List<DeadPlayer> deadPlayers = m_gameStateController.GetComponent<GameStateController>().GetDeadPlayers();
         for (int i = 0; i < m_players.Length; i++)
         {
             if (m_players[i] != null)
@@ -923,10 +1011,10 @@ public class GUIManager : MonoBehaviour
                     GUI.DrawTextureWithTexCoords(new Rect(20 + (i * 270), 760, 240 * shieldPercent, 45), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
                     
                     //Equipment
-                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon();
-                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon();
-                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon();
-                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon();
+                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>().GetIcon();
+                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>().GetIcon();
+                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>().GetIcon();
+                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>().GetIcon();
                     
                     GUI.DrawTexture(new Rect(20 + (i * 270), 820, 49, 55), weapTex);
                     GUI.DrawTexture(new Rect(84 + (i * 270), 820, 49, 55), shieldTex);
@@ -955,10 +1043,10 @@ public class GUIManager : MonoBehaviour
                     GUI.DrawTextureWithTexCoords(new Rect(1070 + ((i - 2) * 270), 760, 240 * shieldPercent, 45), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
                     
                     //Equipment
-                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon();
-                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon();
-                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon();
-                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon();
+                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>().GetIcon();
+                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>().GetIcon();
+                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>().GetIcon();
+                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>().GetIcon();
                     
                     GUI.DrawTexture(new Rect(1070 + ((i - 2) * 270), 820, 49, 55), weapTex);
                     GUI.DrawTexture(new Rect(1134 + ((i - 2) * 270), 820, 49, 55), shieldTex);
@@ -1035,11 +1123,11 @@ public class GUIManager : MonoBehaviour
                     if (distance.magnitude <= 7.5f)
                     {
                         GUI.Label(new Rect(700, 750, 200, 100), "Press X to dock");
-                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().m_isInRangeOfCapitalDock = true;
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetIsInRangeOfCapitalDock(true);
                     }
                     else
                     {
-                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().m_isInRangeOfCapitalDock = false;
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetIsInRangeOfCapitalDock(false);
                     }
                 }
             }
@@ -1064,7 +1152,7 @@ public class GUIManager : MonoBehaviour
 
                     //Player - left
                     GUI.Label(new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
-                    List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+                    List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetPlayerInventory();
                     Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
                     m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
                     for (int i = 0; i < playerInv.Count; i++)
@@ -1153,15 +1241,15 @@ public class GUIManager : MonoBehaviour
                         if (iconLeftX >= 324.0f)
                         {
                             
-                            m_drawnItemsSecondary.Add(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>());
-                            m_drawnItemsSecondary.Add(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>());
-                            m_drawnItemsSecondary.Add(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>());
-                            m_drawnItemsSecondary.Add(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>());
+                            m_drawnItemsSecondary.Add(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>());
+                            m_drawnItemsSecondary.Add(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>());
+                            m_drawnItemsSecondary.Add(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>());
+                            m_drawnItemsSecondary.Add(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>());
                             
-                            GUI.DrawTexture(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon());
-                            GUI.DrawTexture(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon());
-                            GUI.DrawTexture(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon());
-                            GUI.DrawTexture(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon());
+                            GUI.DrawTexture(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>().GetIcon());
+                            GUI.DrawTexture(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>().GetIcon());
+                            GUI.DrawTexture(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>().GetIcon());
+                            GUI.DrawTexture(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>().GetIcon());
                         }
                     }
                     
@@ -1196,7 +1284,7 @@ public class GUIManager : MonoBehaviour
                             //Drop item whereever you are
                             if(weaponTemp.Contains(mousePos))
                             {
-                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Weapon)
+                                if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Weapon)
                                 {
                                     m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                                     m_currentDraggedItem = null;
@@ -1212,7 +1300,7 @@ public class GUIManager : MonoBehaviour
                             }
                             else if(shieldTemp.Contains(mousePos))
                             {
-                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Shield)
+                                if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Shield)
                                 {
                                     m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                                     m_currentDraggedItem = null;
@@ -1228,7 +1316,7 @@ public class GUIManager : MonoBehaviour
                             }
                             else if(platingTemp.Contains(mousePos))
                             {
-                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Plating)
+                                if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Plating)
                                 {
                                     m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                                     m_currentDraggedItem = null;
@@ -1244,7 +1332,7 @@ public class GUIManager : MonoBehaviour
                             }
                             else if(engineTemp.Contains(mousePos))
                             {
-                                if(m_currentDraggedItem.m_typeOfItem == ItemType.Engine)
+                                if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Engine)
                                 {
                                     m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
                                     m_currentDraggedItem = null;
@@ -1295,7 +1383,7 @@ public class GUIManager : MonoBehaviour
                         m_PlayerHasDockedAtShop = false;
                         m_shopDockedAt = null;
                         m_shipyardScreen = true;
-                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().nearbyShop = null;
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetNearbyShop(null);
                         m_thisPlayerHP.transform.parent = null;
                         m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
                         m_thisPlayerHP.rigidbody.isKinematic = false;
@@ -1313,12 +1401,12 @@ public class GUIManager : MonoBehaviour
                     if (distance < 1.5f)
                     {
                         GUI.Label(new Rect(700, 750, 200, 100), "Press X to dock at trading station");
-                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().m_isInRangeOfTradingDock = true;
-                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().nearbyShop = shop;
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetIsInRangeOfTradingDock(true);
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetNearbyShop(shop);
                     }
                     else
                     {
-                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().m_isInRangeOfTradingDock = false;
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetIsInRangeOfTradingDock(false);
                     }
                 }
             }
@@ -1426,7 +1514,7 @@ public class GUIManager : MonoBehaviour
                     {
                         m_lastLockonTarget = info.collider.attachedRigidbody.gameObject;
                         m_isLockingOn = true;
-                        m_lockonTime = 0.0f;
+                        m_lockOnTime = 0.0f;
                     }
                 }
                 else if (m_isLockingOn && !m_hasLockedTarget)
@@ -1440,7 +1528,7 @@ public class GUIManager : MonoBehaviour
                         {
                             m_lastLockonTarget = info.collider.attachedRigidbody.gameObject;
                             m_isLockingOn = true;
-                            m_lockonTime = 0.0f;
+                            m_lockOnTime = 0.0f;
                             m_lockOffTime = 0.0f;
                         }
                     }
@@ -1448,7 +1536,7 @@ public class GUIManager : MonoBehaviour
                     {
                         m_isLockingOn = false;
                         m_lastLockonTarget = null;
-                        m_lockonTime = 0.0f;
+                        m_lockOnTime = 0.0f;
                         m_lockOffTime = 0.0f;
                     }
                 }
@@ -1588,8 +1676,8 @@ public class GUIManager : MonoBehaviour
         if (GUI.Button(new Rect(1038, 180, 84, 33), "", "label"))
         {
             PlayerControlScript pCSc = m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
-            int cashAmount = pCSc.GetSpaceBucks();
-            pCSc.RemoveSpaceBucks(cashAmount);
+            int cashAmount = pCSc.GetCash();
+            pCSc.RemoveCash(cashAmount);
             m_cShipGameObject.GetComponent<CapitalShipScript>().DepositCashToCShip(cashAmount);
         }
         
@@ -1624,7 +1712,7 @@ public class GUIManager : MonoBehaviour
                 DrawRightPanel();
                 
                 GUI.Label(new Rect(408, 270, 164, 40), "Player:", m_nonBoxStyle);
-                List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+                List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetPlayerInventory();
                 Rect scrollAreaRectPl = new Rect(408, 330, 180, 320);
                 m_playerScrollPosition = GUI.BeginScrollView(scrollAreaRectPl, m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
                 for (int i = 0; i < playerInv.Count; i++)
@@ -1738,7 +1826,7 @@ public class GUIManager : MonoBehaviour
                 DrawLeftPanel();
                 
                 GUI.Label(new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
-                List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().m_playerInventory;
+                List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetPlayerInventory();
                 Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
                 m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
                 for (int i = 0; i < playerInv.Count; i++)
@@ -1821,25 +1909,25 @@ public class GUIManager : MonoBehaviour
                     //Hovers
                     if (m_LeftPanelWeaponRect.Contains(mousePos))
                     {
-                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetShopText();
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>().GetShopText();
                         DrawHoverText(text, mousePos);
                     }
                     
                     if (m_LeftPanelShieldRect.Contains(mousePos))
                     {
-                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetShopText();
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>().GetShopText();
                         DrawHoverText(text, mousePos);
                     }
                     
                     if (m_LeftPanelPlatingRect.Contains(mousePos))
                     {
-                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetShopText();
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>().GetShopText();
                         DrawHoverText(text, mousePos);
                     }
                     
                     if (m_LeftPanelEngineRect.Contains(mousePos))
                     {
-                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetShopText();
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>().GetShopText();
                         DrawHoverText(text, mousePos);
                     }
                 }
@@ -1876,7 +1964,7 @@ public class GUIManager : MonoBehaviour
         }
         
         //Respawn buttons:
-        List<DeadPlayer> deadPlayers = m_gameStateController.GetComponent<GameStateController>().m_deadPlayers;
+        List<DeadPlayer> deadPlayers = m_gameStateController.GetComponent<GameStateController>().GetDeadPlayers();
         for (int i = 0; i < deadPlayers.Count; i++)
         {
             int fastSpawnCost = 500 + (int)(deadPlayers[i].m_deadTimer * 10);
@@ -1904,12 +1992,12 @@ public class GUIManager : MonoBehaviour
         if(damagePercent > 0.0f)
         {
             int cost = Mathf.RoundToInt(damagePercent * 500.0f);
-            int cash = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetSpaceBucks();
+            int cash = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetCash();
             if(m_thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(cost))
             {
                 if(GUI.Button(new Rect(430, 130, 120, 83), "Fully repair ship for $" + cost, m_sharedGUIStyle))
                 {
-                    m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(cost);
+                    m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveCash(cost);
                     m_thisPlayerHP.RepairHP(damage);
                 }
             }
@@ -1925,7 +2013,7 @@ public class GUIManager : MonoBehaviour
                 {
                     int damageHealed = (int)(percent * hpPerPercent);
                     m_thisPlayerHP.RepairHP(damageHealed);
-                    m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(cashToSpend);
+                    m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveCash(cashToSpend);
                 }
             }
             else
@@ -2430,10 +2518,10 @@ public class GUIManager : MonoBehaviour
                 engineTemp = new Rect(engineTemp.x + xDiff, engineTemp.y, engineTemp.width - xDiff, engineTemp.height);
             }
             
-            GUI.DrawTextureWithTexCoords(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedWeaponItem.GetComponent<ItemScript>().GetIcon(), weaponSource);
-            GUI.DrawTextureWithTexCoords(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedShieldItem.GetComponent<ItemScript>().GetIcon(), shieldSource);
-            GUI.DrawTextureWithTexCoords(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedPlatingItem.GetComponent<ItemScript>().GetIcon(), platingSource);
-            GUI.DrawTextureWithTexCoords(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().m_equippedEngineItem.GetComponent<ItemScript>().GetIcon(), engineSource);
+            GUI.DrawTextureWithTexCoords(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>().GetIcon(), weaponSource);
+            GUI.DrawTextureWithTexCoords(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>().GetIcon(), shieldSource);
+            GUI.DrawTextureWithTexCoords(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>().GetIcon(), platingSource);
+            GUI.DrawTextureWithTexCoords(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>().GetIcon(), engineSource);
         }
     }
     
@@ -2522,7 +2610,7 @@ public class GUIManager : MonoBehaviour
             }
             else
             {
-                List<Player> players = m_gameStateController.GetComponent<GameStateController>().m_connectedPlayers;
+                List<Player> players = m_gameStateController.GetComponent<GameStateController>().GetConnectedPlayers();
                 for (int i = 0; i < players.Count; i++)
                 {
                     if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), players[i].m_name + " #" + m_playerVotes[i]))
@@ -2554,10 +2642,10 @@ public class GUIManager : MonoBehaviour
         {
             //Display event text
             GUI.Label(new Rect(550, 200, 500, 300), eventText);
-            GUI.Label(new Rect(550, 150, 500, 100), "Time remaining: " + System.Math.Round(currEventSc.m_timer, 0));
+            GUI.Label(new Rect(550, 150, 500, 100), "Time remaining: " + System.Math.Round(currEventSc.GetTimer(), 0));
             
             //Draw each of the buttons
-            for (int i = 0; i < currEventSc.m_possibleOptions.Length; i++)
+            for (int i = 0; i < currEventSc.GetPossibleOptions().Length; i++)
             {
                 if (m_hostIsTieBreaking)
                 {
@@ -2568,7 +2656,7 @@ public class GUIManager : MonoBehaviour
                     //If a button is clicked, activate the relevent option (or vote for it)
                     if (m_hostShouldSelectTiebreaker)
                     {
-                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.m_possibleOptions[i].m_optionText + ": #" + currEventSc.m_optionVotes[i]))
+                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.GetPossibleOptions()[i].optionText + ": #" + currEventSc.GetOptionVotes()[i]))
                         {
                             eventText = currEventSc.ActivateOption(i);
                             m_eventIsOnOutcome = true;
@@ -2577,7 +2665,7 @@ public class GUIManager : MonoBehaviour
                     }
                     else
                     {
-                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.m_possibleOptions[i].m_optionText + ": #" + currEventSc.m_optionVotes[i]))
+                        if (GUI.Button(new Rect(450, 400 + (i * 100), 700, 80), currEventSc.GetPossibleOptions()[i].optionText + ": #" + currEventSc.GetOptionVotes()[i]))
                         {
                             currEventSc.VoteForOption(i);
                         }
@@ -2622,7 +2710,7 @@ public class GUIManager : MonoBehaviour
         if (m_thisPlayerHP)
         {
             return ((m_thisPlayerHP.transform.position - m_lastLockonTarget.transform.position).sqrMagnitude >
-                    (m_thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<WeaponScript>().GetBulletMaxDistance() * 0.5f).Squared());
+                    (m_thisPlayerHP.GetComponent<PlayerWeaponScript>().FindAttachedWeapon().GetComponent<EquipmentWeapon>().GetBulletMaxDistance() * 0.5f).Squared());
         }
 
         return false;
@@ -2865,7 +2953,7 @@ public class GUIManager : MonoBehaviour
     {
         m_hasLockedTarget = false;
         m_lastLockonTarget = null;
-        m_lockonTime = 0.0f;
+        m_lockOnTime = 0.0f;
         m_isLockingOn = false;
         m_thisPlayerHP.GetComponent<PlayerControlScript>().UnsetTargetLock();
     }
@@ -2956,7 +3044,7 @@ public class GUIManager : MonoBehaviour
         m_isSpecMode = true;
         m_gameTimer = 0;
         GameStateController gsc = m_gameStateController.GetComponent<GameStateController>();
-        List<Player> playersL = gsc.m_connectedPlayers;
+        List<Player> playersL = gsc.GetConnectedPlayers();
         m_players = new GameObject[playersL.Count];
         for (int i = 0; i < playersL.Count; i++)
         {
@@ -2998,7 +3086,7 @@ public class GUIManager : MonoBehaviour
     [RPC] void TellOtherPlayersPlayerHasLeft()
     {
         m_playerHasAlreadyLeft = true;
-        m_PlayerRequestsRound = true;
+        //m_PlayerRequestsRound = true;
     }
     [RPC] void AskServerToBeginSpawns()
     {
@@ -3304,7 +3392,7 @@ public class GUIManager : MonoBehaviour
 
 	void HandlePlayerEquipmentDrop (NetworkInventory inventory, int equipmentSlot, ItemType checkIs)
 	{
-		if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == checkIs)
+		if (m_currentDraggedItem.GetComponent<ItemScript>().GetTypeOfItem() == checkIs)
 		{
 			//if the item is a weapon, equip plz!
 			if (m_currentDraggedItemIsFromPlayerInv)
@@ -3332,7 +3420,7 @@ public class GUIManager : MonoBehaviour
 
 	void HandleCShipEquipmentDrop (NetworkInventory inventory, int turretID)
 	{
-		if (m_currentDraggedItem.GetComponent<ItemScript>().m_typeOfItem == ItemType.CapitalWeapon)
+		if (m_currentDraggedItem.GetComponent<ItemScript>().GetTypeOfItem() == ItemType.CapitalWeapon)
 		{
 			if (m_currentDraggedItemIsFromPlayerInv)
 			{
@@ -3462,7 +3550,7 @@ public class GUIManager : MonoBehaviour
                                         {
                                             m_shopConfirmBuy = false;
                                             m_confirmBuyItem = null;
-                                            m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveSpaceBucks(costIfShop);
+                                            m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveCash(costIfShop);
                                         }
 									}
 
@@ -3475,7 +3563,7 @@ public class GUIManager : MonoBehaviour
                                 }
 								case ItemOwner.CShipEquipment:
 								{
-									if (item.m_typeOfItem == ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+									if (item.GetTypeOfItem() == ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
 									{
 										PlayerControlScript player = m_thisPlayerHP.GetComponent<PlayerControlScript>();
 										CapitalShipScript cShip = m_cShipGameObject.GetComponent<CapitalShipScript>();
@@ -3500,20 +3588,20 @@ public class GUIManager : MonoBehaviour
 								}
 								case ItemOwner.PlayerEquipment:
 								{	
-									if (item.m_typeOfItem != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+									if (item.GetTypeOfItem() != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
 									{
 										PlayerControlScript player = m_thisPlayerHP.GetComponent<PlayerControlScript>();
 										GameObject oldEquipment = player.GetEquipmentFromSlot (equipmentSlot);
                                         
 										if (player.InventoryIsFull())
 										{
-											GameObject lastItem = player.m_playerInventory[player.m_playerInventory.Count - 1];
+											GameObject lastItem = player.GetPlayerInventory()[player.GetPlayerInventory().Count - 1];
 
 											// This little wonder makes me want to vomit and should only be used until the demo night
 											// Remove the last item from the players inventory then equip the new item from that
 											player.RemoveItemFromInventory (lastItem);
 											player.AddItemToInventory (item.gameObject);
-											player.EquipItemInSlot (player.m_playerInventory.Count - 1);
+											player.EquipItemInSlot (player.GetPlayerInventory().Count - 1);
 											player.RemoveItemFromInventory (oldEquipment);
 											player.AddItemToInventory (lastItem);
 
@@ -3524,7 +3612,7 @@ public class GUIManager : MonoBehaviour
 										else
 										{
 											player.AddItemToInventory (item.gameObject);
-											player.EquipItemInSlot (player.m_playerInventory.Count - 1);
+											player.EquipItemInSlot (player.GetPlayerInventory().Count - 1);
 										}
 									}
 									break;
@@ -3596,7 +3684,7 @@ public class GUIManager : MonoBehaviour
         m_eventIsActive = true;
         m_eventIsOnOutcome = false;
         currEventSc = currEvent.GetComponent<EventScript>();
-        eventText = currEventSc.m_EventText;
+        eventText = currEventSc.GetEventText();
         eventTriggerer = m_gameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(causer);
 
         //Freeze all the baddies
@@ -3607,14 +3695,14 @@ public class GUIManager : MonoBehaviour
         m_thisPlayerHP.gameObject.rigidbody.isKinematic = true;
 
         //Stop CShip from moving
-        m_cShipGameObject.GetComponent<CapitalShipScript>().shouldStart = false;
+        m_cShipGameObject.GetComponent<CapitalShipScript>().SetShouldStart(false);
         m_cShipGameObject.rigidbody.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
 
         //Stop spawners from spawning
         m_gameStateController.GetComponent<GameStateController>().RequestSpawnerPause();
 
         //Init #votes required
-        m_playerVotes = new int[m_gameStateController.GetComponent<GameStateController>().m_connectedPlayers.Count];
+        m_playerVotes = new int[m_gameStateController.GetComponent<GameStateController>().GetConnectedPlayers().Count];
     }
     
     void OnEventComplete()
@@ -3628,7 +3716,7 @@ public class GUIManager : MonoBehaviour
 
         //Unfreeze CShip
         m_cShipGameObject.rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
-        m_cShipGameObject.GetComponent<CapitalShipScript>().shouldStart = true;
+        m_cShipGameObject.GetComponent<CapitalShipScript>().SetShouldStart(true);
 
         //Purge event vars
         m_eventIsActive = false;
@@ -3693,7 +3781,7 @@ public class GUIManager : MonoBehaviour
 
     void CheckIfPlayerVotesAreOverHalf()
     {
-        int numPlayers = m_gameStateController.GetComponent<GameStateController>().m_connectedPlayers.Count;
+        int numPlayers = m_gameStateController.GetComponent<GameStateController>().GetConnectedPlayers().Count;
         float rawHalf = (float)numPlayers / 2.0f;
 
         for (int i = 0; i < m_playerVotes.Length; i++)
@@ -3735,21 +3823,21 @@ public class GUIManager : MonoBehaviour
 
     void OnPlayerSelected(GameObject player)
     {
-        currEventSc.selectedPlayer = player;
+        currEventSc.SetSelectedPlayer(player);
     }
 
     [RPC] void VoteForContinue(NetworkMessageInfo info)
     {
         continueVotes++;
         Debug.Log("Recieved vote from player: " + info.sender + ", bringing total to: " + continueVotes);
-        if (continueVotes >= m_gameStateController.GetComponent<GameStateController>().m_connectedPlayers.Count)
+        if (continueVotes >= m_gameStateController.GetComponent<GameStateController>().GetConnectedPlayers().Count)
             networkView.RPC("PropagateContinueComplete", RPCMode.All);
     }
     void VoteForContinue()
     {
         continueVotes++;
         Debug.Log("Recieved vote from host, bringing total to: " + continueVotes);
-        if (continueVotes >= m_gameStateController.GetComponent<GameStateController>().m_connectedPlayers.Count)
+        if (continueVotes >= m_gameStateController.GetComponent<GameStateController>().GetConnectedPlayers().Count)
             networkView.RPC("PropagateContinueComplete", RPCMode.All);
 
     }
@@ -3771,7 +3859,7 @@ public class GUIManager : MonoBehaviour
     }
     public void RecievePlayerRequiresSelectingForEvent(string text)
     {
-        m_playerVotes = new int[m_gameStateController.GetComponent<GameStateController>().m_connectedPlayers.Count];
+        m_playerVotes = new int[m_gameStateController.GetComponent<GameStateController>().GetConnectedPlayers().Count];
         eventText = text;
         m_playerSelectTimer = 20.0f;
         m_eventIsOnPlayerSelect = true;
@@ -3780,7 +3868,7 @@ public class GUIManager : MonoBehaviour
     }
     [RPC] void PropagateEventPlayerSelectionText(string text)
     {
-        m_playerVotes = new int[m_gameStateController.GetComponent<GameStateController>().m_connectedPlayers.Count];
+        m_playerVotes = new int[m_gameStateController.GetComponent<GameStateController>().GetConnectedPlayers().Count];
         eventText = text;
         m_playerSelectTimer = 20.0f;
         m_eventIsOnPlayerSelect = true;

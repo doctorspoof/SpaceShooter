@@ -3,53 +3,45 @@ using System.Collections;
 
 public class ShieldScript : MonoBehaviour 
 {
-	public Vector3 GetOffset()
-	{
-		return m_requiredOffset;
-	}
-	[SerializeField]
-	Vector3 m_requiredOffset;
+	
+	[SerializeField] Vector3 m_requiredOffset;
 
+	[SerializeField] int m_shieldMaxCharge;
+	
+	[SerializeField] int m_shieldRechargeRate;
 
-	[SerializeField]
-	int m_shieldMaxCharge;
-	public int GetShieldMaxCharge()
-	{
-		return m_shieldMaxCharge;
-	}
+	[SerializeField] float m_shieldRechargeDelay;
 
-	[SerializeField]
-	int m_shieldRechargeRate;
-	public int GetShieldRechargeRate()
-	{
-		return m_shieldRechargeRate;
-	}
+    #region getset
 
-	[SerializeField]
-	float m_shieldRechargeDelay;
-	public float GetShieldRechargeDelay()
+    public Vector3 GetOffset()
+    {
+        return m_requiredOffset;
+    }
+
+    public int GetShieldMaxCharge()
+    {
+        return m_shieldMaxCharge;
+    }
+
+    public int GetShieldRechargeRate()
+    {
+        return m_shieldRechargeRate;
+    }
+
+    public float GetShieldRechargeDelay()
 	{
 		return m_shieldRechargeDelay;
 	}
 
-	// Use this for initialization
-	void Start () 
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
-	}
+    #endregion getset
 
 	public void ParentToPlayer(string name)
 	{
 		networkView.RPC("ParentToPlayerOverNetwork", RPCMode.Others, name);
 	}
-	[RPC]
-	void ParentToPlayerOverNetwork(string name)
+
+	[RPC] void ParentToPlayerOverNetwork(string name)
 	{
 		GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
 		

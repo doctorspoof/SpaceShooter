@@ -6,13 +6,6 @@ public class Item
 {
 	public GameObject itemObject;
 	public int itemID;
-	
-	
-	// Simply tests if the pointer is valid
-	public static implicit operator bool (Item item)
-	{
-		return item != null;
-	}
 }
 
 public class ItemIDHolder : MonoBehaviour 
@@ -38,7 +31,7 @@ public class ItemIDHolder : MonoBehaviour
 	{
 		// Check if the id corresponds to the index of ItemList then check if the item is the desired item
 		if (id >= 0 && id < ItemList.Length && 
-		    ItemList[id] && ItemList[id].itemID == id)
+		    ItemList[id] != null && ItemList[id].itemID == id)
 		{
 			if (!ItemList[id].itemObject)
 			{
@@ -47,15 +40,13 @@ public class ItemIDHolder : MonoBehaviour
 
 			return ItemList[id].itemObject;
 		}
-		
-		// Brute force it bro!
 		else
 		{
 			foreach (Item item in ItemList)
 			{
 				if (item.itemID == id)
 				{
-					if (!item.itemObject)
+					if (item.itemObject == null)
 					{
 						Debug.LogError ("An item was found in " + name + ".ItemIDHolder.ItemList with ID #" + id + " without a valid .itemObject");
 					}

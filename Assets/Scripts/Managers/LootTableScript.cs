@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 public class LootTableScript : MonoBehaviour 
 {
-	[SerializeField]
-	GameObject m_ItemManager;
+	[SerializeField] GameObject m_ItemManager;
 
 	Item[] m_itemList;
     
@@ -30,7 +29,7 @@ public class LootTableScript : MonoBehaviour
             {
                 if(m_itemList[i].itemObject != null)
                 {
-                    switch(m_itemList[i].itemObject.GetComponent<ItemScript>().m_ItemTierID)
+                    switch(m_itemList[i].itemObject.GetComponent<ItemScript>().GetItemTierID())
                     {
                         case 1:
                         {
@@ -61,12 +60,6 @@ public class LootTableScript : MonoBehaviour
 		{
 			Debug.LogError ("Unable to find object with tag: ItemManager");
 		}
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
 	}
 
     public int[] RequestItemListByTime(float time, bool[] stockFlags, int numItemsReq)
@@ -120,7 +113,7 @@ public class LootTableScript : MonoBehaviour
             //Get an item from the appropriate list
             int i = Random.Range(0, m_itemTiers[currentTier - 1].Count);
             ItemScript iSc = m_itemTiers[currentTier - 1][i].itemObject.GetComponent<ItemScript>();
-            if(stockFlags[(int)iSc.m_typeOfItem])
+            if(stockFlags[(int)iSc.GetTypeOfItem()])
             {
                 outputL.Add(iSc.m_equipmentID);
             }
@@ -202,6 +195,7 @@ public class LootTableScript : MonoBehaviour
 		}
 		return range;
 	}
+
 	Item GetItemByValue (float value, int rangeMin, int rangeMax)
 	{
 		// Pre-condition: maxRange is infact the upper value

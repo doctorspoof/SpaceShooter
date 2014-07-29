@@ -329,8 +329,8 @@ public class HealthScript : MonoBehaviour
 				{
 					BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
 
-					Vector3 position = beam ? beam.beamHit.point : hitter.transform.position;
-					int dType = beam ? (int)beam.m_damageType : (int)hitter.GetComponent<BasicBulletScript>().m_damageType;
+					Vector3 position = beam ? beam.GetBeamHit().point : hitter.transform.position;
+					int dType = beam ? (int)beam.GetDamageType() : (int)hitter.GetComponent<BasicBulletScript>().GetDamageType();
 					float magnitude = beam ? beam.GetDamage() : hitter.GetComponent<BasicBulletScript>().GetDamage();
 
 					networkView.RPC ("PropagateShieldWibble", RPCMode.All, position, dType, magnitude);
@@ -496,7 +496,7 @@ public class HealthScript : MonoBehaviour
 			if(killer != null && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
                 PlayerControlScript playerShip = killer.transform.root.GetComponent<PlayerControlScript>();
-                playerShip.AddSpaceBucks(this.GetComponent<EnemyScript>().GetBounty());
+                playerShip.AddCash(this.GetComponent<EnemyScript>().GetBounty());
 			}
 
             if(Network.isServer)
@@ -515,7 +515,7 @@ public class HealthScript : MonoBehaviour
 
 				if (beam != null)
 				{
-					GetComponent<AsteroidScript>().SplitAsteroid (beam.beamHit.point);
+					GetComponent<AsteroidScript>().SplitAsteroid (beam.GetBeamHit().point);
 				}
 
 				else

@@ -164,7 +164,7 @@ public class CameraScript : MonoBehaviour
                 if(Input.GetKeyDown (KeyCode.Z))
                 {
                     // Toggle the map type
-                    m_gui.m_isOnFollowMap  = !m_gui.m_isOnFollowMap;
+                    m_gui.FlipIsOnFollowMap();
                 }
                 
                 if(Input.GetKeyDown(KeyCode.LeftControl))
@@ -189,7 +189,7 @@ public class CameraScript : MonoBehaviour
                     m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                 }
                 
-                if (m_gameController.m_currentGameState == GameState.InGame)
+                if (m_gameController.GetCurrentGameState() == GameState.InGame)
                 {
                     
                     float scroll = Input.GetAxis("Mouse ScrollWheel");
@@ -267,7 +267,7 @@ public class CameraScript : MonoBehaviour
                     if(Input.GetKeyDown (KeyCode.Z))
                     {
                         // Toggle the map type
-                        m_gui.m_isOnFollowMap  = !m_gui.m_isOnFollowMap;
+                        m_gui.FlipIsOnFollowMap();
                     }
                     
                     if(Input.GetButtonDown("X360Start") || Input.GetKeyDown(KeyCode.Escape))
@@ -277,7 +277,7 @@ public class CameraScript : MonoBehaviour
                 }
                 
                 //Listen for camera input
-                if(!m_playerIsDocked && m_gameController.m_currentGameState == GameState.InGame)
+                if(!m_playerIsDocked && m_gameController.GetCurrentGameState() ==GameState.InGame)
                 {
                     float scroll = Input.GetAxis("Mouse ScrollWheel");
                     if(scroll > 0 || Input.GetButton("X360LeftBumper"))
@@ -361,7 +361,7 @@ public class CameraScript : MonoBehaviour
 
 		//Init player array
 		m_gameController.RemovePlayerFromConnectedList(Network.player);
-		List<Player> players = m_gameController.m_connectedPlayers;
+		List<Player> players = m_gameController.GetConnectedPlayers();
 		m_players = new GameObject[players.Count];
 		for(int i = 0; i < players.Count; i++)
 		{

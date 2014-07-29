@@ -3,52 +3,46 @@ using System.Collections;
 
 public class EngineScript : MonoBehaviour 
 {
-	public Vector3 GetOffset()
-	{
-		return m_requiredOffset;
-	}
-	[SerializeField]
-	Vector3 m_requiredOffset;
 	
-	[SerializeField]
-	float m_engineMoveSpeed;
-	public float GetMoveSpeed()
-	{
-		return m_engineMoveSpeed;
-	}
+	[SerializeField] Vector3 m_requiredOffset;
+	
+	[SerializeField] float m_engineMoveSpeed;
 
-	[SerializeField]
-	float m_engineTurnSpeed;
-	public float GetTurnSpeed()
-	{
-		return m_engineTurnSpeed;
-	}
+	[SerializeField] float m_engineTurnSpeed;
 
-	[SerializeField]
-	float m_engineStrafeModifier;
-	public float GetStrafeModifier()
-	{
-		return m_engineStrafeModifier;
-	}
+	[SerializeField] float m_engineStrafeModifier;
+	
 
-	// Use this for initialization
-	void Start () 
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
-	}
+    #region getset
+
+    public Vector3 GetOffset()
+    {
+        return m_requiredOffset;
+    }
+
+    public float GetMoveSpeed()
+    {
+        return m_engineMoveSpeed;
+    }
+
+    public float GetTurnSpeed()
+    {
+        return m_engineTurnSpeed;
+    }
+
+    public float GetStrafeModifier()
+    {
+        return m_engineStrafeModifier;
+    }
+
+    #endregion getset
 
 	public void ParentToPlayer(string name)
 	{
 		networkView.RPC("ParentToPlayerOverNetwork", RPCMode.Others, name);
 	}
-	[RPC]
-	void ParentToPlayerOverNetwork(string name)
+
+	[RPC] void ParentToPlayerOverNetwork(string name)
 	{
 		GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
 		

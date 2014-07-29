@@ -208,9 +208,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primitiveQuad: {fileID: 0}
-  removeShipAfterSeconds: 0
-  explosions:
+  m_primitiveQuad: {fileID: 100000, guid: d145322cb4a27da41a8cdcf083f7c8d6, type: 2}
+  m_removeShipAfterSeconds: 0
+  m_explosions:
   - explosionPrefabs:
     - {fileID: 100000, guid: 5f86f9da513c93e4fbea0cabdd34dd44, type: 2}
     - {fileID: 100000, guid: 75aee9c489749624d9b977f9b7eb00f6, type: 2}
@@ -219,9 +219,9 @@ MonoBehaviour:
     - {fileID: 100000, guid: 379de339833f70c4181e9f28557e86ba, type: 2}
     - {fileID: 100000, guid: 373f52a514d17114eb7d9657670f84ee, type: 2}
     localPosition: {x: 0, y: 0, z: 0}
-    localScale: {x: 2, y: 2, z: 1}
+    localScale: {x: 1, y: 1, z: 1}
     timeAfterDeathThatExplosionStarts: 0
-  fragments: []
+  m_fragments: []
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

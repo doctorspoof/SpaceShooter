@@ -16,19 +16,19 @@ public class AttackCircleAntiClockwise : IAttack
         Ship targetShip = target.GetComponent<Ship>();
         if(targetShip != null)
         {
-            shipDimension = targetShip.GetCalculatedSizeByPosition(targetShip.m_shipTransform.position);
+            shipDimension = targetShip.GetCalculatedSizeByPosition(targetShip.transform.position);
         }
 
         float totalRange = weaponRange <= shipDimension ? weaponRange + shipDimension : weaponRange;
 
-        Vector2 direction = Vector3.Normalize(target.transform.position - ship.m_shipTransform.position);
+        Vector2 direction = Vector3.Normalize(target.transform.position - ship.transform.position);
 
-        Ray ray = new Ray(ship.m_shipTransform.position, direction);
+        Ray ray = new Ray(ship.transform.position, direction);
 
         RaycastHit hit;
         if (target.collider.Raycast(ray, out hit, totalRange))
         {
-            Vector2 directionFromTargetToShip = Vector3.Normalize(ship.m_shipTransform.position - target.transform.position);
+            Vector2 directionFromTargetToShip = Vector3.Normalize(ship.transform.position - target.transform.position);
 
             float currentAngle = Vector2.Angle(Vector2.up, directionFromTargetToShip);
 
@@ -39,14 +39,14 @@ public class AttackCircleAntiClockwise : IAttack
 
             float targetAngle = currentAngle + 10;// (clockwise ? 10 : -10);
 
-            float distanceToTarget = Vector2.Distance(ship.m_shipTransform.position, target.transform.position);
+            float distanceToTarget = Vector2.Distance(ship.transform.position, target.transform.position);
 
             float rangeToCircleAt = Mathf.Clamp(distanceToTarget, totalRange / 2.0f, totalRange);
 
             Vector2 newPosition = ((Quaternion.AngleAxis(targetAngle, -Vector3.forward) * Vector2.up) * rangeToCircleAt * 0.8f) + target.transform.position;
 
             ship.RotateTowards(newPosition);
-            ship.rigidbody.AddForce(ship.m_shipTransform.up * ship.GetCurrentMomentum() * Time.deltaTime);
+            ship.rigidbody.AddForce(ship.transform.up * ship.GetCurrentMomentum() * Time.deltaTime);
         }
     }
 
