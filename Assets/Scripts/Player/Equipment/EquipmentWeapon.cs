@@ -307,7 +307,7 @@ public class EquipmentWeapon : MonoBehaviour
         Vector3 bulletPos;
         if (m_barrelsShouldRecoil)
         {
-            bulletPos = m_barrels[m_currentBarrelNum].GetComponent<PlayerWeaponRecoilableScript>().GetFirePoint().transform.position;
+            bulletPos = m_barrels[m_currentBarrelNum].GetComponent<Barrel>().GetFirePoint().transform.position;
         }
         else
         {
@@ -380,7 +380,7 @@ public class EquipmentWeapon : MonoBehaviour
     [RPC] void RecoilBarrelOverNetwork(int barrelID)
     {
         float timeToRecoil = m_recoilTime * m_barrels.Length;
-        m_barrels[barrelID].GetComponent<PlayerWeaponRecoilableScript>().RecoilThisBarrel(timeToRecoil);
+        m_barrels[barrelID].GetComponent<Barrel>().Recoil(timeToRecoil);
     }
 
     [RPC] void PropagateTarget(NetworkViewID id, bool unset)

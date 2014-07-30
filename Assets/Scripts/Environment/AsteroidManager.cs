@@ -104,7 +104,7 @@ public sealed class AsteroidManager : MonoBehaviour
             rot = Quaternion.Euler (new Vector3 (0f, 0f, rot.eulerAngles.z));
 
             // Setup the asteroid
-            asteroid = (GameObject) Network.Instantiate(m_asteroidRef[Random.Range (0, m_asteroidRef.Length)], new Vector3(pos.x, pos.y, 10f), rot, 0);
+            asteroid = (GameObject) Network.Instantiate(m_asteroidRef[Random.Range (0, m_asteroidRef.Length)].gameObject, new Vector3(pos.x, pos.y, 10f), rot, 0);
             asteroid.transform.parent = m_asteroids.transform;
         }
     }

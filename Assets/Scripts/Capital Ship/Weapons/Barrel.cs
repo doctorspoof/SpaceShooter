@@ -10,8 +10,48 @@ public class Barrel : MonoBehaviour
 {
     #region Unity modifiable values
 
-	[SerializeField] float m_minY = 0f;  // The minimum position on the Y axis the barrel can move to
-	[SerializeField] float m_idleY = 0f; // The position on the Y axis the barrel should be when idle
+	[SerializeField] float m_minY = 0f;             // The minimum position on the Y axis the barrel can move to
+	[SerializeField] float m_idleY = 0f;            // The position on the Y axis the barrel should be when idle
+
+    [SerializeField] GameObject m_firePoint = null; // The point at which bullets should be fired
+
+    #endregion
+
+
+    #region Getters & setters
+
+    public GameObject GetFirePoint()
+    {
+        return m_firePoint;
+    }
+
+    #endregion
+
+
+    #region Behavior functions
+
+    void Awake()
+    {
+        if (m_firePoint == null)
+        {
+            // Attempt to find the fire point
+            Transform firePoint = transform.FindChild ("FirePoint");
+           
+            // Check if the fire point is valid
+            m_firePoint = firePoint != null ? firePoint.gameObject : null;
+
+            // Output the correct error message
+            if (m_firePoint == null)
+            {
+                Debug.LogError (name + ".Barrel.m_firePoint == null");
+            }
+
+            else
+            {
+                Debug.LogWarning (name + ".Barrel.m_firePoint found on Awake()");
+            }
+        }
+    }
 
     #endregion
 
