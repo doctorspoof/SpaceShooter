@@ -421,7 +421,7 @@ public class CapitalWeaponScript : MonoBehaviour
 
 	[RPC] void PropagateRecoil()
 	{
-		m_cannons[m_currentFirePoint].GetComponent<BarrelScript>().Recoil();
+		m_cannons[m_currentFirePoint].GetComponent<Barrel>().Recoil(GetRecoilTime() * GetNumCannons());
 		SwitchToNextFirePoint();
 	}
 
@@ -431,14 +431,14 @@ public class CapitalWeaponScript : MonoBehaviour
 		{
 			if( m_currentFirePoint < m_cannons.Length && m_cannons[m_currentFirePoint] != null)
 			{
-				m_cannons[m_currentFirePoint].GetComponent<BarrelScript>().Recoil();
+                m_cannons[m_currentFirePoint].GetComponent<Barrel>().Recoil(GetRecoilTime() * GetNumCannons());
 				networkView.RPC ("PropagateRecoil", RPCMode.Others);
 				SwitchToNextFirePoint();
 			}
 			else
 			{
 				//If there are cannons, but not for this FP, recoil barrel 1
-				m_cannons[0].GetComponent<BarrelScript>().Recoil();
+                m_cannons[0].GetComponent<Barrel>().Recoil(GetRecoilTime() * GetNumCannons());
 				networkView.RPC ("PropagateRecoil", RPCMode.Others);
 				SwitchToNextFirePoint();
 			}
