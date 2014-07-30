@@ -258,7 +258,7 @@ public sealed class NetworkInventory : MonoBehaviour
                 m_inventory.RemoveAt (i);
                 
                 // Counts are synchronised, this just ensures that if ran at the start, the function won't crash.
-                if (m_isItemRequested.Count > i)
+                if (i < m_isItemRequested.Count)
                 {
                     m_isItemRequested.RemoveAt (i);
                     m_requestTickets.RemoveAt (i);
@@ -497,7 +497,7 @@ public sealed class NetworkInventory : MonoBehaviour
     /// <param name="adminKey">Unlocks admin mode if you have the right key.</param>
     public void RequestServerAdd (ItemScript item, int preferredIndex = -1, int adminKey = -1)
     {
-        if (item && item.m_equipmentID >= 0)
+        if (item != null && item.m_equipmentID >= 0)
         {
             // Determine whether admin mode is accessible
             bool adminMode = adminKey == m_adminKey;
@@ -556,7 +556,9 @@ public sealed class NetworkInventory : MonoBehaviour
                             if (!IsInventoryFull())
                             {
                                 ticket.uniqueID = m_ticketNumber;
-                                
+
+                                Debug.Log (name + " Reached here");
+
                                 // Increment values
                                 SetTicketNumber (++m_ticketNumber);
                                 SetAddRequests (++m_addRequests);
@@ -652,7 +654,7 @@ public sealed class NetworkInventory : MonoBehaviour
     public void RequestServerCancel (ItemTicket ticket)
     {
         // Ensure we are not wasting time by checking if the ticket is valid
-        if (ticket && ticket.IsValid())
+        if (ticket != null && ticket.IsValid())
         {
             if (Network.isServer)
             {
@@ -749,7 +751,7 @@ public sealed class NetworkInventory : MonoBehaviour
     /// <param name="ticket">The ticket to check the validity of.</param>
     public void RequestTicketValidityCheck (ItemTicket ticket)
     {
-        if (ticket && ticket.IsValid())
+        if (ticket != null && ticket.IsValid())
         {
             // Reset the response, don't call the function otherwise it will break AddItemToServer() and RemoveItemFromServer()
             m_hasServerResponded = false;
@@ -845,7 +847,7 @@ public sealed class NetworkInventory : MonoBehaviour
     public bool RemoveItemFromServer (ItemTicket ticket)
     {
         // Ensure the ticket is both valid to prevent wasting the servers time
-        if (ticket && ticket.IsValid() && ticket == m_itemRequestResponse)
+        if (ticket != null && ticket.IsValid() && ticket == m_itemRequestResponse)
         {
             if (Network.isServer)
             {
@@ -949,7 +951,7 @@ public sealed class NetworkInventory : MonoBehaviour
     public bool AddItemToServer (ItemTicket ticket)
     {
         // Check the item exists and whether the transaction has been authorised
-        if (ticket && ticket.IsValid() && ticket == m_itemAddResponse)
+        if (ticket != null && ticket.IsValid() && ticket == m_itemAddResponse)
         {
             // Unity silliness again
             if (Network.isServer)

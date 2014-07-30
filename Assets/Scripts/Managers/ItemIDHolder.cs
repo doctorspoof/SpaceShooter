@@ -33,7 +33,7 @@ public class ItemIDHolder : MonoBehaviour
 		if (id >= 0 && id < ItemList.Length && 
 		    ItemList[id] != null && ItemList[id].itemID == id)
 		{
-			if (!ItemList[id].itemObject)
+			if (ItemList[id].itemObject == null)
 			{
 				Debug.LogError ("An item was found in " + name + ".ItemIDHolder.ItemList with ID #" + id + " without a valid .itemObject");
 			}
