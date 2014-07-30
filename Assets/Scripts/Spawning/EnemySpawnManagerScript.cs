@@ -173,12 +173,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     public void InitSpawnPoints()
     {
-        if (Network.isServer)
-        {
-            m_allSpawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
-
-            SendNextWaveToPoints();
-        }
+        m_allSpawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
     }
 
     void SendNextWaveToPoints()
