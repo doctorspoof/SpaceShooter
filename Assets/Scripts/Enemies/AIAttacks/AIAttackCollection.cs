@@ -25,7 +25,8 @@ public class AIAttackCollection : MonoBehaviour
     {
         System.Type returnee;
         attackCollection.TryGetValue(name_, out returnee);
-        return (IAttack)returnee.GetConstructor(new Type[]{}).Invoke(new object[]{});
+        //return (IAttack)returnee.GetConstructor(new Type[]{}).Invoke(new object[]{});
+        return null;
     }
 
 }

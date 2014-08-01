@@ -221,7 +221,9 @@ public class GameStateController : MonoBehaviour
 
     #endregion getset
 
-    
+    void Awake()
+    {
+    }
 
     void Start()
     {
