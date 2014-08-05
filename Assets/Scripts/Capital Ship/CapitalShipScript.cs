@@ -334,40 +334,50 @@ public sealed class CapitalShipScript : Ship
     [RPC] void PropagateAttachTurretItemWrappers(int position, int turretID)
     {
         GameObject item = m_itemIDs.GetItemWithID(turretID);
-        m_attachedTurretsItemWrappers[position] = item;
+        m_attachedTurretsItemWrappers[position] = item.GetComponent<ItemScript>();
     }
 
     #endregion Turret functionality
 
 
     #region Cash functions
-    
-    public bool CShipCanAfford(int amount)
+
+    /// <summary>
+    /// Determines whether this instance has enough cash for the specified amount.
+    /// </summary>
+    /// <returns><c>true</c> if this instance has enough cash; otherwise, <c>false</c>.</returns>
+    /// <param name="amount">Amount.</param>
+    public bool HasEnoughCash (int amount)
     {
-        if (m_bankedCash < amount)
-            return false;
-        else
-            return true;
+        return m_bankedCash >= amount;
     }
 
-    public void SpendBankedCash(int amount)
-    {
-        if (CShipCanAfford(amount))
-            m_bankedCash -= amount;
 
-        networkView.RPC("PropagateCShipCash", RPCMode.Others, m_bankedCash);
+    /// <summary>
+    /// Allows for the incrementing/decrementing of the CShip cash.
+    /// </summary>
+    /// <param name="amount">How much to increment by (negatives values decrement).</param>
+    public void AlterCash (int amount)
+    {
+        if (HasEnoughCash (Mathf.Abs (amount)))
+        {
+            m_bankedCash = Mathf.Max (0, m_bankedCash + amount);
+
+            networkView.RPC ("PropagateCShipCash", RPCMode.Others, m_bankedCash);
+
+            if (m_bankedCash - amount < 500 && m_bankedCash >= 500)
+            {
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertMoneyAboveRespawn();
+            }
+        }
     }
 
-    public void DepositCashToCShip(int amount)
-    {
-        m_bankedCash += amount;
-        networkView.RPC("PropagateCShipCash", RPCMode.Others, m_bankedCash);
 
-        if ((m_bankedCash - amount) < 500 && m_bankedCash >= 500)
-            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertMoneyAboveRespawn();
-    }
-
-    [RPC] void PropagateCShipCash(int amount)
+    /// <summary>
+    /// The RPC used for clients to receive the correct current amount of cash which the CShip has.
+    /// </summary>
+    /// <param name="amount">The value for m_bankedCash.</param>
+    [RPC] void PropagateCShipCash (int amount)
     {
         m_bankedCash = amount;
     }

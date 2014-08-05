@@ -2488,18 +2488,13 @@ MonoBehaviour:
   - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
   - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
   m_shouldAnchor: 1
-  m_shouldStart: 0
-  m_cShipInventory:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  m_bankedCash: 1500
+  m_currentResourceMass: 500
+  m_currentResourceWater: 500
+  m_currentResourceFuel: 500
+  m_maxResourceMass: 1000
+  m_maxResourceWater: 1000
+  m_maxResourceFuel: 1000
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2511,7 +2506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e707dc36a5a47948b0d2fbf93b04dab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_cShipTurretID: 2
+  m_cShipTurretID: 1
   m_forwardFacing: 1
 --- !u!114 &11400006
 MonoBehaviour:
@@ -2552,7 +2547,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e707dc36a5a47948b0d2fbf93b04dab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_cShipTurretID: 1
+  m_cShipTurretID: 0
   m_forwardFacing: 1
 --- !u!114 &11400012
 MonoBehaviour:
@@ -2565,7 +2560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e707dc36a5a47948b0d2fbf93b04dab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_cShipTurretID: 3
+  m_cShipTurretID: 2
   m_forwardFacing: 0
 --- !u!114 &11400014
 MonoBehaviour:
@@ -2623,7 +2618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e707dc36a5a47948b0d2fbf93b04dab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_cShipTurretID: 4
+  m_cShipTurretID: 3
   m_forwardFacing: 0
 --- !u!114 &11400020
 MonoBehaviour:
