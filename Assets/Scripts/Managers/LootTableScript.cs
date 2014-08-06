@@ -190,7 +190,7 @@ public class LootTableScript : MonoBehaviour
 			
 		case ItemType.CapitalWeapon:
 			range[0] = 120;
-			range[1] = 130;
+			range[1] = 129;
 			break;
 		}
 		return range;
