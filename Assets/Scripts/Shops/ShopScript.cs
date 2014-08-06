@@ -233,26 +233,22 @@ public class ShopScript : MonoBehaviour
         List<ItemScript> scripts = new List<ItemScript>(idNumbers.Length);
 
         // Avoid the creation of temporary variables
-        GameObject currentItem;
         ItemScript currentScript;
 
         // Iterate through the array obtaining valid ItemScripts
         for (int i = 0; i < idNumbers.Length; ++i)
         {
-            // Assign and check if currentItem is a valid pointer
-            if ((currentItem = m_itemIDs.GetItemWithID(idNumbers[i])) != null)
+            // Assign and check if currentScript is a valid pointer
+            if ((currentScript = m_itemIDs.GetItemWithID (idNumbers[i])) != null)
             {
-                // Assign and check if currentScript is a valid pointer
-                if ((currentScript = currentItem.GetComponent<ItemScript>()) != null)
-                {
-                    scripts.Add(currentScript);
-                }
-
-                else
-                {
-                    Debug.LogError("Couldn't find an ItemScript component on: " + currentItem.name);
-                }
+                scripts.Add(currentScript);
             }
+
+            else
+            {
+                Debug.LogError("Couldn't find an ItemScript component when converting to ItemScript objects");
+            }
+
         }
 
         return scripts;

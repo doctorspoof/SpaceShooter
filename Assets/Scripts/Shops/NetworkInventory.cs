@@ -1029,8 +1029,7 @@ public sealed class NetworkInventory : MonoBehaviour
     [RPC] void PropagateItemAtIndex (int index, int itemID)
     {
         // Allow null values if m_nullRemovedItems
-        GameObject itemObject = m_itemIDs.GetItemWithID (itemID);
-        ItemScript item = itemObject != null ? itemObject.GetComponent<ItemScript>() : null;
+        ItemScript item = m_itemIDs.GetItemWithID (itemID);
        
         // Only allow nulls if that has been specified as an attribute
         if (m_nullRemovedItems || item != null)

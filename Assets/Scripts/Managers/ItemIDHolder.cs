@@ -4,7 +4,7 @@ using System.Collections;
 [System.Serializable]
 public class Item
 {
-	public GameObject itemObject;
+	public ItemScript itemObject;
 	public int itemID;
 }
 
@@ -18,7 +18,7 @@ public class ItemIDHolder : MonoBehaviour
 		for(int i = 0; i < ItemList.Length; i++)
 		{
 			if(ItemList[i] != null && ItemList[i].itemObject != null)
-				ItemList[i].itemObject.GetComponent<ItemScript>().CollectDescription();
+				ItemList[i].itemObject.CollectDescription();
 		}
 	}
 	
@@ -27,7 +27,7 @@ public class ItemIDHolder : MonoBehaviour
 	/// </summary>
 	/// <returns>The item with id, otherwise null.</returns>
 	/// <param name="id">ID.</param>
-	public GameObject GetItemWithID (int id)
+	public ItemScript GetItemWithID (int id)
 	{
 		// Check if the id corresponds to the index of ItemList then check if the item is the desired item
 		if (id >= 0 && id < ItemList.Length && 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -289,12 +289,12 @@ public class GameStateController : MonoBehaviour
                     {
                         //Try to respawn the player
                         CapitalShipScript cshipSc = m_ingameCapitalShip.GetComponent<CapitalShipScript>();
-                        if (cshipSc.CShipCanAfford(500))
+                        if (cshipSc.HasEnoughCash (500))
                         {
                             //Debug.Log ("[GSC]: Player: " + m_deadPlayers[i].m_playerObject.m_name + " is respawning...");
 
                             //Spend the respawn cost
-                            cshipSc.SpendBankedCash(500);
+                            cshipSc.AlterCash (-500);
 
                             //Tell the NetworkPlayer to spawn a new ship for themselves
 
@@ -398,7 +398,7 @@ public class GameStateController : MonoBehaviour
     public void AlertGameControllerBeginSpawning()
     {
         m_SpawnManager.GetComponent<EnemySpawnManagerScript>().BeginSpawning();
-        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldStart(true);
+        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldMove(true);
     }
 
     public void StartGameFromMenu(bool isSpecMode)
@@ -648,7 +648,7 @@ public class GameStateController : MonoBehaviour
 
         m_shouldCheckForFinished = false;
         //m_GUIManager.GetComponent<GUIManager>().m_ArenaClearOfEnemies = false;
-        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldStart(true);
+        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldMove(true);
     }
 
     [RPC] void TellLocalGSCGameHasBegun()
@@ -834,7 +834,7 @@ public class GameStateController : MonoBehaviour
         }
 
         //Stop CShip from moving
-        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldStart(false);
+        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldMove(false);
 
         //Tell players to stop recieving input (RPC) <- no longer needs to be rpc'd!
 
