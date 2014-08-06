@@ -2477,24 +2477,26 @@ MonoBehaviour:
   m_shipHeight: 24
   m_pathToShieldObject: Composite Collider/Shield
   shipID: -1
+  m_shouldAnchor: 1
+  m_bankedCash: 1500
+  m_currentResources:
+    mass: 500
+    water: 500
+    fuel: 500
+  m_maxResources:
+    mass: 1500
+    water: 1500
+    fuel: 1500
+  m_searchRadius: 20
   m_buildUpExplodeRef: {fileID: 100014, guid: 697f6e534d5ab7148a3bf48bdb26c81d, type: 2}
   m_finalExplodeRef: {fileID: 100000, guid: 5563a7198eaee104f8914633f124840e, type: 2}
   m_shatteredShip: {fileID: 100018, guid: f2187e9cf94fbb947b5a55afb04a90c9, type: 2}
   m_targetPoint: {fileID: 0}
-  m_shipSpeed: 15
   m_attachedTurretsItemWrappers:
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  - {fileID: 100000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
-  m_shouldAnchor: 1
-  m_bankedCash: 1500
-  m_currentResourceMass: 500
-  m_currentResourceWater: 500
-  m_currentResourceFuel: 500
-  m_maxResourceMass: 1000
-  m_maxResourceWater: 1000
-  m_maxResourceFuel: 1000
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
+  - {fileID: 11400000, guid: 9d23c3df843f8694999e88c9133074e0, type: 2}
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
