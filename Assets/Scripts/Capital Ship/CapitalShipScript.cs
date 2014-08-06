@@ -155,6 +155,8 @@ public sealed class CapitalShipScript : Ship
 
         // Stop all natural rigidbody movement if the ship should be anchored
         rigidbody.isKinematic = m_shouldAnchor;
+
+        RefreshTurretCache();
     }
 
 
