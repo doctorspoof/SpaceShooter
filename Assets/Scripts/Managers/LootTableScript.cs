@@ -165,33 +165,33 @@ public class LootTableScript : MonoBehaviour
 		switch (type)
 		{
 			// Weapons run from 0->29
-		case ItemType.Weapon:
-			range[0] = 0;
-			range[1] = 29;
-			break;
+    		case ItemType.Weapon:
+    			range[0] = 0;
+    			range[1] = 29;
+    			break;
 			
 			// Shields run from 30->59
-		case ItemType.Shield:
-			range[0] = 30;
-			range[1] = 59;
-			break;
+    		case ItemType.Shield:
+    			range[0] = 30;
+    			range[1] = 59;
+    			break;
 			
 			// Engines run from 60->89
-		case ItemType.Engine:
-			range[0] = 60;
-			range[1] = 89;
-			break;
+    		case ItemType.Engine:
+    			range[0] = 60;
+    			range[1] = 89;
+    			break;
 			
 			// Plating runs from 90->119
-		case ItemType.Plating:
-			range[0] = 90;
-			range[1] = 119;
-			break;
+    		case ItemType.Plating:
+    			range[0] = 90;
+    			range[1] = 119;
+    			break;
 			
-		case ItemType.CapitalWeapon:
-			range[0] = 120;
-			range[1] = 129;
-			break;
+    		case ItemType.CapitalWeapon:
+    			range[0] = 120;
+    			range[1] = 129;
+    			break;
 		}
 		return range;
 	}
