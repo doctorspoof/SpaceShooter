@@ -246,15 +246,17 @@ public class Ship : MonoBehaviour, IEntity
             }
         }
 
+
+        // TODO: move to fixed update
         UpdateCurrentAngularVelocity();
 
         // we cant calculate the max velocity neatly so we check to see if its larger
-        if ((m_maxThrusterVelocitySeen < m_shipRigidbody.velocity.magnitude))
+        if (m_maxThrusterVelocitySeen < m_shipRigidbody.velocity.magnitude)
         {
             m_maxThrusterVelocitySeen = m_shipRigidbody.velocity.magnitude;
         }
 
-        if ((m_maxAngularVelocitySeen < Mathf.Abs(m_currentAngularVelocity)))
+        if (m_maxAngularVelocitySeen < Mathf.Abs(m_currentAngularVelocity))
         {
             m_maxAngularVelocitySeen = Mathf.Abs(m_currentAngularVelocity);
         }
