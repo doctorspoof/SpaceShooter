@@ -1,18 +1,29 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class FaceStar : MonoBehaviour
+
+
+/// <summary>
+/// Causes an object to make sure that it is facing a particular star at all times. This allows for correct shadowing of planets which have an orbit.
+/// </summary>
+public sealed class FaceStar : MonoBehaviour
 {
-
-	[SerializeField] GameObject m_SunRef;
+	[SerializeField] GameObject m_SunRef;   //!< A reference to the star which the object should always look at.
 	
-	void LateUpdate () 
+
+    /// <summary>
+    /// Rotates the object correctly so that it is facing an object every fixed update.
+    /// </summary>
+	void FixedUpdate()
     {
-		Vector3 direction = this.transform.position - m_SunRef.transform.position;
-		direction.Normalize ();
-		Quaternion rotation = this.transform.rotation * Quaternion.FromToRotation (this.transform.up, direction);
-		rotation.x = 0;
-		rotation.y = 0;
-		this.transform.rotation = rotation;
+        if (m_SunRef != null)
+        {   
+            // Obtain the direction to face
+            Vector3 direction = (this.transform.position - m_SunRef.transform.position).normalized;
+
+            // Assign the correct rotation values
+            transform.rotation *= Quaternion.FromToRotation (transform.up, direction);
+            transform.rotation.x = 0;
+            transform.rotation.y = 0;
+        }
 	}
 }
