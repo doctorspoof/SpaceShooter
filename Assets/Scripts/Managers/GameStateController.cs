@@ -438,6 +438,7 @@ public class GameStateController : MonoBehaviour
         //Once everyone has been told to do stuff, alert camera that it's specmode time 
         if (isSpecMode)
             Camera.main.GetComponent<CameraScript>().TellCameraBeginSpectatorMode();
+          
 
     }
 
@@ -493,7 +494,6 @@ public class GameStateController : MonoBehaviour
         {
             foreach (GameObject am in m_AsteroidManagers)
             {
-                //m_AsteroidManager.GetComponent<AsteroidManager>().SpawnAsteroids();
                 am.GetComponent<AsteroidManager>().SpawnAsteroids();
             }
             m_shouldSpawnRoids = false;

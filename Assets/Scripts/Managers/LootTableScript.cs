@@ -99,8 +99,9 @@ public class LootTableScript : MonoBehaviour
         }
             
         //int[] numByTier = new int[3];
-        
-        while(outputL.Count < numItemsReq)
+
+        // Don't allow more than 100 attempts.
+        for (int x = 0; outputL.Count < numItemsReq && x < 100; ++x)
         {
             int currentTier = 0;
             if(outputL.Count < numTier1)
@@ -117,6 +118,11 @@ public class LootTableScript : MonoBehaviour
             {
                 outputL.Add(iSc.GetItemID());
             }
+        }
+
+        if (outputL.Count != numItemsReq)
+        {
+            Debug.LogError ("Couldn't find enough items so proceeding with less.");
         }
         
         //Output List should now be full, so return the array
