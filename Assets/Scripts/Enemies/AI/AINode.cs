@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-using System;
 using System.Collections.Generic;
 
 public enum AIHierarchyRelation
@@ -16,6 +15,8 @@ public class AINode
     List<AINode> m_children = new List<AINode>();
     AINode m_parent;
 
+
+
     IEntity m_entity;
 
     #region getset
@@ -23,11 +24,15 @@ public class AINode
     public void AddChild(AINode node_)
     {
         m_children.Add(node_);
+        node_.SetParent(this);
     }
 
     public void RemoveChild(AINode node_)
     {
-        m_children.Remove(node_);
+        if (m_children.Remove(node_))
+        {
+            node_.SetParent(null);
+        }
     }
 
     public List<AINode> GetChildren()
@@ -40,17 +45,16 @@ public class AINode
         return m_parent;
     }
 
-    public void SetParent(AINode parent_)
+    /// <summary>
+    /// Private because you should only be adding to the hierarchy via AddChild. Prevents confusion and a cyclic circumstance. Keeps the hierarchy correct
+    /// </summary>
+    /// <param name="parent_"></param>
+    void SetParent(AINode parent_)
     {
         m_parent = parent_;
     }
 
     #endregion getset
-
-    public AINode()
-    {
-
-    }
 
     public AINode(IEntity entity_)
     {

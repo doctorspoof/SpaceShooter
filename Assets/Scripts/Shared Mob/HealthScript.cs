@@ -494,7 +494,7 @@ public class HealthScript : MonoBehaviour
 			if(killer != null && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
                 PlayerControlScript playerShip = killer.transform.root.GetComponent<PlayerControlScript>();
-                playerShip.AddCash(this.GetComponent<ShipEnemy>().GetBounty());
+                playerShip.AddCash(this.GetComponent<ShipEnemy>().GetBountyAmount());
 			}
 
             if(Network.isServer)

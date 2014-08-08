@@ -4,6 +4,10 @@ using System.Collections.Generic;
 public interface IEntity
 {
 
+    AINode GetAINode();
+
+    void SetAINode(AINode node_);
+
     /// <summary>
     /// 
     /// </summary>
@@ -26,6 +30,13 @@ public interface IEntity
     /// <param name="listOfParameters"></param>
     /// <returns>Returns true if the order was accepted. Used for inheritance mainly.</returns>
     bool ConsiderOrder(int orderID_, object[] listOfParameters);
+
+    /// <summary>
+    /// If a subordinate needs an order, this is what is used
+    /// </summary>
+    /// <param name="entity_">IEntity that needs an order</param>
+    /// <returns></returns>
+    bool RequestOrder(IEntity entity_);
 
     /// <summary>
     /// 

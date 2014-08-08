@@ -7,26 +7,22 @@ public class WaveEnemyType
 {
     public GameObject m_enemyRef;
     public int m_numEnemy;
-
-    public WaveEnemyType Clone()
-    {
-        return new WaveEnemyType { m_enemyRef = this.m_enemyRef, m_numEnemy = this.m_numEnemy };
-    }
 }
 
 [System.Serializable]
 public class WaveInfo
 {
-    [SerializeField] string defaultOrderTargetTag = "Capital";
+    [SerializeField] List<string> defaultOrderTargetTags;
 
+    // TODO: after decision
 
     public WaveEnemyType[] m_enemiesOnWave;
 
     #region getset
 
-    public string GetDefaultOrderTargetTag()
+    public List<string> GetDefaultOrderTargetTags()
     {
-        return defaultOrderTargetTag;
+        return defaultOrderTargetTags;
     }
 
     public int GetTotalSize()
@@ -62,19 +58,6 @@ public class WaveInfo
 
     #endregion
 
-    public WaveInfo Clone()
-    {
-        WaveInfo returnee = new WaveInfo();
-        returnee.defaultOrderTargetTag = this.defaultOrderTargetTag;
-
-        returnee.m_enemiesOnWave = new WaveEnemyType[this.m_enemiesOnWave.Length];
-        for (int i = 0; i < this.m_enemiesOnWave.Length; ++i)
-        {
-            returnee.m_enemiesOnWave[i] = this.m_enemiesOnWave[i].Clone();
-        }
-
-        return returnee;
-    }
 }
 
 public class EnemySpawnManagerScript : MonoBehaviour

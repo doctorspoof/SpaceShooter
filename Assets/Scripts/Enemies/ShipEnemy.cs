@@ -26,7 +26,6 @@ public class ShipEnemy : Ship
 
 
 
-    Vector2 m_formationPosition;
 
     int m_sendCounter = 0;
 
@@ -79,18 +78,30 @@ public class ShipEnemy : Ship
         }
     }
 
+    public GameObject GetTarget()
+    {
+        return m_target;
+    }
+
+    public Vector2 GetTargetMove()
+    {
+        return m_targetMove;
+    }
+
     #endregion getset
 
 
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
         base.Awake();
     }
 
     // Use this for initialization
-    protected virtual void Start()
+    protected override void Start()
     {
+        base.Start();
+
         m_shipTransform = transform;
         ResetThrusters();
 
@@ -100,7 +111,7 @@ public class ShipEnemy : Ship
         ResetShipSpeed();
     }
 
-    protected virtual void Update()
+    protected override void Update()
     {
         base.Update();
 
@@ -240,7 +251,6 @@ public class ShipEnemy : Ship
 
     public void OnPlayerLoss()
     {
-
     }
 
     public void TellEnemyToFreeze()
@@ -319,6 +329,7 @@ public class ShipEnemy : Ship
 
     void MoveTowardTarget()
     {
+        Debug.Log("parent = " + (m_parentTransform == null) + " m_targetMove = " + m_targetMove);
         if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position), m_targetMove) > Vector2.Distance(m_shipTransform.position, m_targetMove))
         {
             Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
@@ -417,7 +428,7 @@ public class ShipEnemy : Ship
         return true;
     }
 
-    public virtual bool ReceiveOrder(int orderID_, object[] listOfParameters)
+    public override bool ReceiveOrder(int orderID_, object[] listOfParameters)
     {
         switch ((AIShipOrder)orderID_)
         {
@@ -431,6 +442,11 @@ public class ShipEnemy : Ship
                     SetMoveTarget((Vector2)listOfParameters[0]);
                     return true;
                 }
+            case(AIShipOrder.StayInFormation):
+                {
+                    m_currentOrder = AIShipOrder.StayInFormation;
+                    return true;
+                }
             default:
                 {
                     return false;
@@ -438,17 +454,13 @@ public class ShipEnemy : Ship
         }
     }
 
-    public virtual bool GiveOrder(int orderID_, object[] listOfParameters)
+    public override bool GiveOrder(int orderID_, object[] listOfParameters)
     {
-        if (base.GiveOrder(orderID_, listOfParameters))
-        {
-            return true;
-        }
-
-        return false;
+        GetAINode().OrderChildren(orderID_, listOfParameters);
+        return true;
     }
 
-    public virtual bool ConsiderOrder(int orderID_, object[] listOfParameters)
+    public override bool ConsiderOrder(int orderID_, object[] listOfParameters)
     {
         if (base.ConsiderOrder(orderID_, listOfParameters))
         {
@@ -469,7 +481,7 @@ public class ShipEnemy : Ship
         }
     }
 
-    public virtual object[] RequestInformation(int informationID_)
+    public override object[] RequestInformation(int informationID_)
     {
         object[] returnee = null;
         if ((returnee = base.RequestInformation(informationID_)) != null)
@@ -486,7 +498,7 @@ public class ShipEnemy : Ship
         }
     }
 
-    public virtual bool Notify(int informationID_, object[] listOfParameters)
+    public override bool Notify(int informationID_, object[] listOfParameters)
     {
         if (base.Notify(informationID_, listOfParameters))
         {

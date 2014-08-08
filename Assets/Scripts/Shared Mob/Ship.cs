@@ -5,7 +5,8 @@ public enum AIShipOrder
 {
     Idle = 0,
     Move = 1,
-    Attack = 2
+    Attack = 2,
+    StayInFormation = 3
 }
 
 public enum AIShipRequestInfo
@@ -17,7 +18,8 @@ public enum AIShipRequestInfo
 
 public enum AIShipNotifyInfo
 {
-    ParentChanged = 0
+    ParentChanged = 0,
+    SetFormationPosition = 1
 }
 
 [RequireComponent(typeof(MeshFilter))]
@@ -66,6 +68,7 @@ public class Ship : MonoBehaviour, IEntity
 
 
     protected Transform m_parentTransform = null;
+    protected Vector2 m_formationPosition;
 
     Transform m_thrustersHolder = null, m_afterburnersHolder = null;
     Thruster[] m_thrusters = null, m_afterburners = null;
@@ -184,9 +187,9 @@ public class Ship : MonoBehaviour, IEntity
         return m_node;
     }
 
-    public void SetParentShip(Ship parent_)
+    public void SetAINode(AINode node_)
     {
-        m_node.SetParent(parent_.GetAINode());
+        m_node = node_;
     }
 
     public void AddChildShip(Ship child_)
@@ -207,6 +210,11 @@ public class Ship : MonoBehaviour, IEntity
             SetShipSizes();
 
         m_node = new AINode(this);
+    }
+
+    protected virtual void Start()
+    {
+        m_parentTransform = (Transform)GetAINode().GetParent().RequestInformation((int)AIShipRequestInfo.Transform)[0];
     }
 
     protected virtual void Update()
@@ -262,7 +270,6 @@ public class Ship : MonoBehaviour, IEntity
     /// </summary>
     void OnDestroy()
     {
-
         m_node.Destroy();
     }
 
@@ -653,6 +660,11 @@ public class Ship : MonoBehaviour, IEntity
         }
     }
 
+    public virtual bool RequestOrder(IEntity entity_)
+    {
+        return false;
+    }
+
     public virtual object[] RequestInformation(int informationID_)
     {
         switch((AIShipRequestInfo)informationID_)
@@ -683,6 +695,11 @@ public class Ship : MonoBehaviour, IEntity
             case (AIShipNotifyInfo.ParentChanged):
                 {
                     m_parentTransform = (Transform)listOfParameters[0];
+                    return true;
+                }
+            case (AIShipNotifyInfo.SetFormationPosition):
+                {
+                    m_formationPosition = (Vector2)listOfParameters[0];
                     return true;
                 }
             default:

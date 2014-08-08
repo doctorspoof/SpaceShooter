@@ -185,7 +185,7 @@ public class PlayerControlScript : Ship
         m_guiCache = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>();
     }
 
-    void Start()
+    protected override void Start()
     {
 
         m_volumeHolder = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
