@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,7 @@ public sealed class NetworkInventory : MonoBehaviour
 
     #region Unity modifable variables
    
-    [SerializeField] List<ItemScript> m_inventory = new List<ItemScript>(0);	// Only objects with ItemScript components are valid
+    [SerializeField] List<ItemWrapper> m_inventory = new List<ItemWrapper>(0);	// Only objects with ItemScript components are valid
     [SerializeField, Range(0, 100)] int m_capacity = 20;						// The maximum number of items the inventory can hold
     [SerializeField, Range(0.1f, 600f)] float m_requestTimeOutSeconds = 120f;	// How long before a request ticket will be deleted due to it timing out
     [SerializeField] bool m_nullRemovedItems = false;							// Whether removals should just null the reference or remove it from the list entirely
@@ -136,7 +136,7 @@ public sealed class NetworkInventory : MonoBehaviour
     }
 
 
-    public ItemScript GetItemScript (int index)
+    public ItemWrapper GetItemScript (int index)
     {
         // Since this will be the main entry point of the GUI and will be called multiple times per frame
         // a try-catch block is used instead of checking the the index each time.
@@ -170,7 +170,7 @@ public sealed class NetworkInventory : MonoBehaviour
     
     
     /// Shorthand for GetItemScript(), allows the usage of the [] operator
-    public ItemScript this[int index]
+    public ItemWrapper this[int index]
     {
         get { return GetItemScript (index); }
     }
@@ -495,9 +495,9 @@ public sealed class NetworkInventory : MonoBehaviour
     /// <param name="item">Item to be added.</param>
     /// <param name="preferredIndex">The index of the item to replace (-1 will just add it anywhere).</param>
     /// <param name="adminKey">Unlocks admin mode if you have the right key.</param>
-    public void RequestServerAdd (ItemScript item, int preferredIndex = -1, int adminKey = -1)
+    public void RequestServerAdd (ItemWrapper item, int preferredIndex = -1, int adminKey = -1)
     {
-        if (item != null && item.m_equipmentID >= 0)
+        if (item != null && item.GetItemID() >= 0)
         {
             // Determine whether admin mode is accessible
             bool adminMode = adminKey == m_adminKey;
@@ -508,12 +508,12 @@ public sealed class NetworkInventory : MonoBehaviour
             // Silly Unity requires a workaround for the server
             if (Network.isServer)
             {
-                RequestAdd (item.m_equipmentID, preferredIndex, adminMode, m_blankMessage);
+                RequestAdd (item.GetItemID(), preferredIndex, adminMode, m_blankMessage);
             }
             
             else
             {
-                networkView.RPC ("RequestAdd", RPCMode.Server, item.m_equipmentID, preferredIndex, adminMode);
+                networkView.RPC ("RequestAdd", RPCMode.Server, item.GetItemID(), preferredIndex, adminMode);
             }
         }
         
@@ -1029,8 +1029,7 @@ public sealed class NetworkInventory : MonoBehaviour
     [RPC] void PropagateItemAtIndex (int index, int itemID)
     {
         // Allow null values if m_nullRemovedItems
-        GameObject itemObject = m_itemIDs.GetItemWithID (itemID);
-        ItemScript item = itemObject != null ? itemObject.GetComponent<ItemScript>() : null;
+        ItemWrapper item = m_itemIDs.GetItemWithID (itemID);
        
         // Only allow nulls if that has been specified as an attribute
         if (m_nullRemovedItems || item != null)
@@ -1167,7 +1166,7 @@ public sealed class NetworkInventory : MonoBehaviour
         if (IsValidIndex (index))
         {
             // Check the itemID is correct then check whether it matters if it has been requested or not
-            if (m_inventory[index] != null && m_inventory[index].m_equipmentID == itemID)
+            if (m_inventory[index] != null && m_inventory[index].GetItemID() == itemID)
             {
                 switch (check)
                 {

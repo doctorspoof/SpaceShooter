@@ -1,48 +1,76 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-[System.Serializable]
-public class Item
+
+
+/// <summary>
+/// A simple container struct-like class which features a reference to an item prefab and its corresponding itemID number.
+/// </summary>
+[System.Serializable] public sealed class Item
 {
-	public GameObject itemObject;
+	public ItemWrapper itemObject;
 	public int itemID;
 }
 
-public class ItemIDHolder : MonoBehaviour 
-{
-	public Item[] ItemList;// An array of every single available item in the game. Ideally the .itemID of each element will correspond to the index
 
-	// Use this for initialization
-	void Start () 
+
+/// <summary>
+/// The entry point for classes which need to convert item ID numbers into real prefab refreshes. This is useful as it allows for RPC's to send information
+/// about items which can then be reconstructed on the receivers end through the usage of the ItemIDHolder. It also maintains an array of every item in the game.
+/// </summary>
+public sealed class ItemIDHolder : MonoBehaviour 
+{
+	[SerializeField] Item[] m_itemList; //<! An array of every single available item in the game. Ideally the .itemID of each element will correspond to the index
+
+
+    /// <summary>
+    /// Allows for external retreiving of the item list.
+    /// </summary>
+    /// <returns>The central item list array.</returns>
+    public Item[] GetItemList()
+    {
+        return m_itemList;
+    }
+
+
+	/// <summary>
+    /// Ensures that each item has the correct description attached to it.
+    /// </summary>
+	void Awake() 
 	{
-		for(int i = 0; i < ItemList.Length; i++)
+		for (int i = 0; i < m_itemList.Length; ++i)
 		{
-			if(ItemList[i] != null && ItemList[i].itemObject != null)
-				ItemList[i].itemObject.GetComponent<ItemScript>().CollectDescription();
+			if (m_itemList[i] != null && m_itemList[i].itemObject != null)
+            {
+			    m_itemList[i].itemObject.CollectDescription();
+            }
 		}
 	}
+
+
 	
 	/// <summary>
-	/// Searches through an array of every item in the game looking for the desired itemID.
+	/// Searches through an array of every item in the game looking for the desired itemID. Can return null if the item isn't found.
 	/// </summary>
-	/// <returns>The item with id, otherwise null.</returns>
-	/// <param name="id">ID.</param>
-	public GameObject GetItemWithID (int id)
+	/// <returns>The prefab reference of the item with the corresponding ID.</returns>
+	/// <param name="id">The item to look for.</param>
+	public ItemWrapper GetItemWithID (int id)
 	{
 		// Check if the id corresponds to the index of ItemList then check if the item is the desired item
-		if (id >= 0 && id < ItemList.Length && 
-		    ItemList[id] != null && ItemList[id].itemID == id)
+		if (id >= 0 && id < m_itemList.Length && 
+		    m_itemList[id] != null && m_itemList[id].itemID == id)
 		{
-			if (ItemList[id].itemObject == null)
+			if (m_itemList[id].itemObject == null)
 			{
 				Debug.LogError ("An item was found in " + name + ".ItemIDHolder.ItemList with ID #" + id + " without a valid .itemObject");
 			}
 
-			return ItemList[id].itemObject;
+			return m_itemList[id].itemObject;
 		}
+
+        // Just do a brute force search for the item  
 		else
 		{
-			foreach (Item item in ItemList)
+			foreach (Item item in m_itemList)
 			{
 				if (item.itemID == id)
 				{

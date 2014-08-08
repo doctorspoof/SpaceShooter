@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class CapitalBroadsideHolderScript : MonoBehaviour 
@@ -26,7 +26,7 @@ public class CapitalBroadsideHolderScript : MonoBehaviour
         m_cShip.GetComponent<CapitalShipScript>().GetGlowForTurretByID(m_turretLocationAttachedTo).GetComponent<CapitalShipGlowScript>().SetGlowIsActive(true);
         
         //Renable the renderer for this THolder
-        m_cShip.GetComponent<CapitalShipScript>().GetCTurretHolderWithId(m_turretLocationAttachedTo).GetComponent<CShipTurretHolder>().EnableRenderer();
+        m_cShip.GetComponent<CapitalShipScript>().GetCTurretHolderWithID(m_turretLocationAttachedTo).GetComponent<CShipTurretHolder>().EnableRenderer();
     }
 
     /* Custom functions */
@@ -53,7 +53,7 @@ public class CapitalBroadsideHolderScript : MonoBehaviour
 	{
         if(m_cShip == null)
             m_cShip = GameObject.FindGameObjectWithTag("Capital");
-        this.transform.parent = m_cShip.GetComponent<CapitalShipScript>().GetCTurretHolderWithId(location).transform;
+        this.transform.parent = m_cShip.GetComponent<CapitalShipScript>().GetCTurretHolderWithID(location).transform;
 		this.transform.localPosition = Vector3.zero;
 	}
 }
