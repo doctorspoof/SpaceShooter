@@ -102,6 +102,7 @@ public class GameStateController : MonoBehaviour
 
 
 
+    static GameStateController instance;
 
     GameObject m_localPlayer;
 
@@ -219,10 +220,17 @@ public class GameStateController : MonoBehaviour
         m_currentGameState = state_;
     }
 
+    public static GameStateController Instance()
+    {
+        return instance;
+    }
+
     #endregion getset
 
     void Awake()
     {
+        DontDestroyOnLoad(gameObject);
+        instance = this;
     }
 
     void Start()
