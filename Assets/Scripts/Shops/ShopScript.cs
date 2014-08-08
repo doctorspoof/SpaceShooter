@@ -88,12 +88,16 @@ public class ShopScript : MonoBehaviour
     }
 
 
-    // Calculates the cost of a particular item taking into account the price multiplier of the shop
+    /// <summary>
+    /// Calculates the cost of a particular item taking into account the price multiplier of the shop.
+    /// </summary>
+    /// <returns>The total cost.</returns>
+    /// <param name="itemIndex">The index of the item to obtain the price of.</param>
     public int GetItemCost(int itemIndex)
     {
         try
         {
-            return (int)(m_shopInventory[itemIndex].m_cost * m_priceMultiplier);
+            return (int)(m_shopInventory[itemIndex].GetBaseCost() * m_priceMultiplier);
         }
         catch (System.Exception error)
         {
@@ -102,7 +106,7 @@ public class ShopScript : MonoBehaviour
         }
     }
 
-    public int GetIDIfItemPresent(ItemScript item)
+    public int GetIDIfItemPresent(ItemWrapper item)
     {
         for (int i = 0; i < m_shopInventory.GetCount(); i++)
         {
@@ -227,13 +231,13 @@ public class ShopScript : MonoBehaviour
 
 
     // Takes the inputted ID numbers and calls GetItemWithID on each, returns a list of ItemScripts
-    List<ItemScript> ConvertToItemScripts(int[] idNumbers)
+    List<ItemWrapper> ConvertToItemScripts(int[] idNumbers)
     {
         // Initialise a blank list
-        List<ItemScript> scripts = new List<ItemScript>(idNumbers.Length);
+        List<ItemWrapper> scripts = new List<ItemWrapper>(idNumbers.Length);
 
         // Avoid the creation of temporary variables
-        ItemScript currentScript;
+        ItemWrapper currentScript;
 
         // Iterate through the array obtaining valid ItemScripts
         for (int i = 0; i < idNumbers.Length; ++i)
@@ -255,7 +259,7 @@ public class ShopScript : MonoBehaviour
     }
 
     // Performs all the necessary work to add an item to the server
-    void RefillInventory(List<ItemScript> items)
+    void RefillInventory(List<ItemWrapper> items)
     {
         if (Network.isServer)
         {
@@ -294,7 +298,7 @@ public class ShopScript : MonoBehaviour
             // Obtain IDs
             //int[] returnedIDs = m_lootTable.RequestItemByApproximateValue ((elapsedTime + 150f), m_stockFlags, m_rarityMods, m_shopInventory.GetCapacity());
             int[] returnedIDs = m_lootTable.RequestItemListByTime(elapsedTime, m_stockFlags, m_shopInventory.GetCapacity());
-            List<ItemScript> items = ConvertToItemScripts(returnedIDs);
+            List<ItemWrapper> items = ConvertToItemScripts(returnedIDs);
 
             // Clear the inventory for convenience
             m_shopInventory.AdminResetInventory(m_inventoryAdminKey);

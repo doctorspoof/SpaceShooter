@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +47,7 @@ public sealed class CapitalShipScript : Ship
 
     // Others
     [SerializeField]                    Transform m_targetPoint = null;                     //!< Points to where the CShip needs to travel to.
-    [SerializeField]                    ItemScript[] m_attachedTurretsItemWrappers = null;  //!< Contains references to the item wrapper of each turret on the CShip.
+    [SerializeField]                    ItemWrapper[] m_attachedTurretsItemWrappers = null;  //!< Contains references to the item wrapper of each turret on the CShip.
 
     #endregion
 
@@ -100,7 +100,7 @@ public sealed class CapitalShipScript : Ship
         return m_bankedCash;
     }
 
-    public ItemScript[] GetAttachedTurretItemWrappers()
+    public ItemWrapper[] GetAttachedTurretItemWrappers()
     {
         return m_attachedTurretsItemWrappers;
     }
@@ -273,13 +273,13 @@ public sealed class CapitalShipScript : Ship
     /// </summary>
     /// <param name="turretHolderID">The slot to place the new turret at.</param>
     /// <param name="turret">The turret object to attach to the CShip.</param>
-    public void TellServerEquipTurret (int turretSlot, ItemScript turret)
+    public void TellServerEquipTurret (int turretSlot, ItemWrapper turret)
     {
         // Ensure the item is correct
-        int itemID = turret ? turret.m_equipmentID : -1;
+        int itemID = turret ? turret.GetItemID() : -1;
         
         if (turretSlot >= 0 && turretSlot < m_attachedTurretsItemWrappers.Length &&
-            itemID >= 0 && turret.GetTypeOfItem() == ItemType.CapitalWeapon)
+            itemID >= 0 && turret.GetItemType() == ItemType.CapitalWeapon)
         {
             // Can't send an RPC to the server from the server cause that would be helpful!
             if (Network.isServer)
@@ -312,7 +312,7 @@ public sealed class CapitalShipScript : Ship
     /// </summary>
     /// <param name="id">The slot to place the new turret into.</param>
     /// <param name="item">The reconstructed ItemScript of the turret to be placed at the desired position.</param>
-    void ReplaceTurretAtPosition (int id, ItemScript item)
+    void ReplaceTurretAtPosition (int id, ItemWrapper item)
     {
         if (Network.isServer)
         {
@@ -322,12 +322,12 @@ public sealed class CapitalShipScript : Ship
                 m_attachedTurretsItemWrappers[id] = item;
                 
                 // Tell the turret holder to spawn the new turret
-                GetCTurretHolderWithID (id).GetComponent<CShipTurretHolder>().ReplaceAttachedTurret (item.GetEquipmentReference());
+                GetCTurretHolderWithID (id).GetComponent<CShipTurretHolder>().ReplaceAttachedTurret (item.GetItemPrefab());
                 
                 // Propagate equipped items to clients too
                 for (int i = 0; i < m_attachedTurretsItemWrappers.Length; i++)
                 {
-                    networkView.RPC ("PropagateAttachTurretItemWrappers", RPCMode.Others, i, m_attachedTurretsItemWrappers[i].m_equipmentID);
+                    networkView.RPC ("PropagateAttachTurretItemWrappers", RPCMode.Others, i, m_attachedTurretsItemWrappers[i].GetItemID());
                 }
 
                 // Ensure the cache is up to date
@@ -358,7 +358,7 @@ public sealed class CapitalShipScript : Ship
         {
             if ((tHolder = GetCTurretHolderWithID (i)) != null)
             {
-                tHolder.ReplaceAttachedTurret (m_attachedTurretsItemWrappers[i].GetEquipmentReference());
+                tHolder.ReplaceAttachedTurret (m_attachedTurretsItemWrappers[i].GetItemPrefab());
             }
         }
     }

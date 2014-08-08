@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -30,12 +30,12 @@ public class PlayerControlScript : Ship
 	[SerializeField] int m_currentCash = 0;
 
     //Inventory
-    [SerializeField] ItemScript m_equippedWeaponItem;
-    [SerializeField] ItemScript m_equippedShieldItem;
-    [SerializeField] ItemScript m_equippedEngineItem;
-    [SerializeField] ItemScript m_equippedPlatingItem;
+    [SerializeField] ItemWrapper m_equippedWeaponItem;
+    [SerializeField] ItemWrapper m_equippedShieldItem;
+    [SerializeField] ItemWrapper m_equippedEngineItem;
+    [SerializeField] ItemWrapper m_equippedPlatingItem;
 
-    [SerializeField] List<ItemScript> m_playerInventory;
+    [SerializeField] List<ItemWrapper> m_playerInventory;
 
 
 
@@ -96,49 +96,49 @@ public class PlayerControlScript : Ship
             return false;
     }
 
-    public ItemScript GetEquipedPlatingItem()
+    public ItemWrapper GetEquipedPlatingItem()
     {
         return m_equippedPlatingItem;
     }
 
 
-    public void SetEquippedPlatingItem(ItemScript platingItem_)
+    public void SetEquippedPlatingItem(ItemWrapper platingItem_)
     {
         m_equippedPlatingItem = platingItem_;
 
     }
 
-    public ItemScript GetEquipedEngineItem()
+    public ItemWrapper GetEquipedEngineItem()
     {
         return m_equippedEngineItem;
     }
 
-    public void SetEquippedEngineItem(ItemScript engineItem_)
+    public void SetEquippedEngineItem(ItemWrapper engineItem_)
     {
         m_equippedEngineItem = engineItem_;
     }
 
-    public ItemScript GetEquipedShieldItem()
+    public ItemWrapper GetEquipedShieldItem()
     {
         return m_equippedShieldItem;
     }
 
-    public void SetEquippedShieldItem(ItemScript shieldItem_)
+    public void SetEquippedShieldItem(ItemWrapper shieldItem_)
     {
         m_equippedShieldItem = shieldItem_;
     }
 
-    public ItemScript GetEquipedWeaponItem()
+    public ItemWrapper GetEquipedWeaponItem()
     {
         return m_equippedWeaponItem;
     }
 
-    public void SetEquippedWeaponItem(ItemScript weaponItem_)
+    public void SetEquippedWeaponItem(ItemWrapper weaponItem_)
     {
         m_equippedWeaponItem = weaponItem_;
     }
 
-    public List<ItemScript> GetPlayerInventory()
+    public List<ItemWrapper> GetPlayerInventory()
     {
         return m_playerInventory;
     }
@@ -187,7 +187,7 @@ public class PlayerControlScript : Ship
 
         m_volumeHolder = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
 
-        m_playerInventory = new List<ItemScript>(5);
+        m_playerInventory = new List<ItemWrapper>(5);
 
         //ResetEquippedWeapon();
         if (Network.isServer)
@@ -865,11 +865,11 @@ public class PlayerControlScript : Ship
 		}
 
 
-		GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		weapon.transform.parent = this.transform;
 		weapon.transform.localPosition = weapon.GetComponent<EquipmentWeapon>().GetOffset();
 
-		networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<EquipmentWeapon>().GetNeedsLockon());
+		networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon());
 		
 		//Parenting needs to be broadcast to all clients!
 		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
@@ -887,7 +887,7 @@ public class PlayerControlScript : Ship
 
 	public void ResetEquippedShield()
 	{
-		GameObject shield = (GameObject)Network.Instantiate(m_equippedShieldItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject shield = (GameObject)Network.Instantiate(m_equippedShieldItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		shield.transform.parent = this.transform;
 		
 		ShieldScript ssc = shield.GetComponent<ShieldScript>();
@@ -910,7 +910,7 @@ public class PlayerControlScript : Ship
             Network.Destroy(oldEngine);
         }
 
-		GameObject engine = (GameObject)Network.Instantiate(m_equippedEngineItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject engine = (GameObject)Network.Instantiate(m_equippedEngineItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		engine.transform.parent = this.transform;
 
 		EngineScript esc = engine.GetComponent<EngineScript>();
@@ -929,7 +929,7 @@ public class PlayerControlScript : Ship
 	
 	public void ResetEquippedPlating()
 	{
-		GameObject plating = (GameObject)Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject plating = (GameObject)Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		plating.transform.parent = this.transform;
 		
 		PlatingScript psc = plating.GetComponent<PlatingScript>();
@@ -951,14 +951,14 @@ public class PlayerControlScript : Ship
         {
             while (true)
             {
-                ItemScript script;
+                ItemWrapper script;
                 
                 // Ensure the weapon is valid
                 if (GetWeaponObject() == null)
                 {
-                    script = m_equippedWeaponItem ? m_equippedWeaponItem.GetComponent<ItemScript>() : null;
+                    script = m_equippedWeaponItem ? m_equippedWeaponItem.GetComponent<ItemWrapper>() : null;
                     
-                    if (script == null || script.GetTypeOfItem() != ItemType.Weapon)
+                    if (script == null || script.GetItemType() != ItemType.Weapon)
                     {
                         m_equippedWeaponItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (0);
                         Debug.LogError ("Resetting null WeaponObject on: " + name);
@@ -969,9 +969,9 @@ public class PlayerControlScript : Ship
                 
                 if (GetShieldObject() == null)
                 {
-                    script = m_equippedShieldItem ? m_equippedShieldItem.GetComponent<ItemScript>() : null;
+                    script = m_equippedShieldItem ? m_equippedShieldItem.GetComponent<ItemWrapper>() : null;
 
-                    if (script == null || script.GetTypeOfItem() != ItemType.Shield)
+                    if (script == null || script.GetItemType() != ItemType.Shield)
                     {
                         m_equippedShieldItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (30);
                         Debug.LogError ("Resetting null ShieldObject on: " + name);
@@ -982,9 +982,9 @@ public class PlayerControlScript : Ship
                 
                 if (GetEngineObject() == null)
                 {
-                    script = m_equippedEngineItem ? m_equippedEngineItem.GetComponent<ItemScript>() : null;
+                    script = m_equippedEngineItem ? m_equippedEngineItem.GetComponent<ItemWrapper>() : null;
 
-                    if (script == null || script.GetTypeOfItem() != ItemType.Engine)                       
+                    if (script == null || script.GetItemType() != ItemType.Engine)                       
                     {
                         m_equippedEngineItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (60);
                         Debug.LogError ("Resetting null EngineObject on: " + name);
@@ -995,9 +995,9 @@ public class PlayerControlScript : Ship
                 
                 if (GetPlatingObject() == null)
                 {
-                    script = m_equippedPlatingItem ? m_equippedPlatingItem.GetComponent<ItemScript>() : null;
+                    script = m_equippedPlatingItem ? m_equippedPlatingItem.GetComponent<ItemWrapper>() : null;
 
-                    if (script == null || script.GetTypeOfItem() != ItemType.Plating)
+                    if (script == null || script.GetItemType() != ItemType.Plating)
                     {
                         m_equippedPlatingItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (90);
                         Debug.LogError ("Resetting null PlatingObject on: " + name);
@@ -1012,7 +1012,7 @@ public class PlayerControlScript : Ship
     }
 
 	
-	public void AddItemToInventoryLocalOnly(ItemScript itemWrapper)
+	public void AddItemToInventoryLocalOnly(ItemWrapper itemWrapper)
 	{
 		if(!IsInventoryFull())
 		{
@@ -1020,7 +1020,7 @@ public class PlayerControlScript : Ship
 		}
 	}
 
-	public void AddItemToInventory(ItemScript itemWrapper)
+	public void AddItemToInventory(ItemWrapper itemWrapper)
 	{
 		if(Network.isServer)
 		{
@@ -1035,8 +1035,7 @@ public class PlayerControlScript : Ship
 			{
 				m_playerInventory.Add(itemWrapper);
 			}
-			networkView.RPC ("TellServerAddItem", RPCMode.Server, itemWrapper.GetComponent<ItemScript>().m_equipmentID);
-			//networkView.RPC ("TellServerAddItem", RPCMode.Server, itemWrapper);
+			networkView.RPC ("TellServerAddItem", RPCMode.Server, itemWrapper.GetItemID());
 		}
 	}
 
@@ -1047,7 +1046,7 @@ public class PlayerControlScript : Ship
 
 	}
 
-	public void RemoveItemFromInventoryLocalOnly(ItemScript itemWrapper)
+	public void RemoveItemFromInventoryLocalOnly(ItemWrapper itemWrapper)
 	{
 		if(m_playerInventory.Contains(itemWrapper))
 		{
@@ -1055,7 +1054,7 @@ public class PlayerControlScript : Ship
 		}
 	}
 
-	public void RemoveItemFromInventory(ItemScript itemWrapper)
+	public void RemoveItemFromInventory(ItemWrapper itemWrapper)
 	{
 		if(Network.isServer)
 		{
@@ -1070,7 +1069,7 @@ public class PlayerControlScript : Ship
 			{
 				m_playerInventory.Remove(itemWrapper);
 			}
-			networkView.RPC ("TellServerRemoveItem", RPCMode.Server, itemWrapper.m_equipmentID);
+			networkView.RPC ("TellServerRemoveItem", RPCMode.Server, itemWrapper.GetItemID());
 		}
 	}
 
@@ -1089,7 +1088,7 @@ public class PlayerControlScript : Ship
 		return m_playerInventory.Count > 4;
 	}
 
-	public ItemScript GetItemInSlot(int slot)
+	public ItemWrapper GetItemInSlot(int slot)
 	{
         try
         {
@@ -1107,25 +1106,25 @@ public class PlayerControlScript : Ship
 	{
 		if(Network.isServer)
 		{
-			switch(m_playerInventory[slot].GetComponent<ItemScript>().GetTypeOfItem())
+			switch(m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemType())
 			{
 				case ItemType.Weapon:
 				{
 					//If we're told to equip a weapon:
-					Debug.Log ("Equipping weapon " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + m_owner);
+					Debug.Log ("Equipping weapon " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old weapon
-					ItemScript temp = m_equippedWeaponItem;
+					ItemWrapper temp = m_equippedWeaponItem;
 					//Destroy object
 					Network.Destroy(GetWeaponObject());
 
 					//Equip new weapon
-					ItemScript newWeapon = m_playerInventory[slot];
+					ItemWrapper newWeapon = m_playerInventory[slot];
 					m_equippedWeaponItem = newWeapon;
 
 					if(m_owner == Network.player)
 					{
-						if(newWeapon.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<EquipmentWeapon>().GetNeedsLockon())
+						if(newWeapon.GetComponent<ItemWrapper>().GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon())
 						{
 							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
 							Debug.Log ("New weapon is homing, alerting GUI...");
@@ -1137,7 +1136,7 @@ public class PlayerControlScript : Ship
 						}
 					}
 				
-					GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+					GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 					weapon.transform.parent = this.transform;
 					weapon.transform.localPosition = weapon.GetComponent<EquipmentWeapon>().GetOffset();
 					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
@@ -1147,7 +1146,7 @@ public class PlayerControlScript : Ship
 
 					//Send relevant info back to client
 					
-					networkView.RPC ("ReturnInfoToEquippingClient", m_owner, m_equippedWeaponItem.GetComponent<ItemScript>().m_equipmentID);
+					networkView.RPC ("ReturnInfoToEquippingClient", m_owner, m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemID());
 
 					//Take new weapon out of inventory
 					RemoveItemFromInventory(m_playerInventory[slot]);
@@ -1158,17 +1157,17 @@ public class PlayerControlScript : Ship
 				}
 				case ItemType.Shield:
 				{
-					Debug.Log ("Equipping shield " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + m_owner);
+					Debug.Log ("Equipping shield " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old shield
-					ItemScript temp = m_equippedShieldItem;
+					ItemWrapper temp = m_equippedShieldItem;
 					//Destroy the sheld
 					Network.Destroy (GetShieldObject());
 
 					//Equip the new shield
-					ItemScript newShield = m_playerInventory[slot];
+					ItemWrapper newShield = m_playerInventory[slot];
 					m_equippedShieldItem = newShield;
-					GameObject shield = Network.Instantiate(m_equippedShieldItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0) as GameObject;
+					GameObject shield = Network.Instantiate(m_equippedShieldItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0) as GameObject;
                     if (shield != null)
                     {
                         shield.transform.parent = this.transform;
@@ -1194,17 +1193,17 @@ public class PlayerControlScript : Ship
 				}
 				case ItemType.Engine:
 				{
-					Debug.Log ("Equipping engine " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + m_owner);
+					Debug.Log ("Equipping engine " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old engine
-					ItemScript temp = m_equippedEngineItem;
+					ItemWrapper temp = m_equippedEngineItem;
 					//Destroy the engine object
 					Network.Destroy(GetEngineObject());
 
 					//Equip new shield
-					ItemScript newEngine = m_playerInventory[slot];
+					ItemWrapper newEngine = m_playerInventory[slot];
 					m_equippedEngineItem = newEngine;
-					GameObject engine = Network.Instantiate(m_equippedEngineItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0) as GameObject;
+					GameObject engine = Network.Instantiate(m_equippedEngineItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0) as GameObject;
 
                     if (engine != null)
                     {
@@ -1232,17 +1231,17 @@ public class PlayerControlScript : Ship
 				}
 				case ItemType.Plating:
 				{
-					Debug.Log ("Equipping plating " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + m_owner);
+					Debug.Log ("Equipping plating " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old plating
-					ItemScript temp = m_equippedPlatingItem;
+					ItemWrapper temp = m_equippedPlatingItem;
 					//Destroy plating object
 					Network.Destroy(GetPlatingObject());
 
 					//Equip new plating
-					ItemScript newPlating = m_playerInventory[slot];
+					ItemWrapper newPlating = m_playerInventory[slot];
 					m_equippedPlatingItem = newPlating;
-					GameObject plating = Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0) as GameObject;
+					GameObject plating = Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0) as GameObject;
 
                     if (plating != null)
                     {
@@ -1272,17 +1271,17 @@ public class PlayerControlScript : Ship
 		}
 		else
 		{
-			switch(m_playerInventory[slot].GetComponent<ItemScript>().GetTypeOfItem())
+			switch(m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemType())
 			{
 				case ItemType.Weapon:
 				{
 					//If we're told to equip a weapon:
 					
 					//Unequip old weapon
-					ItemScript temp = m_equippedWeaponItem;
+					ItemWrapper temp = m_equippedWeaponItem;
 					
 					//If it's a homing weapon, alert the GUI
-					if(m_playerInventory[slot].GetEquipmentReference().GetComponent<EquipmentWeapon>().GetNeedsLockon())
+					if(m_playerInventory[slot].GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon())
 					{
 						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
 						Debug.Log ("New weapon is homing, alerting GUI...");
@@ -1308,11 +1307,11 @@ public class PlayerControlScript : Ship
 				case ItemType.Shield:
 				{
 					//Unequip old
-					ItemScript temp = m_equippedShieldItem;
+					ItemWrapper temp = m_equippedShieldItem;
 
 					//Don't destroy, handled by server
 					//Equip new
-                    ItemScript newShield = m_playerInventory[slot];
+                    ItemWrapper newShield = m_playerInventory[slot];
 					m_equippedShieldItem = newShield;
 
 					//Update local inventory
@@ -1323,11 +1322,11 @@ public class PlayerControlScript : Ship
 				case ItemType.Engine:
 				{
 					//Unequip old
-                    ItemScript temp = m_equippedEngineItem;
+                    ItemWrapper temp = m_equippedEngineItem;
 					
 					//Don't destroy, handled by server
 					//Equip new
-                    ItemScript newEngine = m_playerInventory[slot];
+                    ItemWrapper newEngine = m_playerInventory[slot];
 					m_equippedEngineItem = newEngine;
 					
 					//Update local inventory
@@ -1338,11 +1337,11 @@ public class PlayerControlScript : Ship
 				case ItemType.Plating:
 				{
 					//Unequip old
-                    ItemScript temp = m_equippedPlatingItem;
+                    ItemWrapper temp = m_equippedPlatingItem;
 					
 					//Don't destroy, handled by server
 					//Equip new
-                    ItemScript newPlating = m_playerInventory[slot];
+                    ItemWrapper newPlating = m_playerInventory[slot];
 					m_equippedPlatingItem = newPlating;
 					
 					//Update local inventory
@@ -1362,7 +1361,7 @@ public class PlayerControlScript : Ship
 
 	[RPC] void ReturnInfoToEquippingClient(int weaponID)
 	{
-        ItemScript equipmentObject = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(weaponID);
+        ItemWrapper equipmentObject = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(weaponID);
 
 		m_equippedWeaponItem = equipmentObject;
 	}
@@ -1655,7 +1654,7 @@ public class PlayerControlScript : Ship
 	/// You probably don't want to use this. This will return the weapon, shield, plating or engine based on what number you pass.
 	/// The numbers correspond to how they're displayed in the GUI to the player
 	/// </summary>
-	public ItemScript GetEquipmentFromSlot (int slotNumber)
+	public ItemWrapper GetEquipmentFromSlot (int slotNumber)
 	{
 		switch (slotNumber)
 		{
