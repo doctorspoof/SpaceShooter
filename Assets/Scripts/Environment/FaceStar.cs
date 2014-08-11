@@ -20,10 +20,13 @@ public sealed class FaceStar : MonoBehaviour
             // Obtain the direction to face
             Vector3 direction = (this.transform.position - m_SunRef.transform.position).normalized;
 
-            // Assign the correct rotation values
-            transform.rotation *= Quaternion.FromToRotation (transform.up, direction);
-            transform.rotation.x = 0;
-            transform.rotation.y = 0;
+            // Calculate the correct rotation values
+            Quaternion newRotation = transform.rotation * Quaternion.FromToRotation (transform.up, direction);
+            newRotation.x = 0;
+            newRotation.y = 0;
+
+            // Assign the rotation
+            transform.rotation = newRotation;
         }
 	}
 }
