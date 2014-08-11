@@ -6,14 +6,16 @@ public enum GameState
 {
     MainMenu = 0,
     HostMenu = 1,
-    ClientConnectingMenu = 2,
+    ClientInputIP = 2,
     ClientMenu = 3,
     MapMenu = 4,
     OptionMenu = 5,
     AttemptingConnect = 6,
     FailedConnectName = 7,
     InGame = 10,
-    InGameConnectionLost = 11
+    InGameConnectionLost = 11,
+    InGameCShipDock = 12,
+    InGameShopDock = 13
 }
 
 [System.Serializable]
@@ -66,7 +68,7 @@ public class GameStateController : MonoBehaviour
     [SerializeField] List<DeadPlayer> m_deadPlayers;
 
     [SerializeField] GameObject m_SpawnManager;
-    [SerializeField] GameObject m_GUIManager;
+    [SerializeField] GUIBaseMaster m_GUIManager;
     [SerializeField] GameObject[] m_AsteroidManagers;
 
     [SerializeField] GameState m_currentGameState = GameState.MainMenu;
@@ -96,18 +98,26 @@ public class GameStateController : MonoBehaviour
 
     List<LossCamConfirmation> m_lossCameraConfirmList;
 
+    float m_gameTimer = 0;
     bool m_lossTimerBegin = false;
     float m_lossTimer = 0.0f;
     bool m_cshipIsDying = false;
-
-
-
 
     GameObject m_localPlayer;
 
 
 
     #region getset
+
+    public float GetGameTimer()
+    {
+        return m_gameTimer;
+    }
+    
+    public void SetGameTimer(float gameTimer_)
+    {
+        m_gameTimer = gameTimer_;
+    }
 
     public List<Player> GetConnectedPlayers()
     {
@@ -252,6 +262,8 @@ public class GameStateController : MonoBehaviour
 
         if (!m_gameStopped)
         {
+            m_gameTimer += Time.deltaTime;
+        
             if (Network.isServer)
             {
                 if (m_capitalDamageTimer < 5.0f)
@@ -390,6 +402,7 @@ public class GameStateController : MonoBehaviour
             Debug.Log("Lost connection to host...");
             ChangeGameState(GameState.InGameConnectionLost);
             //m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
+            
         }
     }
 
@@ -438,23 +451,15 @@ public class GameStateController : MonoBehaviour
             m_ingameCapitalShip = GameObject.FindGameObjectWithTag("Capital");
         }
 
-        /*int rand = Random.Range(0, m_PlayerSpawnPoints.Length);
-        Vector3 pos = m_PlayerSpawnPoints[rand].transform.position;*/
-        //GameObject ship = (GameObject)Network.Instantiate(playerShip, pos, Quaternion.identity, 0);
         Vector3 pos = m_ingameCapitalShip.transform.position;
         pos.z = 10.75f;
-        //pos.z = 10.0f;
         GameObject ship = (GameObject)Network.Instantiate(m_playerShip, pos, m_ingameCapitalShip.transform.rotation, 0);
         ship.GetComponent<PlayerControlScript>().InitPlayerOnCShip(m_ingameCapitalShip);
         m_localPlayer = ship;
         ship.GetComponent<PlayerControlScript>().SetInputMethod(m_GUIManager.GetComponent<GUIManager>().GetUseController());
-        //ship.AddComponent<LocalPlayerInterp>();
 
-        //ship.GetComponent<PlayerControlScript>().SetOwner(player);
-        //ship.GetComponent<PlayerControlScript>().TellOtherClientsShipHasOwner(player);
-        m_GUIManager.GetComponent<GUIManager>().AlertGUIPlayerHasRespawned();
+        //m_GUIManager.GetComponent<GUIManager>().AlertGUIPlayerHasRespawned();
         ship.GetComponent<PlayerControlScript>().TellPlayerWeAreOwner(player);
-
     }
 
     void SpawnCapitalShip()
@@ -501,13 +506,12 @@ public class GameStateController : MonoBehaviour
         m_deadPlayers = new List<DeadPlayer>();
     }
 
-    public void PlayerRequestsToHostGame(string name, bool spec)
+    public void PlayerRequestsToHostGame(string name)
     {
         m_ownName = name;
         Debug.Log("Starting server on port: 6677");
         Network.InitializeServer(10, 6677, false);
-        if (!spec)
-            m_connectedPlayers.Add(new Player(Network.player, m_ownName));
+        m_connectedPlayers.Add(new Player(Network.player, m_ownName));
         ChangeGameState(GameState.HostMenu);
     }
 
@@ -528,7 +532,7 @@ public class GameStateController : MonoBehaviour
     {
         Debug.Log("Aborting connection.");
         Network.Disconnect();
-        ChangeGameState(GameState.ClientConnectingMenu);
+        ChangeGameState(GameState.ClientInputIP);
     }
 
     public void RemovePlayerFromConnectedList(NetworkPlayer player)
@@ -679,7 +683,7 @@ public class GameStateController : MonoBehaviour
 
     public void SwitchToJoinScreen()
     {
-        ChangeGameState(GameState.ClientConnectingMenu);
+        ChangeGameState(GameState.ClientInputIP);
     }
 
     public void OpenOptionMenu()
@@ -711,11 +715,11 @@ public class GameStateController : MonoBehaviour
 
     void ChangeGameState(GameState newState)
     {
-
         if (m_currentGameState != newState)
         {
             m_currentGameState = newState;
-            m_GUIManager.GetComponent<GUIManager>().UpdateCurrentState(m_currentGameState);
+            //m_GUIManager.GetComponent<GUIManager>().UpdateCurrentState(m_currentGameState);
+            m_GUIManager.ChangeGameState(newState);
         }
     }
 
@@ -866,8 +870,8 @@ public class GameStateController : MonoBehaviour
             if (!m_lossConfirmList[i].confirmed)
             {
                 networkView.RPC("CapitalShipHasBeenDestroyed", m_lossConfirmList[i].player);
-                float timer = m_GUIManager.GetComponent<GUIManager>().GetGameTimer();
-                networkView.RPC("SendTimerToClients", m_lossConfirmList[i].player, timer);
+                //float timer = m_GUIManager.GetComponent<GUIManager>().GetGameTimer();
+                //networkView.RPC("SendTimerToClients", m_lossConfirmList[i].player, timer);
             }
         }
     }
@@ -896,8 +900,8 @@ public class GameStateController : MonoBehaviour
             }
 
             networkView.RPC("CapitalShipHasBeenDestroyed", RPCMode.All);
-            float timer = m_GUIManager.GetComponent<GUIManager>().GetGameTimer();
-            networkView.RPC("SendTimerToClients", RPCMode.Others, timer);
+            //float timer = m_GUIManager.GetComponent<GUIManager>().GetGameTimer();
+            //networkView.RPC("SendTimerToClients", RPCMode.Others, timer);
             BeginBuildupDestructionSequence();
 
             m_cshipIsDying = true;
@@ -906,7 +910,7 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void SendTimerToClients(float time)
     {
-        m_GUIManager.GetComponent<GUIManager>().SetGameTimer(time);
+        //m_GUIManager.GetComponent<GUIManager>().SetGameTimer(time);
     }
 
     [RPC] void CapitalShipHasBeenDestroyed()
