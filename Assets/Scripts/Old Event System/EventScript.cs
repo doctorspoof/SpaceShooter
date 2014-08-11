@@ -408,27 +408,18 @@ public class EventScript : MonoBehaviour
 				switch(outcome.affectedResource)
 				{
 					case ResourceType.CShipFuel:
-					{
-						if(outcome.outcomeMagnitude < 0)
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceFuel(-outcome.outcomeMagnitude);
-						else
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceFuel(outcome.outcomeMagnitude);
+					{						
+						GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().AlterCurrentResourceFuel(outcome.outcomeMagnitude);
 						break;
 					}
 					case ResourceType.CShipWater:
 					{
-						if(outcome.outcomeMagnitude < 0)
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceWater(-outcome.outcomeMagnitude);
-						else
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceWater(outcome.outcomeMagnitude);
+                        GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().AlterCurrentResourceWater(outcome.outcomeMagnitude);
 						break;
 					}
 					case ResourceType.CShipMass:
 					{
-						if(outcome.outcomeMagnitude < 0)
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().ReduceResourceMass(-outcome.outcomeMagnitude);
-						else
-							GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().IncreaseResourceMass(outcome.outcomeMagnitude);
+                        GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>().AlterCurrentResourceMass(outcome.outcomeMagnitude);
 						break;
 					}
 					default:

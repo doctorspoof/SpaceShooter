@@ -28,7 +28,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400002}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ GameObject:
   - 4: {fileID: 400004}
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
-  - 114: {fileID: 11400002}
+  - 114: {fileID: 11400004}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -59,7 +59,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: -.00109656586, w: .999999464}
-  m_LocalPosition: {x: -55.2099266, y: 50.3087234, z: 0}
+  m_LocalPosition: {x: 66.8882523, y: 167.601425, z: 0}
   m_LocalScale: {x: .200000003, y: .200000003, z: 1}
   m_Children:
   - {fileID: 400004}
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_bulletRef: {fileID: 100000, guid: 2cda0e07dbd1c5648a9bb5f8763f4a70, type: 2}
   m_bulletOffset: {x: 0, y: 0, z: .100000001}
   m_needsLockon: 0
---- !u!114 &11400002
+--- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -180,12 +180,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 100004}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea3eb903f2fa26141be90e0a2a825468, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a366be136da8284facc584dd8b4e112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_minY: .261999995
+  m_idleY: .723999977
   m_firePoint: {fileID: 100002}
-  m_maxYReduction: .2618514
-  m_idleYLevel: .724098384
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

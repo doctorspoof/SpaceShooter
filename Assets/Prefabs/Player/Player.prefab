@@ -987,13 +987,16 @@ MonoBehaviour:
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
   m_currentCash: 0
-  m_equippedWeaponItem: {fileID: 100000, guid: d8e1271c27ab7ae4793d51be5149f688, type: 2}
-  m_equippedShieldItem: {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
-  m_equippedEngineItem: {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
-  m_equippedPlatingItem: {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
+  m_equippedWeaponItem: {fileID: 11400000, guid: d8e1271c27ab7ae4793d51be5149f688,
+    type: 2}
+  m_equippedShieldItem: {fileID: 11400000, guid: e96c02fd8453d5748b59e3ae33533f8d,
+    type: 2}
+  m_equippedEngineItem: {fileID: 11400000, guid: eeb014f2b35b98342b24a2917a1eb246,
+    type: 2}
+  m_equippedPlatingItem: {fileID: 11400000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
     type: 2}
   m_playerInventory:
-  - {fileID: 100000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
+  - {fileID: 0}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1

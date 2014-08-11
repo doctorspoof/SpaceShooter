@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 
 /// <summary>
@@ -322,7 +322,7 @@ public sealed class BeamBulletScript : MonoBehaviour
 	[RPC] void ParentBeamToCShipOverNetwork (int turretID)
 	{
 		GameObject cship = GameObject.FindGameObjectWithTag("Capital");
-		GameObject turret = cship.GetComponent<CapitalShipScript>().GetCTurretHolderWithId(turretID);
+		CShipTurretHolder turret = cship.GetComponent<CapitalShipScript>().GetCTurretHolderWithID(turretID);
 		this.transform.parent = turret.transform.GetChild(0);
 	}
 }

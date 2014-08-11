@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +36,7 @@ public sealed class NetworkInventory : MonoBehaviour
 
     #region Unity modifable variables
    
-    [SerializeField] List<ItemScript> m_inventory = new List<ItemScript>(0);	// Only objects with ItemScript components are valid
+    [SerializeField] List<ItemWrapper> m_inventory = new List<ItemWrapper>(0);	// Only objects with ItemScript components are valid
     [SerializeField, Range(0, 100)] int m_capacity = 20;						// The maximum number of items the inventory can hold
     [SerializeField, Range(0.1f, 600f)] float m_requestTimeOutSeconds = 120f;	// How long before a request ticket will be deleted due to it timing out
     [SerializeField] bool m_nullRemovedItems = false;							// Whether removals should just null the reference or remove it from the list entirely
@@ -136,7 +136,7 @@ public sealed class NetworkInventory : MonoBehaviour
     }
 
 
-    public ItemScript GetItemScript (int index)
+    public ItemWrapper GetItemScript (int index)
     {
         // Since this will be the main entry point of the GUI and will be called multiple times per frame
         // a try-catch block is used instead of checking the the index each time.
@@ -170,7 +170,7 @@ public sealed class NetworkInventory : MonoBehaviour
     
     
     /// Shorthand for GetItemScript(), allows the usage of the [] operator
-    public ItemScript this[int index]
+    public ItemWrapper this[int index]
     {
         get { return GetItemScript (index); }
     }
@@ -258,7 +258,7 @@ public sealed class NetworkInventory : MonoBehaviour
                 m_inventory.RemoveAt (i);
                 
                 // Counts are synchronised, this just ensures that if ran at the start, the function won't crash.
-                if (m_isItemRequested.Count > i)
+                if (i < m_isItemRequested.Count)
                 {
                     m_isItemRequested.RemoveAt (i);
                     m_requestTickets.RemoveAt (i);
@@ -495,9 +495,9 @@ public sealed class NetworkInventory : MonoBehaviour
     /// <param name="item">Item to be added.</param>
     /// <param name="preferredIndex">The index of the item to replace (-1 will just add it anywhere).</param>
     /// <param name="adminKey">Unlocks admin mode if you have the right key.</param>
-    public void RequestServerAdd (ItemScript item, int preferredIndex = -1, int adminKey = -1)
+    public void RequestServerAdd (ItemWrapper item, int preferredIndex = -1, int adminKey = -1)
     {
-        if (item && item.m_equipmentID >= 0)
+        if (item != null && item.GetItemID() >= 0)
         {
             // Determine whether admin mode is accessible
             bool adminMode = adminKey == m_adminKey;
@@ -508,12 +508,12 @@ public sealed class NetworkInventory : MonoBehaviour
             // Silly Unity requires a workaround for the server
             if (Network.isServer)
             {
-                RequestAdd (item.m_equipmentID, preferredIndex, adminMode, m_blankMessage);
+                RequestAdd (item.GetItemID(), preferredIndex, adminMode, m_blankMessage);
             }
             
             else
             {
-                networkView.RPC ("RequestAdd", RPCMode.Server, item.m_equipmentID, preferredIndex, adminMode);
+                networkView.RPC ("RequestAdd", RPCMode.Server, item.GetItemID(), preferredIndex, adminMode);
             }
         }
         
@@ -533,7 +533,7 @@ public sealed class NetworkInventory : MonoBehaviour
     /// <param name="index">The index at which to add the item.</param>
     /// <param name="adminMode">If set to <c>true</c> enable admin mode.</param>
     /// <param name="info">Used to reply to the sender.</param>
-    [RPC] void RequestAdd(int itemID, int index, bool adminMode, NetworkMessageInfo info)
+    [RPC] void RequestAdd (int itemID, int index, bool adminMode, NetworkMessageInfo info)
     {
         if (Network.isServer)
         {
@@ -556,7 +556,7 @@ public sealed class NetworkInventory : MonoBehaviour
                             if (!IsInventoryFull())
                             {
                                 ticket.uniqueID = m_ticketNumber;
-                                
+
                                 // Increment values
                                 SetTicketNumber (++m_ticketNumber);
                                 SetAddRequests (++m_addRequests);
@@ -589,8 +589,7 @@ public sealed class NetworkInventory : MonoBehaviour
                     }
                 }
             }
-            
-            
+
             // Silly workaround for RPC sending limitation
             if (info.Equals (m_blankMessage))
             {
@@ -652,7 +651,7 @@ public sealed class NetworkInventory : MonoBehaviour
     public void RequestServerCancel (ItemTicket ticket)
     {
         // Ensure we are not wasting time by checking if the ticket is valid
-        if (ticket && ticket.IsValid())
+        if (ticket != null && ticket.IsValid())
         {
             if (Network.isServer)
             {
@@ -749,7 +748,7 @@ public sealed class NetworkInventory : MonoBehaviour
     /// <param name="ticket">The ticket to check the validity of.</param>
     public void RequestTicketValidityCheck (ItemTicket ticket)
     {
-        if (ticket && ticket.IsValid())
+        if (ticket != null && ticket.IsValid())
         {
             // Reset the response, don't call the function otherwise it will break AddItemToServer() and RemoveItemFromServer()
             m_hasServerResponded = false;
@@ -845,7 +844,7 @@ public sealed class NetworkInventory : MonoBehaviour
     public bool RemoveItemFromServer (ItemTicket ticket)
     {
         // Ensure the ticket is both valid to prevent wasting the servers time
-        if (ticket && ticket.IsValid() && ticket == m_itemRequestResponse)
+        if (ticket != null && ticket.IsValid() && ticket == m_itemRequestResponse)
         {
             if (Network.isServer)
             {
@@ -949,7 +948,7 @@ public sealed class NetworkInventory : MonoBehaviour
     public bool AddItemToServer (ItemTicket ticket)
     {
         // Check the item exists and whether the transaction has been authorised
-        if (ticket && ticket.IsValid() && ticket == m_itemAddResponse)
+        if (ticket != null && ticket.IsValid() && ticket.Equals (m_itemAddResponse))
         {
             // Unity silliness again
             if (Network.isServer)
@@ -1030,9 +1029,8 @@ public sealed class NetworkInventory : MonoBehaviour
     [RPC] void PropagateItemAtIndex (int index, int itemID)
     {
         // Allow null values if m_nullRemovedItems
-        GameObject itemObject = m_itemIDs.GetItemWithID(itemID);
-        ItemScript item = itemObject != null ? itemObject.GetComponent<ItemScript>() : null;
-        
+        ItemWrapper item = m_itemIDs.GetItemWithID (itemID);
+       
         // Only allow nulls if that has been specified as an attribute
         if (m_nullRemovedItems || item != null)
         {
@@ -1044,7 +1042,7 @@ public sealed class NetworkInventory : MonoBehaviour
                 {
                     SetAddRequests (--m_addRequests);
                 }
-                
+
                 m_inventory[index] = item;
                 m_isItemRequested[index] = false;
                 m_requestTickets[index].Reset();
@@ -1062,10 +1060,7 @@ public sealed class NetworkInventory : MonoBehaviour
             
             // Propagate it to the clients to keep the clients inventories in sync
             if (Network.isServer)
-            {
-                SetAddRequests (--m_addRequests);
-                
-                
+            {                
                 networkView.RPC ("PropagateItemAtIndex", RPCMode.Others, index, itemID);
             }
         }
@@ -1123,7 +1118,7 @@ public sealed class NetworkInventory : MonoBehaviour
         
         for (int i = 0; i < m_inventory.Count; ++i)
         {
-            if (m_inventory[i] = null)
+            if (m_inventory[i] == null)
             {
                 ++found;
             }
@@ -1171,7 +1166,7 @@ public sealed class NetworkInventory : MonoBehaviour
         if (IsValidIndex (index))
         {
             // Check the itemID is correct then check whether it matters if it has been requested or not
-            if (m_inventory[index] != null && m_inventory[index].m_equipmentID == itemID)
+            if (m_inventory[index] != null && m_inventory[index].GetItemID() == itemID)
             {
                 switch (check)
                 {
@@ -1262,7 +1257,7 @@ public sealed class NetworkInventory : MonoBehaviour
     /// <param name="ticket">The reservation ticket.</param>
     void ReserveItem (int index, ItemTicket ticket)
     {
-        if (IsValidIndex(index))
+        if (IsValidIndex (index))
         {
             // Ensure the previous ticket gets reset so it's invalid
             m_requestTickets[index].Reset();
@@ -1285,7 +1280,7 @@ public sealed class NetworkInventory : MonoBehaviour
     IEnumerator ExpireItemTicket (ItemTicket toExpire, float timeToWait)
     {
         // Wait for the desired amount of time
-        yield return new WaitForSeconds(timeToWait);
+        yield return new WaitForSeconds (timeToWait);
         
         // Tickets which have been redeemed will be reset to the standard ticket
         if (toExpire.IsValid())
@@ -1294,10 +1289,10 @@ public sealed class NetworkInventory : MonoBehaviour
             if (Network.isServer)
             {
                 // Obtain the index
-                int index = DetermineTicketIndex(toExpire);
+                int index = DetermineTicketIndex (toExpire);
                 
                 // Flag the item as unrequested
-                if (IsValidIndex(index))
+                if (IsValidIndex (index))
                 {
                     // Reset the request
                     m_isItemRequested[index] = false;

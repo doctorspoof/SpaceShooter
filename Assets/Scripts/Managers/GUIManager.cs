@@ -116,6 +116,11 @@ public class GUIManager : MonoBehaviour
     GameObject m_lastLockonTarget = null;
     bool m_isOnFollowMap = true;
     //bool m_shipyardScreen = true;
+<<<<<<< HEAD
+=======
+    bool m_shopConfirmBuy = false;
+    ItemWrapper m_confirmBuyItem = null;
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
     bool m_isOnMap = false;
     float m_blobSize;
     bool m_shouldShowWarningAttack = false;
@@ -266,14 +271,44 @@ public class GUIManager : MonoBehaviour
     bool m_hasLockedTarget = false;
     
     // Drag & Drop stuff
+<<<<<<< HEAD
     
     ItemScript m_currentDraggedItem = null;
+=======
+    bool m_isRequestingItem = false;
+    ItemWrapper m_currentDraggedItem = null;
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
     bool m_currentDraggedItemIsFromPlayerInv = true;
     int m_currentDraggedItemInventoryId = -1;
     Vector2 m_playerScrollPosition = Vector2.zero;
     Vector2 m_cShipScrollPosition = Vector2.zero;
     bool m_transferFailed = false;
     string m_transferFailedMessage = "Transfer failed - Item Requested Elsewhere";
+<<<<<<< HEAD
+=======
+    
+    // Animatables
+    int m_playerPanelXWidth = 408;
+    int m_cShipPanelXPos = 796;
+    
+    // Rects
+    Dictionary<Rect, ItemWrapper> m_drawnItems = new Dictionary<Rect, ItemWrapper>();
+    Dictionary<Rect, ItemWrapper> m_drawnItemsSecondary = new Dictionary<Rect, ItemWrapper>();
+    
+    Rect m_LeftPanelPlayerRect = new Rect(810, 315, 180, 335);
+    Rect m_LeftPanelCShipRect = new Rect(1010, 315, 180, 335);
+    Rect m_LeftPanelWeaponRect = new Rect(602, 315, 70, 60);
+    Rect m_LeftPanelEngineRect = new Rect(602, 567, 70, 60);
+    Rect m_LeftPanelShieldRect = new Rect(602, 375, 70, 60);
+    Rect m_LeftPanelPlatingRect = new Rect(602, 440, 70, 60);
+    
+    Rect m_RightPanelPlayerRect = new Rect(407, 315, 180, 335);
+    Rect m_RightPanelCShipRect = new Rect(607, 315, 180, 335);
+    Rect m_RightPanelWeapon1Rect = new Rect(915, 318, 78, 58);
+    Rect m_RightPanelWeapon2Rect = new Rect(915, 378, 78, 58);
+    Rect m_RightPanelWeapon3Rect = new Rect(915, 439, 78, 58);
+    Rect m_RightPanelWeapon4Rect = new Rect(915, 568, 78, 58);
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
 
     // Chat Vars
     //List<string> m_chatMessages;
@@ -756,10 +791,10 @@ public class GUIManager : MonoBehaviour
                     GUI.DrawTextureWithTexCoords(new Rect(20 + (i * 270), 760, 240 * shieldPercent, 45), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
                     
                     //Equipment
-                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>().GetIcon();
-                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>().GetIcon();
-                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>().GetIcon();
-                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>().GetIcon();
+                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetIcon();
+                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemWrapper>().GetIcon();
+                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetIcon();
+                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemWrapper>().GetIcon();
                     
                     GUI.DrawTexture(new Rect(20 + (i * 270), 820, 49, 55), weapTex);
                     GUI.DrawTexture(new Rect(84 + (i * 270), 820, 49, 55), shieldTex);
@@ -788,10 +823,10 @@ public class GUIManager : MonoBehaviour
                     GUI.DrawTextureWithTexCoords(new Rect(1070 + ((i - 2) * 270), 760, 240 * shieldPercent, 45), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
                     
                     //Equipment
-                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemScript>().GetIcon();
-                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemScript>().GetIcon();
-                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemScript>().GetIcon();
-                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemScript>().GetIcon();
+                    Texture weapTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetIcon();
+                    Texture shieldTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemWrapper>().GetIcon();
+                    Texture armourTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetIcon();
+                    Texture engineTex = m_players[i].GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemWrapper>().GetIcon();
                     
                     GUI.DrawTexture(new Rect(1070 + ((i - 2) * 270), 820, 49, 55), weapTex);
                     GUI.DrawTexture(new Rect(1134 + ((i - 2) * 270), 820, 49, 55), shieldTex);
@@ -879,7 +914,266 @@ public class GUIManager : MonoBehaviour
             
             if (m_PlayerHasDockedAtShop && !m_PlayerHasDied)
             {
+<<<<<<< HEAD
                 
+=======
+                if (m_shopDockedAt != null)
+                {
+                    //Grab useful things
+                    Event currentEvent = Event.current;
+                    Vector3 mousePos = currentEvent.mousePosition;
+                    m_drawnItems.Clear();
+                    m_drawnItemsSecondary.Clear();
+                    
+                    //Undertex
+                    GUI.DrawTexture(new Rect(396, 86, 807, 727), m_shopBaseTexture);
+                    
+                    if(m_transferFailed)
+                    {
+                        GUI.Label(new Rect(600, 180, 400, 50), m_transferFailedMessage, m_nonBoxStyle);
+                    }
+
+                    //Player - left
+                    GUI.Label(new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
+                    /*List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetPlayerInventory();
+                    Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
+                    m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
+                    for (int i = 0; i < playerInv.Count; i++)
+                    {
+                        GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
+                        Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+                        GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+                        Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - m_playerScrollPosition.y, lastR.width, lastR.height);
+                        Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+                        
+                        if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                            m_drawnItemsSecondary.Add(finalRect, playerInv[i].GetComponent<ItemScript>());
+                        
+                        if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown && m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Shipyard)
+                        {
+                            bool insideFinalRect = finalRect.Contains(mousePos);
+                            if (!m_shopConfirmBuy && insideFinalRect && !m_isRequestingItem)
+                            {
+                                //Begin drag & drop
+                                m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
+                                m_currentDraggedItemInventoryId = i;
+                                m_currentDraggedItemIsFromPlayerInv = true;
+                            }
+                        }
+                    }
+                    GUI.EndScrollView();*/
+                    
+                    //Shop - right
+                    GUI.Label(new Rect(1020, 270, 164, 40), "Shop:", m_nonBoxStyle);
+                    NetworkInventory shopInv = m_shopDockedAt.GetComponent<NetworkInventory>();
+                    Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
+                    m_cShipScrollPosition = GUI.BeginScrollView(scrollAreaRect, m_cShipScrollPosition, new Rect(0, 0, 150, 52 * shopInv.GetCount()));
+                    for (int i = 0; i < shopInv.GetCount(); i++)
+                    {
+                        if(shopInv[i] != null)
+                        {
+                            GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), shopInv[i].GetIcon());
+                            Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+                            GUI.Label(lastR, shopInv[i].GetComponent<ItemWrapper>().GetItemName(), m_nonBoxSmallStyle);
+                            Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - m_cShipScrollPosition.y, lastR.width, lastR.height);
+                            Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+                            
+                            if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                                m_drawnItems.Add(finalRect, shopInv[i]);
+                            
+                            if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
+                            {
+                                bool insideFinalRect = finalRect.Contains(mousePos);
+                                if (!m_shopConfirmBuy && insideFinalRect && !m_isRequestingItem)
+                                {
+                                    if(m_thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(i)))
+                                    {
+                                        //Since we're a shop, on mouseDown, open the item confirmation box
+                                        shopInv.RequestServerCancel(m_currentTicket);
+                                        shopInv.RequestServerItem(shopInv[i].GetItemID(), i);
+                                        StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.ItemTake, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
+                                    }
+                                    else
+                                        StartCoroutine(CountdownTransferFailedPopup(false));
+                                }
+                            }
+                        }
+                    }
+                    GUI.EndScrollView();
+                    
+                    Rect weaponTemp = new Rect(605, 301, 63, 63);
+                    Rect shieldTemp = new Rect(605, 367, 63, 63);
+                    Rect platingTemp = new Rect(605, 442, 63, 63);
+                    Rect engineTemp = new Rect(605, 588, 63, 63);
+                    
+                    //Do shop type specific stuff
+                    if(m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Basic)
+                    {
+                        GUI.DrawTexture(new Rect(396, 221, 403, 460), m_smallShopTexture);
+                        int hpPercent = (int)(m_thisPlayerHP.GetHPPercentage() * 100.0f);
+                        GUI.Label (new Rect(695, 440, 90, 40), hpPercent.ToString() + "%", m_nonBoxStyle);
+                    }
+                    else
+                    {
+                        //float playerSourceWidth = m_playerPanelXWidth / 408.0f;
+                        GUI.DrawTexture(new Rect(396, 221, 403, 460), m_DockInventoryBorder);
+                        GUI.DrawTexture(new Rect(396, 221, 403, 460), m_DockPlayerImage);
+                        
+                        //Equipped icons:
+                        float iconLeftX = 602.0f - (408.0f - m_playerPanelXWidth);
+                        if (iconLeftX >= 324.0f)
+                        {
+                            
+                            m_drawnItemsSecondary.Add(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemWrapper>());
+                            m_drawnItemsSecondary.Add(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemWrapper>());
+                            m_drawnItemsSecondary.Add(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemWrapper>());
+                            m_drawnItemsSecondary.Add(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemWrapper>());
+                            
+                            GUI.DrawTexture(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetIcon());
+                            GUI.DrawTexture(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemWrapper>().GetIcon());
+                            GUI.DrawTexture(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetIcon());
+                            GUI.DrawTexture(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemWrapper>().GetIcon());
+                        }
+                    }
+                    
+                    //Hover text
+                    if (!m_inGameMenuIsOpen && m_currentDraggedItem == null)
+                    {
+                        foreach (Rect key in m_drawnItems.Keys)
+                        {
+                            if (key.Contains(mousePos))
+                            {
+                                int id = m_shopDockedAt.GetComponent<ShopScript>().GetIDIfItemPresent(m_drawnItems[key]);
+                                string text = m_drawnItems[key].GetHoverText(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(id));
+                                DrawHoverText(text, mousePos);
+                            }
+                        }
+                        
+                        foreach (Rect key in m_drawnItemsSecondary.Keys)
+                        {
+                            if (key.Contains(mousePos))
+                            {
+                                string text = m_drawnItemsSecondary[key].GetHoverText();
+                                DrawHoverText(text, mousePos);  
+                            }
+                        }
+                    }
+                    else if(!m_inGameMenuIsOpen)
+                    {
+                        GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemWrapper>().GetIcon());
+                        
+                        if(!Input.GetMouseButton(0))
+                        {
+                            //Drop item whereever you are
+                            if(weaponTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.GetItemType() == ItemType.Weapon)
+                                {
+                                    m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else if(shieldTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.GetItemType() == ItemType.Shield)
+                                {
+                                    m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else if(platingTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.GetItemType() == ItemType.Plating)
+                                {
+                                    m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else if(engineTemp.Contains(mousePos))
+                            {
+                                if(m_currentDraggedItem.GetItemType() == ItemType.Engine)
+                                {
+                                    m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot(m_currentDraggedItemInventoryId);
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;
+                                }
+                                else
+                                {
+                                    m_currentDraggedItem = null;
+                                    m_currentDraggedItemInventoryId = -1;
+                                    m_currentDraggedItemIsFromPlayerInv = false;  
+                                }
+                            }
+                            else
+                            {
+                                m_currentDraggedItem = null;
+                                m_currentDraggedItemInventoryId = -1;
+                                m_currentDraggedItemIsFromPlayerInv = false;
+                            }
+                        }
+                    }
+                    
+                    //Do confirm box if appropriate
+                    if(m_shopConfirmBuy)
+                    {
+                        GUI.DrawTexture(new Rect(632, 328, 337, 200), m_menuBackground);
+                        GUI.Label(new Rect(662, 350, 277, 50), "Buy '" + m_confirmBuyItem.GetItemName() + "' for $" + m_confirmBuyItem.GetBaseCost() + "?", m_nonBoxStyle);
+                        
+                        if(GUI.Button (new Rect(700, 440, 70, 40), "Confirm"))
+                        {
+                            //int cost = m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex);
+                            shopInv.RequestTicketValidityCheck(m_currentTicket);
+                            Debug.Log ("Requested confirm buy of item, using ticket: " + m_currentTicket.ToString());
+                            StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
+                        }
+                        
+                        if(GUI.Button (new Rect(830, 440, 70, 40), "Cancel"))
+                        {
+                            shopInv.RequestServerCancel(m_currentTicket);
+                            m_shopConfirmBuy = false;
+                            m_confirmBuyItem = null;
+                        }
+                    }
+                    
+                    //Finally, Leave button
+                    if (!m_inGameMenuIsOpen && !m_shopConfirmBuy && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
+                    {
+                        m_PlayerHasDockedAtShop = false;
+                        m_shopDockedAt = null;
+                        //m_shipyardScreen = true;
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().SetNearbyShop(null);
+                        m_thisPlayerHP.transform.parent = null;
+                        m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
+                        m_thisPlayerHP.rigidbody.isKinematic = false;
+                        Screen.showCursor = false;
+                    }
+                }
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
             }
             else
             {
@@ -1077,6 +1371,387 @@ public class GUIManager : MonoBehaviour
     void DrawCShipDockOverlay()
     {
         
+<<<<<<< HEAD
+=======
+        if(m_transferFailed)
+        {
+            GUI.Label(new Rect(600, 180, 400, 50), m_transferFailedMessage, m_nonBoxStyle);
+        }
+        
+        //Show bank status
+        GUI.Label(new Rect(1012, 140, 134, 40), "$" + m_cShipGameObject.GetComponent<CapitalShipScript>().GetBankedCash(), m_nonBoxStyle);
+        
+        //Desposit moneys
+        if (GUI.Button(new Rect(1038, 180, 84, 33), "", "label"))
+        {
+            PlayerControlScript pCSc = m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>();
+            int cashAmount = pCSc.GetCash();
+            pCSc.RemoveCash(cashAmount);
+            //m_cShipGameObject.GetComponent<CapitalShipScript>().DepositCashToCShip(cashAmount);
+        }
+        
+        m_drawnItems.Clear();
+        //Do screen specific stuff here:
+        switch (m_currentCShipPanel)
+        {
+            case CShipScreen.DualPanel:
+            {
+                if (!m_inGameMenuIsOpen && GUI.Button(new Rect(394, 250, m_playerPanelXWidth, 400), ""))
+                {
+                    //If player is selected, CShip should animate away
+                    StartCoroutine(AnimateCShipPanel(1204));
+                    m_currentCShipPanel = CShipScreen.PanelsAnimating;
+                }
+                
+                if (!m_inGameMenuIsOpen && GUI.Button(new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), ""))
+                {
+                    //If CShip is selected, player should animate away
+                    StartCoroutine(AnimatePlayerPanel(0));
+                    m_currentCShipPanel = CShipScreen.PanelsAnimating;
+                }
+                
+                DrawLeftPanel();
+                
+                DrawRightPanel();
+                
+                break;
+            }
+            case CShipScreen.RightPanelActive:
+            {
+                DrawRightPanel();
+                
+                GUI.Label(new Rect(408, 270, 164, 40), "Player:", m_nonBoxStyle);
+                /*List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetPlayerInventory();
+                Rect scrollAreaRectPl = new Rect(408, 330, 180, 320);
+                m_playerScrollPosition = GUI.BeginScrollView(scrollAreaRectPl, m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
+                for (int i = 0; i < playerInv.Count; i++)
+                {
+                    GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
+                    Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+                    GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+                    Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - m_playerScrollPosition.y, lastR.width, lastR.height);
+                    Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+                    
+                    if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                        m_drawnItems.Add(finalRect, playerInv[i].GetComponent<ItemScript>());
+                    
+                    if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
+                    {
+                        //bool insideModR = modR.Contains(mousePos);
+                        if (finalRect.Contains(mousePos) && !m_isRequestingItem)
+                        {
+                            //Begin drag & drop
+                            m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
+                            m_currentDraggedItemInventoryId = i;
+                            m_currentDraggedItemIsFromPlayerInv = true;
+                        }
+                    }
+                }
+                GUI.EndScrollView();*/
+                
+                GUI.Label(new Rect(612, 270, 164, 40), "Capital:", m_nonBoxStyle);
+                NetworkInventory cshipInv = m_cShipGameObject.GetComponent<NetworkInventory>();
+                Rect scrollAreaRect = new Rect(612, 330, 180, 320);
+                m_cShipScrollPosition = GUI.BeginScrollView(scrollAreaRect, m_cShipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
+                for (int i = 0; i < cshipInv.GetCount(); i++)
+                {
+                    GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetIcon());
+                    Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+                    GUI.Label(lastR, cshipInv[i].GetItemName(), m_nonBoxSmallStyle);
+                    Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - m_cShipScrollPosition.y, lastR.width, lastR.height);
+                    Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+                    
+                    if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                        m_drawnItems.Add(finalRect, cshipInv[i].GetComponent<ItemWrapper>());
+                    
+                    if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
+                    {
+                        //bool insideModR = modR.Contains(mousePos);
+                        if (finalRect.Contains(mousePos) && !m_isRequestingItem)
+                        {
+                            //Begin drag & drop
+                            m_currentDraggedItem = cshipInv[i];
+                            m_currentDraggedItemInventoryId = i;
+                            m_currentDraggedItemIsFromPlayerInv = false;
+                            cshipInv.RequestServerCancel(m_currentTicket);
+                            cshipInv.RequestServerItem(cshipInv[i].GetItemID(), i);
+                            StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
+                        }
+                    }
+                }
+                GUI.EndScrollView();
+                
+                DrawLeftPanel();
+                
+                //Handle mouse up if item is selected
+                if (!m_inGameMenuIsOpen && m_currentDraggedItem != null)
+                {
+                    if (IsMouseUpZero() && !m_isRequestingItem)
+                    {
+                        Debug.Log("Mouse button released, drop the item");
+                        HandleItemDrop(false, mousePos);
+                    }
+                    
+                    //If we still have an item selected by this point, draw it next to the cursor
+                    if (m_currentDraggedItem != null)
+                    {
+                        GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemWrapper>().GetIcon());
+                    }
+                }
+                else if(!m_inGameMenuIsOpen)
+                {
+                    /*GameObject[] turrets = m_cShipGameObject.GetComponent<CapitalShipScript>().GetAttachedTurrets();
+                    if (m_RightPanelWeapon1Rect.Contains(mousePos))
+                    {
+                        string text = turrets[0].GetComponent<ItemScript>().GetShopText();
+                        DrawHoverText(text, mousePos);
+                    }
+                    else if (m_RightPanelWeapon2Rect.Contains(mousePos))
+                    {
+                        string text = turrets[1].GetComponent<ItemScript>().GetShopText();
+                        DrawHoverText(text, mousePos);
+                    }
+                    else if (m_RightPanelWeapon3Rect.Contains(mousePos))
+                    {
+                        string text = turrets[2].GetComponent<ItemScript>().GetShopText();
+                        DrawHoverText(text, mousePos);
+                    }
+                    else if (m_RightPanelWeapon4Rect.Contains(mousePos))
+                    {
+                        string text = turrets[3].GetComponent<ItemScript>().GetShopText();
+                        DrawHoverText(text, mousePos);
+                    }*/
+                }
+                
+                if (GUI.Button(new Rect(796, 250, 408, 400), "", "label"))
+                {
+                    StartCoroutine(AnimatePlayerPanel(408));
+                    m_currentCShipPanel = CShipScreen.PanelsAnimating;
+                }
+                break;
+            }
+            case CShipScreen.LeftPanelActive:
+            {
+                DrawLeftPanel();
+                
+                GUI.Label(new Rect(816, 270, 164, 40), "Player:", m_nonBoxStyle);
+                /*List<GameObject> playerInv = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetPlayerInventory();
+                Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
+                m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
+                for (int i = 0; i < playerInv.Count; i++)
+                {
+                    GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
+                    Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+                    GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), m_nonBoxSmallStyle);
+                    Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - m_playerScrollPosition.y, lastR.width, lastR.height);
+                    Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+                    
+                    if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                        m_drawnItems.Add(finalRect, playerInv[i].GetComponent<ItemScript>());
+                    
+                    if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
+                    {
+                        //bool insideModR = modR.Contains(mousePos);
+                        if (finalRect.Contains(mousePos) && !m_isRequestingItem)
+                        {
+                            //Begin drag & drop
+                            m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
+                            m_currentDraggedItemInventoryId = i;
+                            m_currentDraggedItemIsFromPlayerInv = true;
+                        }
+                    }
+                }
+                GUI.EndScrollView();*/
+                
+                GUI.Label(new Rect(1020, 270, 164, 40), "Capital:", m_nonBoxStyle);
+                NetworkInventory cshipInv = m_cShipGameObject.GetComponent<NetworkInventory>();
+                Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
+                m_cShipScrollPosition = GUI.BeginScrollView(scrollAreaRect, m_cShipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
+                for (int i = 0; i < cshipInv.GetCount(); i++)
+                {
+                    GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemWrapper>().GetIcon());
+                    Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+                    GUI.Label(lastR, cshipInv[i].GetComponent<ItemWrapper>().GetItemName(), m_nonBoxSmallStyle);
+                    Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - m_cShipScrollPosition.y, lastR.width, lastR.height);
+                    Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+                    
+                    if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                        m_drawnItems.Add(finalRect, cshipInv[i].GetComponent<ItemWrapper>());
+                    
+                    if (!m_inGameMenuIsOpen && currentEvent.type == EventType.MouseDown)
+                    {
+                        //bool insideModR = modR.Contains(mousePos);
+                        if (finalRect.Contains(mousePos) && !m_isRequestingItem)
+                        {
+                            //Begin drag & drop
+                            m_currentDraggedItem = cshipInv[i];
+                            m_currentDraggedItemInventoryId = i;
+                            m_currentDraggedItemIsFromPlayerInv = false;
+                            cshipInv.RequestServerCancel(m_currentTicket);
+                            cshipInv.RequestServerItem(cshipInv[i].GetItemID(), i);
+                            StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
+                        }
+                    }
+                }
+                GUI.EndScrollView();
+                
+                DrawRightPanel();
+                
+                //Handle mouse up if item is selected
+                if (!m_inGameMenuIsOpen && m_currentDraggedItem != null)
+                {
+                    if (IsMouseUpZero() && !m_isRequestingItem)
+                    {
+                        Debug.Log("Mouse button released, drop the item");
+                        HandleItemDrop(true, mousePos);
+                    }
+                    
+                    //If we still have an item selected by this point, draw it next to the cursor
+                    if (m_currentDraggedItem != null)
+                    {
+                        GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemWrapper>().GetIcon());
+                    }
+                    
+                }
+                else if(!m_inGameMenuIsOpen)
+                {
+                    //Hovers
+                    if (m_LeftPanelWeaponRect.Contains(mousePos))
+                    {
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetHoverText();
+                        DrawHoverText(text, mousePos);
+                    }
+                    
+                    if (m_LeftPanelShieldRect.Contains(mousePos))
+                    {
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemWrapper>().GetHoverText();
+                        DrawHoverText(text, mousePos);
+                    }
+                    
+                    if (m_LeftPanelPlatingRect.Contains(mousePos))
+                    {
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetHoverText();
+                        DrawHoverText(text, mousePos);
+                    }
+                    
+                    if (m_LeftPanelEngineRect.Contains(mousePos))
+                    {
+                        string text = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemWrapper>().GetHoverText();
+                        DrawHoverText(text, mousePos);
+                    }
+                }
+                
+                if (GUI.Button(new Rect(394, 250, 408, 400), "", "label"))
+                {
+                    //Change back to dual panel
+                    m_currentDraggedItem = null;
+                    StartCoroutine(AnimateCShipPanel(796));
+                    m_currentCShipPanel = CShipScreen.PanelsAnimating;
+                }
+                break;
+            }
+            case CShipScreen.PanelsAnimating:
+            {
+                //Wait for animating to complete;
+                DrawLeftPanel();
+                DrawRightPanel();
+                break;
+            }
+        }
+        
+        //Hover text
+        if (!m_inGameMenuIsOpen && m_currentDraggedItem == null)
+        {
+            foreach (Rect key in m_drawnItems.Keys)
+            {
+                if (key.Contains(mousePos))
+                {
+                    string text = m_drawnItems[key].GetHoverText();
+                    DrawHoverText(text, mousePos);
+                }
+            }
+        }
+        
+        //Respawn buttons:
+        List<DeadPlayer> deadPlayers = m_gameStateController.GetComponent<GameStateController>().GetDeadPlayers();
+        for (int i = 0; i < deadPlayers.Count; i++)
+        {
+            int fastSpawnCost = 500 + (int)(deadPlayers[i].m_deadTimer * 10);
+            float buttonX = 811 + (i * 96);
+            GUI.Label(new Rect(buttonX - 20, 690, 124, 33), deadPlayers[i].m_playerObject.m_name, m_nonBoxStyle);
+            GUI.Label(new Rect(buttonX - 20, 722, 124, 33), "$" + fastSpawnCost, m_nonBoxStyle);
+            
+            if (GUI.Button(new Rect(buttonX, 765, 84, 33), ""))
+            {
+                //Check if amount is available, then respawn player as usual
+                /*if (m_cShipGameObject.GetComponent<CapitalShipScript>().CShipCanAfford(fastSpawnCost))
+                {
+                    m_cShipGameObject.GetComponent<CapitalShipScript>().SpendBankedCash(fastSpawnCost);
+                    RequestServerRespawnPlayer(deadPlayers[i].m_playerObject.m_netPlayer);
+                }
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(false));*/
+            }
+        }
+        
+        //Repair
+        float damagePercent = 1.0f - m_thisPlayerHP.GetHPPercentage();
+        int damage = m_thisPlayerHP.GetMaxHP() - m_thisPlayerHP.GetCurrHP();
+        
+        if(damagePercent > 0.0f)
+        {
+            int cost = Mathf.RoundToInt(damagePercent * 500.0f);
+            int cash = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetCash();
+            if(m_thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(cost))
+            {
+                if(GUI.Button(new Rect(430, 130, 120, 83), "Fully repair ship for $" + cost, m_sharedGUIStyle))
+                {
+                    m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveCash(cost);
+                    m_thisPlayerHP.RepairHP(damage);
+                }
+            }
+            else if(cash != 0)
+            {
+                //Work out how much the player can afford
+                float percentageAfford = cash / 500.0f;
+                int percent = Mathf.RoundToInt(percentageAfford * 100.0f);
+                float hpPerPercent = m_thisPlayerHP.GetMaxHP() / 100.0f;
+                int cashToSpend = percent * 5;
+                
+                if(GUI.Button(new Rect(430, 130, 120, 83), "Repair " + percent + "% for $" + cashToSpend, m_sharedGUIStyle))
+                {
+                    int damageHealed = (int)(percent * hpPerPercent);
+                    m_thisPlayerHP.RepairHP(damageHealed);
+                    m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveCash(cashToSpend);
+                }
+            }
+            else
+            {
+                GUI.Label (new Rect(430, 130, 120, 83), "Repair -- No cash!", m_sharedGUIStyle);
+            }
+        }
+        else
+        {
+            GUI.Label (new Rect(430, 130, 120, 83), "Repair -- No damage!", m_sharedGUIStyle);
+        }
+        
+        //Leave button
+        if (!m_inGameMenuIsOpen && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
+        {
+            m_PlayerHasDockedAtCapital = false;
+            Screen.showCursor = false;
+            m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellPlayerStopDocking();
+            m_currentCShipPanel = CShipScreen.DualPanel;
+            StartCoroutine(AnimateCShipPanel(796));
+            StartCoroutine(AnimatePlayerPanel(408));
+            
+            //Clear dragged item
+            m_currentDraggedItem = null;
+            m_currentDraggedItemInventoryId = -1;
+            m_currentDraggedItemIsFromPlayerInv = false;
+            m_cShipGameObject.GetComponent<NetworkInventory>().RequestServerCancel(m_currentTicket);
+        }
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
     }
     
     void DrawInGameMenu()
@@ -1093,6 +1768,8 @@ public class GUIManager : MonoBehaviour
             GUI.matrix = Matrix4x4.identity;
             Vector3 mousePos = Input.mousePosition;
             if (m_hasLockedTarget)
+<<<<<<< HEAD
+=======
             {
                 GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursorLocked);
                 
@@ -1121,6 +1798,487 @@ public class GUIManager : MonoBehaviour
             GUI.DrawTextureWithTexCoords(reloadBoxPos, m_reloadBar, new Rect(0, 0, reloadPercent, 1.0f));
             
             GUI.matrix = oldMat;
+        }
+    }
+    
+    void DrawMap()
+    {
+        //Store gui matrix, restore to identity to remove scaling
+        Matrix4x4 oldGUIMat = GUI.matrix;
+        GUI.matrix = Matrix4x4.identity;
+        
+        //Map should be screen.height * screen.height, center on 1/2 screen.width
+        GUI.DrawTexture(new Rect((Screen.width * 0.5f) - Screen.height * 0.5f, 0, Screen.height, Screen.height), m_mapOverlay);
+        
+        //Now draw shizz
+        
+        //Player - self
+        if (m_thisPlayerHP != null)
+        {
+            Vector2 playerSpotPos = WorldToMapPos(m_thisPlayerHP.transform.position);
+            GUI.DrawTexture(new Rect(playerSpotPos.x - (m_blobSize * 0.5f), playerSpotPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_selfPBlob);
+        }
+        else
+        {
+            Vector2 playerSpotPos = WorldToMapPos(Camera.main.transform.position);
+            GUI.DrawTexture(new Rect(playerSpotPos.x - (m_blobSize * 0.5f), playerSpotPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_selfPBlob);
+        }
+        
+        //Player - others
+        if (m_playerShips != null)
+        {
+            foreach (GameObject player in m_playerShips)
+            {
+                //if(player != null && player != thisPlayerHP.gameObject)
+                if (player && (!m_thisPlayerHP || player != m_thisPlayerHP.gameObject))
+                {
+                    Vector2 playPos = WorldToMapPos(player.transform.position);
+                    GUI.DrawTexture(new Rect(playPos.x - (m_blobSize * 0.5f), playPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_otherPBlob);
+                    GUI.Label(new Rect(playPos.x - (m_blobSize * 1.5f), playPos.y + (m_blobSize * 0.5f), 75, 40),
+                              m_gameStateController.GetComponent<GameStateController>().GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
+                }
+            }
+        }
+        else
+        {
+            m_playerShips = GameObject.FindGameObjectsWithTag("Player");
+        }
+        
+        //CShip
+        if (m_cShipGameObject != null)
+        {
+            Vector2 cshipPos = WorldToMapPos(m_cShipGameObject.transform.position);
+            GUI.DrawTexture(new Rect(cshipPos.x - (m_blobSize * 0.5f), cshipPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_cShipBlob);
+        }
+        else
+            m_cShipGameObject = GameObject.FindGameObjectWithTag("Capital");
+        
+        //Enemies?
+        if (m_pingedEnemies != null)
+        {
+            foreach (GameObject enemy in m_pingedEnemies)
+            {
+                if (enemy != null)// && )IsEnemyInViewableRange(enemy.transform.position))
+                {
+                    Vector2 pingPos = WorldToMapPos(enemy.transform.position);
+                    if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+                    {
+                        GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.5f), pingPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_specEnemyBlob);
+                    }
+                    else
+                    {
+                        GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.5f), pingPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_enemyBlob);
+                    }
+                }
+            }
+        }
+        
+        //Missiles
+        if(m_pingedMissiles != null && m_pingedMissiles.Length != 0)
+        {
+            foreach(GameObject bullet in m_pingedMissiles)
+            {
+                if(bullet != null)
+                {
+                    Vector2 pingPos = WorldToMapPos(bullet.transform.position);
+                    GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.2f), pingPos.y - (m_blobSize * 0.2f), m_blobSize, m_blobSize), m_specEnemyBlob);
+                }
+            }
+        }
+        
+        //Shops!
+        for (int i = 0; i < m_shops.Length; i++)
+        {
+            Vector2 shopPos = WorldToMapPos(m_shops[i].transform.position);
+            GUI.Label(new Rect(shopPos.x - 10, shopPos.y - 10, 20, 20), "$", "Label");
+        }
+        
+        //When we're done, reset the gui matrix
+        GUI.matrix = oldGUIMat;
+    }
+    
+    void DrawSmallFollowMap()
+    {
+        //Store gui matrix, restore to identity to remove scaling
+        Matrix4x4 oldGUIMat = GUI.matrix;
+        GUI.matrix = Matrix4x4.identity;
+        float pixelGapPercent = (53.0f) / (Screen.height * 0.5f);
+        float mapSize = 280.0f;
+        
+        //If map is bottom left:
+        //Map should be screen.height/5 * screen.height/5, centered on (screen.height/5, (screen.height/5)*4)
+        //GUI.DrawTexture(new Rect((Screen.width * 0.5f) - Screen.height * 0.5f, 0, Screen.height, Screen.height), m_mapOverlay);
+        
+        //Step one: Get 'imagepos' from playerPos
+        Vector2 imagePos = Vector2.zero;
+        if (m_thisPlayerHP != null)
+            imagePos = new Vector2(m_thisPlayerHP.transform.position.x / mapSize, m_thisPlayerHP.transform.position.y / mapSize);
+        else
+            imagePos = new Vector2(Camera.main.transform.position.x / mapSize, Camera.main.transform.position.y / mapSize);
+        Vector2 playerPos = imagePos;
+        imagePos *= (1.0f - pixelGapPercent);
+        imagePos.x /= 2;
+        imagePos.x += 0.5f;
+        imagePos.y /= 2;
+        imagePos.y += 0.5f;
+        
+        //Step two: draw map around this area
+        Rect drawRect = new Rect(0, (Screen.height / 4.0f) * 3.0f, Screen.height / 4.0f, Screen.height / 4.0f);
+        float texDrawArea = 0.25f;
+        GUI.DrawTextureWithTexCoords(drawRect,
+                                     m_mapOverlay,
+                                     //new Rect((imagePos.x - 0.125f) * (1.0f + pixelGapPercent), imagePos.y - 0.125f * (1.0f + pixelGapPercent), 0.25f, 0.25f));
+                                     /*new Rect( (imagePos.x - (texDrawArea / 2)) * (1.0f - pixelGapPercent), 
+                       (imagePos.y - (texDrawArea / 2)) * (1.0f - pixelGapPercent), 
+                       texDrawArea, texDrawArea));*/
+                                     new Rect((imagePos.x - (texDrawArea / 2)), (imagePos.y - (texDrawArea / 2)), texDrawArea, texDrawArea));
+        //GUI.DrawTexture (new Rect(0, (Screen.height / 4.0f) * 3.0f, Screen.height / 4.0f, Screen.height / 4.0f), m_mapOverlay);
+        
+        GUI.DrawTexture(new Rect((Screen.height * 0.125f) - (m_blobSize * 0.5f), ((Screen.height * 0.125f) * 7.0f) - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_selfPBlob);
+        
+        // TODO: check this shit
+        /*Vector2 playerNormalDrawPos = Vector2.zero;
+        if (m_thisPlayerHP)
+            playerNormalDrawPos = WorldToSmallMapPos(m_thisPlayerHP.transform.position);
+        else
+            playerNormalDrawPos = WorldToSmallMapPos(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 10.0f));*/
+        
+        //Step three: draw CShip blob
+        if (m_cShipGameObject != null)
+        {
+            Vector2 cshipRelMapPos = new Vector2(m_cShipGameObject.transform.position.x / mapSize, m_cShipGameObject.transform.position.y / mapSize);
+            
+            //Debug.Log ("CShipPos: " + cshipPos + System.Environment.NewLine + "PlayerPos: " + playerPos + ".");
+            
+            //Relativise cship -> player
+            cshipRelMapPos.x -= playerPos.x;
+            cshipRelMapPos.y -= playerPos.y;
+            //cshipPos will be at max ~0.4
+            
+            
+            //Debug.Log ("Gives relative cshipPos of: " + cshipPos + ".");
+            
+            Vector2 drawPos = Vector2.zero;
+            drawPos.x = cshipRelMapPos.x * (Screen.height * (0.5f - (pixelGapPercent * 0.5f)));
+            drawPos.y = cshipRelMapPos.y * (Screen.height * (0.5f - (pixelGapPercent * 0.5f)));
+            
+            Vector2 finalDrawPos = new Vector2((Screen.height * 0.125f) + drawPos.x,
+                                               ((Screen.height * 0.125f) * 7.0f) - drawPos.y);
+            if (drawRect.Contains(finalDrawPos))
+            {
+                GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
+                                         finalDrawPos.y - (m_blobSize * 0.5f),
+                                         m_blobSize, m_blobSize), m_cShipBlob);
+            }
+        }
+        
+        //Draw self:
+        /*if(thisPlayerHP != null)
+        {
+            Vector2 playerSpotPos = WorldToSmallMapPos(thisPlayerHP.transform.position);
+            GUI.DrawTexture(new Rect(playerSpotPos.x - (m_blobSize * 0.25f), playerSpotPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_selfPBlob);
+            //Debug.Log ("Attempting to draw player blob at " + playerSpotPos.ToString() + ".");
+            GUI.DrawTexture (new Rect(33, 800, 5, 5), m_selfPBlob);
+        }
+        else
+        {
+            Vector2 playerSpotPos = WorldToSmallMapPos(Camera.main.transform.position);
+            GUI.DrawTexture(new Rect(playerSpotPos.x - (m_blobSize * 0.25f), playerSpotPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_selfPBlob);
+        }*/
+        
+        //Draw other players:
+        if (m_playerShips != null)
+        {
+            foreach (GameObject player in m_playerShips)
+            {
+                //if(player != null && player != thisPlayerHP.gameObject)
+                if (player && (!m_thisPlayerHP || player != m_thisPlayerHP.gameObject))
+                {
+                    Vector2 playerMapPos = new Vector2(player.transform.position.x / mapSize, player.transform.position.y / mapSize);
+                    
+                    playerMapPos.x -= playerPos.x;
+                    playerMapPos.y -= playerPos.y;
+                    
+                    Vector3 playerDrawPos = Vector2.zero;
+                    playerDrawPos.x = playerMapPos.x * (Screen.height * (0.5f));
+                    playerDrawPos.y = playerMapPos.y * (Screen.height * (0.5f));
+                    
+                    Vector2 finalDrawPos = new Vector2((Screen.height * 0.125f) + playerDrawPos.x,
+                                                       ((Screen.height * 0.125f) * 7.0f) - playerDrawPos.y);
+                    
+                    if (drawRect.Contains(finalDrawPos))
+                    {
+                        GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
+                                                 finalDrawPos.y - (m_blobSize * 0.5f),
+                                                 m_blobSize, m_blobSize), m_otherPBlob);
+                    }
+                }
+            }
+        }
+        else
+        {
+            m_playerShips = GameObject.FindGameObjectsWithTag("Player");
+        }
+        
+        //Enemies
+        if (m_pingedEnemies != null)
+        {
+            foreach (GameObject enemy in m_pingedEnemies)
+            {
+                if (enemy != null)
+                {
+                    Vector2 enemyMapPos = new Vector2(enemy.transform.position.x / mapSize, enemy.transform.position.y / mapSize);
+                    enemyMapPos.x -= playerPos.x;
+                    enemyMapPos.y -= playerPos.y;
+                    
+                    Vector3 enemyDrawPos = Vector2.zero;
+                    enemyDrawPos.x = enemyMapPos.x * (Screen.height * (0.5f));
+                    enemyDrawPos.y = enemyMapPos.y * (Screen.height * (0.5f));
+                    
+                    Vector2 finalDrawPos = new Vector2((Screen.height * 0.125f) + enemyDrawPos.x,
+                                                       ((Screen.height * 0.125f) * 7.0f) - enemyDrawPos.y);
+                    
+                    if (drawRect.Contains(finalDrawPos))
+                    {
+                        if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+                        {
+                            GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
+                                                     finalDrawPos.y - (m_blobSize * 0.5f),
+                                                     m_blobSize, m_blobSize), m_specEnemyBlob);
+                        }
+                        else
+                        {
+                            GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
+                                                     finalDrawPos.y - (m_blobSize * 0.5f),
+                                                     m_blobSize, m_blobSize), m_enemyBlob);
+                        }
+                    }
+                    
+                    /*Vector2 pingPos = WorldToSmallMapPos(enemy.transform.position);
+                    GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_enemyBlob);*/
+                }
+            }
+        }
+        
+        //Missiles
+        if(m_pingedMissiles != null && m_pingedMissiles.Length != 0)
+        {
+            foreach(GameObject bullet in m_pingedMissiles)
+            {
+                if(bullet != null)
+                {
+                    Vector2 enemyMapPos = new Vector2(bullet.transform.position.x / mapSize, bullet.transform.position.y / mapSize);
+                    enemyMapPos.x -= playerPos.x;
+                    enemyMapPos.y -= playerPos.y;
+                    
+                    Vector3 enemyDrawPos = Vector2.zero;
+                    enemyDrawPos.x = enemyMapPos.x * (Screen.height * (0.5f));
+                    enemyDrawPos.y = enemyMapPos.y * (Screen.height * (0.5f));
+                    
+                    Vector2 finalDrawPos = new Vector2((Screen.height * 0.125f) + enemyDrawPos.x,
+                                                       ((Screen.height * 0.125f) * 7.0f) - enemyDrawPos.y);
+                    
+                    if (drawRect.Contains(finalDrawPos))
+                    {
+                        GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.2f), finalDrawPos.y - (m_blobSize * 0.2f), m_blobSize, m_blobSize), m_specEnemyBlob);
+                    }
+                }
+            }
+        }
+        
+        //Always reset the gui!
+        GUI.matrix = oldGUIMat;
+    }
+    
+    void DrawSmallMap()
+    {
+        Matrix4x4 oldGUIMat = GUI.matrix;
+        GUI.matrix = Matrix4x4.identity;
+        
+        GUI.DrawTexture(new Rect(0, (Screen.height * 0.25f) * 3.0f, Screen.height * 0.25f, Screen.height * 0.25f), m_mapOverlay);
+        
+        //Draw Self
+        if (m_thisPlayerHP != null)
+        {
+            Vector2 playerSpotPos = WorldToSmallMapPos(m_thisPlayerHP.transform.position);
+            GUI.DrawTexture(new Rect(playerSpotPos.x - (m_blobSize * 0.25f), playerSpotPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_selfPBlob);
+        }
+        else
+        {
+            Vector2 playerSpotPos = WorldToSmallMapPos(Camera.main.transform.position);
+            GUI.DrawTexture(new Rect(playerSpotPos.x - (m_blobSize * 0.25f), playerSpotPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_selfPBlob);
+        }
+        
+        //Draw CShip
+        //CShip
+        if (m_cShipGameObject != null)
+        {
+            Vector2 cshipPos = WorldToSmallMapPos(m_cShipGameObject.transform.position);
+            GUI.DrawTexture(new Rect(cshipPos.x - (m_blobSize * 0.25f), cshipPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_cShipBlob);
+        }
+        else
+            m_cShipGameObject = GameObject.FindGameObjectWithTag("Capital");
+        
+        //Draw others
+        if (m_playerShips != null)
+        {
+            foreach (GameObject player in m_playerShips)
+            {
+                //if(player != null && player != thisPlayerHP.gameObject)
+                if (player && (!m_thisPlayerHP || player != m_thisPlayerHP.gameObject))
+                {
+                    Vector2 playPos = WorldToSmallMapPos(player.transform.position);
+                    GUI.DrawTexture(new Rect(playPos.x - (m_blobSize * 0.25f), playPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_otherPBlob);
+                }
+            }
+        }
+        else
+        {
+            m_playerShips = GameObject.FindGameObjectsWithTag("Player");
+        }
+        
+        //Draw enemies
+        if (m_pingedEnemies != null)
+        {
+            foreach (GameObject enemy in m_pingedEnemies)
+            {
+                if (enemy != null)
+                {
+                    //Check if enemy is in viewable range
+                    //if(IsEnemyInViewableRange(enemy.transform.position))
+                    //{
+                    Vector2 pingPos = WorldToSmallMapPos(enemy.transform.position);
+                    if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+                    {
+                        GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_specEnemyBlob);
+                    }
+                    else
+                    {
+                        GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_enemyBlob);
+                    }
+                    //}
+                }
+            }
+        }
+        
+        //Missiles
+        if(m_pingedMissiles != null && m_pingedMissiles.Length != 0)
+        {
+            foreach(GameObject bullet in m_pingedMissiles)
+            {
+                if(bullet != null)
+                {
+                    Vector2 pingPos = WorldToSmallMapPos(bullet.transform.position);
+                    GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.2f), pingPos.y - (m_blobSize * 0.2f), m_blobSize, m_blobSize), m_specEnemyBlob);
+                }
+            }
+        }
+        
+        GUI.matrix = oldGUIMat;
+    }
+    
+    void DrawLeftPanel()
+    {
+        float playerSourceWidth = m_playerPanelXWidth / 408.0f;
+        GUI.DrawTexture(new Rect(394, 250, 408, 400), m_DockInventoryBorder);
+        GUI.DrawTextureWithTexCoords(new Rect(394, 250, m_playerPanelXWidth, 400), m_DockPlayerImage, new Rect(1 - playerSourceWidth, 1, playerSourceWidth, 1));
+        
+        //Equipped icons:
+        float iconLeftX = 602.0f - (408.0f - m_playerPanelXWidth);
+        if (iconLeftX >= 324.0f)
+        {
+            Rect weaponSource = new Rect(0, 0, 1, 1);
+            Rect weaponTemp = new Rect(iconLeftX, m_LeftPanelWeaponRect.y, m_LeftPanelWeaponRect.width, m_LeftPanelWeaponRect.height);
+            Rect shieldSource = new Rect(0, 0, 1, 1);
+            Rect shieldTemp = new Rect(iconLeftX, m_LeftPanelShieldRect.y, m_LeftPanelShieldRect.width, m_LeftPanelShieldRect.height);
+            Rect platingSource = new Rect(0, 0, 1, 1);
+            Rect platingTemp = new Rect(iconLeftX, m_LeftPanelPlatingRect.y, m_LeftPanelPlatingRect.width, m_LeftPanelPlatingRect.height);
+            Rect engineSource = new Rect(0, 0, 1, 1);
+            Rect engineTemp = new Rect(iconLeftX, m_LeftPanelEngineRect.y, m_LeftPanelEngineRect.width, m_LeftPanelEngineRect.height);
+            
+            if (iconLeftX <= 394.0f)
+            {
+                //Gives how far over the border we are
+                float xDiff = 394.0f - iconLeftX;
+                float xPercentageOverlap = xDiff / 70.0f;
+                
+                //Change the sourceRect for the icons
+                weaponSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+                shieldSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+                platingSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+                engineSource = new Rect(xPercentageOverlap, 0, 1 - xPercentageOverlap, 1);
+                
+                //Now change the coords to reflect the edge
+                weaponTemp = new Rect(weaponTemp.x + xDiff, weaponTemp.y, weaponTemp.width - xDiff, weaponTemp.height);
+                shieldTemp = new Rect(shieldTemp.x + xDiff, shieldTemp.y, shieldTemp.width - xDiff, shieldTemp.height);
+                platingTemp = new Rect(platingTemp.x + xDiff, platingTemp.y, platingTemp.width - xDiff, platingTemp.height);
+                engineTemp = new Rect(engineTemp.x + xDiff, engineTemp.y, engineTemp.width - xDiff, engineTemp.height);
+            }
+            
+            GUI.DrawTextureWithTexCoords(weaponTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetIcon(), weaponSource);
+            GUI.DrawTextureWithTexCoords(shieldTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedShieldItem().GetComponent<ItemWrapper>().GetIcon(), shieldSource);
+            GUI.DrawTextureWithTexCoords(platingTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetIcon(), platingSource);
+            GUI.DrawTextureWithTexCoords(engineTemp, m_thisPlayerHP.GetComponent<PlayerControlScript>().GetEquipedEngineItem().GetComponent<ItemWrapper>().GetIcon(), engineSource);
+        }
+    }
+    
+    void DrawRightPanel()
+    {
+        float cshipSourcewidth = (1204.0f - (float)m_cShipPanelXPos) / 408.0f;
+        GUI.DrawTexture(new Rect(796, 250, 408, 400), m_DockInventoryBorder);
+        GUI.DrawTextureWithTexCoords(new Rect(m_cShipPanelXPos, 250, (1204 - m_cShipPanelXPos), 400), m_DockCShipImage, new Rect(0, 0, cshipSourcewidth, 1));
+        
+        //Draw Icons
+        float iconLeftX = 915.0f + (m_cShipPanelXPos - 796.0f);
+        if (iconLeftX <= 1204.0f)
+        {
+            Rect weapon1Source = new Rect(0, 0, 1, 1);
+            Rect weapon1Temp = new Rect(iconLeftX, m_RightPanelWeapon1Rect.y, m_RightPanelWeapon1Rect.width, m_RightPanelWeapon1Rect.height);
+            Rect weapon2Source = new Rect(0, 0, 1, 1);
+            Rect weapon2Temp = new Rect(iconLeftX, m_RightPanelWeapon2Rect.y, m_RightPanelWeapon2Rect.width, m_RightPanelWeapon2Rect.height);
+            Rect weapon3Source = new Rect(0, 0, 1, 1);
+            Rect weapon3Temp = new Rect(iconLeftX, m_RightPanelWeapon3Rect.y, m_RightPanelWeapon3Rect.width, m_RightPanelWeapon3Rect.height);
+            Rect weapon4Source = new Rect(0, 0, 1, 1);
+            Rect weapon4Temp = new Rect(iconLeftX, m_RightPanelWeapon4Rect.y, m_RightPanelWeapon4Rect.width, m_RightPanelWeapon4Rect.height);
+            
+            if (iconLeftX >= 1126.0f)
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
+            {
+                GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursorLocked);
+                
+                //Draw locked target over the enemy
+                if (m_lastLockonTarget != null)
+                {
+                    Vector2 pos = Camera.main.WorldToScreenPoint(m_lastLockonTarget.transform.position);
+                    pos.y = Screen.height - pos.y;
+                    GUI.DrawTexture(new Rect((pos.x - 15), (pos.y - 15), 30, 30), m_enemyLocked);
+                }
+                else
+                    m_hasLockedTarget = false;
+            }
+            else if (m_isLockingOn)
+                GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursorLocking);
+            else
+                GUI.DrawTexture(new Rect(mousePos.x - 20, (Screen.height - mousePos.y) - 20, 40, 40), m_cursor);
+            
+            //Reload on cursor
+            Rect reloadBoxPos = new Rect(mousePos.x + 12, (Screen.height - mousePos.y), 11, 18);
+            GUI.DrawTexture(reloadBoxPos, m_reloadBackground);
+            
+            //Draw reload percentage
+            float reloadPercent = m_thisPlayerHP.GetComponent<PlayerControlScript>().GetReloadPercentage();
+            reloadBoxPos.width *= reloadPercent;
+            GUI.DrawTextureWithTexCoords(reloadBoxPos, m_reloadBar, new Rect(0, 0, reloadPercent, 1.0f));
+            
+<<<<<<< HEAD
+            GUI.matrix = oldMat;
+=======
+            /*GameObject[] turrets = m_cShipGameObject.GetComponent<CapitalShipScript>().GetAttachedTurrets();
+            GUI.DrawTextureWithTexCoords(weapon1Temp, turrets[0].GetComponent<ItemScript>().GetIcon(), weapon1Source);
+            GUI.DrawTextureWithTexCoords(weapon2Temp, turrets[1].GetComponent<ItemScript>().GetIcon(), weapon2Source);
+            GUI.DrawTextureWithTexCoords(weapon3Temp, turrets[2].GetComponent<ItemScript>().GetIcon(), weapon3Source);
+            GUI.DrawTextureWithTexCoords(weapon4Temp, turrets[3].GetComponent<ItemScript>().GetIcon(), weapon4Source);*/
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
         }
     }
     
@@ -1695,15 +2853,407 @@ public class GUIManager : MonoBehaviour
 		return m_previousMouseZero && !m_mouseZero;
 	}
 
+<<<<<<< HEAD
     
 
 	
+=======
+    void HandleItemDrop(bool isLeftPanel, Vector2 mousePos)
+    {
+        NetworkInventory inventory = m_cShipGameObject.GetComponent<NetworkInventory>();
+
+        //Depending on where the cursor is when the mouse is released, decide what happens to the item
+        if (isLeftPanel)
+        {
+            //If over player inventory, try to store there.
+            if (m_LeftPanelPlayerRect.Contains(mousePos))
+            {
+                //If the item was originally from here, we don't need to do anything
+                if (!m_currentDraggedItemIsFromPlayerInv)
+                {
+                    if (!m_thisPlayerHP.GetComponent<PlayerControlScript>().IsInventoryFull())
+                    {
+                        //Debug.Log ("<color=blue>Beginning item transfer sequence</color>");
+                        inventory.RequestTicketValidityCheck(m_currentTicket);
+                        StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory));
+                        return;
+                    }
+                    else
+                    {
+                        inventory.RequestServerCancel(m_currentTicket);
+                    }
+                }
+                m_currentDraggedItem = null;
+                m_currentDraggedItemIsFromPlayerInv = false;
+                m_currentDraggedItemInventoryId = -1;
+            }
+            //If over CShip inventory, try and drop there
+            else if (m_LeftPanelCShipRect.Contains(mousePos))
+            {
+                if (m_currentDraggedItemIsFromPlayerInv)
+                {
+                    inventory.RequestServerAdd(m_currentDraggedItem);
+                    StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd, ItemOwner.PlayerInventory, ItemOwner.NetworkInventory));
+                }
+
+                else
+                {
+                    inventory.RequestServerCancel(m_currentTicket);
+                }
+
+                m_currentDraggedItem = null;
+                m_currentDraggedItemIsFromPlayerInv = false;
+                m_currentDraggedItemInventoryId = -1;
+            }
+            //If over any equipment slot points try and equip it
+            else if (m_LeftPanelWeaponRect.Contains(mousePos))
+			{
+				HandlePlayerEquipmentDrop (inventory, 1, ItemType.Weapon);
+            }
+            else if (m_LeftPanelShieldRect.Contains(mousePos))
+			{
+				HandlePlayerEquipmentDrop (inventory, 2, ItemType.Shield);
+            }
+            else if (m_LeftPanelPlatingRect.Contains(mousePos))
+			{
+				HandlePlayerEquipmentDrop (inventory, 3, ItemType.Plating);
+            }
+            else if (m_LeftPanelEngineRect.Contains(mousePos))
+            {
+                HandlePlayerEquipmentDrop (inventory, 4, ItemType.Engine);
+			}
+        }
+        else
+        {
+            //If over player inventory, try to store there.
+            if (m_RightPanelPlayerRect.Contains(mousePos))
+            {
+                //If the item was originally from here, we don't need to do anything
+                if (!m_currentDraggedItemIsFromPlayerInv)
+                {
+                    if (!m_thisPlayerHP.GetComponent<PlayerControlScript>().IsInventoryFull())
+                    {
+                        inventory.RequestTicketValidityCheck(m_currentTicket);
+                        StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory));
+                        return;
+                    }
+                    else
+                    {
+                        inventory.RequestServerCancel(m_currentTicket);
+                    }
+                }
+                m_currentDraggedItem = null;
+                m_currentDraggedItemIsFromPlayerInv = false;
+                m_currentDraggedItemInventoryId = -1;
+            }
+            //If over CShip inventory, try and drop there
+            else if (m_RightPanelCShipRect.Contains(mousePos))
+            {
+                if (m_currentDraggedItemIsFromPlayerInv)
+                {
+                    //CShip.GetComponent<CapitalShipScript>().AddItemToInventory(thisPlayerHP.GetComponent<PlayerControlScript>().GetItemInSlot(m_currentDraggedItemInventoryId));
+                    inventory.RequestServerAdd(m_currentDraggedItem);
+                    StartCoroutine(AwaitTicketRequestResponse(inventory, RequestType.ItemAdd, ItemOwner.PlayerInventory, ItemOwner.NetworkInventory));
+                }
+
+                else
+                {
+                    // Ensure the ticket is cancelled since the item must have been requested at this point
+                    inventory.RequestServerCancel(m_currentTicket);
+                }
+
+                m_currentDraggedItem = null;
+                m_currentDraggedItemIsFromPlayerInv = false;
+                m_currentDraggedItemInventoryId = -1;
+            }
+            //If over any equipment slot points try and equip it
+            else if (m_RightPanelWeapon1Rect.Contains(mousePos))
+			{
+				HandleCShipEquipmentDrop (inventory, 1);
+            }
+            else if (m_RightPanelWeapon2Rect.Contains(mousePos))
+			{
+				HandleCShipEquipmentDrop (inventory, 2);
+            }
+            else if (m_RightPanelWeapon3Rect.Contains(mousePos))
+			{				
+				HandleCShipEquipmentDrop (inventory, 3);
+            }
+            else if (m_RightPanelWeapon4Rect.Contains(mousePos))
+			{
+				HandleCShipEquipmentDrop (inventory, 4);
+            }
+        }
+    }
+
+
+	void HandlePlayerEquipmentDrop (NetworkInventory inventory, int equipmentSlot, ItemType checkIs)
+	{
+		if (m_currentDraggedItem.GetComponent<ItemWrapper>().GetItemType() == checkIs)
+		{
+			//if the item is a weapon, equip plz!
+			if (m_currentDraggedItemIsFromPlayerInv)
+			{
+				m_thisPlayerHP.GetComponent<PlayerControlScript>().EquipItemInSlot (m_currentDraggedItemInventoryId);
+			}
+
+			else
+			{
+				inventory.RequestTicketValidityCheck (m_currentTicket);
+				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerEquipment, false, equipmentSlot));
+			}
+		}
+		
+		else if (!m_currentDraggedItemIsFromPlayerInv)
+		{
+			inventory.RequestServerCancel (m_currentTicket);
+		}
+		
+		m_currentDraggedItem = null;
+		m_currentDraggedItemIsFromPlayerInv = false;
+		m_currentDraggedItemInventoryId = -1;
+	}
+
+
+	void HandleCShipEquipmentDrop (NetworkInventory inventory, int turretID)
+	{
+		if (m_currentDraggedItem.GetComponent<ItemWrapper>().GetItemType() == ItemType.CapitalWeapon)
+		{
+			if (m_currentDraggedItemIsFromPlayerInv)
+			{
+				CapitalShipScript cShip = m_cShipGameObject.GetComponent<CapitalShipScript>();
+				//GameObject oldTurret = cShip.GetAttachedTurrets()[turretID - 1];
+				PlayerControlScript player = m_thisPlayerHP.GetComponent<PlayerControlScript>();						
+				
+				cShip.TellServerEquipTurret (turretID, m_currentDraggedItem);
+				player.RemoveItemFromInventory (m_currentDraggedItem);					
+				
+				if (player.IsInventoryFull())
+				{
+					// Move the item to the CShip inventory since the players inventory is full
+					//inventory.RequestServerAdd (oldTurret.GetComponent<ItemScript>());
+					StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, ItemOwner.CShipEquipment, ItemOwner.NetworkInventory));
+				}
+				
+				else
+				{
+					//player.AddItemToInventory (oldTurret);
+				}
+				
+			}
+			
+			else
+			{
+				inventory.RequestTicketValidityCheck (m_currentTicket);
+				StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.CShipEquipment, false, turretID));
+			}
+		}
+		
+		else
+		{
+			inventory.RequestServerCancel (m_currentTicket);
+		}
+		
+		
+		m_currentDraggedItem = null;
+		m_currentDraggedItemIsFromPlayerInv = false;
+		m_currentDraggedItemInventoryId = -1;
+	}
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
 
     
 
 
 	// WARNING! EXTREMELY HAZARDOUS CODE LIES BEYOND THIS POINT! DO NOT LOOK AT THIS FUNCTION OR YOU MAY TURN BLIND!
+<<<<<<< HEAD
     
+=======
+    IEnumerator AwaitTicketRequestResponse(NetworkInventory inventory, RequestType reqType, ItemOwner from, ItemOwner to = ItemOwner.NetworkInventory, bool fromShop = false, int equipmentSlot = -1)
+    {
+        m_isRequestingItem = true;
+
+        while (!inventory.HasServerResponded())
+        {
+            Debug.Log("Server has not yet responded <color=yellow>:(</color>");
+            yield return null;
+        }
+
+        switch (reqType)
+        {
+            case RequestType.ItemAdd:
+	        {
+	            m_currentTicket = inventory.GetItemAddResponse();
+                int itemID = m_currentTicket.itemID;
+                if (inventory.AddItemToServer(m_currentTicket))
+                {    
+					if (from == ItemOwner.PlayerInventory)
+					{
+						//m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
+					}
+                }
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(true));           
+
+	            break;
+	        }
+            case RequestType.ItemTake:
+	        {
+	            m_currentTicket = inventory.GetItemRequestResponse();
+	            //Debug.Log("Ticket: " + m_currentTicket.uniqueID + " with ID: " + m_currentTicket.itemID + " at index: " + m_currentTicket.itemIndex + ".");
+                
+                if(m_currentTicket.IsValid())
+                {
+                    if(fromShop)
+                    {
+                        m_shopConfirmBuy = true;
+                        m_confirmBuyItem = inventory[m_currentTicket.itemIndex];
+                    }
+                }
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(true));
+            
+	            break;
+	        }
+            case RequestType.TicketValidity:
+	        {
+	            //Debug.Log("Is the ticket valid?");
+	            if (inventory.GetTicketValidityResponse())
+	            {
+	                //Debug.Log("Yes!");
+					switch (from)
+					{
+						case ItemOwner.NetworkInventory:
+                        {
+                            ItemWrapper item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemWrapper>();
+							switch (to)
+							{
+								case ItemOwner.PlayerInventory:
+                                {
+                                    int costIfShop = fromShop ? inventory.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex) : -1;
+                        
+									if (inventory.RemoveItemFromServer (m_currentTicket))
+									{
+										m_thisPlayerHP.GetComponent<PlayerControlScript>().AddItemToInventory (item);
+                            
+                                        if(fromShop)
+                                        {
+                                            m_shopConfirmBuy = false;
+                                            m_confirmBuyItem = null;
+                                            m_thisPlayerHP.GetComponent<PlayerControlScript>().RemoveCash(costIfShop);
+                                        }
+									}
+
+									else
+									{
+										Debug.LogError("<color=blue>Ticket mismatch!</color>");
+									}
+
+									break;
+                                }
+								case ItemOwner.CShipEquipment:
+								{
+									if (item.GetItemType() == ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+									{
+										PlayerControlScript player = m_thisPlayerHP.GetComponent<PlayerControlScript>();
+										CapitalShipScript cShip = m_cShipGameObject.GetComponent<CapitalShipScript>();
+										//GameObject oldTurret = cShip.GetAttachedTurrets()[equipmentSlot - 1];
+
+										//cShip.TellServerEquipTurret (equipmentSlot, item.gameObject);
+										
+										if (player.IsInventoryFull())
+										{
+											// Move the item to the CShip inventory since the players inventory is full
+											//inventory.RequestServerAdd (oldTurret.GetComponent<ItemScript>());
+											StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, to, from));
+										}
+
+										else
+										{
+											//player.AddItemToInventory (oldTurret);
+										}
+									}
+
+									break;
+								}
+								case ItemOwner.PlayerEquipment:
+								{	
+									if (item.GetItemType() != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+									{
+										PlayerControlScript player = m_thisPlayerHP.GetComponent<PlayerControlScript>();
+										ItemWrapper oldEquipment = player.GetEquipmentFromSlot (equipmentSlot);
+                                        
+										if (player.IsInventoryFull())
+										{
+											ItemWrapper lastItem = player.GetPlayerInventory()[player.GetPlayerInventory().Count - 1];
+
+											// This little wonder makes me want to vomit and should only be used until the demo night
+											// Remove the last item from the players inventory then equip the new item from that
+											player.RemoveItemFromInventory (lastItem);
+											player.AddItemToInventory (item);
+											player.EquipItemInSlot (player.GetPlayerInventory().Count - 1);
+											player.RemoveItemFromInventory (oldEquipment);
+											player.AddItemToInventory (lastItem);
+
+											// Move the item to the CShip inventory since the players inventory is full
+											inventory.RequestServerAdd (oldEquipment.GetComponent<ItemWrapper>());
+											StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, to, from));
+										}
+										else
+										{
+											player.AddItemToInventory (item);
+											player.EquipItemInSlot (player.GetPlayerInventory().Count - 1);
+										}
+									}
+									break;
+								}
+
+								default:
+									inventory.RequestServerCancel (m_currentTicket);
+									break;
+							}
+							break;
+						}	
+						default:
+							Debug.LogError ("THIS SHOULD NEVER HAPPEN!");
+							break;
+					}
+
+				}
+                else
+                    StartCoroutine(CountdownTransferFailedPopup(true));
+				break;
+	        }
+        }
+
+        m_isRequestingItem = false;
+
+        if (!m_currentTicket.IsValid())
+        {
+            m_currentDraggedItem = null;
+            m_currentDraggedItemInventoryId = -1;
+            m_currentDraggedItemIsFromPlayerInv = false;
+        }
+    }
+
+    IEnumerator CountdownTransferFailedPopup(bool transfer)
+    {
+        if(transfer)
+            m_transferFailedMessage = "Transfer failed - Item Requested Elsewhere";
+        else
+            m_transferFailedMessage = "Insufficient funds";
+        m_transferFailed = true;
+        float timer = 1.5f;
+        
+        while(timer > 0.0f)
+        {
+            timer -= Time.deltaTime;
+            m_transferFailed = true;
+            yield return 0;
+        }
+        
+        m_transferFailed = false;
+    }
+>>>>>>> 3bd98016f0f701a8e7e72197e556413113265b26
 
     
 
@@ -1724,7 +3274,7 @@ public class GUIManager : MonoBehaviour
         m_thisPlayerHP.gameObject.rigidbody.isKinematic = true;
 
         //Stop CShip from moving
-        m_cShipGameObject.GetComponent<CapitalShipScript>().SetShouldStart(false);
+        m_cShipGameObject.GetComponent<CapitalShipScript>().SetShouldMove(false);
         m_cShipGameObject.rigidbody.constraints = RigidbodyConstraints.FreezePosition | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
 
         //Stop spawners from spawning
@@ -1745,7 +3295,7 @@ public class GUIManager : MonoBehaviour
 
         //Unfreeze CShip
         m_cShipGameObject.rigidbody.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
-        m_cShipGameObject.GetComponent<CapitalShipScript>().SetShouldStart(true);
+        m_cShipGameObject.GetComponent<CapitalShipScript>().SetShouldMove(true);
 
         //Purge event vars
         m_eventIsActive = false;
