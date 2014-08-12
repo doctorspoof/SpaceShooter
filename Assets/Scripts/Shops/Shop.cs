@@ -21,7 +21,7 @@ public enum ShopType
 /// allows for the equipping of items, how much it costs to purchase an item and what the shop can actually stock.
 /// </summary>
 [RequireComponent (typeof (NetworkInventory))]
-public class Shop : MonoBehaviour
+public sealed class Shop : MonoBehaviour
 {
     #region Unity modifiable variables
 
