@@ -22,8 +22,8 @@ public sealed class FaceStar : MonoBehaviour
 
             // Calculate the correct rotation values
             Quaternion newRotation = transform.rotation * Quaternion.FromToRotation (transform.up, direction);
-            newRotation.x = 0;
-            newRotation.y = 0;
+            newRotation.x = 0f;
+            newRotation.y = 0f;
 
             // Assign the rotation
             transform.rotation = newRotation;

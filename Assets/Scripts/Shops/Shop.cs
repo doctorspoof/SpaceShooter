@@ -62,12 +62,7 @@ public class Shop : MonoBehaviour
 
     public Vector3 GetDockPoint()
     {
-        if (m_dockPoint)
-        {
-            return m_dockPoint.position;
-        }
-
-        return transform.position;
+        return m_dockPoint.position;
     }
 
 
@@ -130,6 +125,11 @@ public class Shop : MonoBehaviour
         m_shopInventory = GetComponent<NetworkInventory>();
 
         CleanStockFlags();
+
+        if (m_dockPoint == null)
+        {
+            m_dockPoint = transform;
+        }
     }
 
 

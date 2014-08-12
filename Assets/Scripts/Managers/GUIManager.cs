@@ -396,7 +396,7 @@ public class GUIManager : MonoBehaviour
                 
                 foreach (GameObject shop in shops)
                 {
-                    shop.GetComponent<ShopScript>().RequestNewInventory(m_gameTimer);
+                    shop.GetComponent<Shop>().RequestNewInventory(m_gameTimer);
                 }
             }
         }
@@ -1203,7 +1203,7 @@ public class GUIManager : MonoBehaviour
                                 bool insideFinalRect = finalRect.Contains(mousePos);
                                 if (!m_shopConfirmBuy && insideFinalRect && !m_isRequestingItem)
                                 {
-                                    if(m_thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(i)))
+                                    if(m_thisPlayerHP.GetComponent<PlayerControlScript>().CheckCanAffordAmount(m_shopDockedAt.GetComponent<Shop>().GetItemCost(i)))
                                     {
                                         //Since we're a shop, on mouseDown, open the item confirmation box
                                         shopInv.RequestServerCancel(m_currentTicket);
@@ -1224,7 +1224,7 @@ public class GUIManager : MonoBehaviour
                     Rect engineTemp = new Rect(605, 588, 63, 63);
                     
                     //Do shop type specific stuff
-                    if(m_shopDockedAt.GetComponent<ShopScript>().GetShopType() == ShopScript.ShopType.Basic)
+                    if(m_shopDockedAt.GetComponent<Shop>().GetShopType() == ShopType.Basic)
                     {
                         GUI.DrawTexture(new Rect(396, 221, 403, 460), m_smallShopTexture);
                         int hpPercent = (int)(m_thisPlayerHP.GetHPPercentage() * 100.0f);
@@ -1260,8 +1260,8 @@ public class GUIManager : MonoBehaviour
                         {
                             if (key.Contains(mousePos))
                             {
-                                int id = m_shopDockedAt.GetComponent<ShopScript>().GetIDIfItemPresent(m_drawnItems[key]);
-                                string text = m_drawnItems[key].GetHoverText(m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(id));
+                                int id = m_shopDockedAt.GetComponent<Shop>().GetIndexOf(m_drawnItems[key]);
+                                string text = m_drawnItems[key].GetHoverText(m_shopDockedAt.GetComponent<Shop>().GetItemCost(id));
                                 DrawHoverText(text, mousePos);
                             }
                         }
@@ -1396,7 +1396,7 @@ public class GUIManager : MonoBehaviour
                 GameObject shop = GetClosestShop();
                 if (shop != null)
                 {
-                    Vector3 shopDockPoint = shop.GetComponent<ShopScript>().GetDockPoint();
+                    Vector3 shopDockPoint = shop.GetComponent<Shop>().GetDockPoint();
                     float distance = Vector3.Distance(shopDockPoint, m_thisPlayerHP.transform.position);
                     if (distance < 1.5f)
                     {
@@ -3542,7 +3542,7 @@ public class GUIManager : MonoBehaviour
 							{
 								case ItemOwner.PlayerInventory:
                                 {
-                                    int costIfShop = fromShop ? inventory.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex) : -1;
+                                    int costIfShop = fromShop ? inventory.GetComponent<Shop>().GetItemCost(m_currentTicket.itemIndex) : -1;
                         
 									if (inventory.RemoveItemFromServer (m_currentTicket))
 									{
