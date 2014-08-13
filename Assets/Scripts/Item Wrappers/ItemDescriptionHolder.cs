@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public static class ItemDescriptionHolder 
 {
-	static Dictionary<int, string> descriptionID = new Dictionary<int, string>()
+	static Dictionary<int, string> m_descriptionID = new Dictionary<int, string>()
 	{
 		{0, "Type: Blaster\r\nBasic blaster firing supercharged bolts of ionised plasma"},
 		{1, "Type: Shotgun\r\nArchaic, slug-based weapon that fires multiple shots in a wide arc. Effective against multiple small targets"},
@@ -119,13 +119,13 @@ public static class ItemDescriptionHolder
 		{110, "Type: Light Plating\r\nSpecialised stealth armour utilised by Maiorian ambush parties. The ability to utilise it's cloaking system was sadly lost in the retrofit to human ships"},
 		{111, "Type: Medium Plating\r\nA combination of both the lightweight alloy armour and untraditional armour placement techniques. Results in very strong all-round armour"},
 		{112, "Type: Heavy Plating\r\nArmour fashioned from the very rare (but very heavy) metal 'Impervium'. Unbeatable protection, but at a serious cost to agility"},
-		{113, "ITEMMISSING"},
-		{114, "ITEMMISSING"},
-		{115, "ITEMMISSING"},
-		{116, "ITEMMISSING"},
-		{117, "ITEMMISSING"},
-		{118, "ITEMMISSING"},
-		{119, "ITEMMISSING"},
+		{113, "MISSINGITEM"},
+		{114, "MISSINGITEM"},
+		{115, "MISSINGITEM"},
+		{116, "MISSINGITEM"},
+		{117, "MISSINGITEM"},
+		{118, "MISSINGITEM"},
+		{119, "MISSINGITEM"},
 		{120, "Type: Capital Weapon\r\nStandard anti-ship turrets for larger vessels. Will attempt to lead targets to ensure accuracy"},
 		{121, "Type: Capital Weapon\r\nImproved default turret with additional barrels, for faster rate of fire"},
 		{122, "Type: Capital Weapon\r\nAnti-swarm weapon designed to affect a large area around the target with damage. Effective against large groups of both foes and asteroids"},
@@ -137,7 +137,7 @@ public static class ItemDescriptionHolder
 	public static string GetDescriptionFromID(int id)
 	{
 		string output = "";
-		output = descriptionID[id];
+		output = m_descriptionID[id];
 
 		if(output == "MISSINGITEM")
 		{

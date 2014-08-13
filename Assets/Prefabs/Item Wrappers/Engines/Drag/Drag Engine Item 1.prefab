@@ -38,14 +38,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d0f3c07afd0ddf458269f4daf6d56d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_typeOfItem: 2
-  m_ItemTierID: 1
-  m_equipmentIcon: {fileID: 2800000, guid: 6f89f43e768dd754eafcd6a4acc7d0e8, type: 3}
-  m_equipmentName: Fusion Engine VxIII
-  m_descriptionID: 0
-  m_cost: 0
-  m_equipmentID: 62
-  m_equipmentReference: {fileID: 100000, guid: 99834b4aab68a1e48b2f09dc810141c2, type: 2}
+  m_itemType: 0
+  m_itemID: 0
+  m_itemTierID: 1
+  m_baseCost: 0
+  m_itemName: 
+  m_itemIcon: {fileID: 2800000, guid: 6f89f43e768dd754eafcd6a4acc7d0e8, type: 3}
+  m_itemPrefab: {fileID: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

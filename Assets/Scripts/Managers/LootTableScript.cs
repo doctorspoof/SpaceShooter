@@ -1,11 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 public class LootTableScript : MonoBehaviour 
 {
-	[SerializeField]
-	GameObject m_ItemManager;
+	[SerializeField] GameObject m_ItemManager;
 
 	Item[] m_itemList;
     
@@ -25,12 +24,12 @@ public class LootTableScript : MonoBehaviour
 
 		if(m_ItemManager != null)
 		{
-			m_itemList = m_ItemManager.GetComponent<ItemIDHolder>().ItemList;
+			m_itemList = m_ItemManager.GetComponent<ItemIDHolder>().GetItemList();
             for(int i = 0; i < m_itemList.Length; i++)
             {
                 if(m_itemList[i].itemObject != null)
                 {
-                    switch(m_itemList[i].itemObject.GetComponent<ItemScript>().m_ItemTierID)
+                    switch(m_itemList[i].itemObject.GetComponent<ItemWrapper>().GetItemTierID())
                     {
                         case 1:
                         {
@@ -62,18 +61,15 @@ public class LootTableScript : MonoBehaviour
 			Debug.LogError ("Unable to find object with tag: ItemManager");
 		}
 	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
-	}
 
-    public int[] RequestItemListByTime(float time, bool[] stockFlags, int numItemsReq)
+    public List<ItemWrapper> RequestItemListByTime(float time, List<Element> stockFlags, int numItemsReq)
     {
         //Bool array, order is:
         //Weapons - Shields - Engines - Plating - CWeapons
-        
+
+        return new List<ItemWrapper>(0);
+
+        /*
         //Initialise output array
         List<int> outputL = new List<int>();
         //int[] output = new int[numItemsReq];
@@ -105,9 +101,10 @@ public class LootTableScript : MonoBehaviour
                 numTier3 += itemOverflow;
         }
             
-        int[] numByTier = new int[3];
-        
-        while(outputL.Count < numItemsReq)
+        //int[] numByTier = new int[3];
+
+        // Don't allow more than 100 attempts.
+        for (int x = 0; outputL.Count < numItemsReq && x < 100; ++x)
         {
             int currentTier = 0;
             if(outputL.Count < numTier1)
@@ -119,15 +116,20 @@ public class LootTableScript : MonoBehaviour
                 
             //Get an item from the appropriate list
             int i = Random.Range(0, m_itemTiers[currentTier - 1].Count);
-            ItemScript iSc = m_itemTiers[currentTier - 1][i].itemObject.GetComponent<ItemScript>();
-            if(stockFlags[(int)iSc.m_typeOfItem])
+            ItemWrapper iSc = m_itemTiers[currentTier - 1][i].itemObject;
+            if(stockFlags[(int)iSc.GetItemType()])
             {
-                outputL.Add(iSc.m_equipmentID);
+                outputL.Add(iSc.GetItemID());
             }
+        }
+
+        if (outputL.Count != numItemsReq)
+        {
+            Debug.LogError ("Couldn't find enough items so proceeding with less.");
         }
         
         //Output List should now be full, so return the array
-        return outputL.ToArray();
+        return outputL.ToArray();*/
     }
 
 	public int[] RequestItemByApproximateValue(float value, bool[] stockFlags, float[] rarityMods, int numItemsReq)
@@ -172,36 +174,37 @@ public class LootTableScript : MonoBehaviour
 		switch (type)
 		{
 			// Weapons run from 0->29
-		case ItemType.Weapon:
-			range[0] = 0;
-			range[1] = 29;
-			break;
+    		case ItemType.Weapon:
+    			range[0] = 0;
+    			range[1] = 29;
+    			break;
 			
 			// Shields run from 30->59
-		case ItemType.Shield:
-			range[0] = 30;
-			range[1] = 59;
-			break;
+    		case ItemType.Shield:
+    			range[0] = 30;
+    			range[1] = 59;
+    			break;
 			
 			// Engines run from 60->89
-		case ItemType.Engine:
-			range[0] = 60;
-			range[1] = 89;
-			break;
+    		case ItemType.Engine:
+    			range[0] = 60;
+    			range[1] = 89;
+    			break;
 			
 			// Plating runs from 90->119
-		case ItemType.Plating:
-			range[0] = 90;
-			range[1] = 119;
-			break;
+    		case ItemType.Plating:
+    			range[0] = 90;
+    			range[1] = 119;
+    			break;
 			
-		case ItemType.CapitalWeapon:
-			range[0] = 120;
-			range[1] = 130;
-			break;
+    		case ItemType.CapitalWeapon:
+    			range[0] = 120;
+    			range[1] = 129;
+    			break;
 		}
 		return range;
 	}
+
 	Item GetItemByValue (float value, int rangeMin, int rangeMax)
 	{
 		// Pre-condition: maxRange is infact the upper value
@@ -230,7 +233,7 @@ public class LootTableScript : MonoBehaviour
 				
 				if (temp != null && temp.itemObject != null)
 				{
-					int cost = temp.itemObject.GetComponent<ItemScript>().m_cost;
+					int cost = temp.itemObject.GetComponent<ItemWrapper>().GetBaseCost();
 					if ((value - randDiff) <= cost && cost <= (value + randDiff))
 					{
 						// If the cost is appropriate, yippee!
@@ -284,7 +287,7 @@ public class LootTableScript : MonoBehaviour
 				//Debug.Log ("Selected item with id# " + id);
 				if(temp != null && temp.itemObject != null)
 				{
-					int cost = temp.itemObject.GetComponent<ItemScript>().m_cost;
+					int cost = temp.itemObject.GetComponent<ItemWrapper>().GetBaseCost();
 					if((value - randDiff) <= cost && cost <= (value + randDiff))
 					{
 						//If the cost is appropriate, yippee!
@@ -338,7 +341,7 @@ public class LootTableScript : MonoBehaviour
 				//Debug.Log ("Selected item with id# " + id);
 				if(temp != null && temp.itemObject != null)
 				{
-					int cost = temp.itemObject.GetComponent<ItemScript>().m_cost;
+					int cost = temp.itemObject.GetComponent<ItemWrapper>().GetBaseCost();
 					if((value - randDiff) <= cost && cost <= (value + randDiff))
 					{
 						//If the cost is appropriate, yippee!
@@ -392,7 +395,7 @@ public class LootTableScript : MonoBehaviour
 				//Debug.Log ("Selected item with id# " + id);
 				if(temp != null && temp.itemObject != null)
 				{
-					int cost = temp.itemObject.GetComponent<ItemScript>().m_cost;
+					int cost = temp.itemObject.GetComponent<ItemWrapper>().GetBaseCost();
 					if((value - randDiff) <= cost && cost <= (value + randDiff))
 					{
 						//If the cost is appropriate, yippee!
@@ -446,7 +449,7 @@ public class LootTableScript : MonoBehaviour
 				//Debug.Log ("Selected item with id# " + id);
 				if(temp != null && temp.itemObject != null)
 				{
-					int cost = temp.itemObject.GetComponent<ItemScript>().m_cost;
+					int cost = temp.itemObject.GetComponent<ItemWrapper>().GetBaseCost();
 					if((value - randDiff) <= cost && cost <= (value + randDiff))
 					{
 						//If the cost is appropriate, yippee!

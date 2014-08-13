@@ -27,7 +27,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &100002
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 4
@@ -313,11 +313,10 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: .00109656586, w: .999999464}
-  m_LocalPosition: {x: 74.1014862, y: 107.42057, z: 10}
+  m_LocalPosition: {x: .330427766, y: 284.868805, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400004}
-  - {fileID: 400002}
   - {fileID: 400022}
   m_Father: {fileID: 0}
 --- !u!4 &400002
@@ -330,7 +329,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -.199999809}
   m_LocalScale: {x: .680000007, y: 1.20000005, z: 1.20000005}
   m_Children: []
-  m_Father: {fileID: 400000}
+  m_Father: {fileID: 400004}
 --- !u!4 &400004
 Transform:
   m_ObjectHideFlags: 1
@@ -348,6 +347,7 @@ Transform:
   - {fileID: 400018}
   - {fileID: 400014}
   - {fileID: 400012}
+  - {fileID: 400002}
   m_Father: {fileID: 400000}
 --- !u!4 &400006
 Transform:
@@ -434,7 +434,7 @@ Transform:
   m_GameObject: {fileID: 100020}
   m_LocalRotation: {x: 0, y: 0, z: 1, w: -4.34643454e-07}
   m_LocalPosition: {x: .109625459, y: 1.15075564, z: .0500001907}
-  m_LocalScale: {x: .400000006, y: .800000072, z: 1}
+  m_LocalScale: {x: .400000006, y: .800000012, z: 1}
   m_Children: []
   m_Father: {fileID: 400022}
 --- !u!4 &400022
@@ -462,7 +462,7 @@ Transform:
   m_GameObject: {fileID: 100024}
   m_LocalRotation: {x: 0, y: 0, z: 1, w: -4.37113883e-08}
   m_LocalPosition: {x: -.0772949904, y: 1.15082991, z: .0500001907}
-  m_LocalScale: {x: .399999917, y: .799999833, z: 1}
+  m_LocalScale: {x: .400000006, y: .800000012, z: 1}
   m_Children: []
   m_Father: {fileID: 400022}
 --- !u!4 &400026
@@ -473,7 +473,7 @@ Transform:
   m_GameObject: {fileID: 100026}
   m_LocalRotation: {x: 0, y: 0, z: .707106829, w: .707106829}
   m_LocalPosition: {x: .560277522, y: -.40532738, z: .0500001907}
-  m_LocalScale: {x: .399999917, y: .799999833, z: 1}
+  m_LocalScale: {x: .400000006, y: .800000012, z: 1}
   m_Children: []
   m_Father: {fileID: 400022}
 --- !u!4 &400028
@@ -484,7 +484,7 @@ Transform:
   m_GameObject: {fileID: 100028}
   m_LocalRotation: {x: 0, y: 0, z: -.711835265, w: .702346563}
   m_LocalPosition: {x: -.560277462, y: -.40532738, z: .0500001907}
-  m_LocalScale: {x: .399999917, y: .799999833, z: 1}
+  m_LocalScale: {x: .400000006, y: .800000012, z: 1}
   m_Children: []
   m_Father: {fileID: 400022}
 --- !u!4 &400030
@@ -495,7 +495,7 @@ Transform:
   m_GameObject: {fileID: 100030}
   m_LocalRotation: {x: 0, y: 0, z: .707106829, w: .707106829}
   m_LocalPosition: {x: .493620068, y: .499597639, z: .0500001907}
-  m_LocalScale: {x: .399999917, y: .799999833, z: 1}
+  m_LocalScale: {x: .400000006, y: .800000012, z: 1}
   m_Children: []
   m_Father: {fileID: 400022}
 --- !u!4 &400032
@@ -962,22 +962,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 832418e1ee81c394c8c38e481743f320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ownerSt: 
-  isPlayerControlScript: 0
-  shipTransform: {fileID: 0}
-  shipRigidbody: {fileID: 0}
+  m_ownerSt: 
+  m_isPlayerControlScript: 0
   m_maxShipSpeed: 0
   m_currentShipSpeed: 0
-  afterburnerIncreaseOfSpeed: 0
-  afterburnerLength: 0
-  afterburnerRechargeTime: 0
+  m_afterburnerIncreaseOfSpeed: 0
+  m_afterburnerLength: 0
+  m_afterburnerRechargeTime: 0
   m_rotateSpeed: 5
   m_ramDamageMultiplier: 5
   maunuallySetWidthAndHeight: 0
-  minWeaponRange: 0
-  maxWeaponRange: 0
+  m_minWeaponRange: 0
+  m_maxWeaponRange: 0
   m_shipWidth: 0
   m_shipHeight: 0
+  m_pathToShieldObject: Composite Collider/Shield
   shipID: -1
   m_shouldRecieveInput: 1
   m_baseEngineSpeed: 5
@@ -987,22 +986,17 @@ MonoBehaviour:
   m_maxDockingSpeed: 225
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
-  m_currentSpaceBucks: 300
-  m_equippedWeaponItem: {fileID: 100000, guid: d8e1271c27ab7ae4793d51be5149f688, type: 2}
-  m_equippedShieldItem: {fileID: 100000, guid: e96c02fd8453d5748b59e3ae33533f8d, type: 2}
-  m_equippedEngineItem: {fileID: 100000, guid: eeb014f2b35b98342b24a2917a1eb246, type: 2}
-  m_equippedPlatingItem: {fileID: 100000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
+  m_currentCash: 0
+  m_equippedWeaponItem: {fileID: 11400000, guid: d8e1271c27ab7ae4793d51be5149f688,
+    type: 2}
+  m_equippedShieldItem: {fileID: 11400000, guid: e96c02fd8453d5748b59e3ae33533f8d,
+    type: 2}
+  m_equippedEngineItem: {fileID: 11400000, guid: eeb014f2b35b98342b24a2917a1eb246,
+    type: 2}
+  m_equippedPlatingItem: {fileID: 11400000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
     type: 2}
   m_playerInventory:
-  - {fileID: 100000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
-  m_currentVelocity: {x: 0, y: 0, z: 0}
-  m_isInRangeOfCapitalDock: 0
-  m_isInRangeOfTradingDock: 0
-  nearbyShop: {fileID: 0}
-  m_isAnimating: 0
-  m_currentDockingState: 0
-  CShip: {fileID: 0}
-  targetPoint: {x: 0, y: 0, z: 0}
+  - {fileID: 0}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1016,15 +1010,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
-  m_maximumHealth: 100
-  m_currentHealth: 0
-  m_pathToShieldObject: Shield
   m_maximumShield: 100
   m_currentShield: 0
+  m_maximumHealth: 100
+  m_currentHealth: 0
   m_shieldRechargeRate: 20
   m_timeToRechargeShield: 3
-  m_shouldStop: 0
-  m_isInvincible: 0
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1048,20 +1039,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primitiveQuad: {fileID: 0}
-  removeShipAfterSeconds: -1
-  explosions:
-  - explosionPrefabs:
-    - {fileID: 100000, guid: 5f86f9da513c93e4fbea0cabdd34dd44, type: 2}
-    - {fileID: 100000, guid: 75aee9c489749624d9b977f9b7eb00f6, type: 2}
-    - {fileID: 100000, guid: 3d56c3dc7212b474ebdc5f46af8a0952, type: 2}
-    - {fileID: 100000, guid: 921676dad59146e40b6c9e54d9cc227c, type: 2}
-    - {fileID: 100000, guid: 379de339833f70c4181e9f28557e86ba, type: 2}
-    - {fileID: 100000, guid: 373f52a514d17114eb7d9657670f84ee, type: 2}
-    localPosition: {x: 0, y: 0, z: -.0500000007}
-    localScale: {x: 2, y: 2, z: 1}
-    timeAfterDeathThatExplosionStarts: 0
-  fragments: []
+  m_primitiveQuad: {fileID: 0}
+  m_removeShipAfterSeconds: 0
+  m_explosions: []
+  m_fragments: []
 --- !u!114 &11400008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1073,10 +1054,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
+  m_uvTieX: 5
+  m_uvTieY: 5
+  m_fps: 60
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1091,7 +1072,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 0
+  m_firesWithTurn: 0
 --- !u!114 &11400012
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1103,7 +1084,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 0
+  m_firesWithTurn: 0
 --- !u!114 &11400014
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1115,10 +1096,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
+  m_uvTieX: 5
+  m_uvTieY: 5
+  m_fps: 60
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1133,10 +1114,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
+  m_uvTieX: 5
+  m_uvTieY: 5
+  m_fps: 60
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1151,7 +1132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 1
+  m_firesWithTurn: 0
 --- !u!114 &11400020
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1163,7 +1144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 2
+  m_firesWithTurn: 0
 --- !u!114 &11400022
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1175,10 +1156,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
+  m_uvTieX: 5
+  m_uvTieY: 5
+  m_fps: 60
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1193,7 +1174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 2
+  m_firesWithTurn: 0
 --- !u!114 &11400026
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1205,10 +1186,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
+  m_uvTieX: 5
+  m_uvTieY: 5
+  m_fps: 60
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1223,10 +1204,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
+  m_uvTieX: 5
+  m_uvTieY: 5
+  m_fps: 60
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1241,7 +1222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 1
+  m_firesWithTurn: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

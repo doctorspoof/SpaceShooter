@@ -6,7 +6,7 @@ public class AttackStrafeRight : IAttack
 
     public override void Attack(EnemyScript ship, GameObject target)
     {
-		float timeTakenToTravel = Vector3.Distance(target.transform.position, ship.shipTransform.position) / ship.GetComponent<EnemyWeaponScript>().GetBulletSpeed();
+		float timeTakenToTravel = Vector3.Distance(target.transform.position, ship.transform.position) / ship.GetComponent<EnemyWeaponScript>().GetBulletSpeed();
 		Vector3 predictedTargetPos = target.transform.position + (target.rigidbody.velocity * timeTakenToTravel);
 		ship.RotateTowards(predictedTargetPos);
 
@@ -18,20 +18,20 @@ public class AttackStrafeRight : IAttack
         Ship targetShip = target.GetComponent<Ship>();
         if (targetShip != null)
         {
-            shipDimension = targetShip.GetCalculatedSizeByPosition(targetShip.shipTransform.position);
+            shipDimension = targetShip.GetCalculatedSizeByPosition(targetShip.transform.position);
         }
 
         float totalRange = weaponRange <= shipDimension ? weaponRange + shipDimension : weaponRange;
 
-        Vector3 direction = Vector3.Normalize(target.rigidbody.position - ship.shipTransform.position);
+        Vector3 direction = Vector3.Normalize(target.rigidbody.position - ship.transform.position);
 
-        Ray ray = new Ray(ship.shipTransform.position, direction);
+        Ray ray = new Ray(ship.transform.position, direction);
         //Debug.DrawLine(ship.shipTransform.position, ship.shipTransform.position + direction * weaponRange);
 
         RaycastHit hit;
         if (weaponScript != null && target.collider.Raycast(ray, out hit, totalRange))
         {
-            ship.rigidbody.AddForce(ship.shipTransform.right * ship.GetCurrentMomentum() * Time.deltaTime);
+            ship.rigidbody.AddForce(ship.transform.right * ship.GetCurrentMomentum() * Time.deltaTime);
             weaponScript.MobRequestsFire();
         }
 

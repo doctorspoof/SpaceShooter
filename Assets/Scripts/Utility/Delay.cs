@@ -1,39 +1,70 @@
-﻿
-using UnityEngine;
-using System.Collections;
+﻿using UnityEngine;
 
-public class Delay : MonoBehaviour {
 
-    float timeToDelay = 0, currentTime = 0;
 
-    MeshRenderer renderer;
-    SpriteSheet spriteSheet;
+/// <summary>
+/// Delay is used in the creation of explosions and other effects. Using Delay allows explosions to be triggered at different, random intervals.
+/// </summary>
+[RequireComponent (typeof (MeshRenderer))]
+[RequireComponent (typeof (SpriteSheet))]
+public class Delay : MonoBehaviour
+{
+    #region Internal data
 
-    void Start()
+    MeshRenderer m_renderer;    //!< A reference to the MeshRenderer used for the delay.
+    SpriteSheet m_spriteSheet;  //!< A reference to the SpriteSheet used for the delay.
+
+    #endregion
+
+
+    #region Behavior functions
+
+    /// <summary>
+    /// Obtains a reference to the MeshRenderer and the SpriteSheet so the delay can function properly.
+    /// </summary>
+    void Awake()
     {
-        renderer = GetComponent<MeshRenderer>();
-        renderer.enabled = false;
+        m_renderer = GetComponent<MeshRenderer>();
+        m_renderer.enabled = false;
 
-        spriteSheet = GetComponent<SpriteSheet>();
-        spriteSheet.enabled = false;
-        //gameObject.SetActive(false);
+        m_spriteSheet = GetComponent<SpriteSheet>();
+        m_spriteSheet.enabled = false;
     }
 
-	// Update is called once per frame
-	void Update () {
+    #endregion
 
-        currentTime += Time.deltaTime;
-        if(currentTime >= timeToDelay)
+
+    #region Delay functionality
+    
+    /// <summary>
+    /// Time until script activates the renderer and spritesheet
+    /// </summary>
+    /// <param name="delay_">Time in seconds</param>
+    public void SetDelay (float delay_)
+    {
+        if (delay_ >= 0f)
         {
-            renderer.enabled = true;
-            spriteSheet.enabled = true;
-            spriteSheet._frameOffset = 0;
+            CancelInvoke ("ShowSprites");
+            Invoke ("ShowSprites", delay_);
         }
-
-	}
-
-    public void SetDelay(float delay_)
-    {
-        timeToDelay = delay_;
     }
+
+
+    /// <summary>
+    /// Called to enable the MeshRenderer and SpriteSheet.
+    /// </summary>
+    void ShowSprites()
+    {
+        m_renderer.enabled = true;
+        m_spriteSheet.enabled = true;
+        m_spriteSheet.SetCurrentFrame(0);
+
+        if (audio != null)
+        {
+            audio.volume = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
+            audio.Play();
+        }
+    }
+
+    #endregion
 }

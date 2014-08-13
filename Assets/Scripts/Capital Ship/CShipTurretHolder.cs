@@ -1,27 +1,48 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class CShipTurretHolder : MonoBehaviour 
 {
-	public int m_cShipTurretID;
-	public bool m_forwardFacing;
+    [SerializeField]            int m_cShipTurretID;         // An assigned ID to indicate where on the CShip this turret is located
+	[SerializeField]            bool m_forwardFacing;        // Whether or not the turret should face forwards by default
 
-	// Use this for initialization
-	void Start () 
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
-	}
+    #region getset
 
-	public GameObject GetAttachedTurret()
-	{
-		return this.transform.GetChild(0).gameObject;
-	}
+    public int GetShipTurretID()
+    {
+        return m_cShipTurretID;
+    }
+
+    public void SetShipTurretID(int id_)
+    {
+        m_cShipTurretID = id_;
+    }
+
+    public GameObject GetAttachedTurret()
+    {
+        return this.transform.GetChild(0).gameObject;
+    }
+
+    #endregion getset
+
+    /* Unity Functions */
+    void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
+    {
+        float zRot = this.transform.rotation.eulerAngles.z;
+        
+        if(stream.isWriting)
+        {
+            stream.Serialize(ref zRot);
+        }
+        else
+        {
+            stream.Serialize(ref zRot);
+            
+            this.transform.rotation = Quaternion.Euler(0, 0, zRot);
+        }
+    }
+
+    /* Custom Functions */
 	public void ReplaceAttachedTurret(GameObject turretRef)
 	{
 		if(this.transform.childCount > 0)
@@ -32,13 +53,8 @@ public class CShipTurretHolder : MonoBehaviour
 		else
 		{
 			//If we're spawning a broadside, we need to do a few extra things
-
 			//First ensure rotation reset
 			this.transform.localRotation = Quaternion.identity;
-			if(!m_forwardFacing)
-			{
-				//If we're not forward facing, rotate to forwards first
-			}
 
 			//Then spawn the broadside
 			newTurr.GetComponent<CapitalBroadsideHolderScript>().SpawnLocationTurret(m_cShipTurretID);
@@ -49,12 +65,11 @@ public class CShipTurretHolder : MonoBehaviour
 			//Turn off the appropriate glow too
 			this.transform.parent.GetComponent<CapitalShipScript>().GetGlowForTurretByID(m_cShipTurretID).GetComponent<CapitalShipGlowScript>().SetGlowIsActive(false);
 		}
-		//newTurr.transform.parent = this.transform;
-
+        
 		if(!m_forwardFacing)
 		{
 			if(newTurr.GetComponent<CapitalWeaponScript>() != null)
-				newTurr.GetComponent<CapitalWeaponScript>().isForwardFacing = false;
+				newTurr.GetComponent<CapitalWeaponScript>().m_isForwardFacing = false;
 		}
 	}
 
@@ -63,35 +78,20 @@ public class CShipTurretHolder : MonoBehaviour
 		this.renderer.enabled = true;
 		networkView.RPC ("PropagateEnableRenderer", RPCMode.All);
 	}
-	[RPC]
-	void PropagateEnableRenderer()
+    [RPC] void PropagateEnableRenderer()
 	{
 		this.renderer.enabled = true;
 	}
+    
 	public void DisableRenderer()
 	{
 		networkView.RPC ("PropagateDisableRenderer", RPCMode.All);
 	}
-	[RPC]
-	void PropagateDisableRenderer()
+    [RPC] void PropagateDisableRenderer()
 	{
 		this.renderer.enabled = false;
 	}
 
-	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
-	{
-		float zRot = this.transform.rotation.eulerAngles.z;
-
-		if(stream.isWriting)
-		{
-			stream.Serialize(ref zRot);
-		}
-		else
-		{
-			stream.Serialize(ref zRot);
-
-			this.transform.rotation = Quaternion.Euler(0, 0, zRot);
-		}
-	}
+	
 
 }

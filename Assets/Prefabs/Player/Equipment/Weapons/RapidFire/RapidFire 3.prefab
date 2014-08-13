@@ -28,7 +28,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400002}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ GameObject:
   - 4: {fileID: 400004}
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
-  - 114: {fileID: 11400002}
+  - 114: {fileID: 11400010}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -62,7 +62,7 @@ GameObject:
   - 4: {fileID: 400006}
   - 33: {fileID: 3300002}
   - 23: {fileID: 2300002}
-  - 114: {fileID: 11400004}
+  - 114: {fileID: 11400012}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -79,7 +79,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400008}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400010}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -109,7 +109,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400012}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -125,7 +125,7 @@ GameObject:
   - 4: {fileID: 400014}
   - 33: {fileID: 3300004}
   - 23: {fileID: 2300004}
-  - 114: {fileID: 11400006}
+  - 114: {fileID: 11400014}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -143,7 +143,7 @@ GameObject:
   - 4: {fileID: 400016}
   - 33: {fileID: 3300006}
   - 23: {fileID: 2300006}
-  - 114: {fileID: 11400008}
+  - 114: {fileID: 11400016}
   m_Layer: 0
   m_Name: Barrel
   m_TagString: Untagged
@@ -158,7 +158,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -55.2148628, y: 50.3023758, z: 0}
+  m_LocalPosition: {x: 66.6832657, y: 167.789917, z: 0}
   m_LocalScale: {x: .200000003, y: .200000003, z: 1}
   m_Children:
   - {fileID: 400016}
@@ -430,7 +430,7 @@ MonoBehaviour:
   m_bulletRef: {fileID: 100000, guid: 752dda0ef848b304092c0340b40455ee, type: 2}
   m_bulletOffset: {x: 0, y: 0, z: .100000001}
   m_needsLockon: 0
---- !u!114 &11400002
+--- !u!114 &11400010
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -438,13 +438,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 100004}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea3eb903f2fa26141be90e0a2a825468, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a366be136da8284facc584dd8b4e112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_minY: .236000001
+  m_idleY: .727999985
   m_firePoint: {fileID: 100002}
-  m_maxYReduction: .236186996
-  m_idleYLevel: .728359222
---- !u!114 &11400004
+--- !u!114 &11400012
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -452,13 +452,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 100006}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea3eb903f2fa26141be90e0a2a825468, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a366be136da8284facc584dd8b4e112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_minY: .236000001
+  m_idleY: .727999985
   m_firePoint: {fileID: 100008}
-  m_maxYReduction: .236186996
-  m_idleYLevel: .728359222
---- !u!114 &11400006
+--- !u!114 &11400014
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -466,13 +466,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 100014}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea3eb903f2fa26141be90e0a2a825468, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a366be136da8284facc584dd8b4e112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_minY: .444999993
+  m_idleY: .944999993
   m_firePoint: {fileID: 100010}
-  m_maxYReduction: .445045501
-  m_idleYLevel: .94461441
---- !u!114 &11400008
+--- !u!114 &11400016
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -480,12 +480,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 100016}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea3eb903f2fa26141be90e0a2a825468, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a366be136da8284facc584dd8b4e112, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_minY: .444999993
+  m_idleY: .944999993
   m_firePoint: {fileID: 100012}
-  m_maxYReduction: .445045501
-  m_idleYLevel: .944614172
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

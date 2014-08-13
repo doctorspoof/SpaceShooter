@@ -1,65 +1,59 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class CapitalBroadsideHolderScript : MonoBehaviour 
 {
-	[SerializeField]
-	GameObject[] m_turretLocationVersions;
+    /* Serialized members */
+	[SerializeField]    GameObject[] m_turretLocationVersions;
 
-	int turretLocationAttachedTo = -1;
+    /* Internal members */
+	int m_turretLocationAttachedTo = -1;
+	GameObject m_attachedTurret = null;
+    
+    /* Cached members */
+    GameObject m_cShip;
 
-	GameObject attachedTurret = null;
+    /* Unity functions */
+    void OnDestroy()
+    {
+        //Destroy the attached turret
+        Network.Destroy (m_attachedTurret);
+        
+        if(m_cShip == null)
+            m_cShip = GameObject.FindGameObjectWithTag("Capital");
+        
+        //Renable the glow for this section
+        m_cShip.GetComponent<CapitalShipScript>().GetGlowForTurretByID(m_turretLocationAttachedTo).GetComponent<CapitalShipGlowScript>().SetGlowIsActive(true);
+        
+        //Renable the renderer for this THolder
+        m_cShip.GetComponent<CapitalShipScript>().GetCTurretHolderWithID(m_turretLocationAttachedTo).GetComponent<CShipTurretHolder>().EnableRenderer();
+    }
 
-	// Use this for initialization
-	void Start () 
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-	
-	}
-
+    /* Custom functions */
 	public void SpawnLocationTurret(int id)
 	{
 		Debug.Log ("Spawning broadside turret with id #" + id);
-		turretLocationAttachedTo = id;
-		GameObject turret = (GameObject)Network.Instantiate(m_turretLocationVersions[id - 1], this.transform.position, GameObject.FindGameObjectWithTag("Capital").transform.rotation, 0);
+        m_turretLocationAttachedTo = id;
+        if(m_cShip == null)
+            m_cShip = GameObject.FindGameObjectWithTag("Capital");
+        GameObject turret = (GameObject)Network.Instantiate(m_turretLocationVersions[id - 1], this.transform.position, m_cShip.transform.rotation, 0);
 		turret.transform.parent = this.transform;
 		ParentThisWeaponToCShip(id);
-		attachedTurret = turret;
+        m_attachedTurret = turret;
 
 		this.transform.localPosition = new Vector3(0, 0, 0.15f);
-	}
-
-	void OnDestroy()
-	{
-		//Destroy the attached turret
-		Network.Destroy (attachedTurret);
-
-		GameObject CShip = GameObject.FindGameObjectWithTag("Capital");
-		//Renable the glow for this section
-		CShip.GetComponent<CapitalShipScript>().GetGlowForTurretByID(turretLocationAttachedTo).GetComponent<CapitalShipGlowScript>().SetGlowIsActive(true);
-
-		//Renable the renderer for this THolder
-		CShip.GetComponent<CapitalShipScript>().GetCTurretHolderWithId(turretLocationAttachedTo).GetComponent<CShipTurretHolder>().EnableRenderer();
 	}
 
 	public void ParentThisWeaponToCShip(int location)
 	{
 		networkView.RPC ("PropagateParentToLocation", RPCMode.All, location);
 	}
-	[RPC]
-	void PropagateParentToLocation(int location)
+    
+	[RPC] void PropagateParentToLocation(int location)
 	{
-		GameObject cship = GameObject.FindGameObjectWithTag("Capital");
-		this.transform.parent = cship.GetComponent<CapitalShipScript>().GetCTurretHolderWithId(location).transform;
-		//this.transform.parent = cship.transform;
-		//attachedTurret.GetComponent<CapitalWeaponScript>().PropagateParentToLocation(location);
+        if(m_cShip == null)
+            m_cShip = GameObject.FindGameObjectWithTag("Capital");
+        this.transform.parent = m_cShip.GetComponent<CapitalShipScript>().GetCTurretHolderWithID(location).transform;
 		this.transform.localPosition = Vector3.zero;
-		//this.transform.localPosition = new Vector3(0.0f, 0.6f, 0.1f);
-		//this.transform.localPosition = m_posOffset;
 	}
 }

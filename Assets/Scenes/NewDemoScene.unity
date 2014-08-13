@@ -78,7 +78,7 @@ NavMeshSettings:
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-  m_PrefabInternal: {fileID: 1043321431}
+  m_PrefabInternal: {fileID: 1905372542}
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 11740236}
@@ -95,141 +95,33 @@ MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214,
     type: 2}
-  m_PrefabInternal: {fileID: 1043321431}
+  m_PrefabInternal: {fileID: 1905372542}
   m_GameObject: {fileID: 11740234}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smallMultipleWaves:
+  m_smallMultipleWaves:
   - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 48
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 32
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 12
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 24
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 16
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 4
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 32
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 24
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 32
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 24
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
-  singleLargeWave:
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 2
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 20
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 2
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 40
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 6
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 35
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 3
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 10
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 15
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 10
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 25
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 3
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 10
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 2
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 10
-  specialWaves:
-  - defaultOrderTargetTag: Player
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100036, guid: 56293a06d8e04834fb2a97f86e4d9835, type: 2}
-      m_numEnemy: 3
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
-      m_numEnemy: 2
-  test: []
+  m_singleLargeWave: []
+  m_specialWaves: []
   m_allSpawnPoints: []
-  m_capitalShip: {fileID: 0}
-  healthModifierIncrement: 0
-  currentHealthModifier: 1
-  timeCountInMinutes: 25
-  multiplierAtTimeRequired: 5
-  secondsBetweenWaves: 60
-  shouldStart: 0
-  allDone: 1
-  lastTimeModifier: 0
-  lastTimeSpawn: 0
+  m_healthModifierIncrement: 0
+  m_currentHealthModifier: 1
+  m_timeCountInMinutes: 25
+  m_multiplierAtTimeRequired: 5
+  m_secondsBetweenWaves: 40
+  m_lastTimeModifier: 0
+  m_lastTimeSpawn: 0
 --- !u!4 &11740236
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-  m_PrefabInternal: {fileID: 1043321431}
+  m_PrefabInternal: {fileID: 1905372542}
   m_GameObject: {fileID: 11740234}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10.5}
@@ -310,10 +202,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 1
-  _fps: 6
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -347,15 +239,10 @@ MonoBehaviour:
   m_shopType: 0
   m_dockPoint: {fileID: 645314090}
   m_canStockWeapons: 0
-  m_weaponRarityMod: 1.5
   m_canStockShields: 1
-  m_shieldRarityMod: 2
   m_canStockEngines: 0
-  m_engineRarityMod: 1
   m_canStockPlating: 0
-  m_platingRarityMod: 1
   m_canStockCWeapons: 0
-  m_cWeaponRarityMod: 1
   RESETINVENTORY: 0
 --- !u!65 &61916496
 BoxCollider:
@@ -462,10 +349,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -574,16 +461,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!4 &94703548
 Transform:
   m_ObjectHideFlags: 0
@@ -754,14 +640,14 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 474890346}
+  - {fileID: 747189060}
+  - {fileID: 94703548}
   - {fileID: 1607990018}
   - {fileID: 539799790}
-  - {fileID: 520790229}
-  - {fileID: 747189060}
   - {fileID: 936720315}
+  - {fileID: 474890346}
   - {fileID: 1087065111}
-  - {fileID: 94703548}
+  - {fileID: 520790229}
   m_Father: {fileID: 0}
 --- !u!1 &249488141
 GameObject:
@@ -804,10 +690,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 7
-  _uvTieY: 1
-  _fps: 10
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -853,8 +739,6 @@ GameObject:
   - 23: {fileID: 258042577}
   - 95: {fileID: 258042576}
   - 114: {fileID: 258042575}
-  - 148: {fileID: 258042579}
-  - 114: {fileID: 258042580}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -932,29 +816,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 762900438}
   m_GameObject: {fileID: 258042573}
   m_Mesh: {fileID: 4300000, guid: f5ed61adc60ca4f47a4497d2995dafd4, type: 3}
---- !u!148 &258042579
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 258042573}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 258042580}
-  m_ViewID:
-    m_ID: 18
-    m_Type: 1
---- !u!114 &258042580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 258042573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &283628323
 GameObject:
   m_ObjectHideFlags: 0
@@ -996,10 +857,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 7
-  _uvTieY: 1
-  _fps: 10
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1062,22 +923,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_asteroidRef:
-  - {fileID: 100000, guid: 0c35fc6f7f7e2c64b820d8c92ebd5a2b, type: 2}
-  - {fileID: 100000, guid: 6a01e0409e2e14d40942c8393eb33efc, type: 2}
-  - {fileID: 100000, guid: 8dbfe283cbaf1d647a62e96a9679bfee, type: 2}
-  - {fileID: 100000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
-  - {fileID: 100002, guid: f8929da04eebe45e391b2e0aef0d04ef, type: 2}
-  - {fileID: 100000, guid: 04139a9891d6746678a5357abafb13a4, type: 2}
-  - {fileID: 100002, guid: 0836eafaaca2d4376ba9637033c6aaa8, type: 2}
-  - {fileID: 100000, guid: bd516ee9db1c842ae8e3f0fba41830db, type: 2}
-  - {fileID: 100000, guid: 28983c26a15ce4e34a04cfa3a691fd77, type: 2}
-  - {fileID: 100002, guid: 9ec4b5185335c49a9ba61ab7ec1aaaef, type: 2}
-  - {fileID: 100000, guid: 87de505aad3584024a074bd703b43c78, type: 2}
+  - {fileID: 11400002, guid: 0c35fc6f7f7e2c64b820d8c92ebd5a2b, type: 2}
+  - {fileID: 11400000, guid: 6a01e0409e2e14d40942c8393eb33efc, type: 2}
+  - {fileID: 11400002, guid: 8dbfe283cbaf1d647a62e96a9679bfee, type: 2}
+  - {fileID: 11400000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
+  - {fileID: 11400000, guid: f8929da04eebe45e391b2e0aef0d04ef, type: 2}
+  - {fileID: 11400000, guid: 04139a9891d6746678a5357abafb13a4, type: 2}
+  - {fileID: 11400000, guid: 0836eafaaca2d4376ba9637033c6aaa8, type: 2}
+  - {fileID: 11400000, guid: bd516ee9db1c842ae8e3f0fba41830db, type: 2}
+  - {fileID: 11400000, guid: 8f96467e4ad0948cab1e25bcfd800794, type: 2}
+  - {fileID: 11400000, guid: 9ec4b5185335c49a9ba61ab7ec1aaaef, type: 2}
+  - {fileID: 11400000, guid: 87de505aad3584024a074bd703b43c78, type: 2}
   m_range: 165
   m_ringThickness: 8
   m_numAsteroids: 200
   m_shouldBeRingBelt: 1
-  m_shouldSpawnNow: 0
 --- !u!4 &317678363
 Transform:
   m_ObjectHideFlags: 0
@@ -1189,10 +1049,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1396,10 +1256,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -1536,16 +1396,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!1 &520790224
 GameObject:
   m_ObjectHideFlags: 0
@@ -1621,16 +1480,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!4 &520790229
 Transform:
   m_ObjectHideFlags: 0
@@ -1911,16 +1769,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!4 &539799790
 Transform:
   m_ObjectHideFlags: 0
@@ -1961,8 +1818,6 @@ GameObject:
   - 23: {fileID: 577369976}
   - 95: {fileID: 577369975}
   - 114: {fileID: 577369974}
-  - 148: {fileID: 577369978}
-  - 114: {fileID: 577369979}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -2040,29 +1895,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 788266642}
   m_GameObject: {fileID: 577369972}
   m_Mesh: {fileID: 4300000, guid: f5ed61adc60ca4f47a4497d2995dafd4, type: 3}
---- !u!148 &577369978
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 577369972}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 577369979}
-  m_ViewID:
-    m_ID: 22
-    m_Type: 1
---- !u!114 &577369979
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 577369972}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &588482639
 GameObject:
   m_ObjectHideFlags: 0
@@ -2075,8 +1907,6 @@ GameObject:
   - 23: {fileID: 588482643}
   - 95: {fileID: 588482642}
   - 114: {fileID: 588482641}
-  - 148: {fileID: 588482645}
-  - 114: {fileID: 588482646}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -2154,29 +1984,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1341443119}
   m_GameObject: {fileID: 588482639}
   m_Mesh: {fileID: 4300000, guid: f5ed61adc60ca4f47a4497d2995dafd4, type: 3}
---- !u!148 &588482645
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 588482639}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 588482646}
-  m_ViewID:
-    m_ID: 16
-    m_Type: 1
---- !u!114 &588482646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 588482639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &618841095
 Prefab:
   m_ObjectHideFlags: 0
@@ -2627,16 +2434,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!4 &747189060
 Transform:
   m_ObjectHideFlags: 0
@@ -2861,15 +2667,10 @@ MonoBehaviour:
   m_shopType: 1
   m_dockPoint: {fileID: 1204770483}
   m_canStockWeapons: 0
-  m_weaponRarityMod: 1.5
   m_canStockShields: 0
-  m_shieldRarityMod: 1
   m_canStockEngines: 1
-  m_engineRarityMod: 2
   m_canStockPlating: 0
-  m_platingRarityMod: 1
   m_canStockCWeapons: 0
-  m_cWeaponRarityMod: 1
   RESETINVENTORY: 0
 --- !u!65 &779021245
 BoxCollider:
@@ -3098,10 +2899,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 1
-  _fps: 6
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -3135,15 +2936,10 @@ MonoBehaviour:
   m_shopType: 0
   m_dockPoint: {fileID: 2063122409}
   m_canStockWeapons: 1
-  m_weaponRarityMod: 2
   m_canStockShields: 0
-  m_shieldRarityMod: 1
   m_canStockEngines: 0
-  m_engineRarityMod: 1
   m_canStockPlating: 0
-  m_platingRarityMod: 1
   m_canStockCWeapons: 0
-  m_cWeaponRarityMod: 1
   RESETINVENTORY: 0
 --- !u!65 &800427925
 BoxCollider:
@@ -3400,9 +3196,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_boundaryScale: {x: 650, y: 650, z: 650}
-  destroyAsteroids: 1
-  destroyPlayers: 0
-  destroyEnemies: 0
+  m_destroyAsteroids: 1
+  m_destroyPlayers: 0
+  m_destroyEnemies: 0
 --- !u!135 &846995419
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -3903,16 +3699,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!4 &936720315
 Transform:
   m_ObjectHideFlags: 0
@@ -3941,70 +3736,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 62
   m_CollisionDetection: 0
---- !u!1001 &956056770
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_range
-      value: 275
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_ringThickness
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_numAsteroids
-      value: 400
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_shouldSpawnNow
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_Name
-      value: Asteroid Manager (Outer)
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_asteroidRef.Array.data[3]
-      value: 
-      objectReference: {fileID: 100000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-  m_RootGameObject: {fileID: 1142287605}
-  m_IsPrefabParent: 0
-  m_IsExploded: 1
 --- !u!1 &964067663
 GameObject:
   m_ObjectHideFlags: 0
@@ -4017,8 +3748,6 @@ GameObject:
   - 23: {fileID: 964067665}
   - 95: {fileID: 964067664}
   - 114: {fileID: 964067668}
-  - 148: {fileID: 964067669}
-  - 114: {fileID: 964067670}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -4097,29 +3826,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpinRate: 10
   rotAxis: 1
---- !u!148 &964067669
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 964067663}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 964067670}
-  m_ViewID:
-    m_ID: 19
-    m_Type: 1
---- !u!114 &964067670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 964067663}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &982731091
 Prefab:
   m_ObjectHideFlags: 0
@@ -4309,54 +4015,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 568a554ab59114d75b7022f051c4d2d9, type: 2}
   m_RootGameObject: {fileID: 846995417}
-  m_IsPrefabParent: 0
-  m_IsExploded: 1
---- !u!1001 &1043321431
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1558293152}
-    m_Modifications:
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -10.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: timeCountInMinutes
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-      propertyPath: multiplierAtTimeRequired
-      value: 5
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_ParentPrefab: {fileID: 100100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
-  m_RootGameObject: {fileID: 11740234}
   m_IsPrefabParent: 0
   m_IsExploded: 1
 --- !u!1 &1056071217
@@ -4589,16 +4247,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!4 &1087065111
 Transform:
   m_ObjectHideFlags: 0
@@ -4674,14 +4331,6 @@ Prefab:
       propertyPath: m_numAsteroids
       value: 200
       objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_shouldSpawnNow
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-      propertyPath: m_asteroidRef.Array.data[3]
-      value: 
-      objectReference: {fileID: 100000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
   m_RootGameObject: {fileID: 317678361}
@@ -4718,7 +4367,7 @@ Transform:
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-  m_PrefabInternal: {fileID: 956056770}
+  m_PrefabInternal: {fileID: 1152876981}
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1142287607}
@@ -4735,7 +4384,7 @@ MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696,
     type: 2}
-  m_PrefabInternal: {fileID: 956056770}
+  m_PrefabInternal: {fileID: 1152876981}
   m_GameObject: {fileID: 1142287605}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -4743,27 +4392,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_asteroidRef:
-  - {fileID: 100000, guid: 0c35fc6f7f7e2c64b820d8c92ebd5a2b, type: 2}
-  - {fileID: 100000, guid: 6a01e0409e2e14d40942c8393eb33efc, type: 2}
-  - {fileID: 100000, guid: 8dbfe283cbaf1d647a62e96a9679bfee, type: 2}
-  - {fileID: 100000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
-  - {fileID: 100002, guid: f8929da04eebe45e391b2e0aef0d04ef, type: 2}
-  - {fileID: 100000, guid: 04139a9891d6746678a5357abafb13a4, type: 2}
-  - {fileID: 100002, guid: 0836eafaaca2d4376ba9637033c6aaa8, type: 2}
-  - {fileID: 100000, guid: bd516ee9db1c842ae8e3f0fba41830db, type: 2}
-  - {fileID: 100000, guid: 28983c26a15ce4e34a04cfa3a691fd77, type: 2}
-  - {fileID: 100002, guid: 9ec4b5185335c49a9ba61ab7ec1aaaef, type: 2}
-  - {fileID: 100000, guid: 87de505aad3584024a074bd703b43c78, type: 2}
+  - {fileID: 11400002, guid: 0c35fc6f7f7e2c64b820d8c92ebd5a2b, type: 2}
+  - {fileID: 11400000, guid: 6a01e0409e2e14d40942c8393eb33efc, type: 2}
+  - {fileID: 11400002, guid: 8dbfe283cbaf1d647a62e96a9679bfee, type: 2}
+  - {fileID: 11400000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
+  - {fileID: 11400000, guid: f8929da04eebe45e391b2e0aef0d04ef, type: 2}
+  - {fileID: 11400000, guid: 04139a9891d6746678a5357abafb13a4, type: 2}
+  - {fileID: 11400000, guid: 0836eafaaca2d4376ba9637033c6aaa8, type: 2}
+  - {fileID: 11400000, guid: bd516ee9db1c842ae8e3f0fba41830db, type: 2}
+  - {fileID: 11400000, guid: 8f96467e4ad0948cab1e25bcfd800794, type: 2}
+  - {fileID: 11400000, guid: 9ec4b5185335c49a9ba61ab7ec1aaaef, type: 2}
+  - {fileID: 11400000, guid: 87de505aad3584024a074bd703b43c78, type: 2}
   m_range: 275
   m_ringThickness: 10
   m_numAsteroids: 400
   m_shouldBeRingBelt: 1
-  m_shouldSpawnNow: 0
 --- !u!4 &1142287607
 Transform:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
-  m_PrefabInternal: {fileID: 956056770}
+  m_PrefabInternal: {fileID: 1152876981}
   m_GameObject: {fileID: 1142287605}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 10}
@@ -4864,6 +4512,50 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fcf27d622c32bf04b90d34d3d9a09e32, type: 2}
   m_RootGameObject: {fileID: 1846911431}
+  m_IsPrefabParent: 0
+  m_IsExploded: 1
+--- !u!1001 &1152876981
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_Name
+      value: Asteroid Manager (Outer)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+  m_RootGameObject: {fileID: 1142287605}
   m_IsPrefabParent: 0
   m_IsExploded: 1
 --- !u!1 &1187806345
@@ -5062,8 +4754,8 @@ MonoBehaviour:
   - {fileID: 317678361}
   - {fileID: 1142287605}
   m_currentGameState: 0
-  playerShip: {fileID: 100000, guid: 14d4555b266c62547a8b355d13620974, type: 2}
-  capitalShip: {fileID: 100012, guid: 0ad7e2e9e4e29664b9507d7323e411aa, type: 2}
+  m_playerShip: {fileID: 100000, guid: 14d4555b266c62547a8b355d13620974, type: 2}
+  m_capitalShip: {fileID: 100012, guid: 0ad7e2e9e4e29664b9507d7323e411aa, type: 2}
   m_ingameCapitalShip: {fileID: 0}
   m_shouldCheckForFinished: 0
   m_waveTimer: 0
@@ -5207,10 +4899,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -5419,15 +5111,10 @@ MonoBehaviour:
   m_shopType: 0
   m_dockPoint: {fileID: 1608623262}
   m_canStockWeapons: 1
-  m_weaponRarityMod: 1
   m_canStockShields: 1
-  m_shieldRarityMod: 1
   m_canStockEngines: 1
-  m_engineRarityMod: 1
   m_canStockPlating: 1
-  m_platingRarityMod: 1
   m_canStockCWeapons: 0
-  m_cWeaponRarityMod: 1
   RESETINVENTORY: 0
 --- !u!65 &1337935895
 BoxCollider:
@@ -5510,10 +5197,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 1
-  _fps: 6
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -5577,15 +5264,10 @@ MonoBehaviour:
   m_shopType: 0
   m_dockPoint: {fileID: 1256501225}
   m_canStockWeapons: 0
-  m_weaponRarityMod: 1.5
   m_canStockShields: 0
-  m_shieldRarityMod: 1
   m_canStockEngines: 0
-  m_engineRarityMod: 1
   m_canStockPlating: 1
-  m_platingRarityMod: 2
   m_canStockCWeapons: 0
-  m_cWeaponRarityMod: 1
   RESETINVENTORY: 0
 --- !u!65 &1339814085
 BoxCollider:
@@ -5668,10 +5350,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 1
-  _fps: 6
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 1
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -5860,8 +5542,6 @@ GameObject:
   - 23: {fileID: 1343359365}
   - 95: {fileID: 1343359364}
   - 114: {fileID: 1343359363}
-  - 148: {fileID: 1343359368}
-  - 114: {fileID: 1343359369}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -5939,29 +5619,6 @@ Transform:
   m_LocalScale: {x: .0999999866, y: .0999999866, z: .099999994}
   m_Children: []
   m_Father: {fileID: 1187806346}
---- !u!148 &1343359368
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1343359362}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 1343359369}
-  m_ViewID:
-    m_ID: 15
-    m_Type: 1
---- !u!114 &1343359369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1343359362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1357474853
 Prefab:
   m_ObjectHideFlags: 0
@@ -6180,10 +5837,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 7
-  _uvTieY: 1
-  _fps: 10
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -6389,8 +6046,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_backgroundHolder: {fileID: 1974935422}
-  m_players: []
-  targetPoint: {x: 0, y: 0, z: 0}
+  m_targetPoint: {x: 0, y: 0, z: 0}
 --- !u!81 &1470631185
 AudioListener:
   m_ObjectHideFlags: 0
@@ -6740,8 +6396,8 @@ Transform:
   - {fileID: 1614308797}
   - {fileID: 871924831}
   - {fileID: 1846911432}
-  - {fileID: 11740236}
   - {fileID: 1744561043}
+  - {fileID: 11740236}
   m_Father: {fileID: 0}
 --- !u!1001 &1594006177
 Prefab:
@@ -6902,16 +6558,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98caf547033d2a544b6cbef50d3b7489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeTime: 15
-  spawnPointActive: 0
-  spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
-  finalEffect: {fileID: 0}
-  maxTimeBetweenFirstAndLastSpawn: 10
-  wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
-  timeBeforeScalingWormhole: 3
-  timeTakenToScaleWormhole: 2
-  wormholeOriginalScale: {x: 24, y: 24, z: 1}
-  m_shouldPause: 0
+  m_activeTime: 15
+  m_spawnPointActive: 0
+  m_spawnEffect: {fileID: 100000, guid: 36be544bfa2e7fb4b879eb3bc78bb961, type: 2}
+  m_finalEffect: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+  m_maxTimeBetweenFirstAndLastSpawn: 10
+  m_wormholePrefab: {fileID: 100000, guid: 41a31ead9ed6dd8409a7116ce6e6eac8, type: 2}
+  m_timeBeforeScalingWormhole: 3
+  m_timeTakenToScaleWormhole: 2
+  m_wormholeOriginalScale: {x: 24, y: 24, z: 1}
 --- !u!1 &1608623262
 GameObject:
   m_ObjectHideFlags: 0
@@ -7041,20 +6696,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2693f204d32fecf42a16863d67468b13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CShip: {fileID: 0}
-  CShipHealth: {fileID: 0}
-  playerShips: []
-  shops:
-  - {fileID: 1337935893}
-  - {fileID: 779021240}
-  - {fileID: 1339814083}
-  - {fileID: 61916491}
-  - {fileID: 800427920}
   m_shopRestockTime: 150
-  GameStateController: {fileID: 1243518159}
-  m_currentPingTime: 0
-  m_shouldResetShopsNow: 0
-  m_shopTimer: 0
+  m_menuBackground: {fileID: 2800000, guid: 162597ee9b314254d960d0501e6f6d6a, type: 3}
+  m_menuButtonHighlight: {fileID: 2800000, guid: 6480c2cab8f9424409cb30ef0fde0b74,
+    type: 3}
+  m_DockBackground: {fileID: 2800000, guid: 424eb3d04c4f3244e89e336d2342ba24, type: 3}
+  m_DockCShipImage: {fileID: 2800000, guid: f490e46c7242c304694d17245238a820, type: 3}
+  m_DockPlayerImage: {fileID: 2800000, guid: feb0f331ada19a74fa3d1967ac03cfdd, type: 3}
+  m_DockInventoryBorder: {fileID: 2800000, guid: eaaec054f7677414cadcb67f70ef7750,
+    type: 3}
+  m_shopBaseTexture: {fileID: 2800000, guid: 225c214fb08635948a187813c1f8ec6f, type: 3}
+  m_smallShopTexture: {fileID: 2800000, guid: 48917559ca6eef74abb7ce749d568413, type: 3}
+  m_SpecCShipImage: {fileID: 2800000, guid: 006f607291b2a594588ae89866250248, type: 3}
+  m_SpecBottomPanel: {fileID: 2800000, guid: 3480f946cfd89c14e98c68136ed66233, type: 3}
+  m_mapOverlay: {fileID: 2800000, guid: 3d949cc67cbce174cbb4d136e4837ac3, type: 3}
+  m_selfPBlob: {fileID: 2800000, guid: c7f183f0398bb5a41a901bae350820d9, type: 3}
+  m_otherPBlob: {fileID: 2800000, guid: 09202667be749984cb4cc9a180a146a6, type: 3}
+  m_cShipBlob: {fileID: 2800000, guid: 9ef8ea4bc5ff88046a08a7b1ee9e4425, type: 3}
+  m_enemyBlob: {fileID: 2800000, guid: 213588710bea7e24882fbcc0456f6382, type: 3}
+  m_specEnemyBlob: {fileID: 2800000, guid: a40a7992ab2e50d4c97d3a682856deb9, type: 3}
+  m_playerBarBorder: {fileID: 2800000, guid: 1bb7328248134d641b55485a3c2de8b5, type: 3}
+  m_playerBarHealth: {fileID: 2800000, guid: 221c034af0a1c824f8e9dce7e508fed7, type: 3}
+  m_playerBarShield: {fileID: 2800000, guid: 4bb6bf1a8fa95864e86b908a75dec558, type: 3}
+  m_cShipBarBorder: {fileID: 2800000, guid: d9a214f47440f4a4d85ab11410a3a54b, type: 3}
+  m_cShipBarHealth: {fileID: 2800000, guid: 2074c1d02caf6bb4ca8f82e78a6ace8e, type: 3}
+  m_cShipBarShield: {fileID: 2800000, guid: abd97e325144642429c3029342fcfdc4, type: 3}
+  m_healthBar: {fileID: 2800000, guid: 32ecd07adc5adb4468d14e30b65bbddb, type: 3}
+  m_healthBackground: {fileID: 2800000, guid: e92e5681b59f9b94384cc3db09871619, type: 3}
+  m_shieldBar: {fileID: 2800000, guid: e85631113a5a8ca44945a6a360fcb887, type: 3}
+  m_iconBorder: {fileID: 2800000, guid: c953a9ac0db0001438898a6a6a57334d, type: 3}
+  m_playerIcon: {fileID: 2800000, guid: 176eed51fc418c342b148a4388c9cb3b, type: 3}
+  m_CShipIcon: {fileID: 2800000, guid: 7b524ea7ec7fccb4488398977ecfa0cc, type: 3}
+  m_cursor: {fileID: 2800000, guid: d29587ef7dd121d4baa8c41c067089f0, type: 3}
+  m_cursorLocking: {fileID: 2800000, guid: 9e7e50a4d694d024ca34e45db12bc22f, type: 3}
+  m_cursorLocked: {fileID: 2800000, guid: c11139cd2ac3c284d95c510d0fad6d6e, type: 3}
+  m_enemyLocked: {fileID: 2800000, guid: 5be006650b37c3a4c9ea30a952faec7f, type: 3}
+  m_reloadBackground: {fileID: 2800000, guid: 07ae3d6d0988b5b4bb88e02c52fe27cf, type: 3}
+  m_reloadBar: {fileID: 2800000, guid: 31ad552df7ddb2644bc087097e05976a, type: 3}
+  m_barEnd: {fileID: 2800000, guid: 046bbc3d73d12bc40b569dfc9223a913, type: 3}
+  m_barMid: {fileID: 2800000, guid: 0165ac27eb57f0449948f42e7446a8c8, type: 3}
   m_sharedGUIStyle:
     m_Name: Shared
     m_Normal:
@@ -7468,66 +7148,7 @@ MonoBehaviour:
     m_FixedHeight: 0
     m_StretchWidth: 1
     m_StretchHeight: 1
-  useController: 0
-  m_menuBackground: {fileID: 2800000, guid: 162597ee9b314254d960d0501e6f6d6a, type: 3}
-  m_menuButtonHighlight: {fileID: 2800000, guid: 6480c2cab8f9424409cb30ef0fde0b74,
-    type: 3}
-  m_selectedButton: 0
-  m_gameTimer: 0
-  players: []
-  m_barEnd: {fileID: 2800000, guid: 046bbc3d73d12bc40b569dfc9223a913, type: 3}
-  m_barMid: {fileID: 2800000, guid: 0165ac27eb57f0449948f42e7446a8c8, type: 3}
-  m_healthBlip: {fileID: 2800000, guid: 8d18d4a8d4ed96245a974839ce33045d, type: 3}
-  m_shieldBlip: {fileID: 2800000, guid: 44c587e91376ee245846f55a187a7461, type: 3}
-  m_guiArrow: {fileID: 2800000, guid: ada0668c9bf112a4caa471334b0c8352, type: 3}
-  m_guiArrow2: {fileID: 2800000, guid: 4b07255b27890c54b94983ac079dd721, type: 3}
-  m_PlayerRequestsRound: 0
-  m_ArenaClearOfEnemies: 1
-  m_PlayerHasDockedAtCapital: 0
-  m_PlayerHasDockedAtShop: 0
-  m_shopDockedAt: {fileID: 0}
-  thisPlayerHP: {fileID: 0}
-  m_SpecCShipImage: {fileID: 2800000, guid: 006f607291b2a594588ae89866250248, type: 3}
-  m_SpecBottomPanel: {fileID: 2800000, guid: 3480f946cfd89c14e98c68136ed66233, type: 3}
-  m_playerBarBorder: {fileID: 2800000, guid: 1bb7328248134d641b55485a3c2de8b5, type: 3}
-  m_playerBarHealth: {fileID: 2800000, guid: 221c034af0a1c824f8e9dce7e508fed7, type: 3}
-  m_playerBarShield: {fileID: 2800000, guid: 4bb6bf1a8fa95864e86b908a75dec558, type: 3}
-  m_cShipBarBorder: {fileID: 2800000, guid: d9a214f47440f4a4d85ab11410a3a54b, type: 3}
-  m_cShipBarHealth: {fileID: 2800000, guid: 2074c1d02caf6bb4ca8f82e78a6ace8e, type: 3}
-  m_cShipBarShield: {fileID: 2800000, guid: abd97e325144642429c3029342fcfdc4, type: 3}
-  m_healthBar: {fileID: 2800000, guid: 32ecd07adc5adb4468d14e30b65bbddb, type: 3}
-  m_healthBackground: {fileID: 2800000, guid: e92e5681b59f9b94384cc3db09871619, type: 3}
-  m_shieldBar: {fileID: 2800000, guid: e85631113a5a8ca44945a6a360fcb887, type: 3}
-  m_iconBorder: {fileID: 2800000, guid: c953a9ac0db0001438898a6a6a57334d, type: 3}
-  m_playerIcon: {fileID: 2800000, guid: 176eed51fc418c342b148a4388c9cb3b, type: 3}
-  m_CShipIcon: {fileID: 2800000, guid: 7b524ea7ec7fccb4488398977ecfa0cc, type: 3}
-  m_cursor: {fileID: 2800000, guid: d29587ef7dd121d4baa8c41c067089f0, type: 3}
-  m_cursorLocking: {fileID: 2800000, guid: 9e7e50a4d694d024ca34e45db12bc22f, type: 3}
-  m_cursorLocked: {fileID: 2800000, guid: c11139cd2ac3c284d95c510d0fad6d6e, type: 3}
-  m_enemyLocked: {fileID: 2800000, guid: 5be006650b37c3a4c9ea30a952faec7f, type: 3}
-  m_reloadBackground: {fileID: 2800000, guid: 07ae3d6d0988b5b4bb88e02c52fe27cf, type: 3}
-  m_reloadBar: {fileID: 2800000, guid: 31ad552df7ddb2644bc087097e05976a, type: 3}
-  m_currentWeaponNeedsLockon: 0
-  m_isOnFollowMap: 1
-  m_shopBaseTexture: {fileID: 2800000, guid: 225c214fb08635948a187813c1f8ec6f, type: 3}
-  m_smallShopTexture: {fileID: 2800000, guid: 48917559ca6eef74abb7ce749d568413, type: 3}
-  m_mapOverlay: {fileID: 2800000, guid: 3d949cc67cbce174cbb4d136e4837ac3, type: 3}
-  m_selfPBlob: {fileID: 2800000, guid: c7f183f0398bb5a41a901bae350820d9, type: 3}
-  m_otherPBlob: {fileID: 2800000, guid: 09202667be749984cb4cc9a180a146a6, type: 3}
-  m_cShipBlob: {fileID: 2800000, guid: 9ef8ea4bc5ff88046a08a7b1ee9e4425, type: 3}
-  m_enemyBlob: {fileID: 2800000, guid: 213588710bea7e24882fbcc0456f6382, type: 3}
-  m_specEnemyBlob: {fileID: 2800000, guid: a40a7992ab2e50d4c97d3a682856deb9, type: 3}
-  m_DockBackground: {fileID: 2800000, guid: 424eb3d04c4f3244e89e336d2342ba24, type: 3}
-  m_DockCShipImage: {fileID: 2800000, guid: f490e46c7242c304694d17245238a820, type: 3}
-  m_DockPlayerImage: {fileID: 2800000, guid: feb0f331ada19a74fa3d1967ac03cfdd, type: 3}
-  m_DockInventoryBorder: {fileID: 2800000, guid: eaaec054f7677414cadcb67f70ef7750,
-    type: 3}
-  m_currentCShipPanel: 5
-  playerScrollPosition: {x: 0, y: 0}
-  cshipScrollPosition: {x: 0, y: 0}
-  m_hostShouldSelectTiebreaker: 0
-  m_hostIsTieBreaking: 0
-  m_playerVotes: 
+  m_players: []
 --- !u!4 &1614308797
 Transform:
   m_ObjectHideFlags: 0
@@ -7593,10 +7214,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -7980,129 +7601,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smallMultipleWaves:
+  m_smallMultipleWaves:
   - defaultOrderTargetTag: Capital
     m_enemiesOnWave:
     - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
       m_numEnemy: 48
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 32
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 12
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 24
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 16
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 4
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 32
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 24
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 32
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 24
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
-  singleLargeWave:
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 2
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 20
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 2
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 40
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 6
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 35
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 3
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 10
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 15
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 10
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 25
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100028, guid: 306a29074abf3af47adef95dbf196c3b, type: 2}
-      m_numEnemy: 1
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 3
-    - m_enemyRef: {fileID: 100002, guid: 0215575724211a249b5a90b5d494c995, type: 2}
-      m_numEnemy: 10
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: 4769047548bf873438b5345390bd76cd, type: 2}
-      m_numEnemy: 2
-    - m_enemyRef: {fileID: 100002, guid: edac17d37e00791418381fc88fb39738, type: 2}
-      m_numEnemy: 8
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 10
-  specialWaves:
-  - defaultOrderTargetTag: Player
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100036, guid: 56293a06d8e04834fb2a97f86e4d9835, type: 2}
-      m_numEnemy: 3
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
-      m_numEnemy: 2
-  test: []
+  m_singleLargeWave: []
+  m_specialWaves: []
   m_allSpawnPoints: []
-  m_capitalShip: {fileID: 0}
-  healthModifierIncrement: 0
-  currentHealthModifier: 1
-  timeCountInMinutes: 25
-  multiplierAtTimeRequired: 15
-  secondsBetweenWaves: 60
-  shouldStart: 0
-  allDone: 1
-  lastTimeModifier: 0
-  lastTimeSpawn: 0
+  m_healthModifierIncrement: 0
+  m_currentHealthModifier: 1
+  m_timeCountInMinutes: 25
+  m_multiplierAtTimeRequired: 5
+  m_secondsBetweenWaves: 40
+  m_lastTimeModifier: 0
+  m_lastTimeSpawn: 0
 --- !u!4 &1744561043
 Transform:
   m_ObjectHideFlags: 0
@@ -8155,10 +7668,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -8222,10 +7735,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 7
-  _uvTieY: 1
-  _fps: 10
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -8425,10 +7938,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -8503,10 +8016,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 7
-  _uvTieY: 1
-  _fps: 10
-  _frameOffset: 0
+  m_uvTieX: 1
+  m_uvTieY: 1
+  m_fps: 10
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -8548,7 +8061,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1828159907}
-  - 114: {fileID: 1828159906}
   m_Layer: 12
   m_Name: Capital Ship Start
   m_TagString: CSStart
@@ -8556,17 +8068,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1828159906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1828159905}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e20725e286ddae6439e9db2564bdccd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1828159907
 Transform:
   m_ObjectHideFlags: 0
@@ -8674,6 +8175,46 @@ Transform:
   m_Children:
   - {fileID: 1848115362}
   m_Father: {fileID: 321477129}
+--- !u!1001 &1905372542
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1558293152}
+    m_Modifications:
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -10.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 921a376d7dd6ff044af37cd32fed5214, type: 2}
+  m_RootGameObject: {fileID: 11740234}
+  m_IsPrefabParent: 0
+  m_IsExploded: 1
 --- !u!1 &1942261619
 GameObject:
   m_ObjectHideFlags: 0
@@ -8686,8 +8227,6 @@ GameObject:
   - 23: {fileID: 1942261623}
   - 95: {fileID: 1942261622}
   - 114: {fileID: 1942261621}
-  - 148: {fileID: 1942261625}
-  - 114: {fileID: 1942261626}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -8765,29 +8304,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1703944472}
   m_GameObject: {fileID: 1942261619}
   m_Mesh: {fileID: 4300000, guid: f5ed61adc60ca4f47a4497d2995dafd4, type: 3}
---- !u!148 &1942261625
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1942261619}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 1942261626}
-  m_ViewID:
-    m_ID: 20
-    m_Type: 1
---- !u!114 &1942261626
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1942261619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1974935422
 GameObject:
   m_ObjectHideFlags: 0
@@ -9157,8 +8673,6 @@ GameObject:
   - 23: {fileID: 2035960020}
   - 95: {fileID: 2035960019}
   - 114: {fileID: 2035960018}
-  - 148: {fileID: 2035960023}
-  - 114: {fileID: 2035960024}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -9237,29 +8751,6 @@ Transform:
   m_Children:
   - {fileID: 1056071218}
   m_Father: {fileID: 868343641}
---- !u!148 &2035960023
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2035960017}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 2035960024}
-  m_ViewID:
-    m_ID: 17
-    m_Type: 1
---- !u!114 &2035960024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2035960017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2047468118
 GameObject:
   m_ObjectHideFlags: 0
@@ -9301,10 +8792,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 2
-  _uvTieY: 2
-  _fps: 4
-  _frameOffset: 0
+  m_uvTieX: 2
+  m_uvTieY: 2
+  m_fps: 4
+  m_frameOffset: 0
   m_shouldReverse: 0
   m_isForwards: 1
   shouldDieAfterFirstRun: 0
@@ -9376,8 +8867,6 @@ GameObject:
   - 23: {fileID: 2076915003}
   - 95: {fileID: 2076915002}
   - 114: {fileID: 2076915001}
-  - 148: {fileID: 2076915005}
-  - 114: {fileID: 2076915006}
   m_Layer: 0
   m_Name: MeshPlanet
   m_TagString: Untagged
@@ -9455,29 +8944,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 1340838148}
   m_GameObject: {fileID: 2076914999}
   m_Mesh: {fileID: 4300000, guid: f5ed61adc60ca4f47a4497d2995dafd4, type: 3}
---- !u!148 &2076915005
-NetworkView:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2076914999}
-  m_Enabled: 1
-  m_StateSynchronization: 1
-  m_Observed: {fileID: 2076915006}
-  m_ViewID:
-    m_ID: 21
-    m_Type: 1
---- !u!114 &2076915006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2076914999}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e9a5a7e071f75e4aad80a15e5ff5738, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2077844041
 Prefab:
   m_ObjectHideFlags: 0

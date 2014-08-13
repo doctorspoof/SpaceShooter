@@ -11,53 +11,41 @@ public enum ShipManoeuvre
 
 public class Thruster : MonoBehaviour
 {
-    [SerializeField]
-    //List<ShipManoeuvre> directionsToFireWith;
+    [SerializeField] ShipManoeuvre m_firesWithTurn;
 
-    //int manoeuvreToFireWith = 0;
+    Transform m_thrusterTransform, m_parentShipTransform;
+    Vector3 m_originalScale, m_originalPosition;
 
-    ShipManoeuvre firesWithTurn;
-
-    Transform thrusterTransform, parentShipTransform;
-    Vector3 originalScale, originalPosition;
-
-    // Use this for initialization
-    void Start()
+    public void SetParentShip(Transform parentShip_)
     {
-        thrusterTransform = transform;
-        originalScale = thrusterTransform.localScale;
-        originalPosition = thrusterTransform.localPosition;
-
-        //foreach(ShipManoeuvre mano in directionsToFireWith)
-        //{
-        //    manoeuvreToFireWith = manoeuvreToFireWith | (int)mano;
-        //}
+        m_parentShipTransform = parentShip_;
     }
 
-    // Update is called once per frame
-    void Update()
+    void Start()
     {
-
+        m_thrusterTransform = transform;
+        m_originalScale = m_thrusterTransform.localScale;
+        m_originalPosition = m_thrusterTransform.localPosition;
     }
 
     void SetPercentage(float percentage_)
     {
         float clamped = Mathf.Clamp(percentage_, 0, 1);
 
-        Vector3 newScale = originalScale * clamped;
+        Vector3 newScale = m_originalScale * clamped;
         newScale.z = 1;
-        thrusterTransform.localScale = newScale;
+        m_thrusterTransform.localScale = newScale;
 
-        Vector3 changeInScale = newScale - originalScale;
+        Vector3 changeInScale = newScale - m_originalScale;
 
-        thrusterTransform.localPosition = originalPosition - (thrusterTransform.localRotation * new Vector3(0, changeInScale.y / 2, 0));
+        m_thrusterTransform.localPosition = m_originalPosition - (m_thrusterTransform.localRotation * new Vector3(0, changeInScale.y / 2, 0));
 
         //Debug.DrawLine(thrusterTransform.parent.position + originalPosition, thrusterTransform.parent.position + thrusterTransform.localPosition, Color.red);
     }
 
-    public void Calculate(/*Vector2 velocity_,*/ float maxVelocitySeen_, float currentAngularAcceleration_, float maxAngularAccelerationSeen_)
+    public void Calculate(float maxVelocitySeen_, float currentAngularAcceleration_, float maxAngularAccelerationSeen_)
     {
-        if(parentShipTransform == null || thrusterTransform == null)
+        if(m_parentShipTransform == null || m_thrusterTransform == null)
         {
             return;
         }
@@ -66,8 +54,8 @@ public class Thruster : MonoBehaviour
 
         if (maxVelocitySeen_ > 0)
         {
-            float ratio = parentShipTransform.rigidbody.velocity.magnitude / maxVelocitySeen_;
-            float clampedDot = Mathf.Clamp(Vector2.Dot(thrusterTransform.up, parentShipTransform.rigidbody.velocity.normalized), 0, 1);
+            float ratio = m_parentShipTransform.rigidbody.velocity.magnitude / maxVelocitySeen_;
+            float clampedDot = Mathf.Clamp(Vector2.Dot(m_thrusterTransform.up, m_parentShipTransform.rigidbody.velocity.normalized), 0, 1);
 
             percentFromVelocity = ratio * clampedDot;
         }
@@ -76,11 +64,11 @@ public class Thruster : MonoBehaviour
 
         if (maxAngularAccelerationSeen_ > 0)
         {
-            if (firesWithTurn == ShipManoeuvre.TurnLeft && currentAngularAcceleration_ > 0)
+            if (m_firesWithTurn == ShipManoeuvre.TurnLeft && currentAngularAcceleration_ > 0)
             {
                 percentFromAngular = Mathf.Abs(currentAngularAcceleration_) / maxAngularAccelerationSeen_;
             }
-            else if (firesWithTurn == ShipManoeuvre.TurnRight && currentAngularAcceleration_ < 0)
+            else if (m_firesWithTurn == ShipManoeuvre.TurnRight && currentAngularAcceleration_ < 0)
             {
                 percentFromAngular = Mathf.Abs(currentAngularAcceleration_) / maxAngularAccelerationSeen_;
             }
@@ -92,9 +80,5 @@ public class Thruster : MonoBehaviour
 
     }
 
-    public void SetParentShip(Transform parentShip_)
-    {
-        parentShipTransform = parentShip_;
-    }
 
 }

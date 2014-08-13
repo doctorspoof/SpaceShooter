@@ -25,7 +25,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -10.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -46,7 +46,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 0
   MinDistance: 1
-  MaxDistance: 1.00999999
+  MaxDistance: 100000
   Pan2D: 0
   rolloffMode: 2
   BypassEffects: 0
@@ -102,10 +102,12 @@ MonoBehaviour:
   m_deadPlayers: []
   m_SpawnManager: {fileID: 0}
   m_GUIManager: {fileID: 0}
-  m_AsteroidManagers: []
+  m_AsteroidManagers:
+  - {fileID: 0}
+  - {fileID: 0}
   m_currentGameState: 0
-  playerShip: {fileID: 100000, guid: 14d4555b266c62547a8b355d13620974, type: 2}
-  capitalShip: {fileID: 100012, guid: 0ad7e2e9e4e29664b9507d7323e411aa, type: 2}
+  m_playerShip: {fileID: 100000, guid: 14d4555b266c62547a8b355d13620974, type: 2}
+  m_capitalShip: {fileID: 100012, guid: 0ad7e2e9e4e29664b9507d7323e411aa, type: 2}
   m_ingameCapitalShip: {fileID: 0}
   m_shouldCheckForFinished: 0
   m_waveTimer: 0

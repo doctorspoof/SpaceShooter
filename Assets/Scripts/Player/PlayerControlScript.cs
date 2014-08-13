@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,90 +14,815 @@ public enum DockingState
 public class PlayerControlScript : Ship
 {
 
-	[SerializeField]
-	bool m_shouldRecieveInput = true;
+	[SerializeField] bool m_shouldRecieveInput = true;
 
-	
+	[SerializeField] float m_baseEngineSpeed = 5.0f;
+	[SerializeField] float m_baseEngineTurnSpeed = 1.0f;
 
-	[SerializeField]
-	float m_baseEngineSpeed = 5.0f;
-	[SerializeField]
-	float m_baseEngineTurnSpeed = 1.0f;
+	[SerializeField] int m_baseShipHull = 25;
+	[SerializeField] float m_baseShipWeight = 0.05f;
 
-	[SerializeField]
-	int m_baseShipHull = 25;
-	[SerializeField]
-	float m_baseShipWeight = 0.05f;
+	[SerializeField] float m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
+	[SerializeField] float m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
 
-	[SerializeField]
-	float m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
-	[SerializeField]
-	float m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
-	float m_dockingTime = 0.0f;				//Used to determine if the player should continue the docking attempt
+    [SerializeField] float m_playerStrafeMod = 0.6f;
 
-    //[SerializeField]
-    //float m_playerMoveSpeed = 50.0f;
-    //[SerializeField]
-    //float m_playerRotateSpeed = 5.0f;
-    [SerializeField]
-    float m_playerStrafeMod = 0.6f;
+	[SerializeField] int m_currentCash = 0;
 
-	//Spacebux
-	[SerializeField]
-	int m_currentSpaceBucks = 0;
-	public int GetSpaceBucks()
+    //Inventory
+    [SerializeField] ItemWrapper m_equippedWeaponItem;
+    [SerializeField] ItemWrapper m_equippedShieldItem;
+    [SerializeField] ItemWrapper m_equippedEngineItem;
+    [SerializeField] ItemWrapper m_equippedPlatingItem;
+
+    [SerializeField] List<ItemWrapper> m_playerInventory;
+
+
+
+
+    bool m_isAnimating = false;
+    DockingState m_currentDockingState = DockingState.NOTDOCKING;
+
+    Vector3 m_targetPoint = Vector3.zero;
+
+    float m_dockingTime = 0.0f;				//Used to determine if the player should continue the docking attempt
+
+    //bool m_shouldPlaySound = false;
+
+    // Use this for initialization
+    float m_volumeHolder = 1.0f;
+
+    bool m_useController = false;
+    Quaternion m_targetAngle;
+
+    bool m_playerIsOutOfBounds = false;
+
+    bool m_isInRangeOfCapitalDock = false;
+    bool m_isInRangeOfTradingDock = false;
+    GameObject m_nearbyShop = null;
+
+
+
+
+    GameObject m_CShip = null;
+    GameStateController m_gscCache = null;
+    GUIInGameMaster m_guiCache = null;
+
+    #region getset
+
+    public int GetCash()
 	{
-		return m_currentSpaceBucks;
+		return m_currentCash;
 	}
-	public void AddSpaceBucks(int amount)
-	{
-		m_currentSpaceBucks += amount;
 
-		if(Network.player != owner)
+    public void AddCash(int amount)
+	{
+		m_currentCash += amount;
+
+		if(Network.player != m_owner)
 		{
-			networkView.RPC ("PropagateCashAmount", owner, m_currentSpaceBucks);
+			networkView.RPC ("PropagateCashAmount", m_owner, m_currentCash);
 		}
 	}
-	[RPC]
-	void PropagateCashAmount(int amount)
-	{
-		m_currentSpaceBucks = amount;
-	}
-	public bool CheckCanAffordAmount(int amount)
-	{
-		if(m_currentSpaceBucks >= amount)
-			return true;
-		else
-			return false;
-	}
-	public bool RemoveSpaceBucks(int amount)
-	{
-		if(CheckCanAffordAmount(amount))
-		{
-			m_currentSpaceBucks -= amount;
 
-			networkView.RPC ("PropagateCashAmount", RPCMode.Server, m_currentSpaceBucks);
-			return true;
-		}
-		else
-			return false;
-	}
+    public bool RemoveCash(int amount)
+    {
+        if (CheckCanAffordAmount(amount))
+        {
+            m_currentCash -= amount;
+
+            networkView.RPC("PropagateCashAmount", RPCMode.Server, m_currentCash);
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public ItemWrapper GetEquipedPlatingItem()
+    {
+        return m_equippedPlatingItem;
+    }
+
+
+    public void SetEquippedPlatingItem(ItemWrapper platingItem_)
+    {
+        m_equippedPlatingItem = platingItem_;
+
+    }
+
+    public ItemWrapper GetEquipedEngineItem()
+    {
+        return m_equippedEngineItem;
+    }
+
+    public void SetEquippedEngineItem(ItemWrapper engineItem_)
+    {
+        m_equippedEngineItem = engineItem_;
+    }
+
+    public ItemWrapper GetEquipedShieldItem()
+    {
+        return m_equippedShieldItem;
+    }
+
+    public void SetEquippedShieldItem(ItemWrapper shieldItem_)
+    {
+        m_equippedShieldItem = shieldItem_;
+    }
+
+    public ItemWrapper GetEquipedWeaponItem()
+    {
+        return m_equippedWeaponItem;
+    }
+
+    public void SetEquippedWeaponItem(ItemWrapper weaponItem_)
+    {
+        m_equippedWeaponItem = weaponItem_;
+    }
+
+    public List<ItemWrapper> GetPlayerInventory()
+    {
+        return m_playerInventory;
+    }
+
+    public bool IsInRangeOfCapitalDock()
+    {
+        return m_isInRangeOfCapitalDock;
+    }
+
+    public void SetIsInRangeOfCapitalDock(bool flag_)
+    {
+        m_isInRangeOfCapitalDock = flag_;
+    }
+
+    public bool IsInRangeOfTradingDock()
+    {
+        return m_isInRangeOfTradingDock;
+    }
+
+    public void SetIsInRangeOfTradingDock(bool flag_)
+    {
+        m_isInRangeOfTradingDock = flag_;
+    }
+
+    public GameObject GetNearbyShop()
+    {
+        return m_nearbyShop;
+    }
+
+    public void SetNearbyShop(GameObject shop_)
+    {
+        m_nearbyShop = shop_;
+    }
+
+    #endregion
+
+    
 
     protected override void Awake()
     {
-        Init();
+        base.Awake();
+        m_guiCache = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>();
     }
 
-	//Sounds
-	bool shouldPlaySound = false;
-	[RPC]
-	void PropagateIsPlayingSound(bool isPlaying)
+    void Start()
+    {
+
+        m_volumeHolder = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
+
+        m_playerInventory = new List<ItemWrapper>(5);
+
+        //ResetEquippedWeapon();
+        if (Network.isServer)
+        {
+            ResetEquippedWeapon();
+            ResetEquippedShield();
+            ResetEquippedEngine();
+            ResetEquippedPlating();
+        }
+
+        //timeSinceLastPacket = Time.realtimeSinceStartup;
+        m_gscCache = GameStateController.Instance();
+        StartCoroutine(EnsureEquipmentValidity());
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        m_ownerSt = m_owner.ToString();
+
+        if (m_owner == Network.player)
+        {
+            if ((m_useController && Input.GetButtonDown("X360Start")) || (!m_useController && Input.GetKeyDown(KeyCode.Escape)))
+            {
+                m_gscCache.ToggleMainMenu();
+            }
+
+            if (m_isAnimating)
+            {
+                UpdateDockingState();
+            }
+
+            if (m_shouldRecieveInput)
+            {
+                if (m_useController && Input.GetJoystickNames().Length < 1)
+                {
+                    m_useController = false;
+                }
+
+
+                if (!m_isAnimating)
+                {
+                    if ((m_useController && Input.GetButtonDown("X360X")) || (!m_useController && Input.GetKey(KeyCode.X)))
+                    {
+                        StartDocking();
+                    }
+
+                    //In here, player should respond to any input
+                    if (!m_useController)
+                    {
+                        UpdateFromKeyboardInput();
+                    }
+                    else
+                    {
+                        UpdateFromController();
+                    }
+
+                    
+                    if ((m_useController && Input.GetButtonDown("X360B")) || (!m_useController && Input.GetMouseButtonDown(2)))
+                    {
+                        //TODO: REDO HOMING SYSTEM
+                        //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RequestBreakLock();
+                    }
+
+                    if (m_useController)
+                    {
+                        //Don't rotate to face cursor, instead, listen for right stick input
+                        float v = Input.GetAxis("RightStickVertical");
+                        float h = Input.GetAxis("RightStickHorizontal");
+
+                        if (v != 0 || h != 0)
+                        {
+                            float angle = (Mathf.Atan2(v, h) - Mathf.PI / 2) * Mathf.Rad2Deg;
+                            Quaternion target = Quaternion.Euler(new Vector3(0, 0, angle));
+                            m_targetAngle = target;
+                        }
+
+                        transform.rotation = Quaternion.Slerp(transform.rotation, m_targetAngle, GetRotateSpeed() * Time.deltaTime);
+
+                        if (Input.GetAxis("X360Triggers") < 0)
+                            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+                        else if (Input.GetAxis("X360Triggers") == 0)
+                            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+                    }
+                    else
+                    {
+                        //Here, it should rotate to face the mouse cursor
+                        var objectPos = Camera.main.WorldToScreenPoint(transform.position);
+                        var dir = Input.mousePosition - objectPos;
+
+                        RotateTowards(transform.position + dir);
+
+                        if (Input.GetMouseButton(0))
+                        {
+                            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+                        }
+
+                        if (Input.GetMouseButtonUp(0))
+                        {
+                            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+                        }
+                    }
+
+                    //Listen for combat input
+                    /*if((useController && Input.GetAxis("X360Triggers") < 0) || (!useController && Input.GetMouseButton(0)))
+                    {
+                        this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+                    }
+
+                    if((useController && Input.GetAxis("X360Triggers") == 0) || (!useController && Input.GetMouseButtonUp(0)))
+                        this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();*/
+
+                }
+            }
+            //Now finish up by applying vevlocity + momentum
+            //this.transform.position += m_currentVelocity;
+            //m_currentVelocity *= 0.995f;
+
+            //if (!receivedInput)
+            //{
+            //    if (shouldPlaySound)
+            //    {
+            //        shouldPlaySound = false;
+            //        this.audio.Stop();
+            //        networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, false);
+            //    }
+            //}
+
+            //Finish by checking to make sure we're not too far from 0,0
+            float distance = (this.transform.position - new Vector3(0, 0, 10)).sqrMagnitude;
+            if (m_playerIsOutOfBounds)
+            {
+                if (distance < 290f.Squared())
+                {
+                    //Stop warning screen
+                    m_guiCache.SetOutOfBoundsWarning(false);
+                    m_playerIsOutOfBounds = false;
+                }
+            }
+            else
+            {
+                if (distance >= 290f.Squared())
+                {
+                    //Begin warning screen
+                    m_guiCache.SetOutOfBoundsWarning(true);
+                    m_playerIsOutOfBounds = true;
+                }
+            }
+        }
+        else
+        {
+
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (Network.player == m_owner)
+            Screen.showCursor = true;
+    }
+
+    [RPC] void PropagateCashAmount(int amount)
+    {
+        m_currentCash = amount;
+    }
+
+    public bool CheckCanAffordAmount(int amount)
+    {
+        if (m_currentCash >= amount)
+            return true;
+        else
+            return false;
+    }
+
+    private void StartDocking()
+    {
+        if (m_isInRangeOfCapitalDock)
+        {
+            //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_PlayerHasDockedAtCapital = true;
+            /*GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
+            transform.parent = GameObject.FindGameObjectWithTag("Capital").transform;
+            rigidbody.isKinematic = true;
+            m_shouldRecieveInput = false;*/
+
+            //Begin the animation sequence
+            m_CShip = GameObject.FindGameObjectWithTag("Capital");
+            m_targetPoint = m_CShip.transform.position + (m_CShip.transform.right * 7.0f) + (m_CShip.transform.up * 1.5f);
+            m_currentDockingState = DockingState.OnApproach;
+            //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
+            m_isAnimating = true;
+        }
+        else if (m_isInRangeOfTradingDock && m_nearbyShop != null)
+        {
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtShop(m_nearbyShop);
+            transform.parent = m_nearbyShop.transform;
+            rigidbody.isKinematic = true;
+            m_shouldRecieveInput = false;
+
+        }
+    }
+
+    private void UpdateFromController()
+    {
+        if (Input.GetAxis("LeftStickVertical") > 0)
+        {
+            //Forward
+            float v = Input.GetAxis("LeftStickVertical");
+            float h = Input.GetAxis("LeftStickHorizontal");
+
+            Vector3 inputVec = new Vector3(h, v, 0);
+            if (inputVec.sqrMagnitude > 1.0f)
+            {
+                inputVec.Normalize();
+                inputVec *= 0.7071067f;
+            }
+            Vector3 forward = this.transform.up;
+
+            float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+
+            float speed = 0;
+            if (forwardSpeedFac > 0.95f)
+            {
+                //Apply forward speed
+                speed = GetCurrentShipSpeed();
+            }
+            else
+            {
+                //Apply side speed
+                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+            }
+
+            //float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
+            //float speed = (forwardSpeedFac * m_playerMoveSpeed) + (sideSpeedFac * (m_playerMoveSpeed * m_playerStrafeMod));
+
+            Vector3 moveFac = inputVec * speed;
+
+            this.rigidbody.AddForce(moveFac * Time.deltaTime);
+
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetAxis("LeftStickVertical") < 0)
+        {
+            //Back
+            float v = Input.GetAxis("LeftStickVertical");
+            float h = Input.GetAxis("LeftStickHorizontal");
+
+            Vector3 inputVec = new Vector3(h, v, 0);
+            if (inputVec.sqrMagnitude > 1.0f)
+            {
+                inputVec.Normalize();
+                inputVec *= 0.7071067f;
+            }
+            Vector3 forward = this.transform.up;
+
+            float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+            float speed = 0;
+            if (forwardSpeedFac > 0.95f)
+            {
+                //Apply forward speed
+                speed = GetCurrentShipSpeed();
+            }
+            else
+            {
+                //Apply side speed
+                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+            }
+
+            Vector3 moveFac = inputVec * speed;
+
+            this.rigidbody.AddForce(moveFac * Time.deltaTime);
+
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetAxis("LeftStickHorizontal") < 0)
+        {
+            //Left
+            float v = Input.GetAxis("LeftStickVertical");
+            float h = Input.GetAxis("LeftStickHorizontal");
+
+            Vector3 inputVec = new Vector3(h, v, 0);
+            if (inputVec.sqrMagnitude > 1.0f)
+            {
+                inputVec.Normalize();
+                inputVec *= 0.7071067f;
+            }
+            Vector3 forward = this.transform.up;
+
+            float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+            float speed = 0;
+            if (forwardSpeedFac > 0.95f)
+            {
+                //Apply forward speed
+                speed = GetCurrentShipSpeed();
+            }
+            else
+            {
+                //Apply side speed
+                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+            }
+
+            Vector3 moveFac = inputVec * speed;
+
+            this.rigidbody.AddForce(moveFac * Time.deltaTime);
+
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetAxis("LeftStickHorizontal") > 0)
+        {
+            //Right
+            float v = Input.GetAxis("LeftStickVertical");
+            float h = Input.GetAxis("LeftStickHorizontal");
+
+            Vector3 inputVec = new Vector3(h, v, 0);
+            if (inputVec.sqrMagnitude > 1.0f)
+            {
+                inputVec.Normalize();
+                inputVec *= 0.7071067f;
+            }
+            Vector3 forward = this.transform.up;
+
+            float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
+            float speed = 0;
+            if (forwardSpeedFac > 0.95f)
+            {
+                //Apply forward speed
+                speed = GetCurrentShipSpeed();
+            }
+            else
+            {
+                //Apply side speed
+                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+            }
+
+            Vector3 moveFac = inputVec * speed * Time.deltaTime;
+
+            this.rigidbody.AddForce(moveFac);
+
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetButtonDown("X360Back"))
+        {
+            m_guiCache.ToggleMapsTogether();
+        }
+    }
+
+    private void UpdateFromKeyboardInput()
+    {
+        if (Input.GetKey(KeyCode.W))
+        {
+            //this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
+            this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+
+            //Play sound + particles
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            //this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
+            this.rigidbody.AddForce(this.transform.up * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
+
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            //this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+            this.rigidbody.AddForce(this.transform.right * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
+
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            //this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
+            this.rigidbody.AddForce(this.transform.right * (GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
+
+            //if (!shouldPlaySound)
+            //{
+            //    shouldPlaySound = true;
+            //    this.audio.volume = volumeHolder;
+            //    this.audio.Play();
+            //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+            //}
+            //receivedInput = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            m_gscCache.ToggleBigMapState();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            /*bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
+            GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetIsOnFollowMap(!mapVal);*/
+
+            m_gscCache.ToggleSmallMapState();
+        }
+    }
+
+    void UpdateDockingState()
+    {
+        //If for any reason CShip is not set, find it
+        if (m_CShip == null)
+        {
+            m_CShip = GameObject.FindGameObjectWithTag("Capital");
+        }
+
+        //If still on the entrance phases, allow cancelling with 'X'
+        /*if(Input.GetKey (KeyCode.X))
+            {
+                if(m_currentDockingState == DockingState.OnApproach || m_currentDockingState == DockingState.OnEntry)
+                {
+                    //Cancel the animation
+                    m_isAnimating = false;
+                }
+            }*/
+
+        //Now animate based on state
+        switch (m_currentDockingState)
+        {
+            case DockingState.NOTDOCKING:
+                {
+                    //We shouldn't even be here man
+                    //We shouln't even BE here!
+                    m_isAnimating = false;
+                    networkView.RPC("PropagateInvincibility", RPCMode.All, false);
+                    rigidbody.isKinematic = false;
+                    break;
+                }
+            case DockingState.OnApproach:
+                {
+                    // Make sure targetPoint is up to date
+                    m_targetPoint = m_CShip.transform.position + (m_CShip.transform.right * 7.0f);
+
+                    // Move towards entrance point
+                    Vector3 direction = m_targetPoint - transform.position;
+                    Vector3 rotation = -m_CShip.transform.right;
+                    MoveToDockPoint(direction, rotation);
+
+                    // If we're near, switch to onEntry
+                    if (direction.magnitude <= 1.35f)
+                    {
+                        m_dockingTime += Time.deltaTime;
+
+                        if (m_dockingTime >= 0.36f)
+                        {
+                            // Reset the docking time
+                            m_dockingTime = 0f;
+
+                            // Kill our speed temporarily
+                            rigidbody.isKinematic = true;
+                            m_currentDockingState = DockingState.OnEntry;
+                            m_targetPoint = m_CShip.transform.position + (m_CShip.transform.up * 1.5f);
+                            rigidbody.isKinematic = false;
+                            this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
+                        }
+                    }
+
+                    else
+                    {
+                        m_dockingTime = 0f;
+                    }
+
+                    //Play sounds
+                    /*if (!shouldPlaySound)
+                    {
+                        shouldPlaySound = true;
+                        this.audio.volume = volumeHolder;
+                        this.audio.Play();
+                        networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+                    }
+                    recievedInput = true;*/
+                    break;
+                }
+            case DockingState.OnEntry:
+                {
+                    //Make sure targetPoint is up to date
+                    m_targetPoint = m_CShip.transform.position;
+
+                    //Rotate towards entrance point
+                    Vector3 direction = m_targetPoint - transform.position;
+                    Vector3 rotation = -m_CShip.transform.right;
+                    MoveToDockPoint(direction, rotation);
+
+                    //If we're near, switch to docked and cut input. Then alert GUI we've docked
+                    if (direction.magnitude <= 1.5f)
+                    {
+                        m_dockingTime += Time.deltaTime;
+
+                        if (m_dockingTime >= 0.25f)
+                        {
+                            // Reset the docking time
+                            m_dockingTime = 0f;
+
+                            // Perform docking process
+                            m_currentDockingState = DockingState.Docked;
+                            transform.rotation = m_CShip.transform.rotation;
+                            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
+                            transform.parent = m_CShip.transform;
+                            rigidbody.isKinematic = true;
+                            networkView.RPC("PropagateInvincibility", RPCMode.All, true);
+                        }
+                    }
+
+                    else
+                    {
+                        // Reset the docking time
+                        m_dockingTime = 0f;
+                    }
+
+                    //Play sounds
+                    /*if (!shouldPlaySound)
+                    {
+                        shouldPlaySound = true;
+                        this.audio.volume = volumeHolder;
+                        this.audio.Play();
+                        networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+                    }
+                    recievedInput = true;*/
+                    break;
+                }
+            case DockingState.Docked:
+                {
+                    //We shouldn't need to do anything. Await GUI telling us we're done
+
+                    // Stop exception spam by ensuring the CShip is alive
+                    if (m_CShip)
+                    {
+                        //Ensure rotation matches CShip
+                        transform.rotation = m_CShip.transform.rotation;
+
+                        //Also position
+                        float oldZ = transform.position.z;
+                        transform.position = new Vector3(m_CShip.transform.position.x, m_CShip.transform.position.y, oldZ);
+
+                    }
+                    break;
+                }
+            case DockingState.Exiting:
+                {
+                    //Accelerate forwards
+                    this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+
+                    //If we're far enough away, stop animating
+                    Vector3 dir = m_CShip.transform.position - transform.position;
+                    if (dir.magnitude >= 12.0f)
+                    {
+                        //Fly free!
+                        m_currentDockingState = DockingState.NOTDOCKING;
+                        m_isAnimating = false;
+                        this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
+                        networkView.RPC("PropagateInvincibility", RPCMode.All, false);
+                        rigidbody.isKinematic = false;
+                    }
+
+                    //Play the sound
+                    //if (!shouldPlaySound)
+                    //{
+                    //    shouldPlaySound = true;
+                    //    this.audio.volume = volumeHolder;
+                    //    this.audio.Play();
+                    //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+                    //}
+                    //recievedInput = true;
+                    break;
+                }
+        }
+    }
+
+	[RPC] void PropagateIsPlayingSound(bool isPlaying)
 	{
-		shouldPlaySound = isPlaying;
+		//m_shouldPlaySound = isPlaying;
 
 		if(isPlaying)
 		{
-			this.audio.volume = volumeHolder;
+			this.audio.volume = m_volumeHolder;
 			this.audio.Play();
 		}
 		else
@@ -112,15 +837,11 @@ public class PlayerControlScript : Ship
         SetCurrentShipSpeed(m_baseEngineSpeed + moveSpeed);
         SetRotateSpeed(m_baseEngineTurnSpeed + turnSpeed);
         m_playerStrafeMod = strafeMod;
-        //m_playerMoveSpeed = m_baseEngineSpeed + moveSpeed;
-        //m_playerRotateSpeed = m_baseEngineTurnSpeed + turnSpeed;
 	}
-
-	//Inventory
-	public GameObject m_equippedWeaponItem;
+	
 	public void ResetEquippedWeapon()
 	{
-		Debug.Log ("Recieved request to reset weapon. Re-equipping weapon: " + m_equippedWeaponItem.GetComponent<ItemScript>().GetItemName());
+		//Debug.Log ("Recieved request to reset weapon. Re-equipping weapon: " + m_equippedWeaponItem.GetComponent<ItemScript>().GetItemName());
 
 		GameObject equippedWeap = GetWeaponObject();
 		if(equippedWeap != null)
@@ -130,43 +851,43 @@ public class PlayerControlScript : Ship
 		}
 
 
-		GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		weapon.transform.parent = this.transform;
-		weapon.transform.localPosition = weapon.GetComponent<WeaponScript>().GetOffset();
+		weapon.transform.localPosition = weapon.GetComponent<EquipmentWeapon>().GetOffset();
 
-		networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<WeaponScript>().m_needsLockon);
+		networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon());
 		
 		//Parenting needs to be broadcast to all clients!
-		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
-		weapon.GetComponent<WeaponScript>().ParentWeaponToOwner(name);
+		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
+		weapon.GetComponent<EquipmentWeapon>().ParentWeaponToOwner(name);
 		this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);
 	}
-	[RPC]
-	void PropagateWeaponResetHomingBool(bool state)
+
+	[RPC] void PropagateWeaponResetHomingBool(bool state)
 	{
-		if(owner == Network.player)
+		if(m_owner == Network.player)
 		{
-			GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = state;
+            //TODO: Part of homing lockon system
+			//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(state);
 		}
 	}
 
-	public GameObject m_equippedShieldItem;
 	public void ResetEquippedShield()
 	{
-		GameObject shield = (GameObject)Network.Instantiate(m_equippedShieldItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject shield = (GameObject)Network.Instantiate(m_equippedShieldItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		shield.transform.parent = this.transform;
 		
 		ShieldScript ssc = shield.GetComponent<ShieldScript>();
 		shield.transform.localPosition = ssc.GetOffset();
 
-		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
+		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
 		ssc.ParentToPlayer(name);
 
 		HealthScript HP = this.GetComponent<HealthScript>();
 		HP.EquipNewShield(ssc.GetShieldMaxCharge(), ssc.GetShieldRechargeRate(), ssc.GetShieldRechargeDelay());
 	}
 
-	public GameObject m_equippedEngineItem;
+	
 	public void ResetEquippedEngine()
 	{
         GameObject oldEngine = GetEngineObject();
@@ -176,17 +897,15 @@ public class PlayerControlScript : Ship
             Network.Destroy(oldEngine);
         }
 
-		GameObject engine = (GameObject)Network.Instantiate(m_equippedEngineItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject engine = (GameObject)Network.Instantiate(m_equippedEngineItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		engine.transform.parent = this.transform;
 
 		EngineScript esc = engine.GetComponent<EngineScript>();
 		engine.transform.localPosition = esc.GetOffset();
 
-		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
+		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
 		esc.ParentToPlayer(name);
 
-        //m_playerMoveSpeed = m_baseEngineSpeed + esc.GetMoveSpeed();
-        //m_playerRotateSpeed = m_baseEngineTurnSpeed + esc.GetTurnSpeed();
         m_playerStrafeMod = esc.GetStrafeModifier();
         SetMaxShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
         SetCurrentShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
@@ -194,16 +913,16 @@ public class PlayerControlScript : Ship
 
 	}
 
-	public GameObject m_equippedPlatingItem;
+	
 	public void ResetEquippedPlating()
 	{
-		GameObject plating = (GameObject)Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+		GameObject plating = (GameObject)Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 		plating.transform.parent = this.transform;
 		
 		PlatingScript psc = plating.GetComponent<PlatingScript>();
 		plating.transform.localPosition = psc.GetOffset();
 
-		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
+		string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
 		psc.ParentToPlayer(name);
 
 		//Update hull
@@ -215,18 +934,18 @@ public class PlayerControlScript : Ship
     
     IEnumerator EnsureEquipmentValidity()
     {
-        if (owner == Network.player)
+        if (m_owner == Network.player)
         {
             while (true)
             {
-                ItemScript script;
+                ItemWrapper script;
                 
                 // Ensure the weapon is valid
-                if (!GetWeaponObject())
+                if (GetWeaponObject() == null)
                 {
-                    script = m_equippedWeaponItem ? m_equippedWeaponItem.GetComponent<ItemScript>() : null;
+                    script = m_equippedWeaponItem ? m_equippedWeaponItem.GetComponent<ItemWrapper>() : null;
                     
-                    if (!script || script.m_typeOfItem != ItemType.Weapon)
+                    if (script == null || script.GetItemType() != ItemType.Weapon)
                     {
                         m_equippedWeaponItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (0);
                         Debug.LogError ("Resetting null WeaponObject on: " + name);
@@ -235,11 +954,11 @@ public class PlayerControlScript : Ship
                     ResetEquippedWeapon();
                 }
                 
-                if (!GetShieldObject())
+                if (GetShieldObject() == null)
                 {
-                    script = m_equippedShieldItem ? m_equippedShieldItem.GetComponent<ItemScript>() : null;
-                
-                    if (!script || script.m_typeOfItem != ItemType.Shield)
+                    script = m_equippedShieldItem ? m_equippedShieldItem.GetComponent<ItemWrapper>() : null;
+
+                    if (script == null || script.GetItemType() != ItemType.Shield)
                     {
                         m_equippedShieldItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (30);
                         Debug.LogError ("Resetting null ShieldObject on: " + name);
@@ -248,11 +967,11 @@ public class PlayerControlScript : Ship
                     ResetEquippedShield();
                 }
                 
-                if (!GetEngineObject())
+                if (GetEngineObject() == null)
                 {
-                    script = m_equippedEngineItem ? m_equippedEngineItem.GetComponent<ItemScript>() : null;
-                        
-                    if (!script || script.m_typeOfItem != ItemType.Engine)                       
+                    script = m_equippedEngineItem ? m_equippedEngineItem.GetComponent<ItemWrapper>() : null;
+
+                    if (script == null || script.GetItemType() != ItemType.Engine)                       
                     {
                         m_equippedEngineItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (60);
                         Debug.LogError ("Resetting null EngineObject on: " + name);
@@ -261,11 +980,11 @@ public class PlayerControlScript : Ship
                     ResetEquippedEngine();
                 }
                 
-                if (!GetPlatingObject())
+                if (GetPlatingObject() == null)
                 {
-                    script = m_equippedPlatingItem ? m_equippedPlatingItem.GetComponent<ItemScript>() : null;
-                    
-                    if (!script || script.m_typeOfItem != ItemType.Plating)
+                    script = m_equippedPlatingItem ? m_equippedPlatingItem.GetComponent<ItemWrapper>() : null;
+
+                    if (script == null || script.GetItemType() != ItemType.Plating)
                     {
                         m_equippedPlatingItem = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (90);
                         Debug.LogError ("Resetting null PlatingObject on: " + name);
@@ -279,48 +998,50 @@ public class PlayerControlScript : Ship
         }
     }
 
-	public List<GameObject> m_playerInventory;
-	public void AddItemToInventoryLocalOnly(GameObject itemWrapper)
+	
+	public void AddItemToInventoryLocalOnly(ItemWrapper itemWrapper)
 	{
-		if(!InventoryIsFull())
+		if(!IsInventoryFull())
 		{
 			m_playerInventory.Add(itemWrapper);
 		}
 	}
-	public void AddItemToInventory(GameObject itemWrapper)
+
+	public void AddItemToInventory(ItemWrapper itemWrapper)
 	{
 		if(Network.isServer)
 		{
-			if(!InventoryIsFull())
+			if(!IsInventoryFull())
 			{
 				m_playerInventory.Add(itemWrapper);
 			}
 		}
 		else
 		{
-			if(!InventoryIsFull())
+			if(!IsInventoryFull())
 			{
 				m_playerInventory.Add(itemWrapper);
 			}
-			networkView.RPC ("TellServerAddItem", RPCMode.Server, itemWrapper.GetComponent<ItemScript>().m_equipmentID);
-			//networkView.RPC ("TellServerAddItem", RPCMode.Server, itemWrapper);
+			networkView.RPC ("TellServerAddItem", RPCMode.Server, itemWrapper.GetItemID());
 		}
 	}
-	[RPC]
-	void TellServerAddItem(int id)
+
+	[RPC] void TellServerAddItem(int id)
 	{
 		//AddItemToInventory(item);
 		AddItemToInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(id));
 
 	}
-	public void RemoveItemFromInventoryLocalOnly(GameObject itemWrapper)
+
+	public void RemoveItemFromInventoryLocalOnly(ItemWrapper itemWrapper)
 	{
 		if(m_playerInventory.Contains(itemWrapper))
 		{
 			m_playerInventory.Remove(itemWrapper);
 		}
 	}
-	public void RemoveItemFromInventory(GameObject itemWrapper)
+
+	public void RemoveItemFromInventory(ItemWrapper itemWrapper)
 	{
 		if(Network.isServer)
 		{
@@ -335,81 +1056,86 @@ public class PlayerControlScript : Ship
 			{
 				m_playerInventory.Remove(itemWrapper);
 			}
-			networkView.RPC ("TellServerRemoveItem", RPCMode.Server, itemWrapper.GetComponent<ItemScript>().m_equipmentID);
+			networkView.RPC ("TellServerRemoveItem", RPCMode.Server, itemWrapper.GetItemID());
 		}
 	}
-	[RPC]
-	void TellServerRemoveItem(int id)
+
+	[RPC] void TellServerRemoveItem(int id)
 	{
 		RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(id));
 	}
+
 	public void ClearInventory()
 	{
 		m_playerInventory.Clear();
 	}
-	public bool InventoryIsFull()
+
+	public bool IsInventoryFull()
 	{
-		if(m_playerInventory.Count > 4)
-		{
-			return true;
-		}
-		else
-			return false;
+		return m_playerInventory.Count > 4;
 	}
-	public GameObject GetItemInSlot(int slot)
+
+	public ItemWrapper GetItemInSlot(int slot)
 	{
-		if(m_playerInventory[slot] != null)
-		{
-			return m_playerInventory[slot];
-		}
-		else
-			return null;
+        try
+        {
+            return m_playerInventory[slot];
+        }
+		
+        catch (System.Exception error)
+        {
+            Debug.LogError (error.Message);
+            return null;
+        }
 	}
+
 	public void EquipItemInSlot(int slot)
 	{
 		if(Network.isServer)
 		{
-			switch(m_playerInventory[slot].GetComponent<ItemScript>().m_typeOfItem)
+			switch(m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemType())
 			{
 				case ItemType.Weapon:
 				{
 					//If we're told to equip a weapon:
-					Debug.Log ("Equipping weapon " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + owner);
+					Debug.Log ("Equipping weapon " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old weapon
-					GameObject temp = m_equippedWeaponItem;
+					ItemWrapper temp = m_equippedWeaponItem;
 					//Destroy object
 					Network.Destroy(GetWeaponObject());
 
 					//Equip new weapon
-					GameObject newWeapon = m_playerInventory[slot];
+					ItemWrapper newWeapon = m_playerInventory[slot];
 					m_equippedWeaponItem = newWeapon;
 
-					if(owner == Network.player)
+					if(m_owner == Network.player)
 					{
-						if(newWeapon.GetComponent<ItemScript>().GetEquipmentReference().GetComponent<WeaponScript>().m_needsLockon)
+						if(newWeapon.GetComponent<ItemWrapper>().GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon())
 						{
-							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = true;
+                            //TODO: HOMING STUFF
+							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
 							Debug.Log ("New weapon is homing, alerting GUI...");
 						}
 						else
 						{
-							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = false;
+                            //TODO: HOMING STUFF
+							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
 							Debug.Log ("Weapon is not homing. Alerting GUI.");
 						}
 					}
 				
-					GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
+					GameObject weapon = (GameObject)Network.Instantiate(m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0);
 					weapon.transform.parent = this.transform;
-					weapon.transform.localPosition = weapon.GetComponent<WeaponScript>().GetOffset();
-					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
-					weapon.GetComponent<WeaponScript>().ParentWeaponToOwner(name);
+					weapon.transform.localPosition = weapon.GetComponent<EquipmentWeapon>().GetOffset();
+					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
+					weapon.GetComponent<EquipmentWeapon>().ParentWeaponToOwner(name);
 					//Broadcast parenting here too
 					this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);
 
 					//Send relevant info back to client
 					
-					networkView.RPC ("ReturnInfoToEquippingClient", owner, m_equippedWeaponItem.GetComponent<ItemScript>().m_equipmentID);
+					networkView.RPC ("ReturnInfoToEquippingClient", m_owner, m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemID());
 
 					//Take new weapon out of inventory
 					RemoveItemFromInventory(m_playerInventory[slot]);
@@ -420,29 +1146,32 @@ public class PlayerControlScript : Ship
 				}
 				case ItemType.Shield:
 				{
-					Debug.Log ("Equipping shield " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + owner);
+					Debug.Log ("Equipping shield " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old shield
-					GameObject temp = m_equippedShieldItem;
+					ItemWrapper temp = m_equippedShieldItem;
 					//Destroy the sheld
 					Network.Destroy (GetShieldObject());
 
 					//Equip the new shield
-					GameObject newShield = m_playerInventory[slot];
+					ItemWrapper newShield = m_playerInventory[slot];
 					m_equippedShieldItem = newShield;
-					GameObject shield = (GameObject)Network.Instantiate(m_equippedShieldItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
-					shield.transform.parent = this.transform;
+					GameObject shield = Network.Instantiate(m_equippedShieldItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0) as GameObject;
+                    if (shield != null)
+                    {
+                        shield.transform.parent = this.transform;
 
-					ShieldScript ssc = shield.GetComponent<ShieldScript>();
-					shield.transform.localPosition = ssc.GetOffset();
-
-					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
-					ssc.ParentToPlayer(name);
-					
-					//TODO: Add changes to HPscript here
-					HealthScript HP = this.GetComponent<HealthScript>();
-					Debug.Log ("Attempting to access shield script on item: " + shield.name);
-					HP.EquipNewShield(ssc.GetShieldMaxCharge(), ssc.GetShieldRechargeRate(), ssc.GetShieldRechargeDelay());
+    					ShieldScript ssc = shield.GetComponent<ShieldScript>();
+    					shield.transform.localPosition = ssc.GetOffset();
+                    
+    					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
+    					ssc.ParentToPlayer(name);
+    					
+    					//TODO: Add changes to HPscript here
+    					HealthScript HP = this.GetComponent<HealthScript>();
+    					Debug.Log ("Attempting to access shield script on item: " + shield.name);
+    					HP.EquipNewShield(ssc.GetShieldMaxCharge(), ssc.GetShieldRechargeRate(), ssc.GetShieldRechargeDelay());
+                    }
 
 					//Remove new shield from inv
 					RemoveItemFromInventory(m_playerInventory[slot]);
@@ -453,29 +1182,33 @@ public class PlayerControlScript : Ship
 				}
 				case ItemType.Engine:
 				{
-					Debug.Log ("Equipping engine " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + owner);
+					Debug.Log ("Equipping engine " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old engine
-					GameObject temp = m_equippedEngineItem;
+					ItemWrapper temp = m_equippedEngineItem;
 					//Destroy the engine object
 					Network.Destroy(GetEngineObject());
 
 					//Equip new shield
-					GameObject newEngine = m_playerInventory[slot];
+					ItemWrapper newEngine = m_playerInventory[slot];
 					m_equippedEngineItem = newEngine;
-					GameObject engine = (GameObject)Network.Instantiate(m_equippedEngineItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
-					engine.transform.parent = this.transform;
+					GameObject engine = Network.Instantiate(m_equippedEngineItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0) as GameObject;
 
-					EngineScript esc = engine.GetComponent<EngineScript>();
-					engine.transform.localPosition = esc.GetOffset();
-				
-					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
-					esc.ParentToPlayer(name);
+                    if (engine != null)
+                    {
+    					engine.transform.parent = this.transform;
 
-					//Change our move stats
-					SetMaxShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
-                    SetCurrentShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
-					SetRotateSpeed(m_baseEngineTurnSpeed + esc.GetTurnSpeed());	
+    					EngineScript esc = engine.GetComponent<EngineScript>();
+    					engine.transform.localPosition = esc.GetOffset();
+    				
+    					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
+    					esc.ParentToPlayer(name);
+
+    					//Change our move stats
+    					SetMaxShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
+                        SetCurrentShipSpeed(m_baseEngineSpeed + esc.GetMoveSpeed());
+    					SetRotateSpeed(m_baseEngineTurnSpeed + esc.GetTurnSpeed());	
+                    }
 
 					//Remove new engine from inv
 					RemoveItemFromInventory(m_playerInventory[slot]);
@@ -487,30 +1220,34 @@ public class PlayerControlScript : Ship
 				}
 				case ItemType.Plating:
 				{
-					Debug.Log ("Equipping plating " + m_playerInventory[slot].GetComponent<ItemScript>().GetItemName() + " on player #" + owner);
+					Debug.Log ("Equipping plating " + m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemName() + " on player #" + m_owner);
 
 					//Unequip old plating
-					GameObject temp = m_equippedPlatingItem;
+					ItemWrapper temp = m_equippedPlatingItem;
 					//Destroy plating object
 					Network.Destroy(GetPlatingObject());
 
 					//Equip new plating
-					GameObject newPlating = m_playerInventory[slot];
+					ItemWrapper newPlating = m_playerInventory[slot];
 					m_equippedPlatingItem = newPlating;
-					GameObject plating = (GameObject)Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation, 0);
-					plating.transform.parent = this.transform;
+					GameObject plating = Network.Instantiate(m_equippedPlatingItem.GetComponent<ItemWrapper>().GetItemPrefab(), this.transform.position, this.transform.rotation, 0) as GameObject;
 
-					PlatingScript psc = plating.GetComponent<PlatingScript>();
-					plating.transform.localPosition = psc.GetOffset();
-				
-					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(owner);
-					psc.ParentToPlayer(name);
+                    if (plating != null)
+                    {
+    					plating.transform.parent = this.transform;
 
-					//Update our HP
-					this.GetComponent<HealthScript>().EquipNewPlating (psc.GetPlatingHealth() + m_baseShipHull);
+    					PlatingScript psc = plating.GetComponent<PlatingScript>();
+    					plating.transform.localPosition = psc.GetOffset();
+    				
+    					string name = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().GetNameFromNetworkPlayer(m_owner);
+    					psc.ParentToPlayer(name);
 
-					//Update RB
-					rigidbody.mass = m_baseShipWeight + psc.GetPlatingWeight();
+    					//Update our HP
+    					this.GetComponent<HealthScript>().EquipNewPlating (psc.GetPlatingHealth() + m_baseShipHull);
+
+    					//Update RB
+    					rigidbody.mass = m_baseShipWeight + psc.GetPlatingWeight();
+                    }
 
 					//Remove new plating from inv
 					RemoveItemFromInventory(m_playerInventory[slot]);
@@ -523,33 +1260,26 @@ public class PlayerControlScript : Ship
 		}
 		else
 		{
-			switch(m_playerInventory[slot].GetComponent<ItemScript>().m_typeOfItem)
+			switch(m_playerInventory[slot].GetComponent<ItemWrapper>().GetItemType())
 			{
 				case ItemType.Weapon:
 				{
 					//If we're told to equip a weapon:
 					
 					//Unequip old weapon
-					GameObject temp = m_equippedWeaponItem;
-					//Destroy object
-					//Network.Destroy(GetWeaponObject());
-					
-					//Equip new weapon
-					/*GameObject newWeapon = m_playerInventory[slot];
-					m_equippedWeaponItem = newWeapon;*/
-					//GameObject weapon = (GameObject)Instantiate(m_equippedWeaponItem.GetComponent<ItemScript>().GetEquipmentReference(), this.transform.position, this.transform.rotation);
-					//weapon.transform.parent = this.transform;
-					//this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);
+					ItemWrapper temp = m_equippedWeaponItem;
 					
 					//If it's a homing weapon, alert the GUI
-					if(m_playerInventory[slot].GetComponent<ItemScript>().GetEquipmentReference().GetComponent<WeaponScript>().m_needsLockon)
+					if(m_playerInventory[slot].GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon())
 					{
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = true;
+                        //TODO: HOMING STUFF AGAIN
+						//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
 						Debug.Log ("New weapon is homing, alerting GUI...");
 					}
 					else
 					{
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_currentWeaponNeedsLockon = false;
+                        //TODO: HOMING STUFF AGAIN
+						//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
 						Debug.Log ("Weapon is not homing. Alerting GUI.");
 					}
 				
@@ -568,11 +1298,11 @@ public class PlayerControlScript : Ship
 				case ItemType.Shield:
 				{
 					//Unequip old
-					GameObject temp = m_equippedShieldItem;
+					ItemWrapper temp = m_equippedShieldItem;
 
 					//Don't destroy, handled by server
 					//Equip new
-					GameObject newShield = m_playerInventory[slot];
+                    ItemWrapper newShield = m_playerInventory[slot];
 					m_equippedShieldItem = newShield;
 
 					//Update local inventory
@@ -583,11 +1313,11 @@ public class PlayerControlScript : Ship
 				case ItemType.Engine:
 				{
 					//Unequip old
-					GameObject temp = m_equippedEngineItem;
+                    ItemWrapper temp = m_equippedEngineItem;
 					
 					//Don't destroy, handled by server
 					//Equip new
-					GameObject newEngine = m_playerInventory[slot];
+                    ItemWrapper newEngine = m_playerInventory[slot];
 					m_equippedEngineItem = newEngine;
 					
 					//Update local inventory
@@ -598,11 +1328,11 @@ public class PlayerControlScript : Ship
 				case ItemType.Plating:
 				{
 					//Unequip old
-					GameObject temp = m_equippedPlatingItem;
+                    ItemWrapper temp = m_equippedPlatingItem;
 					
 					//Don't destroy, handled by server
 					//Equip new
-					GameObject newPlating = m_playerInventory[slot];
+                    ItemWrapper newPlating = m_playerInventory[slot];
 					m_equippedPlatingItem = newPlating;
 					
 					//Update local inventory
@@ -614,59 +1344,37 @@ public class PlayerControlScript : Ship
 			networkView.RPC ("TellServerEquipItemInSlot", RPCMode.Server, slot);
 		}
 	}
-	[RPC]
-	void TellServerEquipItemInSlot(int slot)
+
+	[RPC] void TellServerEquipItemInSlot(int slot)
 	{
 		EquipItemInSlot(slot);
 	}
-	[RPC]
-	void ReturnInfoToEquippingClient(int weaponID)
+
+	[RPC] void ReturnInfoToEquippingClient(int weaponID)
 	{
-		GameObject equipmentObject = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(weaponID);
+        ItemWrapper equipmentObject = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(weaponID);
 
 		m_equippedWeaponItem = equipmentObject;
 	}
 
 	public void SetNewTargetLock(GameObject target)
 	{
-		GetWeaponObject().GetComponent<WeaponScript>().SetTarget(target);
+		GetWeaponObject().GetComponent<EquipmentWeapon>().SetTarget(target);
 		//Debug.Log ("Receieved target lock on enemy: " + target.name);
 	}
+
 	public void UnsetTargetLock()
 	{
-		GetWeaponObject().GetComponent<WeaponScript>().UnsetTarget();
+		GetWeaponObject().GetComponent<EquipmentWeapon>().UnsetTarget();
 	}
+
 	public float GetReloadPercentage()
 	{
-		return GetWeaponObject().GetComponent<WeaponScript>().GetReloadPercentage();
+		return GetWeaponObject().GetComponent<EquipmentWeapon>().GetReloadPercentage();
 	}
 
-
-	// Use this for initialization
-	float volumeHolder = 1.0f;
-	void Start () 
-	{
-		volumeHolder = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
-
-		m_currentVelocity = Vector3.zero;
-		m_playerInventory = new List<GameObject>(5);
-
-		//ResetEquippedWeapon();
-		if(Network.isServer)
-		{
-			ResetEquippedWeapon();
-			ResetEquippedShield();
-			ResetEquippedEngine();
-			ResetEquippedPlating();
-		}
-
-		timeSinceLastPacket = Time.realtimeSinceStartup;
-
-		previousPacketPosition = this.transform.position;
-		predictedPacketPosition = this.transform.position;
-        
-        StartCoroutine (EnsureEquipmentValidity());
-	}
+	/*
+	
 
 	float timeSinceLastPacket;
 	IEnumerator DeadReckonPosition(Vector3 newPos, Vector3 newVel)
@@ -715,105 +1423,15 @@ public class PlayerControlScript : Ship
 		}
 		
 		this.rigidbody.velocity = newVel;
-	}
+	}*/
 
-	IEnumerator ContinuePlayerMovement()
-	{
-		float t = 0.0f;
 
-		while(t < 0.2f)
-		{
-			t += Time.deltaTime;
-			rigidbody.MovePosition(rigidbody.position + (rigidbody.velocity * Time.deltaTime * Time.deltaTime));
-			yield return 0;
-		}
-	}
-	float rotationInc = 0.0f;
-	float prevRot = 0.0f;
-	IEnumerator ContinuePlayerRotation()
-	{
-		float t = 0.0f;
-
-		while(t < 0.2f)
-		{
-			t += Time.deltaTime;
-			rigidbody.MoveRotation(Quaternion.Euler(0, 0, (this.transform.rotation.eulerAngles.z + (rotationInc * Time.deltaTime * Time.deltaTime))));
-			yield return 0;
-		}
-	}
-
-	Vector3 previousPacketPosition = Vector3.zero;
-	Vector3 predictedPacketPosition = Vector3.zero;
-	float timeSinceLastPacketNew = 0.0f;
-
-	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
-	{
-		Vector3 position = this.transform.position;
-		float zRotation = this.transform.rotation.eulerAngles.z;
-		Vector3 velocity = this.rigidbody.velocity;
-		
-		if(stream.isWriting)
-		{
-			//We're the owner, send our info to other people
-			stream.Serialize(ref position);
-			stream.Serialize(ref zRotation);
-			stream.Serialize(ref velocity);
-		}
-		else
-		{
-			//We're recieving info from a remote client
-			stream.Serialize(ref position);
-			stream.Serialize(ref zRotation);
-			stream.Serialize(ref velocity);
-
-			if(position != predictedPacketPosition)
-			{
-				//Jump to recieved pos
-				this.transform.position = position;
-			}
-			else
-			{
-				//If it matches our predication, don't do anything!
-				Debug.Log ("Recieved position matches prediction!");
-			}
-
-			//this.transform.position = position;
-
-			this.rigidbody.velocity = velocity;
-			prevRot = this.transform.rotation.eulerAngles.z;
-			rotationInc = zRotation - prevRot;
-			this.transform.rotation = Quaternion.Euler(0, 0, zRotation);
-
-			//StartCoroutine(ContinuePlayerMovement());
-
-			//Calculate the predicted position for next time
-			/*predictedPacketPosition = position + (previousPacketPosition - position);
-			previousPacketPosition = position;
-			timeSinceLastPacketNew = 0.0f;*/
-		}
-	}
-
-	//Movement vars
-	public Vector3 m_currentVelocity;
-
-	public bool m_isInRangeOfCapitalDock = false;
-	public bool m_isInRangeOfTradingDock = false;
-	public GameObject nearbyShop = null;
-
-	[SerializeField]
-	bool m_isAnimating = false;
-	[SerializeField]
-	DockingState m_currentDockingState = DockingState.NOTDOCKING;
-
-	[SerializeField]
-	GameObject CShip = null;
-	[SerializeField]
-	Vector3 targetPoint = Vector3.zero;
+	
 
 	public void InitPlayerOnCShip(GameObject CShip)
 	{
-		this.CShip = CShip;
-		targetPoint = CShip.transform.position;
+		this.m_CShip = CShip;
+		m_targetPoint = CShip.transform.position;
 
 		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
 		rigidbody.isKinematic = true;
@@ -842,605 +1460,14 @@ public class PlayerControlScript : Ship
 
 	public void SetInputMethod(bool useControl)
 	{
-		useController = useControl;
+		m_useController = useControl;
 	}
 
-	[RPC]
-	void PropagateInvincibility(bool state)
+	[RPC] void PropagateInvincibility(bool state)
 	{
-		GetComponent<HealthScript>().m_isInvincible = state;
+		GetComponent<HealthScript>().SetInvincible(state);
 	}
-
-	bool useController = false;
-	Quaternion targetAngle;
-	// Update is called once per frame
-    protected override void Update() 
-	{
-		ownerSt = owner.ToString();
-		bool recievedInput = false;
-		base.Update();
-
-		if(owner != null && owner == Network.player)
-		{
-			if((useController && Input.GetButtonDown("X360Start")) || (!useController && Input.GetKeyDown(KeyCode.Escape)))
-			{
-				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMenuState();
-			}
-
-			if(m_isAnimating)
-			{
-				//If for any reason CShip is not set, find it
-				if(CShip == null)
-				{
-					CShip = GameObject.FindGameObjectWithTag("Capital");
-				}
-				
-				//If still on the entrance phases, allow cancelling with 'X'
-				/*if(Input.GetKey (KeyCode.X))
-					{
-						if(m_currentDockingState == DockingState.OnApproach || m_currentDockingState == DockingState.OnEntry)
-						{
-							//Cancel the animation
-							m_isAnimating = false;
-						}
-					}*/
-				
-				//Now animate based on state
-				switch(m_currentDockingState)
-				{
-				case DockingState.NOTDOCKING:
-				{
-					//We shouldn't even be here man
-					//We shouln't even BE here!
-					m_isAnimating = false;
-					networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
-					rigidbody.isKinematic = false;
-					break;
-				}
-				case DockingState.OnApproach:
-				{
-					// Make sure targetPoint is up to date
-					targetPoint = CShip.transform.position + (CShip.transform.right * 7.0f);
-					
-					// Move towards entrance point
-					Vector3 direction = targetPoint - transform.position;
-					Vector3 rotation = -CShip.transform.right;
-					MoveToDockPoint (direction, rotation);
-					
-					// If we're near, switch to onEntry
-					if(direction.magnitude <= 1.35f)
-					{
-						m_dockingTime += Time.deltaTime;
-						
-						if (m_dockingTime >= 0.36f)
-						{
-							// Reset the docking time
-							m_dockingTime = 0f;
-							
-							// Kill our speed temporarily
-							rigidbody.isKinematic = true;
-							m_currentDockingState = DockingState.OnEntry;
-							targetPoint = CShip.transform.position + (CShip.transform.up * 1.5f);
-							rigidbody.isKinematic = false;
-							this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
-						}
-					}
-					
-					else
-					{
-						m_dockingTime = 0f;
-					}
-					
-					//Play sounds
-					if(!shouldPlaySound)
-					{
-						shouldPlaySound = true;
-						this.audio.volume = volumeHolder;
-						this.audio.Play();
-						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-					}
-					recievedInput = true;
-					break;
-				}
-				case DockingState.OnEntry:
-				{
-					//Make sure targetPoint is up to date
-					targetPoint = CShip.transform.position;
-					
-					//Rotate towards entrance point
-					Vector3 direction = targetPoint - transform.position;
-					Vector3 rotation = -CShip.transform.right;
-					MoveToDockPoint (direction, rotation);
-					
-					//If we're near, switch to docked and cut input. Then alert GUI we've docked
-					if (direction.magnitude <= 1.5f)
-					{
-						m_dockingTime += Time.deltaTime;
-						
-						if (m_dockingTime >= 0.25f)
-						{
-							// Reset the docking time
-							m_dockingTime = 0f;
-							
-							// Perform docking process
-							m_currentDockingState = DockingState.Docked;
-							transform.rotation = CShip.transform.rotation;
-							GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
-							transform.parent = CShip.transform;
-							rigidbody.isKinematic = true;
-							networkView.RPC ("PropagateInvincibility", RPCMode.All, true);
-						}
-					}
-					
-					else
-					{
-						// Reset the docking time
-						m_dockingTime = 0f;
-					}
-					
-					//Play sounds
-					if(!shouldPlaySound)
-					{
-						shouldPlaySound = true;
-						this.audio.volume = volumeHolder;
-						this.audio.Play();
-						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-					}
-					recievedInput = true;
-					break;
-				}
-				case DockingState.Docked:
-				{
-					//We shouldn't need to do anything. Await GUI telling us we're done
-					
-					// Stop exception spam by ensuring the CShip is alive
-					if (CShip)
-					{
-						//Ensure rotation matches CShip
-						transform.rotation = CShip.transform.rotation;
-						
-						//Also position
-						float oldZ = transform.position.z;
-						transform.position = new Vector3(CShip.transform.position.x, CShip.transform.position.y, oldZ);
-
-					}
-					break;
-				}
-				case DockingState.Exiting:
-				{
-					//Accelerate forwards
-					this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
-					
-					//If we're far enough away, stop animating
-					Vector3 dir = CShip.transform.position - transform.position;
-					if(dir.magnitude >= 12.0f)
-					{
-						//Fly free!
-						m_currentDockingState = DockingState.NOTDOCKING;
-						m_isAnimating = false;
-						this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
-						networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
-						rigidbody.isKinematic = false;
-					}
-					
-					//Play the sound
-					if(!shouldPlaySound)
-					{
-						shouldPlaySound = true;
-						this.audio.volume = volumeHolder;
-						this.audio.Play();
-						networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-					}
-					recievedInput = true;
-					break;
-				}
-				}
-			}
-
-			if(m_shouldRecieveInput)
-			{
-				if(useController && Input.GetJoystickNames().Length < 1)
-				{
-					useController = false;
-				}
-
-
-				if(!m_isAnimating)
-				{
-					if((useController && Input.GetButtonDown("X360X")) || (!useController && Input.GetKey (KeyCode.X)))
-					{
-						if(m_isInRangeOfCapitalDock)
-						{
-							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_PlayerHasDockedAtCapital = true;
-							/*GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
-							transform.parent = GameObject.FindGameObjectWithTag("Capital").transform;
-							rigidbody.isKinematic = true;
-							m_shouldRecieveInput = false;*/
-
-							//Begin the animation sequence
-							CShip = GameObject.FindGameObjectWithTag("Capital");
-							targetPoint = CShip.transform.position + (CShip.transform.right * 7.0f) + (CShip.transform.up * 1.5f);
-							m_currentDockingState = DockingState.OnApproach;
-							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
-							m_isAnimating = true;
-						}
-						else if(m_isInRangeOfTradingDock && nearbyShop != null)
-						{
-							GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtShop(nearbyShop);
-							transform.parent = nearbyShop.transform;
-							rigidbody.isKinematic = true;
-							m_shouldRecieveInput = false;
-							
-						}
-					}
-
-					//In here, player should respond to any input
-					if(!useController)
-					{
-						if(Input.GetKey(KeyCode.W))
-						{
-							//this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
-                            this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
-							
-							//Play sound + particles
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetKey (KeyCode.S))
-						{
-							//this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
-                            this.rigidbody.AddForce(this.transform.up * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
-							
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;							
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetKey (KeyCode.A))
-						{
-							//this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-                            this.rigidbody.AddForce(this.transform.right * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
-							
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetKey (KeyCode.D))
-						{
-							//this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-                            this.rigidbody.AddForce(this.transform.right * (GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
-							
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetKeyDown(KeyCode.Tab))
-						{
-							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
-						}
-						
-						if(Input.GetKeyDown(KeyCode.Z))
-						{
-							bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
-							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap = !mapVal;
-						}
-					}
-					else
-					{
-						if(Input.GetAxis("LeftStickVertical") > 0)
-						{
-							//Forward
-							float v = Input.GetAxis("LeftStickVertical");
-							float h = Input.GetAxis("LeftStickHorizontal");
-
-							Vector3 inputVec = new Vector3(h, v, 0);
-							if(inputVec.sqrMagnitude > 1.0f)
-							{
-								inputVec.Normalize();
-								inputVec *= 0.7071067f;
-							}
-							Vector3 forward = this.transform.up;
-
-							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-
-							float speed = 0;
-							if(forwardSpeedFac > 0.95f)
-							{
-								//Apply forward speed
-								speed = GetCurrentShipSpeed();
-							}
-							else
-							{
-								//Apply side speed
-								speed = GetCurrentShipSpeed() * m_playerStrafeMod;
-							}
-
-							//float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
-							//float speed = (forwardSpeedFac * m_playerMoveSpeed) + (sideSpeedFac * (m_playerMoveSpeed * m_playerStrafeMod));
-
-							Vector3 moveFac = inputVec * speed;
-
-							this.rigidbody.AddForce(moveFac * Time.deltaTime);
-
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetAxis("LeftStickVertical") < 0)
-						{
-							//Back
-							float v = Input.GetAxis("LeftStickVertical");
-							float h = Input.GetAxis("LeftStickHorizontal");
-							
-							Vector3 inputVec = new Vector3(h, v, 0);
-							if(inputVec.sqrMagnitude > 1.0f)
-							{
-								inputVec.Normalize();
-								inputVec *= 0.7071067f;
-							}
-							Vector3 forward = this.transform.up;
-							
-							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-							float speed = 0;
-							if(forwardSpeedFac > 0.95f)
-							{
-								//Apply forward speed
-                                speed = GetCurrentShipSpeed();
-							}
-							else
-							{
-								//Apply side speed
-								speed = GetCurrentShipSpeed() * m_playerStrafeMod;
-							}
-
-							Vector3 moveFac = inputVec * speed;
-							
-							this.rigidbody.AddForce(moveFac * Time.deltaTime);
-							
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetAxis("LeftStickHorizontal") < 0)
-						{
-							//Left
-							float v = Input.GetAxis("LeftStickVertical");
-							float h = Input.GetAxis("LeftStickHorizontal");
-							
-							Vector3 inputVec = new Vector3(h, v, 0);
-							if(inputVec.sqrMagnitude > 1.0f)
-							{
-								inputVec.Normalize();
-								inputVec *= 0.7071067f;
-							}
-							Vector3 forward = this.transform.up;
-							
-							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-							float speed = 0;
-							if(forwardSpeedFac > 0.95f)
-							{
-								//Apply forward speed
-								speed = GetCurrentShipSpeed();
-							}
-							else
-							{
-								//Apply side speed
-								speed = GetCurrentShipSpeed() * m_playerStrafeMod;
-							}
-
-							Vector3 moveFac = inputVec * speed;
-							
-							this.rigidbody.AddForce(moveFac * Time.deltaTime);
-							
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetAxis("LeftStickHorizontal") > 0)
-						{
-							//Right
-							float v = Input.GetAxis("LeftStickVertical");
-							float h = Input.GetAxis("LeftStickHorizontal");
-							
-							Vector3 inputVec = new Vector3(h, v, 0);
-							if(inputVec.sqrMagnitude > 1.0f)
-							{
-								inputVec.Normalize();
-								inputVec *= 0.7071067f;
-							}
-							Vector3 forward = this.transform.up;
-							
-							float forwardSpeedFac = Mathf.Abs(Vector3.Dot(inputVec.normalized, forward));
-							float speed = 0;
-							if(forwardSpeedFac > 0.95f)
-							{
-								//Apply forward speed
-                                speed = GetCurrentShipSpeed();
-							}
-							else
-							{
-								//Apply side speed
-                                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
-							}
-
-							Vector3 moveFac = inputVec * speed * Time.deltaTime;
-							
-							this.rigidbody.AddForce(moveFac);
-							
-							if(!shouldPlaySound)
-							{
-								shouldPlaySound = true;
-								this.audio.volume = volumeHolder;
-								this.audio.Play();
-								networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-							}
-							recievedInput = true;
-						}
-
-						if(Input.GetButtonDown("X360Back"))
-						{
-							GUIManager gui = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>();
-							int status = gui.GetMapStatus();
-							
-							if(status == 0)
-							{
-								//Go from follow map to non-follow map
-								gui.m_isOnFollowMap = false;
-							}
-							else if(status == 1)
-							{
-								//Go from non-follow to fullscreen
-								gui.m_isOnFollowMap = true;
-								gui.ToggleMap();
-							}
-							else
-							{
-								//Go from fullscreen to follow
-								gui.ToggleMap();
-							}
-						}
-					}
-
-
-
-					if((useController && Input.GetButtonDown("X360B")) || (!useController && Input.GetMouseButtonDown (2)))
-					{
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RequestBreakLock();
-					}
-
-					if(useController)
-					{
-						//Don't rotate to face cursor, instead, listen for right stick input
-						float v = Input.GetAxis("RightStickVertical");
-						float h = Input.GetAxis("RightStickHorizontal");
-
-						if(v != 0 || h != 0)
-						{
-							float angle = (Mathf.Atan2 (v,h) - Mathf.PI/2) * Mathf.Rad2Deg;
-							Quaternion target = Quaternion.Euler(new Vector3(0, 0, angle));
-							targetAngle = target;
-						}
-
-						transform.rotation = Quaternion.Slerp(transform.rotation, targetAngle, GetRotateSpeed() * Time.deltaTime);
-
-						if(Input.GetAxis("X360Triggers") < 0)
-							this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
-						else if(Input.GetAxis ("X360Triggers") == 0)
-							this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
-					}
-					else
-					{
-						//Here, it should rotate to face the mouse cursor
-						var objectPos = Camera.main.WorldToScreenPoint(transform.position);
-                        var dir = Input.mousePosition - objectPos;
-
-                        RotateTowards(transform.position + dir);
-
-						if(Input.GetMouseButton(0))
-						{
-							this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
-						}
-
-						if(Input.GetMouseButtonUp(0))
-						{
-							this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
-						}
-					}
-
-				//Listen for combat input
-				/*if((useController && Input.GetAxis("X360Triggers") < 0) || (!useController && Input.GetMouseButton(0)))
-				{
-					this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
-				}
-
-				if((useController && Input.GetAxis("X360Triggers") == 0) || (!useController && Input.GetMouseButtonUp(0)))
-					this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();*/
-
-				}
-			}
-			//Now finish up by applying vevlocity + momentum
-			//this.transform.position += m_currentVelocity;
-			//m_currentVelocity *= 0.995f;
-
-			if(!recievedInput)
-			{
-				if(shouldPlaySound)
-				{
-					shouldPlaySound = false;
-					this.audio.Stop ();
-					networkView.RPC ("PropagateIsPlayingSound", RPCMode.Others, false);
-				}
-			}
-
-			//Finish by checking to make sure we're not too far from 0,0
-			float distance = Vector3.Distance(this.transform.position, new Vector3(0, 0, 10));
-			if(m_playerIsOoB)
-			{
-				if(distance < 290)
-				{
-					//Stop warning screen
-					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().StopOutOfBoundsWarning();
-					m_playerIsOoB = false;
-				}
-			}
-			else
-			{
-				if(distance >= 290)
-				{
-					//Begin warning screen
-					GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().BeginOutOfBoundsWarning();
-					m_playerIsOoB = true;
-				}
-			}
-		}
-		else
-		{
-
-		}
-	}
-
+	
 	void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
 	{
 		float magnitude = moveTo.magnitude;
@@ -1481,8 +1508,6 @@ public class PlayerControlScript : Ship
         transform.rotation = Quaternion.Slerp(transform.rotation, target, m_dockRotateSpeed * Time.deltaTime);
 	}
 
-	bool m_playerIsOoB = false;
-
 	public void Respawn()
 	{
 		//this.gameObject.SetActive(true);
@@ -1494,8 +1519,8 @@ public class PlayerControlScript : Ship
 		this.GetComponent<HealthScript>().ResetHPOnRespawn();
 		networkView.RPC ("PropagateRespawn", RPCMode.Others);
 	}
-	[RPC]
-	void PropagateRespawn()
+
+	[RPC] void PropagateRespawn()
 	{
 		//this.gameObject.SetActive(true);
 		this.renderer.enabled = true;
@@ -1510,44 +1535,43 @@ public class PlayerControlScript : Ship
 	{
 		networkView.RPC ("SetOwner", RPCMode.Others, player);
 		//Also tell GUI to update player blobs for map
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().AlertGUIRemotePlayerHasRespawned();
+		m_guiCache.ResetPlayerList();
 	}
+
 	public void TellPlayerWeAreOwner(NetworkPlayer player)
 	{
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().thisPlayerHP = this.GetComponent<HealthScript>();
+        m_guiCache.PassThroughPlayerReference(this.gameObject);
+        Debug.Log ("Passed through player reference to gui: " + m_guiCache);
 		Camera.main.GetComponent<CameraScript>().InitPlayer(this.gameObject);//.m_currentPlayer = this.gameObject;
-		owner = player;
+		m_owner = player;
 		TellOtherClientsShipHasOwner(player);
 
 		//Ensure weapon is up to date
 		//ResetEquippedWeapon();
 	}
-	[RPC]
-	void SetOwner(NetworkPlayer player)
+
+	[RPC] void SetOwner(NetworkPlayer player)
 	{
 		//this.gameObject.AddComponent<RemotePlayerInterp>();
 		//this.GetComponent<RemotePlayerInterp>().localPlayer = this.gameObject;
-		owner = player;
-	}
-	public NetworkPlayer GetOwner()
-	{
-		return owner;
+		m_owner = player;
 	}
 
 	public void TellShipStartRecievingInput()
 	{
 		m_shouldRecieveInput = true;
 	}
+
 	public void TellShipStopRecievingInput()
 	{
 		m_shouldRecieveInput = false;
 		//networkView.RPC ("PropagateRecieveInput", RPCMode.Others);
 	}
-	[RPC]
-	void PropagateRecieveInput()
+
+	[RPC] void PropagateRecieveInput()
 	{
 		m_shouldRecieveInput = false;
-		this.GetComponent<HealthScript>().m_shouldStop = true;
+		this.GetComponent<HealthScript>().SetShouldStop(true);
 	}
 
 	public GameObject GetWeaponObject()
@@ -1562,6 +1586,7 @@ public class PlayerControlScript : Ship
 
 		return null;
 	}
+
 	GameObject GetShieldObject()
 	{
 		foreach(Transform child in transform)
@@ -1574,6 +1599,7 @@ public class PlayerControlScript : Ship
 
 		return null;
 	}
+
 	GameObject GetEngineObject()
 	{
 		foreach(Transform child in transform)
@@ -1586,6 +1612,7 @@ public class PlayerControlScript : Ship
 		
 		return null;
 	}
+
 	GameObject GetPlatingObject()
 	{
 		foreach(Transform child in transform)
@@ -1599,90 +1626,9 @@ public class PlayerControlScript : Ship
 		return null;
 	}
 
-	void OnDestroy()
-	{
-		if(Network.player == owner)
-			Screen.showCursor = true;
-	}
+	
 
-	//Do shield fizzle wizzle
-	int shaderCounter = 0;
-	public void BeginShaderCoroutine(Vector3 position, int type, float magnitude)
-	{
-		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
-		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
-		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
-		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), type);
-		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), magnitude);
-
-		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
-		
-		++shaderCounter;
-		if(shaderCounter >= 4)
-			shaderCounter = 0;
-	}
-	public void BeginShaderCoroutine(Vector3 position)
-	{
-		//Debug.Log ("Bullet collision, beginning shader coroutine");
-		Vector3 pos = this.transform.InverseTransformPoint(position);
-		pos = new Vector3(pos.x * transform.localScale.x, pos.y * transform.localScale.y, pos.z);
-		GetShield().renderer.material.SetVector("_ImpactPos" + (shaderCounter + 1).ToString(), new Vector4(pos.x, pos.y, pos.z, 1));
-		GetShield().renderer.material.SetFloat("_ImpactTime" + (shaderCounter + 1).ToString(), 1.0f);
-		GetShield().renderer.material.SetInt("_ImpactTypes" + (shaderCounter + 1).ToString(), 0);
-		GetShield().renderer.material.SetFloat("_ImpactMagnitude" + (shaderCounter + 1).ToString(), 0.0f);
-
-		StartCoroutine(ReduceShieldEffectOverTime(shaderCounter));
-		
-		++shaderCounter;
-		if(shaderCounter >= 4)
-			shaderCounter = 0;
-	}
-
-	bool coroutineIsRunning = false;
-	bool coroutineForceStopped = false;
-	IEnumerator ReduceShieldEffectOverTime(int i)
-	{
-		float t = 0;
-		coroutineIsRunning = true;
-		//while(t <= 1.0f && coroutineIsRunning)
-		while(t <= 1.0f)
-		{
-			t += Time.deltaTime;
-			GameObject shield = GetShield();
-			float time = shield.renderer.material.GetFloat("_ImpactTime" + (i + 1).ToString());
-			
-			//oldImp.w = 1.0f - t;
-			
-			shield.renderer.material.SetFloat("_ImpactTime" + (i + 1).ToString(), 1.0f - t);
-			yield return 0;
-		}
-		
-		/*if(!coroutineIsRunning)
-				coroutineForceStopped = true;*/
-		
-		
-		coroutineIsRunning = false;
-	}
-
-	GameObject GetShield()
-	{
-		foreach(Transform child in this.transform)
-		{
-			if(child.tag == "Shield")
-			{
-				return child.gameObject;
-			}
-		}
-
-		Debug.LogWarning ("No shield found for mob " + this.name);
-		return null;
-	}
-
-
-	[RPC]
-	void PropagateExplosiveForce (float x, float y, float range, float minForce, float maxForce, int mode = (int) ForceMode.Force)
+	[RPC] void PropagateExplosiveForce (float x, float y, float range, float minForce, float maxForce, int mode = (int) ForceMode.Force)
 	{
 		// Use the players z position to stop the force causing players to move upwards all the time
 		Vector3 position = new Vector3 (x, y, transform.position.z);
@@ -1700,7 +1646,7 @@ public class PlayerControlScript : Ship
 	/// You probably don't want to use this. This will return the weapon, shield, plating or engine based on what number you pass.
 	/// The numbers correspond to how they're displayed in the GUI to the player
 	/// </summary>
-	public GameObject GetEquipmentFromSlot (int slotNumber)
+	public ItemWrapper GetEquipmentFromSlot (int slotNumber)
 	{
 		switch (slotNumber)
 		{
