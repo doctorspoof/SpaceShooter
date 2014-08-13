@@ -25,6 +25,11 @@ public class AISpawnLeader : MonoBehaviour, IEntity
         return targetTags;
     }
 
+    public void AddTargetTag(string tag_)
+    {
+        targetTags.Add(tag_);
+    }
+
 
     #endregion
 

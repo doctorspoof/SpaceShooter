@@ -106,7 +106,7 @@ public class ShipEnemy : Ship
         ResetThrusters();
 
         //lastFramePosition = shipTransform.position;
-        m_currentAttackType = AIAttackCollection.GetAttack(m_allowedAttacksForShip[Random.Range(0, m_allowedAttacksForShip.Length)]);
+        //m_currentAttackType = AIAttackCollection.GetAttack(m_allowedAttacksForShip[Random.Range(0, m_allowedAttacksForShip.Length)]);
         m_randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
         ResetShipSpeed();
     }
@@ -174,6 +174,11 @@ public class ShipEnemy : Ship
             }
 
         }
+    }
+
+    void OnDestroy()
+    {
+        Debug.Log("I have been murdered!");
     }
 
     public void AlertLowHP(GameObject lastHit)
@@ -329,7 +334,8 @@ public class ShipEnemy : Ship
 
     void MoveTowardTarget()
     {
-        Debug.Log("parent = " + (m_parentTransform == null) + " m_targetMove = " + m_targetMove);
+        //Debug.Log("parent = " + (m_parentTransform == null) + " m_targetMove = " + m_targetMove);
+        // TODO: this was reliant on the EnemyGroup. Needs changing so that it can follow its own target, or stay in formation otherwise.
         if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position), m_targetMove) > Vector2.Distance(m_shipTransform.position, m_targetMove))
         {
             Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();

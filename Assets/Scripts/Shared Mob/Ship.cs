@@ -214,7 +214,12 @@ public class Ship : MonoBehaviour, IEntity
 
     protected virtual void Start()
     {
-        m_parentTransform = (Transform)GetAINode().GetParent().RequestInformation((int)AIShipRequestInfo.Transform)[0];
+        object[] info = GetAINode().GetParent().RequestInformation((int)AIShipRequestInfo.Transform);
+        if(info != null)
+        {
+            m_parentTransform = (Transform)info[0];
+        }
+        
     }
 
     protected virtual void Update()
@@ -263,7 +268,7 @@ public class Ship : MonoBehaviour, IEntity
 
         //Debug.Log("Ship id = " + shipID + " has " + maxThrusterVelocitySeen + " __ " + maxAngularVelocitySeen + " __ " + currentAngularVelocity);
 
-        UpdateThrusters();
+        //UpdateThrusters();
 
     }
 
@@ -416,8 +421,6 @@ public class Ship : MonoBehaviour, IEntity
 
     void UpdateThrusters()
     {
-        
-        
         foreach (Thruster thruster in m_thrusters)
         {
             if (thruster != null)
@@ -446,7 +449,7 @@ public class Ship : MonoBehaviour, IEntity
 
     public void ResetThrusters()
     {
-        networkView.RPC("PropagateResetThrusters", RPCMode.All);
+        //networkView.RPC("PropagateResetThrusters", RPCMode.All);
     }
 
     [RPC]

@@ -4,7 +4,7 @@ using System.Collections;
 public class HealthScript : MonoBehaviour 
 {
 	//Only need to use this for the capital ship
-	[SerializeField] GameObject m_GameStateController;
+	[SerializeField] GameObject m_gameStateController;
 	
 	[SerializeField] GameObject m_DeathObjectRef;
 
@@ -35,10 +35,6 @@ public class HealthScript : MonoBehaviour
     bool hasBeenHitAlready = false;
 
     #region getset
-    public void SetGameStateController(GameObject controller)
-    {
-        m_GameStateController = controller;
-    }
 
     public bool GetShouldStop()
     {
@@ -285,7 +281,6 @@ public class HealthScript : MonoBehaviour
 			//Tell gamecontroller the capital ship is under attack
 			if(this.tag == "Capital")
             {
-                GameStateController gameState = m_GameStateController.GetComponent<GameStateController>();
                 gameState.CapitalShipHasTakenDamage();
             }
 				

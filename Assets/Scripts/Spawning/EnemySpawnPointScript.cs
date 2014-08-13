@@ -93,8 +93,6 @@ public class EnemySpawnPointScript : MonoBehaviour
 
     }
 
-    // TODO: change wormhole scaling to client side with triggers only being sent across network for opening wormholes
-
     void CheckScalingWormhole()
     {
         if (m_spawnPointActive && !m_wormholeActive)
@@ -160,10 +158,9 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             if (spawn.currentTime >= spawn.timeUntilStart)
             {
-                ShipEnemy script = spawn.shipObject.GetComponent<ShipEnemy>();
-                spawn.leader.AddChild(script.GetAINode());
+                spawn.shipObject.SetActive(true);
 
-                HealthScript health = enemy.GetComponent<HealthScript>();
+                HealthScript health = spawn.shipObject.GetComponent<HealthScript>();
                 health.SetModifier(m_modifier);
 
                 m_enemiesBeingSpawned.RemoveAt(i);
@@ -178,47 +175,35 @@ public class EnemySpawnPointScript : MonoBehaviour
         }
     }
 
-    public void AddToSpawnList(List<WaveInfo> waves_)
+    public void AddToSpawnList(WaveInfo wave_)
     {
         if (Network.isServer)
         {
-            foreach (WaveInfo info in waves_)
-            {
-                GenerateSpawnLocations(info);
-                //m_wavesToBeSpawned.Add(CreateGroupedWaveInfo(info));
-            }
+            // currently does nothing with any gameobjects that dont have a ship component, eg. AISpawnLeader
+
+            List<GameObject> objectsInstantiated = wave_.Instantiate();
+
+            List<Ship> ships = new List<Ship>();
+            objectsInstantiated.ForEach(
+                 x =>
+                 {
+                     Ship ship = null;
+                     if ((ship = x.GetComponent<Ship>()) != null)
+                     {
+                         ships.Add(ship);
+                     }
+                 }
+                 );
+
+            List<SpawnLocation> locations = GenerateSpawnLocations(ships.Count);
+
+            Debug.Log("ship count = " + ships.Count + " location count = " + locations.Count);
+
+            BindSpawns(ships, locations);
 
             Activate(true);
         }
     }
-
-
-    /// <summary>
-    /// Used for tying a group to a wave
-    /// </summary>
-    /// <param name="info_"></param>
-    /// <returns></returns>
-    //GroupedWaveInfo CreateGroupedWaveInfo(WaveInfo info_)
-    //{
-    //    // set all the objects into an array
-    //    List<GameObject> enemies = new List<GameObject>();
-
-    //    foreach (WaveEnemyType enemyType in info_.m_enemiesOnWave)
-    //    {
-    //        for (int i = 0; i < enemyType.m_numEnemy; ++i)
-    //        {
-
-    //            enemies.Add(enemyType.m_enemyRef);
-                
-    //        }
-    //    }
-
-    //    GameObject leaderAIObject = new GameObject("LeaderAI");
-    //    AISpawnLeader leaderAI = leaderAIObject.AddComponent<AISpawnLeader>();
-    //    leaderAI.GetTargetTags().AddRange(info_.GetDefaultOrderTargetTags());
-
-    //    return new GroupedWaveInfo { leader = leaderAI, wave = enemies.ToArray() };
-    //}
 
     void Activate(bool flag_)
     {
@@ -230,42 +215,53 @@ public class EnemySpawnPointScript : MonoBehaviour
         }
     }
 
+    void BindSpawns(List<Ship> ships_, List<SpawnLocation> spawns_)
+    {
+        for(int i = 0; i < spawns_.Count; ++i)
+        {
+            spawns_[i].scale = ships_[i].GetMaxSize();
+            spawns_[i].shipObject = ships_[i].gameObject;
+        }
+
+        m_enemiesWaitingToSpawn.AddRange(spawns_);
+    }
+
     /// <summary>
     /// Takes all current wavesToBeSpawned and starts the spawning sequence
     /// </summary>
-    void GenerateSpawnLocations(WaveInfo info_)
+    List<SpawnLocation> GenerateSpawnLocations(int count_)
     {
-        foreach (WaveEnemyType enemyType in info_.m_enemiesOnWave)
+        List<SpawnLocation> locations = new List<SpawnLocation>();
+
+        for(int i = 0; i < count_; ++i)
         {
-            for (int i = 0; i < enemyType.m_numEnemy; ++i)
+            Vector3 spawnLocation = this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0);
+
+            float timeUntilStart = Random.Range(0, m_maxTimeBetweenFirstAndLastSpawn) + m_timeBeforeScalingWormhole + m_timeTakenToScaleWormhole;
+
+            SpawnLocation newLocation = new SpawnLocation{ timeUntilStart = timeUntilStart };
+            bool added = false;
+
+            for (int j = 0; j < locations.Count; ++j)
             {
-                Ship shipComponent = enemyType.m_enemyRef.GetComponent<Ship>();
+                if(locations[j].timeUntilStart > newLocation.timeUntilStart)
+                {
+                    locations.Insert(j, newLocation);
+                    added = true;
+                    break;
+                }
+            }
 
-                Vector3 spawnLocation = this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0);
-                GameObject ship = (GameObject)Network.Instantiate(enemyType.m_enemyRef, spawnLocation, Quaternion.identity, 0);
-                ship.SetActive(false);
-
-                NewSpawnLocation(Random.Range(0, m_maxTimeBetweenFirstAndLastSpawn) + m_timeBeforeScalingWormhole + m_timeTakenToScaleWormhole,
-                                shipComponent.GetMaxSize(),
-                                ship);
+            if(!added)
+            {
+                locations.Add(newLocation);
             }
         }
+
+        return locations;
     }
 
-    /// <summary>
-    /// Creates a new spawn for a specified prefab
-    /// </summary>
-    /// <param name="timeUntilStart_">Time until the spawning starts</param>
-    /// <param name="location_"></param>
-    /// <param name="scale_"></param>
-    /// <param name="prefab_"></param>
-    /// <param name="parentGroup_"></param>
-    void NewSpawnLocation(float timeUntilStart_, float scale_, GameObject shipObject_)
-    {
-        m_enemiesWaitingToSpawn.Add(new SpawnLocation { timeUntilStart = timeUntilStart_, scale = scale_, shipObject = shipObject_ });
-    }
-
-    [RPC] private void PropagateNewSpawnEffect(float timeTillDestroy_, Vector3 location_, float scale_)
+    [RPC] void PropagateNewSpawnEffect(float timeTillDestroy_, Vector3 location_, float scale_)
     {
         GameObject spawnedEffect = (GameObject)Instantiate(m_spawnEffect, location_, Quaternion.identity);
         spawnedEffect.transform.localScale = new Vector3(scale_, scale_, 1);

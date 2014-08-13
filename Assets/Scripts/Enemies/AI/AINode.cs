@@ -21,6 +21,11 @@ public class AINode
 
     #region getset
 
+    public IEntity GetEntity()
+    {
+        return m_entity;
+    }
+
     public void AddChild(AINode node_)
     {
         m_children.Add(node_);
@@ -46,11 +51,15 @@ public class AINode
     }
 
     /// <summary>
-    /// Private because you should only be adding to the hierarchy via AddChild. Prevents confusion and a cyclic circumstance. Keeps the hierarchy correct
+    /// Private because you should only be adding to the hierarchy via AddChild. Prevents confusion and a cyclic circumstance. Keeps the hierarchy correct.
     /// </summary>
     /// <param name="parent_"></param>
     void SetParent(AINode parent_)
     {
+        if(m_parent != null)
+        {
+            m_parent.GetChildren().Remove(this);
+        }
         m_parent = parent_;
     }
 
@@ -242,19 +251,31 @@ public class AINode
     /// <param name="node_">Node that is losing children</param>
     public void ReceiveChildren(AINode node_)
     {
-        foreach (AINode child in node_.GetChildren())
+        // run it backwards to make sure we dont start skipping elements when changing parents
+        for(int i = node_.GetChildren().Count - 1; i >= 0; --i)
         {
-            child.SetParent(this);
-            m_children.Add(child);
+            AddChild(node_.GetChildren()[i]);
         }
 
         node_.GetChildren().Clear();
     }
 
+    /// <summary>
+    /// CLEAN UP AFTER YOURSELVES! GAWD!
+    /// </summary>
     public void Destroy()
     {
         // make sure this node is replaced correctly so that the hierarchy is not broken.
         PromoteNewReplacement();
+    }
 
+    public void Recurse(System.Action<IEntity> func_)
+    {
+        func_(m_entity);
+
+        foreach(AINode child in m_children)
+        {
+            child.Recurse(func_);
+        }
     }
 }
