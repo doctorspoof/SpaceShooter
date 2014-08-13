@@ -33,12 +33,12 @@ public class GUIShopDockScreen : BaseGUIScreen
     // Cached Members
     GameStateController     m_gscCache                              = null;
     PlayerControlScript     m_playerCache                           = null;
-    ShopScript              m_shopCache                             = null;
+    Shop              m_shopCache                             = null;
     
     #region Setters
     public void SetShopCache(GameObject shop)
     {
-        m_shopCache = shop.GetComponent<ShopScript>();
+        m_shopCache = shop.GetComponent<Shop>();
     }
     public void SetPlayerReference(GameObject ship)
     {
@@ -89,7 +89,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                 if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
                     m_drawnItemsSecondary.Add(finalRect, playerInv[i].GetComponent<ItemWrapper>());
                 
-                if (shouldRecieveInput && currentEvent.type == EventType.MouseDown && m_shopCache.GetShopType() == ShopScript.ShopType.Shipyard)
+                if (shouldRecieveInput && currentEvent.type == EventType.MouseDown && m_shopCache.GetShopType() == ShopType.Shipyard)
                 {
                     bool insideFinalRect = finalRect.Contains(mousePos);
                     if (!m_shopConfirmBuy && insideFinalRect && !m_isRequestingItem)
@@ -147,7 +147,7 @@ public class GUIShopDockScreen : BaseGUIScreen
             Rect engineTemp = new Rect(605, 588, 63, 63);
             
             //Do shop type specific stuff
-            if(m_shopCache.GetShopType() == ShopScript.ShopType.Basic)
+            if(m_shopCache.GetShopType() == ShopType.Basic)
             {
                 GUI.DrawTexture(new Rect(396, 221, 403, 460), m_smallShopTexture);
                 int hpPercent = (int)(m_playerCache.GetComponent<HealthScript>().GetHPPercentage() * 100.0f);
@@ -183,9 +183,10 @@ public class GUIShopDockScreen : BaseGUIScreen
                 {
                     if (key.Contains(mousePos))
                     {
-                        int id = m_shopCache.GetIDIfItemPresent(m_drawnItems[key]);
-                        string text = m_drawnItems[key].GetHoverText(m_shopCache.GetItemCost(id));
-                        DrawHoverText(text, mousePos);
+                        //TODO: Find out what pete renamed this function to
+                        //int id = m_shopCache.GetIDIfItemPresent(m_drawnItems[key]);
+                        //string text = m_drawnItems[key].GetHoverText(m_shopCache.GetItemCost(id));
+                        //DrawHoverText(text, mousePos);
                     }
                 }
                 
@@ -286,7 +287,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                 
                 if(GUI.Button (new Rect(700, 440, 70, 40), "Confirm"))
                 {
-                    //int cost = m_shopDockedAt.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex);
+                    //int cost = m_shopDockedAt.GetComponent<Shop>().GetItemCost(m_currentTicket.itemIndex);
                     shopInv.RequestTicketValidityCheck(m_currentTicket);
                     Debug.Log ("Requested confirm buy of item, using ticket: " + m_currentTicket.ToString());
                     StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.TicketValidity, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
@@ -386,7 +387,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                     {
                     case ItemOwner.PlayerInventory:
                     {
-                        int costIfShop = fromShop ? inventory.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex) : -1;
+                        int costIfShop = fromShop ? inventory.GetComponent<Shop>().GetItemCost(m_currentTicket.itemIndex) : -1;
                         
                         if (inventory.RemoveItemFromServer (m_currentTicket))
                         {

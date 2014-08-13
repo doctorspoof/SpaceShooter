@@ -148,13 +148,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!148 &61916494
 NetworkView:
   m_ObjectHideFlags: 0
@@ -180,16 +180,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 0
   m_dockPoint: {fileID: 645314090}
-  m_canStockWeapons: 0
-  m_canStockShields: 1
-  m_canStockEngines: 0
-  m_canStockPlating: 0
-  m_canStockCWeapons: 0
-  RESETINVENTORY: 0
+  m_canStock: 
+  DebugResetInventory: 0
 --- !u!65 &61916496
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -412,13 +408,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!23 &249488144
 Renderer:
   m_ObjectHideFlags: 0
@@ -579,13 +575,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!23 &283628326
 Renderer:
   m_ObjectHideFlags: 0
@@ -1728,16 +1724,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 1
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 1
   m_dockPoint: {fileID: 1204770483}
-  m_canStockWeapons: 0
-  m_canStockShields: 0
-  m_canStockEngines: 1
-  m_canStockPlating: 0
-  m_canStockCWeapons: 0
-  RESETINVENTORY: 0
+  m_canStock: 
+  DebugResetInventory: 0
 --- !u!65 &779021245
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1965,13 +1957,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!148 &800427923
 NetworkView:
   m_ObjectHideFlags: 0
@@ -1997,16 +1989,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 0
   m_dockPoint: {fileID: 2063122409}
-  m_canStockWeapons: 1
-  m_canStockShields: 0
-  m_canStockEngines: 0
-  m_canStockPlating: 0
-  m_canStockCWeapons: 0
-  RESETINVENTORY: 0
+  m_canStock: 
+  DebugResetInventory: 0
 --- !u!65 &800427925
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2186,7 +2174,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b15400513652724e91f0fba3db45668, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SunRef: {fileID: 2099994236}
+  m_pointToFace: {fileID: 0}
 --- !u!95 &823290493
 Animator:
   serializedVersion: 2
@@ -3927,16 +3915,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 0
   m_dockPoint: {fileID: 1608623262}
-  m_canStockWeapons: 1
-  m_canStockShields: 1
-  m_canStockEngines: 1
-  m_canStockPlating: 1
-  m_canStockCWeapons: 0
-  RESETINVENTORY: 0
+  m_canStock: 
+  DebugResetInventory: 0
 --- !u!65 &1337935895
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4018,13 +4002,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &1337935901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4080,16 +4064,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 0
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 0
   m_dockPoint: {fileID: 1256501225}
-  m_canStockWeapons: 0
-  m_canStockShields: 0
-  m_canStockEngines: 0
-  m_canStockPlating: 1
-  m_canStockCWeapons: 0
-  RESETINVENTORY: 0
+  m_canStock: 
+  DebugResetInventory: 0
 --- !u!65 &1339814085
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4171,13 +4151,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &1339814091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4606,13 +4586,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!23 &1406026652
 Renderer:
   m_ObjectHideFlags: 0
@@ -5565,13 +5545,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!23 &1754092239
 Renderer:
   m_ObjectHideFlags: 0
@@ -5726,7 +5706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b15400513652724e91f0fba3db45668, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SunRef: {fileID: 2099994236}
+  m_pointToFace: {fileID: 0}
 --- !u!1 &1799796568
 GameObject:
   m_ObjectHideFlags: 0
@@ -5768,13 +5748,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 1
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!23 &1799796571
 Renderer:
   m_ObjectHideFlags: 0

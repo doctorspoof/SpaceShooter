@@ -931,7 +931,7 @@ public class GUICShipDockScreen : BaseGUIScreen
                         {
                         case ItemOwner.PlayerInventory:
                         {
-                            int costIfShop = fromShop ? inventory.GetComponent<ShopScript>().GetItemCost(m_currentTicket.itemIndex) : -1;
+                            int costIfShop = fromShop ? inventory.GetComponent<Shop>().GetItemCost(m_currentTicket.itemIndex) : -1;
                             
                             if (inventory.RemoveItemFromServer (m_currentTicket))
                             {

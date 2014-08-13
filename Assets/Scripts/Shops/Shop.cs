@@ -86,7 +86,7 @@ public sealed class Shop : MonoBehaviour
 
         catch (System.Exception error)
         {
-            Debug.LogError ("Exception occurred in " + name + ".ShopScript: " + error.Message);
+            Debug.LogError ("Exception occurred in " + name + ".Shop: " + error.Message);
             return int.MaxValue;
         }
     }
@@ -107,7 +107,7 @@ public sealed class Shop : MonoBehaviour
             }
         }
 
-        Debug.LogWarning ("Couldn't find item: " + item + " in " + name + ".ShopScript.m_shopInventory");
+        Debug.LogWarning ("Couldn't find item: " + item + " in " + name + ".Shop.m_shopInventory");
         return -1;
     }
 
@@ -340,7 +340,7 @@ public sealed class Shop : MonoBehaviour
             if (items.Count != m_shopInventory.GetCapacity())
             {
                 Debug.LogError ("The number of generated items (" + items.Count + ") in " +
-                                name + ".ShopScript does not match the NetworkInventory capacity (" + m_shopInventory.GetCapacity() + ").");
+                                name + ".Shop does not match the NetworkInventory capacity (" + m_shopInventory.GetCapacity() + ").");
             }
 
             for (int i = 0; i < items.Count; ++i)
@@ -357,7 +357,7 @@ public sealed class Shop : MonoBehaviour
                     
                     else
                     {
-                        Debug.LogError ("Somehow the server hasn't responded in " + name + ".ShopScript.RefillInventory()");
+                        Debug.LogError ("Somehow the server hasn't responded in " + name + ".Shop.RefillInventory()");
                     }
                 }
             }
