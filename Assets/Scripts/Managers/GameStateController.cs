@@ -474,9 +474,13 @@ public class GameStateController : MonoBehaviour
             m_sceneLoadedConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
             m_sceneLoadedConfirmList[i].readyToLoad = false;
         }
-        networkView.RPC("BeginLoadingInGameScene", RPCMode.All);
         
-        SwitchToLoadingScreen();
+        //Non-async
+        networkView.RPC ("BeginLoadScreen", RPCMode.All);
+        //ASync
+        //networkView.RPC("BeginLoadingInGameScene", RPCMode.All);
+        
+        //SwitchToLoadingScreen();
         
         //TODO: Move this stuff to post 
         /*SpawnCapitalShip();
@@ -503,6 +507,30 @@ public class GameStateController : MonoBehaviour
             Camera.main.GetComponent<CameraScript>().TellCameraBeginSpectatorMode();*/
     }
     
+    /* Non-ASync Method */
+    [RPC] void BeginLoadScreen()
+    {
+        SwitchToLoadingScreen();
+        Application.LoadLevel(1);
+        
+        StartCoroutine(AwaitLoadComplete());
+    }
+    
+    IEnumerator AwaitLoadComplete()
+    {
+        while(Application.loadedLevel != 1)
+            yield return 0;
+    
+        if(Network.isServer)
+            HostSetUpGame();
+        else
+        {
+            m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
+            SwitchToDockedAtCShip();
+        }
+    }
+    
+    /* ASync Method */
     [RPC] void BeginLoadingInGameScene()
     {
         Debug.Log ("Beginning scene load...");
@@ -597,8 +625,9 @@ public class GameStateController : MonoBehaviour
         
     }
     void HostSetUpGame()
-    {
-        networkView.RPC ("TellPlayersSwapSceneNow", RPCMode.Others);
+    {   
+        //Uncomment this to return to async
+        //networkView.RPC ("TellPlayersSwapSceneNow", RPCMode.Others);
     
         //Update our scene references to the new scene
         m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();

@@ -1541,7 +1541,6 @@ public class PlayerControlScript : Ship
 	public void TellPlayerWeAreOwner(NetworkPlayer player)
 	{
         m_guiCache.PassThroughPlayerReference(this.gameObject);
-        Debug.Log ("Passed through player reference to gui: " + m_guiCache);
 		Camera.main.GetComponent<CameraScript>().InitPlayer(this.gameObject);//.m_currentPlayer = this.gameObject;
 		m_owner = player;
 		TellOtherClientsShipHasOwner(player);
