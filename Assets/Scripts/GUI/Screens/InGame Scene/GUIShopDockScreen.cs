@@ -19,27 +19,38 @@ public class GUIShopDockScreen : BaseGUIScreen
     string                  m_transferFailedMessage                 = "";
     
     // Dragged Item Members
-    ItemScript              m_currentDraggedItem                    = null;
+    ItemWrapper              m_currentDraggedItem                    = null;
     int                     m_currentDraggedItemInventoryId         = -1;
     bool                    m_currentDraggedItemIsFromPlayerInv     = false;
     ItemTicket              m_currentTicket                         = null;
     bool                    m_shopConfirmBuy                        = false;
-    ItemScript              m_confirmBuyItem                        = null;
+    ItemWrapper              m_confirmBuyItem                        = null;
     
     // Drawn Rect Dictionaries
-    Dictionary<Rect, ItemScript> m_drawnItems = new Dictionary<Rect, ItemScript>();
-    Dictionary<Rect, ItemScript> m_drawnItemsSecondary = new Dictionary<Rect, ItemScript>();
+    Dictionary<Rect, ItemWrapper> m_drawnItems = new Dictionary<Rect, ItemWrapper>();
+    Dictionary<Rect, ItemWrapper> m_drawnItemsSecondary = new Dictionary<Rect, ItemWrapper>();
     
     // Cached Members
     GameStateController     m_gscCache                              = null;
     PlayerControlScript     m_playerCache                           = null;
     ShopScript              m_shopCache                             = null;
     
+    #region Setters
+    public void SetShopCache(GameObject shop)
+    {
+        m_shopCache = shop.GetComponent<ShopScript>();
+    }
+    public void SetPlayerReference(GameObject ship)
+    {
+        m_playerCache = ship.GetComponent<PlayerControlScript>();
+    }
+    #endregion
+    
     /* Unity Functions */
     void Start () 
     {
         m_priorityValue = 3;
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
     }
     
     /* Custom Functions */
@@ -64,19 +75,19 @@ public class GUIShopDockScreen : BaseGUIScreen
             
             //Player - left
             GUI.Label(new Rect(816, 270, 164, 40), "Player:", "No Box");
-            List<GameObject> playerInv = m_playerCache.GetPlayerInventory();
+            List<ItemWrapper> playerInv = m_playerCache.GetPlayerInventory();
             Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
             m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
             for (int i = 0; i < playerInv.Count; i++)
             {
-                GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemScript>().GetIcon());
+                GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemWrapper>().GetIcon());
                 Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
-                GUI.Label(lastR, playerInv[i].GetComponent<ItemScript>().GetItemName(), "Small No Box");
+                GUI.Label(lastR, playerInv[i].GetComponent<ItemWrapper>().GetItemName(), "Small No Box");
                 Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - m_playerScrollPosition.y, lastR.width, lastR.height);
                 Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
                 
                 if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-                    m_drawnItemsSecondary.Add(finalRect, playerInv[i].GetComponent<ItemScript>());
+                    m_drawnItemsSecondary.Add(finalRect, playerInv[i].GetComponent<ItemWrapper>());
                 
                 if (shouldRecieveInput && currentEvent.type == EventType.MouseDown && m_shopCache.GetShopType() == ShopScript.ShopType.Shipyard)
                 {
@@ -84,7 +95,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                     if (!m_shopConfirmBuy && insideFinalRect && !m_isRequestingItem)
                     {
                         //Begin drag & drop
-                        m_currentDraggedItem = playerInv[i].GetComponent<ItemScript>();
+                        m_currentDraggedItem = playerInv[i].GetComponent<ItemWrapper>();
                         m_currentDraggedItemInventoryId = i;
                         m_currentDraggedItemIsFromPlayerInv = true;
                     }
@@ -103,7 +114,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                 {
                     GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), shopInv[i].GetIcon());
                     Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
-                    GUI.Label(lastR, shopInv[i].GetComponent<ItemScript>().GetItemName(), "Small No Box");
+                    GUI.Label(lastR, shopInv[i].GetComponent<ItemWrapper>().GetItemName(), "Small No Box");
                     Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - m_shopScrollPosition.y, lastR.width, lastR.height);
                     Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
                     
@@ -119,7 +130,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                             {
                                 //Since we're a shop, on mouseDown, open the item confirmation box
                                 shopInv.RequestServerCancel(m_currentTicket);
-                                shopInv.RequestServerItem(shopInv[i].m_equipmentID, i);
+                                shopInv.RequestServerItem(shopInv[i].GetItemID(), i);
                                 StartCoroutine(AwaitTicketRequestResponse(shopInv, RequestType.ItemTake, ItemOwner.NetworkInventory, ItemOwner.PlayerInventory, true));
                             }
                             else
@@ -153,15 +164,15 @@ public class GUIShopDockScreen : BaseGUIScreen
                 if (iconLeftX >= 324.0f)
                 {
                     
-                    m_drawnItemsSecondary.Add(weaponTemp, m_playerCache.GetEquipedWeaponItem().GetComponent<ItemScript>());
-                    m_drawnItemsSecondary.Add(shieldTemp, m_playerCache.GetEquipedShieldItem().GetComponent<ItemScript>());
-                    m_drawnItemsSecondary.Add(platingTemp, m_playerCache.GetEquipedPlatingItem().GetComponent<ItemScript>());
-                    m_drawnItemsSecondary.Add(engineTemp, m_playerCache.GetEquipedEngineItem().GetComponent<ItemScript>());
+                    m_drawnItemsSecondary.Add(weaponTemp, m_playerCache.GetEquipedWeaponItem().GetComponent<ItemWrapper>());
+                    m_drawnItemsSecondary.Add(shieldTemp, m_playerCache.GetEquipedShieldItem().GetComponent<ItemWrapper>());
+                    m_drawnItemsSecondary.Add(platingTemp, m_playerCache.GetEquipedPlatingItem().GetComponent<ItemWrapper>());
+                    m_drawnItemsSecondary.Add(engineTemp, m_playerCache.GetEquipedEngineItem().GetComponent<ItemWrapper>());
                     
-                    GUI.DrawTexture(weaponTemp, m_playerCache.GetEquipedWeaponItem().GetComponent<ItemScript>().GetIcon());
-                    GUI.DrawTexture(shieldTemp, m_playerCache.GetEquipedShieldItem().GetComponent<ItemScript>().GetIcon());
-                    GUI.DrawTexture(platingTemp, m_playerCache.GetEquipedPlatingItem().GetComponent<ItemScript>().GetIcon());
-                    GUI.DrawTexture(engineTemp, m_playerCache.GetEquipedEngineItem().GetComponent<ItemScript>().GetIcon());
+                    GUI.DrawTexture(weaponTemp, m_playerCache.GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetIcon());
+                    GUI.DrawTexture(shieldTemp, m_playerCache.GetEquipedShieldItem().GetComponent<ItemWrapper>().GetIcon());
+                    GUI.DrawTexture(platingTemp, m_playerCache.GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetIcon());
+                    GUI.DrawTexture(engineTemp, m_playerCache.GetEquipedEngineItem().GetComponent<ItemWrapper>().GetIcon());
                 }
             }
             
@@ -173,7 +184,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                     if (key.Contains(mousePos))
                     {
                         int id = m_shopCache.GetIDIfItemPresent(m_drawnItems[key]);
-                        string text = m_drawnItems[key].GetShopText(m_shopCache.GetItemCost(id));
+                        string text = m_drawnItems[key].GetHoverText(m_shopCache.GetItemCost(id));
                         DrawHoverText(text, mousePos);
                     }
                 }
@@ -182,21 +193,21 @@ public class GUIShopDockScreen : BaseGUIScreen
                 {
                     if (key.Contains(mousePos))
                     {
-                        string text = m_drawnItemsSecondary[key].GetShopText();
+                        string text = m_drawnItemsSecondary[key].GetHoverText();
                         DrawHoverText(text, mousePos);  
                     }
                 }
             }
             else if(shouldRecieveInput)
             {
-                GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemScript>().GetIcon());
+                GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemWrapper>().GetIcon());
                 
                 if(!Input.GetMouseButton(0))
                 {
                     //Drop item whereever you are
                     if(weaponTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Weapon)
+                        if(m_currentDraggedItem.GetItemType() == ItemType.Weapon)
                         {
                             m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
@@ -212,7 +223,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                     }
                     else if(shieldTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Shield)
+                        if(m_currentDraggedItem.GetItemType() == ItemType.Shield)
                         {
                             m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
@@ -228,7 +239,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                     }
                     else if(platingTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Plating)
+                        if(m_currentDraggedItem.GetItemType() == ItemType.Plating)
                         {
                             m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
@@ -244,7 +255,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                     }
                     else if(engineTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetTypeOfItem() == ItemType.Engine)
+                        if(m_currentDraggedItem.GetItemType() == ItemType.Engine)
                         {
                             m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
@@ -271,7 +282,7 @@ public class GUIShopDockScreen : BaseGUIScreen
             if(m_shopConfirmBuy)
             {
                 GUI.DrawTexture(new Rect(632, 328, 337, 200), m_menuBackground);
-                GUI.Label(new Rect(662, 350, 277, 50), "Buy '" + m_confirmBuyItem.GetItemName() + "' for $" + m_confirmBuyItem.m_cost + "?", "No Box");
+                GUI.Label(new Rect(662, 350, 277, 50), "Buy '" + m_confirmBuyItem.GetItemName() + "' for $" + m_confirmBuyItem.GetBaseCost() + "?", "No Box");
                 
                 if(GUI.Button (new Rect(700, 440, 70, 40), "Confirm"))
                 {
@@ -370,7 +381,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                 {
                 case ItemOwner.NetworkInventory:
                 {
-                    ItemScript item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemScript>();
+                    ItemWrapper item = GameObject.FindGameObjectWithTag ("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID (m_currentTicket.itemID).GetComponent<ItemWrapper>();
                     switch (to)
                     {
                     case ItemOwner.PlayerInventory:
@@ -379,7 +390,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                         
                         if (inventory.RemoveItemFromServer (m_currentTicket))
                         {
-                            m_playerCache.AddItemToInventory (item.gameObject);
+                            m_playerCache.AddItemToInventory (item);
                             
                             if(fromShop)
                             {
@@ -398,29 +409,29 @@ public class GUIShopDockScreen : BaseGUIScreen
                     }
                     case ItemOwner.PlayerEquipment:
                     {   
-                        if (item.GetTypeOfItem() != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+                        if (item.GetItemType() != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
                         {
-                            GameObject oldEquipment = m_playerCache.GetEquipmentFromSlot (equipmentSlot);
+                            ItemWrapper oldEquipment = m_playerCache.GetEquipmentFromSlot (equipmentSlot);
                             
-                            if (m_playerCache.InventoryIsFull())
+                            if (m_playerCache.IsInventoryFull())
                             {
-                                GameObject lastItem = m_playerCache.GetPlayerInventory()[m_playerCache.GetPlayerInventory().Count - 1];
+                                ItemWrapper lastItem = m_playerCache.GetPlayerInventory()[m_playerCache.GetPlayerInventory().Count - 1];
                                 
                                 // This little wonder makes me want to vomit and should only be used until the demo night
                                 // Remove the last item from the players inventory then equip the new item from that
                                 m_playerCache.RemoveItemFromInventory (lastItem);
-                                m_playerCache.AddItemToInventory (item.gameObject);
+                                m_playerCache.AddItemToInventory (item);
                                 m_playerCache.EquipItemInSlot (m_playerCache.GetPlayerInventory().Count - 1);
                                 m_playerCache.RemoveItemFromInventory (oldEquipment);
                                 m_playerCache.AddItemToInventory (lastItem);
                                 
                                 // Move the item to the CShip inventory since the players inventory is full
-                                inventory.RequestServerAdd (oldEquipment.GetComponent<ItemScript>());
+                                inventory.RequestServerAdd (oldEquipment);
                                 StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, to, from));
                             }
                             else
                             {
-                                m_playerCache.AddItemToInventory (item.gameObject);
+                                m_playerCache.AddItemToInventory (item);
                                 m_playerCache.EquipItemInSlot (m_playerCache.GetPlayerInventory().Count - 1);
                             }
                         }

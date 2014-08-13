@@ -14,6 +14,6 @@ public sealed class CapitalShipFinalExplode : MonoBehaviour
 	void OnDestroy()
 	{
 		//Tell gui to display loss popup
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ShowLossSplash();
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().SwitchToGameOver();
     }
 }

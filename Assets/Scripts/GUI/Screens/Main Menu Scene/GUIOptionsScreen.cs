@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class GUIOptionsScreen : BaseGUIScreen 
@@ -27,7 +27,7 @@ public class GUIOptionsScreen : BaseGUIScreen
             
         m_newResolution = Screen.currentResolution;
             
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
 	}
     
     /* Custom Functions */
@@ -113,7 +113,7 @@ public class GUIOptionsScreen : BaseGUIScreen
         
         if(GUI.Button (new Rect(222, 130, 290, 620), "", "label"))
         {
-            m_gscCache.CloseOptionMenu();
+            m_gscCache.SwitchToMainMenu();
         }
     }
 }

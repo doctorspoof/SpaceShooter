@@ -12,20 +12,79 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     [SerializeField]        Texture m_iconBorder;
     [SerializeField]        Texture m_playerIcon;
     [SerializeField]        Texture m_cShipIcon;
+    [SerializeField]        Texture m_menuBackground;
+    [SerializeField]        Texture m_cursor;
+    [SerializeField]        Texture m_cursorLocking;
+    [SerializeField]        Texture m_cursorLocked;
+    [SerializeField]        Texture m_reloadBackground;
+    [SerializeField]        Texture m_reloadBar;
+    [SerializeField]        Texture m_lockedTarget;
     
     // Internal members
+    bool m_shouldShowCShipUnderFire = false;
+    bool m_playerHasDied = false;
+    bool m_isOnCShipDeathSequence = false;
+    bool m_noRespawnCash = false;
+    bool m_isOutOfBounds = false;
+    float m_cShipAttackTimer = 0.0f;
     
+    //Locking vars
+    bool m_isLockedOn = false;
+    bool m_isLockingOn = false;
+    GameObject m_targetGO = null;
+    
+    #region Setters
+    public void SetPlayerDead(bool state)
+    {
+        m_playerHasDied = state;
+    }
+    public void SetNoRespawnCash(bool state)
+    {
+        m_noRespawnCash = state;
+    }
+    public void SetCShipUnderFire()
+    {
+        m_shouldShowCShipUnderFire = true;
+        m_cShipAttackTimer = 0.0f;
+    }
+    public void SetIsOutOfBounds(bool state)
+    {
+        m_isOutOfBounds = state; 
+    }
+    #endregion
     
     // Cached members
     GameStateController m_gscCache;
     HealthScript m_playerHPCache;
     HealthScript m_cShipHPCache;
     
+    #region
+    public void SetCShipReference(GameObject cship)
+    {
+        m_cShipHPCache = cship.GetComponent<HealthScript>();
+    }
+    public void SetPlayerReference(GameObject ship)
+    {
+        m_playerHPCache = ship.GetComponent<HealthScript>();
+    }
+    #endregion
+    
     /* Unity Functions */
     void Start () 
     {
         m_priorityValue = 1;
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
+    }
+    
+    void Update ()
+    {
+        if(m_shouldShowCShipUnderFire)
+        {
+            if(m_cShipAttackTimer < 3.5f)
+                m_cShipAttackTimer += Time.deltaTime;
+            else
+                m_shouldShowCShipUnderFire = false;
+        }
     }
     
     /* Custom Functions */
@@ -105,6 +164,39 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTexture(new Rect(1215, 80, 200, 50), m_barMid);
             GUI.DrawTexture(new Rect(1425, 80, -10, 50), m_barEnd);
             GUI.Label(new Rect(1225, 85, 180, 44), "$ " + m_cShipHPCache.GetComponent<CapitalShipScript>().GetBankedCash(), "No Box");
+        }
+        
+        if(m_shouldShowCShipUnderFire)
+        {
+            GUI.Label (new Rect(1205, 130, 220, 44), "Capital ship under attack!", "Shared");
+        }
+        
+        if (m_playerHasDied && !m_isOnCShipDeathSequence)
+        {
+            GUI.DrawTexture(new Rect(650, 100, 300, 250), m_menuBackground);
+            GUI.Label(new Rect(700, 130, 200, 80), "You have been destroyed", "Big No Box");
+            
+            if (m_noRespawnCash)
+            {
+                GUI.Label(new Rect(675, 200, 250, 80), "Not enough banked cash to respawn! You need $500.", "No Box");
+            }
+            else
+            {
+                GUI.Label(new Rect(700, 200, 200, 80), "Respawning...", "No Box");
+            }
+        }
+    }
+    
+    void DrawCursor()
+    {
+        if (m_playerHPCache != null)
+        {
+            //Cursor
+            Matrix4x4 oldMat = GUI.matrix;
+            GUI.matrix = Matrix4x4.identity;
+            Vector3 mousePos = Input.mousePosition;
+            
+            
         }
     }
 }

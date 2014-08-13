@@ -31,7 +31,7 @@ public class CameraScript : MonoBehaviour
 	/* Cached members */
 	GameStateController m_gameController; 	            // A reference to the GameStateController
     GameObject m_capitalShip;                           // A reference to the CShip
-	GUIManager m_gui;						            // A reference to the GUIManager
+    GUIBaseMaster m_gui;						        // A reference to the GUIManager
 
 	/* Unity functions */
     
@@ -40,19 +40,20 @@ public class CameraScript : MonoBehaviour
 		m_currentOrthoSize = camera.orthographicSize;
 
 		// Assign a reference to the GameStateController
-		GameObject gameController = GameObject.FindGameObjectWithTag ("GameController");
+        m_gameController = GameStateController.Instance();
 
-		if (gameController == null || !(m_gameController = gameController.GetComponent<GameStateController>()))
+        if (m_gameController == null)
 		{
 			Debug.LogError ("Unable to find GameStateController in CameraScript.");
 		}
 
-		GameObject guiManager = GameObject.FindGameObjectWithTag ("GUIManager");
+
+		/*GameObject guiManager = GameObject.FindGameObjectWithTag ("GUIManager");
 
 		if (guiManager == null || !(m_gui = guiManager.GetComponent<GUIManager>()))
 		{
 			Debug.LogError ("Unable to find GUIManager in CameraScript.");
-		}
+		}*/
 	}
 
     // Late update is used for spectator mode
@@ -84,7 +85,7 @@ public class CameraScript : MonoBehaviour
                     {
                         m_isInFollowMode = false;
                         m_trackedPlayerID = -1;
-                        m_gui.RecieveActivePlayerSpec(m_trackedPlayerID);   
+                        //m_gui.RecieveActivePlayerSpec(m_trackedPlayerID);   
                     }
                 }
                 else
@@ -126,7 +127,7 @@ public class CameraScript : MonoBehaviour
                     {
                         m_isInFollowMode = true;
                         m_trackedPlayerID = 0;
-                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
+                        //m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
                 if(Input.GetKeyDown(KeyCode.Alpha2))
@@ -135,7 +136,7 @@ public class CameraScript : MonoBehaviour
                     {
                         m_isInFollowMode = true;
                         m_trackedPlayerID = 1;
-                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
+                        //m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
                 if(Input.GetKeyDown(KeyCode.Alpha3))
@@ -144,7 +145,7 @@ public class CameraScript : MonoBehaviour
                     {
                         m_isInFollowMode = true;
                         m_trackedPlayerID = 2;
-                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
+                        //m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
                 if(Input.GetKeyDown(KeyCode.Alpha4))
@@ -153,18 +154,18 @@ public class CameraScript : MonoBehaviour
                     {
                         m_isInFollowMode = true;
                         m_trackedPlayerID = 3;
-                        m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
+                        //m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                     }
                 }
                 
                 if(Input.GetKeyDown(KeyCode.Tab))
                 {
-                    m_gui.ToggleMap();
+                    m_gameController.ToggleBigMapState();
                 }
                 if(Input.GetKeyDown (KeyCode.Z))
                 {
                     // Toggle the map type
-                    m_gui.FlipIsOnFollowMap();
+                    m_gameController.ToggleSmallMapState();
                 }
                 
                 if(Input.GetKeyDown(KeyCode.LeftControl))
@@ -174,7 +175,7 @@ public class CameraScript : MonoBehaviour
                         m_capitalShip = GameObject.FindGameObjectWithTag("Capital");
                     transform.position = m_capitalShip.transform.position + m_SpecOffset;
                     m_trackedPlayerID = -1;
-                    m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
+                    //m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                 }
                 
                 if(Input.GetKeyDown (KeyCode.Space))
@@ -186,7 +187,7 @@ public class CameraScript : MonoBehaviour
                     else if(m_trackedPlayerID < 0)
                         m_trackedPlayerID = 0;
                     
-                    m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
+                    //m_gui.RecieveActivePlayerSpec (m_trackedPlayerID);
                 }
                 
                 if (m_gameController.GetCurrentGameState() == GameState.InGame)
@@ -262,22 +263,22 @@ public class CameraScript : MonoBehaviour
                     
                     if(Input.GetKeyDown(KeyCode.Tab))
                     {
-                        m_gui.ToggleMap();
+                        m_gameController.ToggleBigMapState();
                     }
                     if(Input.GetKeyDown (KeyCode.Z))
                     {
                         // Toggle the map type
-                        m_gui.FlipIsOnFollowMap();
+                        m_gameController.ToggleSmallMapState();
                     }
                     
                     if(Input.GetButtonDown("X360Start") || Input.GetKeyDown(KeyCode.Escape))
                     {
-                        m_gui.ToggleMenuState();
+                        m_gameController.ToggleMainMenu();
                     }
                 }
                 
                 //Listen for camera input
-                if(!m_playerIsDocked && m_gameController.GetCurrentGameState() ==GameState.InGame)
+                if(!m_playerIsDocked && m_gameController.GetCurrentGameState() == GameState.InGame)
                 {
                     float scroll = Input.GetAxis("Mouse ScrollWheel");
                     if(scroll > 0 || Input.GetButton("X360LeftBumper"))
@@ -369,7 +370,7 @@ public class CameraScript : MonoBehaviour
 		}
 
 		//Alert gui we're in specmode
-		m_gui.BeginSpecModeGameTimer();
+		//m_gui.BeginSpecModeGameTimer();
 		m_shouldParallax = true;
 
 		//Jump to CShip

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class GUIIPScreen : BaseGUIScreen 
@@ -9,6 +9,13 @@ public class GUIIPScreen : BaseGUIScreen
     /* Internal Members */
     string m_IPField;
     string m_username;
+    
+    #region Setters
+    public void SetUsername(string name)
+    {
+        m_username = name;
+    }
+    #endregion
 
     /* Cached stuff */
     GameStateController m_gscCache;
@@ -19,7 +26,7 @@ public class GUIIPScreen : BaseGUIScreen
 	    m_priorityValue = 1;
         m_IPField = PlayerPrefs.GetString("LastIP");
         m_username = PlayerPrefs.GetString("LastUsername");
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
 	}
     
     /* Custom Functions */
@@ -57,6 +64,8 @@ public class GUIIPScreen : BaseGUIScreen
     }
     void ClientConnectBackActivate()
     {
-        m_gscCache.GetComponent<GameStateController>().BackToMenu();
+        m_gscCache.GetComponent<GameStateController>().SwitchToMainMenu();
     }
+    
+    
 }

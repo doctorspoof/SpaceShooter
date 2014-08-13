@@ -43,7 +43,7 @@ MonoBehaviour:
   m_itemTierID: 1
   m_baseCost: 0
   m_itemName: 
-  m_itemIcon: {fileID: 0}
+  m_itemIcon: {fileID: 2800000, guid: d6271a8c9a82e1443b2c10dd6cab33dc, type: 3}
   m_itemPrefab: {fileID: 100000, guid: 964383f7e861cc845a80f146d56fc96c, type: 2}
 --- !u!1001 &100100000
 Prefab:

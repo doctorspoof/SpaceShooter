@@ -12,10 +12,13 @@ public enum GameState
     OptionMenu = 5,
     AttemptingConnect = 6,
     FailedConnectName = 7,
+    LoadingScreen = 8,
     InGame = 10,
     InGameConnectionLost = 11,
     InGameCShipDock = 12,
-    InGameShopDock = 13
+    InGameShopDock = 13,
+    InGameGameOver = 14,
+    InGameMenu = 15
 }
 
 [System.Serializable]
@@ -62,6 +65,12 @@ public class GameStateController : MonoBehaviour
         public NetworkPlayer player;
         public bool camInPositionConfirmed;
     }
+    
+    class SceneLoadingConfirmation
+    {
+        public NetworkPlayer player;
+        public bool readyToLoad;
+    }
 
     [SerializeField] List<Player> m_connectedPlayers;
     
@@ -91,22 +100,25 @@ public class GameStateController : MonoBehaviour
     float m_volumeHolder = 1.0f;
 
     bool m_shouldSpawnRoids = true;
+    bool m_inGameMenuIsOpen = false;
 
     float m_capitalDamageTimer = 0;
 
     List<LossConfirmation> m_lossConfirmList;
-
     List<LossCamConfirmation> m_lossCameraConfirmList;
+    List<SceneLoadingConfirmation> m_sceneLoadedConfirmList;
 
     float m_gameTimer = 0;
     bool m_lossTimerBegin = false;
     float m_lossTimer = 0.0f;
     bool m_cshipIsDying = false;
+    bool m_isLoadingLevel = false;
 
     static GameStateController instance;
+    
 
     GameObject m_localPlayer;
-
+    AsyncOperation m_levelChangeOperation;
 
 
     #region getset
@@ -254,7 +266,14 @@ public class GameStateController : MonoBehaviour
 
     
     void Update()
-    {
+    {   
+        //If at any time the GUI manager is null, immediately find one in the scene
+        if(m_GUIManager == null && m_isLoadingLevel)
+        {
+            Debug.Log("GUI reference is null, finding new GUIMaster in scene...");
+            m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
+        }
+    
         if (m_volumeHolder != PlayerPrefs.GetFloat("MusicVolume"))
         {
             m_volumeHolder = PlayerPrefs.GetFloat("MusicVolume");
@@ -342,7 +361,7 @@ public class GameStateController : MonoBehaviour
                             if (m_deadPlayers[i].m_needsChecking)
                             {
                                 //Alert the GUI that there are insufficient funds to respawn, then stop checking if we can afford
-                                m_GUIManager.GetComponent<GUIManager>().AlertGUINoMoneyToRespawn(m_deadPlayers[i].m_playerObject.m_netPlayer);
+                                TellPlayerNoMoneyToRespawn(m_deadPlayers[i].m_playerObject.m_netPlayer);
                                 m_deadPlayers[i].m_needsChecking = false;
                             }
                         }
@@ -352,6 +371,28 @@ public class GameStateController : MonoBehaviour
             }
         }
     }
+    
+    /* Custom Functions */
+    
+    void TellPlayerNoMoneyToRespawn(NetworkPlayer player)
+    {
+        if(player == Network.player)
+            networkView.RPC ("SetNotEnoughRespawnMoney", player, true);
+        else
+            SetNotEnoughRespawnMoney(true);
+    }
+    void TellPlayerIsMoneyToRespawn(NetworkPlayer player)
+    {
+        if(player == Network.player)
+            networkView.RPC ("SetNotEnoughRespawnMoney", player, false);
+        else
+            SetNotEnoughRespawnMoney(false);
+    }
+    [RPC] void SetNotEnoughRespawnMoney(bool state)
+    {
+        m_GUIManager.GetComponent<GUIInGameMaster>().SetInsufficientRespawnCash(state);
+    }
+    
 
     bool ListContainsName(string name)
     {
@@ -366,11 +407,11 @@ public class GameStateController : MonoBehaviour
 
     public void AlertMoneyAboveRespawn()
     {
-        m_GUIManager.GetComponent<GUIManager>().AlertGUIMoneyToRespawn(Network.player);
+        TellPlayerIsMoneyToRespawn(Network.player);
         foreach (DeadPlayer deadP in m_deadPlayers)
         {
             deadP.m_needsChecking = true;
-            m_GUIManager.GetComponent<GUIManager>().AlertGUIMoneyToRespawn(deadP.m_playerObject.m_netPlayer);
+            TellPlayerIsMoneyToRespawn(deadP.m_playerObject.m_netPlayer);
         }
     }
 
@@ -411,7 +452,7 @@ public class GameStateController : MonoBehaviour
         if (Network.isClient)
         {
             Debug.Log("Lost connection to host...");
-            ChangeGameState(GameState.InGameConnectionLost);
+            SwitchToInGameConnLost();
             //m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
             
         }
@@ -425,10 +466,20 @@ public class GameStateController : MonoBehaviour
 
     public void StartGameFromMenu(bool isSpecMode)
     {
-        //For now this will take the players to the basic map. 
-        //Later this will take them to the map screen etc.
-
-        SpawnCapitalShip();
+        //TODO: Change this to begin the level load sequence
+        m_sceneLoadedConfirmList = new List<SceneLoadingConfirmation>();
+        for (int i = 0; i < m_connectedPlayers.Count; i++)
+        {
+            m_sceneLoadedConfirmList.Add(new SceneLoadingConfirmation());
+            m_sceneLoadedConfirmList[i].player = m_connectedPlayers[i].m_netPlayer;
+            m_sceneLoadedConfirmList[i].readyToLoad = false;
+        }
+        networkView.RPC("BeginLoadingInGameScene", RPCMode.All);
+        
+        SwitchToLoadingScreen();
+        
+        //TODO: Move this stuff to post 
+        /*SpawnCapitalShip();
 
         foreach (NetworkPlayer player in Network.connections)
         {
@@ -439,7 +490,6 @@ public class GameStateController : MonoBehaviour
 
         if (!isSpecMode)
         {
-            //Debug.Log("Spawning ship for self.");
             SpawnAShip(Network.player);
         }
         ChangeToInGame();
@@ -447,13 +497,136 @@ public class GameStateController : MonoBehaviour
         //Begin the game!
         m_gameStopped = false;
         networkView.RPC("TellLocalGSCGameHasBegun", RPCMode.Others);
-        m_GUIManager.GetComponent<GUIManager>().StartRound();
 
         //Once everyone has been told to do stuff, alert camera that it's specmode time 
         if (isSpecMode)
-            Camera.main.GetComponent<CameraScript>().TellCameraBeginSpectatorMode();
-          
-
+            Camera.main.GetComponent<CameraScript>().TellCameraBeginSpectatorMode();*/
+    }
+    
+    [RPC] void BeginLoadingInGameScene()
+    {
+        Debug.Log ("Beginning scene load...");
+        SwitchToLoadingScreen();
+        StartCoroutine(AwaitSceneLoadCompletion());
+    }
+    
+    IEnumerator AwaitSceneLoadCompletion()
+    {
+        m_levelChangeOperation = Application.LoadLevelAsync(1);
+        m_levelChangeOperation.allowSceneActivation = false;
+        
+        while(m_levelChangeOperation.progress < 0.9f)
+        {
+            Debug.Log ("Load operation is not yet completed! Current progress: " + m_levelChangeOperation.progress);
+            yield return new WaitForSeconds(1.0f);
+        }
+        
+        /*while(!m_levelChangeOperation.isDone)
+        {
+            Debug.Log ("Load operation is not yet completed!");
+            yield return m_levelChangeOperation;
+        }*/
+        
+        Debug.Log ("Load operation has completed, alerting host");
+        
+        //Alert the host that we're ready to change to the new level whenever everyone else is
+        if(Network.isServer)
+            HostIsReadyToLoad();
+        else
+            networkView.RPC ("AlertHostClientIsReadyToLoad", RPCMode.Server);
+    }
+    
+    [RPC] void AlertHostClientIsReadyToLoad(NetworkMessageInfo info)
+    {
+        Debug.Log ("Client #" + info.sender + " is ready to load");
+        for(int i = 0; i < m_sceneLoadedConfirmList.Count; i++)
+        {
+            if(m_sceneLoadedConfirmList[i].player == info.sender)
+            {
+                m_sceneLoadedConfirmList[i].readyToLoad = true;
+                TestSceneCanBeLoaded();
+                return;
+            }
+        }
+    }
+    void HostIsReadyToLoad()
+    {
+        Debug.Log ("Host is ready to load");
+        for(int i = 0;i < m_sceneLoadedConfirmList.Count; i++)
+        {
+            if(m_sceneLoadedConfirmList[i].player == Network.player)
+            {
+                m_sceneLoadedConfirmList[i].readyToLoad = true;
+                TestSceneCanBeLoaded();
+                return;
+            }
+        }
+    }
+    
+    void TestSceneCanBeLoaded()
+    {
+        for(int i = 0; i < m_sceneLoadedConfirmList.Count; i++)
+        {
+            if(!m_sceneLoadedConfirmList[i].readyToLoad)
+            {
+                Debug.Log ("Not everyone is ready yet!");
+                return;
+            }
+        }
+        
+        Debug.Log ("Everyone is ready!");
+        //If we've gotten here, it means everyone is ready to go
+        //networkView.RPC ("TellPlayersLoadSceneNow", RPCMode.All);
+        TellPlayersSwapSceneNow();
+        StartCoroutine(AwaitSceneTransitionBeforeSetup());
+    }
+    
+    IEnumerator AwaitSceneTransitionBeforeSetup()
+    {
+        while(!m_levelChangeOperation.isDone)
+        {
+            yield return 0;
+        }
+        
+        HostSetUpGame();
+    }
+    [RPC] void TellPlayersSwapSceneNow()
+    {
+        Debug.Log ("Recieved request to finalise scene switch");
+        m_levelChangeOperation.allowSceneActivation = true;
+        
+    }
+    void HostSetUpGame()
+    {
+        networkView.RPC ("TellPlayersSwapSceneNow", RPCMode.Others);
+    
+        //Update our scene references to the new scene
+        m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
+        UpdateAttachedAsteroidManagers();
+        
+        //Do game setup
+        SpawnCapitalShip();
+        
+        foreach (NetworkPlayer player in Network.connections)
+        {
+            Debug.Log("Telling player #" + player.ToString() + " to spawn ship.");
+            networkView.RPC("SpawnAShip", player, player);
+            networkView.RPC("ChangeToInGame", player);
+        }
+        
+        SpawnAShip(Network.player);
+        ChangeToInGame();
+        
+        //Begin the game!
+        m_gameStopped = false;
+        networkView.RPC("TellLocalGSCGameHasBegun", RPCMode.Others);
+        
+        networkView.RPC ("ForceRemoteStateChange", RPCMode.All, (int)GameState.InGameCShipDock);
+    }
+    
+    [RPC] void ForceRemoteStateChange(int state)
+    {
+        ChangeGameState((GameState)state);
     }
 
     [RPC] void SpawnAShip(NetworkPlayer player)
@@ -468,7 +641,7 @@ public class GameStateController : MonoBehaviour
         GameObject ship = (GameObject)Network.Instantiate(m_playerShip, pos, m_ingameCapitalShip.transform.rotation, 0);
         ship.GetComponent<PlayerControlScript>().InitPlayerOnCShip(m_ingameCapitalShip);
         m_localPlayer = ship;
-        ship.GetComponent<PlayerControlScript>().SetInputMethod(m_GUIManager.GetComponent<GUIManager>().GetUseController());
+        ship.GetComponent<PlayerControlScript>().SetInputMethod((PlayerPrefs.GetInt("UseControl") == 1));
 
         //m_GUIManager.GetComponent<GUIManager>().AlertGUIPlayerHasRespawned();
         ship.GetComponent<PlayerControlScript>().TellPlayerWeAreOwner(player);
@@ -488,11 +661,14 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void SendCShipRefToClients()
     {
-        //Debug.Log("Recieved request to attach CShip");
         GameObject cship = GameObject.FindGameObjectWithTag("Capital");
-        m_GUIManager.GetComponent<GUIManager>().SetCShip(cship);
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughCShipReference(cship);
     }
     
+    void UpdateAttachedAsteroidManagers()
+    {
+        m_AsteroidManagers = GameObject.FindGameObjectsWithTag("AsteroidManager");
+    }
 
     [RPC] void ChangeToInGame()
     {
@@ -504,13 +680,10 @@ public class GameStateController : MonoBehaviour
             }
             m_shouldSpawnRoids = false;
         }
-        ChangeGameState(GameState.InGame);
+        
+        SwitchToInGame();
     }
 
-    public void BackToMenu()
-    {
-        ChangeGameState(GameState.MainMenu);
-    }
     public void WipeConnectionInfo()
     {
         m_connectedPlayers = new List<Player>();
@@ -523,7 +696,7 @@ public class GameStateController : MonoBehaviour
         Debug.Log("Starting server on port: 6677");
         Network.InitializeServer(10, 6677, false);
         m_connectedPlayers.Add(new Player(Network.player, m_ownName));
-        ChangeGameState(GameState.HostMenu);
+        SwitchToHostScreen();
     }
 
     public void PlayerRequestsToJoinGame(string IP, string name, int port)
@@ -531,7 +704,7 @@ public class GameStateController : MonoBehaviour
         m_ownName = name;
         Debug.Log("Attempting to connect to server at: " + IP.ToString() + ", at port: " + port);
         NetworkConnectionError error = Network.Connect(IP, port);
-        ChangeGameState(GameState.AttemptingConnect);
+        SwitchToAttemptingConn();
 
         if (error != NetworkConnectionError.NoError)
         {
@@ -543,7 +716,7 @@ public class GameStateController : MonoBehaviour
     {
         Debug.Log("Aborting connection.");
         Network.Disconnect();
-        ChangeGameState(GameState.ClientInputIP);
+        SwitchToIPInput();
     }
 
     public void RemovePlayerFromConnectedList(NetworkPlayer player)
@@ -629,7 +802,7 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void CancelClientConnect()
     {
-        ChangeGameState(GameState.FailedConnectName);
+        SwitchToConnFailed();
         WipeConnectionInfo();
         Network.Disconnect();
         Debug.LogWarning("Kicked from server due to conflicting name");
@@ -657,7 +830,6 @@ public class GameStateController : MonoBehaviour
         //networkView.RPC ("TellHostBeginSpawns", RPCMode.Server);
         //networkView.RPC ("TellHostBeginSpawns", RPCMode.All);
 
-        networkView.RPC("TellAllClientsRoundHasStarted", RPCMode.Others, true);
 
         m_shouldCheckForFinished = false;
         //m_GUIManager.GetComponent<GUIManager>().m_ArenaClearOfEnemies = false;
@@ -669,16 +841,6 @@ public class GameStateController : MonoBehaviour
         m_gameStopped = false;
     }
 
-    [RPC] void TellAllClientsRoundHasStarted(bool started)
-    {
-        //m_GUIManager.GetComponent<GUIManager>().m_PlayerRequestsRound = started;
-        if (started)
-        {
-            m_GUIManager.GetComponent<GUIManager>().StartRound();
-            m_shouldCheckForFinished = false;
-        }
-    }
-
     [RPC] void TellAllDeadPlayersRespawn()
     {
         if (m_localPlayer == null)
@@ -687,25 +849,117 @@ public class GameStateController : MonoBehaviour
         }
     }
 
-    public void AlertAllClientsNextWaveReady()
+    #region ExternalScriptAccess
+    public void ToggleMainMenu()
     {
-        networkView.RPC("TellAllClientsRoundHasStarted", RPCMode.All, false);
+        m_inGameMenuIsOpen = !m_inGameMenuIsOpen;
+        
+        if (m_inGameMenuIsOpen)
+        {
+            Screen.showCursor = true;
+            if (m_localPlayer != null)
+                m_localPlayer.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
+                
+            SwitchToEscMenu();
+        }
+        else
+        {
+            if (!(m_currentGameState == GameState.InGameCShipDock || m_currentGameState == GameState.InGameShopDock))
+            {
+                Screen.showCursor = false;
+                if (m_localPlayer != null)
+                    m_localPlayer.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
+            }
+            
+            SwitchToInGame();
+        }
     }
+    #endregion
 
-    public void SwitchToJoinScreen()
+    #region Value Passing To GUI
+    public void ToggleBigMapState()
     {
-        ChangeGameState(GameState.ClientInputIP);
+        m_GUIManager.GetComponent<GUIInGameMaster>().ToggleBigMapState();
     }
-
-    public void OpenOptionMenu()
+    public void ToggleSmallMapState()
     {
-        ChangeGameState(GameState.OptionMenu);
+        m_GUIManager.GetComponent<GUIInGameMaster>().ToggleSmallMapState();
     }
+    #endregion
 
-    public void CloseOptionMenu()
+    #region GameState Changing
+    //Menu Screens
+    public void SwitchToMainMenu()
     {
         ChangeGameState(GameState.MainMenu);
     }
+    
+    public void SwitchToHostScreen()
+    {
+        ChangeGameState(GameState.HostMenu);
+    }
+    
+    public void SwitchToIPInput()
+    {
+        ChangeGameState(GameState.ClientInputIP);
+    }
+    
+    public void SwitchToClientScreen()
+    {
+        ChangeGameState(GameState.ClientMenu);
+    }
+
+    public void SwitchToOptions()
+    {
+        ChangeGameState(GameState.OptionMenu);
+    }
+    
+    public void SwitchToAttemptingConn()
+    {
+        ChangeGameState(GameState.AttemptingConnect);
+    }
+
+    public void SwitchToConnFailed()
+    {
+        ChangeGameState(GameState.FailedConnectName);
+    }
+    
+    public void SwitchToLoadingScreen()
+    {
+        ChangeGameState(GameState.LoadingScreen);
+    }
+    
+    //In-Game Screens
+    public void SwitchToInGame()
+    {
+        ChangeGameState(GameState.InGame);
+    }
+    
+    public void SwitchToInGameConnLost()
+    {
+        ChangeGameState(GameState.InGameConnectionLost);
+    }
+    
+    public void SwitchToDockedAtCShip()
+    {
+        ChangeGameState(GameState.InGameCShipDock);
+    }
+    
+    public void SwitchToDockedAtShop()
+    {
+        ChangeGameState(GameState.InGameShopDock);
+    }
+    
+    public void SwitchToGameOver()
+    {
+        ChangeGameState(GameState.InGameGameOver);
+    }
+    
+    public void SwitchToEscMenu()
+    {
+        ChangeGameState(GameState.InGameMenu);
+    }
+    #endregion
 
     void OnPlayerConnected(NetworkPlayer player)
     {
@@ -721,7 +975,7 @@ public class GameStateController : MonoBehaviour
         networkView.RPC("PlayerSendsNameToOthers", RPCMode.Server, m_ownName);
         //Debug.Log ("Asking host to propagate our name to other clients");
         //networkView.RPC ("ClientAsksHostToSpreadName", RPCMode.Server, ownName);
-        ChangeGameState(GameState.ClientMenu);
+        SwitchToClientScreen();
     }
 
     void ChangeGameState(GameState newState)
@@ -753,7 +1007,7 @@ public class GameStateController : MonoBehaviour
         m_localPlayer = null;
         Camera.main.GetComponent<CameraScript>().NotifyPlayerHasDied();
         //m_GUIManager.GetComponent<GUIManager>().m_PlayerHasDied = true;
-        m_GUIManager.GetComponent<GUIManager>().AlertGUIPlayerHasDied();
+        m_GUIManager.GetComponent<GUIInGameMaster>().SetPlayerDead(true);
         if (Network.isClient)
         {
             networkView.RPC("AlertHostPlayerHasDied", RPCMode.Server, false);
@@ -856,7 +1110,7 @@ public class GameStateController : MonoBehaviour
             player.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();
 
         //Tell GUI to display victory splash
-        m_GUIManager.GetComponent<GUIManager>().ShowVictorySplash();
+        //m_GUIManager.GetComponent<GUIManager>().ShowVictorySplash();
         m_gameStopped = true;
     }
     
@@ -871,7 +1125,7 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void PropagateCapitalShipUnderFire()
     {
-        m_GUIManager.GetComponent<GUIManager>().AlertCapitalUnderAttack();
+        m_GUIManager.GetComponent<GUIInGameMaster>().StartPopupCShipTakenDamage();
     }
 
     void ResendLossState()
@@ -955,7 +1209,8 @@ public class GameStateController : MonoBehaviour
 
         //Tell the gui what's happening.
         //This will handle freezing all enemies, stopping input, and alerting the camera
-        m_GUIManager.GetComponent<GUIManager>().AlertGUIDeathSequenceBegins();
+        //TODO: Make the GSC handle all this
+        //m_GUIManager.GetComponent<GUIManager>().AlertGUIDeathSequenceBegins();
 
         if (Network.isServer)
         {
@@ -1069,18 +1324,18 @@ public class GameStateController : MonoBehaviour
 
     public void NotifyLocalPlayerHasDockedAtCShip()
     {
-        m_GUIManager.GetComponent<GUIManager>().CloseMap();
-        m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtCapital(true);
+        //m_GUIManager.GetComponent<GUIManager>().CloseMap();
+        //m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtCapital(true);
         Screen.showCursor = true;
         Camera.main.GetComponent<CameraScript>().TellCameraPlayerIsDocked();
     }
 
     public void NotifyLocalPlayerHasDockedAtShop(GameObject shop)
     {
-        m_GUIManager.GetComponent<GUIManager>().CloseMap();
-        m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtShop(true);
+        //m_GUIManager.GetComponent<GUIManager>().CloseMap();
+        //m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtShop(true);
         Screen.showCursor = true;
-        m_GUIManager.GetComponent<GUIManager>().SetShopDockedAt(shop);
+        m_GUIManager.GetComponent<GUIInGameMaster>().SetDockedShop(shop);
     }
 
     public void RequestSpawnerPause()

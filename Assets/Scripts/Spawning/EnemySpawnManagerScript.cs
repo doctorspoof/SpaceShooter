@@ -248,7 +248,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             }
         }
 
-        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertAllClientsNextWaveReady();
+        //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertAllClientsNextWaveReady();
 
     }
 

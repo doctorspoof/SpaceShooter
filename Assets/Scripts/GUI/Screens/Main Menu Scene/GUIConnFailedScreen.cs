@@ -13,7 +13,7 @@ public class GUIConnFailedScreen : BaseGUIScreen
 	void Start () 
     {
         m_priorityValue = 2;
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
 	}
     
     /* Custom Functions */
@@ -25,7 +25,7 @@ public class GUIConnFailedScreen : BaseGUIScreen
         
         if (GUI.Button(new Rect(225, 698, 285, 50), "BACK", "Shared"))
         {
-            m_gscCache.BackToMenu();
+            m_gscCache.SwitchToMainMenu();
         }
     }
 }

@@ -69,6 +69,20 @@ public class GUIInGameMaster : GUIBaseMaster
                 UpdateScreensToDraw(temp);
                 break;
             }
+            case GameState.InGameGameOver:
+            {
+                List<BaseGUIScreen> temp = new List<BaseGUIScreen>(m_listOfScreensToDraw);
+                temp.Add(GetComponent<GUILossSplashScreen>());
+                UpdateScreensToDraw(temp);
+                break;
+            }
+            case GameState.InGameMenu:
+            {
+                List<BaseGUIScreen> temp = new List<BaseGUIScreen>(m_listOfScreensToDraw);
+                temp.Add(GetComponent<GUIEscapeMenuScreen>());
+                UpdateScreensToDraw(temp);
+                break;
+            }
             default:
             {
                 Debug.Log ("Passed game state is not handled by this GUIMaster!");
@@ -76,4 +90,67 @@ public class GUIInGameMaster : GUIBaseMaster
             }
         }
     }
+    
+    #region Generic Sets/Calls
+    public void PassThroughCShipReference(GameObject cShip)
+    {
+        GetComponent<GUIMapOverlayScreen>().SetCShipReference(cShip);
+        GetComponent<GUIInGameHUDScreen>().SetCShipReference(cShip);
+        GetComponent<GUICShipDockScreen>().SetCShipReference(cShip);
+    }
+    public void PassThroughPlayerReference(GameObject player)
+    {
+        GetComponent<GUIMapOverlayScreen>().SetPlayerReference(player);
+        GetComponent<GUIInGameHUDScreen>().SetPlayerReference(player);
+        GetComponent<GUICShipDockScreen>().SetPlayerReference(player);
+        GetComponent<GUIShopDockScreen>().SetPlayerReference(player);
+    }
+    #endregion
+    
+    #region Specific Toggles/Calls
+    public void ToggleBigMapState()
+    {
+        GetComponent<GUIMapOverlayScreen>().ToggleBigMap();
+    }
+    
+    public void ToggleSmallMapState()
+    {
+        GetComponent<GUIMapOverlayScreen>().ToggleSmallMap();
+    }
+    
+    public void ToggleMapsTogether()
+    {
+        GetComponent<GUIMapOverlayScreen>().ToggleMapsTogether();
+    }
+    
+    public void StartPopupCShipTakenDamage()
+    {
+        GetComponent<GUIInGameHUDScreen>().SetCShipUnderFire();
+    }
+    
+    public void SetInsufficientRespawnCash(bool state)
+    {
+        GetComponent<GUIInGameHUDScreen>().SetNoRespawnCash(state);
+    }
+    
+    public void SetDockedShop(GameObject shop)
+    {
+        GetComponent<GUIShopDockScreen>().SetShopCache(shop);
+    }
+    
+    public void SetPlayerDead(bool state)
+    {
+        GetComponent<GUIInGameHUDScreen>().SetPlayerDead(state);
+    }
+    
+    public void SetOutOfBoundsWarning(bool state)
+    {
+        GetComponent<GUIInGameHUDScreen>().SetIsOutOfBounds(state);
+    }
+    
+    public void ResetPlayerList()
+    {
+        GetComponent<GUIMapOverlayScreen>().ResetPlayerList();
+    }
+    #endregion
 }

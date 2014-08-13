@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class GUIConnectingScreen : BaseGUIScreen 
@@ -11,7 +11,7 @@ public class GUIConnectingScreen : BaseGUIScreen
 	void Start () 
     {
         m_priorityValue = 2;
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
 	}
     
     /* Custom Functions */
@@ -22,7 +22,7 @@ public class GUIConnectingScreen : BaseGUIScreen
         if (GUI.Button(new Rect(222, 698, 290, 50), "", "label") && shouldRecieveInput)
         {
             Debug.Log ("Activating cancel button");
-            m_gscCache.GetComponent<GameStateController>().BackToMenu();
+            m_gscCache.GetComponent<GameStateController>().SwitchToMainMenu();
         }
     }
 }

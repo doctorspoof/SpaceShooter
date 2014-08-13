@@ -2,6 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum CShipScreen
+{
+    PlayerPanel = 1,
+    StatusPanel = 2,
+    ObjectivePanel = 3,
+    DualPanel = 5,
+    LeftPanelActive = 6,
+    RightPanelActive = 7,
+    PanelsAnimating = 8
+}
+
 enum ItemOwner
 {
     PlayerInventory = 1,

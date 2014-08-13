@@ -88,6 +88,13 @@ public class GUIMainMenuMaster : GUIBaseMaster
                 m_highestPriority = 1;
                 break;
             }
+            case GameState.LoadingScreen:
+            {
+                m_listOfScreensToDraw.Clear();
+                m_listOfScreensToDraw.Add (GetComponent<GUILoadingScreen>());
+                m_highestPriority = 3;
+                break;
+            }
             default:
             {
                 Debug.Log ("Passed game state is not handled by this GUIMaster!");
@@ -96,7 +103,9 @@ public class GUIMainMenuMaster : GUIBaseMaster
         }
     }
     
-    
-    
-    
+    /* Specific Calls/PassThrough */
+    public void SetUsername(string name)
+    {
+        GetComponent<GUIIPScreen>().SetUsername(name);
+    }
 }

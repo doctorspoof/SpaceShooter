@@ -65,6 +65,8 @@ public class PlayerControlScript : Ship
 
 
     GameObject m_CShip = null;
+    GameStateController m_gscCache = null;
+    GUIInGameMaster m_guiCache = null;
 
     #region getset
 
@@ -180,6 +182,7 @@ public class PlayerControlScript : Ship
     protected override void Awake()
     {
         base.Awake();
+        m_guiCache = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>();
     }
 
     void Start()
@@ -199,7 +202,7 @@ public class PlayerControlScript : Ship
         }
 
         //timeSinceLastPacket = Time.realtimeSinceStartup;
-
+        m_gscCache = GameStateController.Instance();
         StartCoroutine(EnsureEquipmentValidity());
     }
 
@@ -213,7 +216,7 @@ public class PlayerControlScript : Ship
         {
             if ((m_useController && Input.GetButtonDown("X360Start")) || (!m_useController && Input.GetKeyDown(KeyCode.Escape)))
             {
-                GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMenuState();
+                m_gscCache.ToggleMainMenu();
             }
 
             if (m_isAnimating)
@@ -249,7 +252,8 @@ public class PlayerControlScript : Ship
                     
                     if ((m_useController && Input.GetButtonDown("X360B")) || (!m_useController && Input.GetMouseButtonDown(2)))
                     {
-                        GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RequestBreakLock();
+                        //TODO: REDO HOMING SYSTEM
+                        //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RequestBreakLock();
                     }
 
                     if (m_useController)
@@ -323,7 +327,7 @@ public class PlayerControlScript : Ship
                 if (distance < 290f.Squared())
                 {
                     //Stop warning screen
-                    GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().StopOutOfBoundsWarning();
+                    m_guiCache.SetOutOfBoundsWarning(false);
                     m_playerIsOutOfBounds = false;
                 }
             }
@@ -332,7 +336,7 @@ public class PlayerControlScript : Ship
                 if (distance >= 290f.Squared())
                 {
                     //Begin warning screen
-                    GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().BeginOutOfBoundsWarning();
+                    m_guiCache.SetOutOfBoundsWarning(true);
                     m_playerIsOutOfBounds = true;
                 }
             }
@@ -376,7 +380,7 @@ public class PlayerControlScript : Ship
             m_CShip = GameObject.FindGameObjectWithTag("Capital");
             m_targetPoint = m_CShip.transform.position + (m_CShip.transform.right * 7.0f) + (m_CShip.transform.up * 1.5f);
             m_currentDockingState = DockingState.OnApproach;
-            GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
+            //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
             m_isAnimating = true;
         }
         else if (m_isInRangeOfTradingDock && m_nearbyShop != null)
@@ -561,25 +565,7 @@ public class PlayerControlScript : Ship
 
         if (Input.GetButtonDown("X360Back"))
         {
-            GUIManager gui = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>();
-            int status = gui.GetMapStatus();
-
-            if (status == 0)
-            {
-                //Go from follow map to non-follow map
-                gui.SetIsOnFollowMap(false);
-            }
-            else if (status == 1)
-            {
-                //Go from non-follow to fullscreen
-                gui.SetIsOnFollowMap(true);
-                gui.ToggleMap();
-            }
-            else
-            {
-                //Go from fullscreen to follow
-                gui.ToggleMap();
-            }
+            m_guiCache.ToggleMapsTogether();
         }
     }
 
@@ -648,7 +634,7 @@ public class PlayerControlScript : Ship
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().ToggleMap();
+            m_gscCache.ToggleBigMapState();
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
@@ -656,7 +642,7 @@ public class PlayerControlScript : Ship
             /*bool mapVal = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().m_isOnFollowMap;
             GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetIsOnFollowMap(!mapVal);*/
 
-            GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().FlipIsOnFollowMap();
+            m_gscCache.ToggleSmallMapState();
         }
     }
 
@@ -881,7 +867,8 @@ public class PlayerControlScript : Ship
 	{
 		if(m_owner == Network.player)
 		{
-			GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(state);
+            //TODO: Part of homing lockon system
+			//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(state);
 		}
 	}
 
@@ -1126,12 +1113,14 @@ public class PlayerControlScript : Ship
 					{
 						if(newWeapon.GetComponent<ItemWrapper>().GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon())
 						{
-							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
+                            //TODO: HOMING STUFF
+							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
 							Debug.Log ("New weapon is homing, alerting GUI...");
 						}
 						else
 						{
-							GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
+                            //TODO: HOMING STUFF
+							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
 							Debug.Log ("Weapon is not homing. Alerting GUI.");
 						}
 					}
@@ -1283,12 +1272,14 @@ public class PlayerControlScript : Ship
 					//If it's a homing weapon, alert the GUI
 					if(m_playerInventory[slot].GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon())
 					{
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
+                        //TODO: HOMING STUFF AGAIN
+						//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
 						Debug.Log ("New weapon is homing, alerting GUI...");
 					}
 					else
 					{
-						GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
+                        //TODO: HOMING STUFF AGAIN
+						//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
 						Debug.Log ("Weapon is not homing. Alerting GUI.");
 					}
 				
@@ -1544,12 +1535,13 @@ public class PlayerControlScript : Ship
 	{
 		networkView.RPC ("SetOwner", RPCMode.Others, player);
 		//Also tell GUI to update player blobs for map
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().AlertGUIRemotePlayerHasRespawned();
+		m_guiCache.ResetPlayerList();
 	}
 
 	public void TellPlayerWeAreOwner(NetworkPlayer player)
 	{
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetThisPlayerHP(this.GetComponent<HealthScript>());
+        m_guiCache.PassThroughPlayerReference(this.gameObject);
+        Debug.Log ("Passed through player reference to gui: " + m_guiCache);
 		Camera.main.GetComponent<CameraScript>().InitPlayer(this.gameObject);//.m_currentPlayer = this.gameObject;
 		m_owner = player;
 		TellOtherClientsShipHasOwner(player);

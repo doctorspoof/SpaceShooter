@@ -18,12 +18,60 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     GameObject[] m_shops = null;
     bool m_isBigMap = false;
     bool m_isFollowMap = false;
+    
+    #region Setters
+    public void ToggleBigMap()
+    {
+        m_isBigMap = !m_isBigMap;
+    }
+    public void ToggleSmallMap()
+    {
+        m_isFollowMap = !m_isFollowMap;
+    }
+    public void ToggleMapsTogether()
+    {
+        if(m_isBigMap)
+        {
+            m_isBigMap = false;
+            m_isFollowMap = true;
+        }
+        else
+        {
+            if(m_isFollowMap)
+            {
+                m_isBigMap = false;
+                m_isFollowMap = false;
+            }
+            else
+            {
+                m_isBigMap = true;
+            }
+        }
+    }
+    public void ResetPlayerList()
+    {
+        m_playerShips = GameObject.FindGameObjectsWithTag("Player");
+    }
+    #endregion
+    
     float m_blobSize;
     
     /* Cached Members */
     PlayerControlScript m_playerCache = null;
     CapitalShipScript m_cshipCache = null;
     GameStateController m_gscCache = null;
+    
+    #region Setters
+    public void SetCShipReference(GameObject ship)
+    {
+        m_cshipCache = ship.GetComponent<CapitalShipScript>();
+    }
+    
+    public void SetPlayerReference(GameObject ship)
+    {
+        m_playerCache = ship.GetComponent<PlayerControlScript>();
+    }
+    #endregion
     
     /* Unity Functions */
     void Start () 

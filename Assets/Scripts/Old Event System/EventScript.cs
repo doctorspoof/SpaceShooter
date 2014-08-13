@@ -201,7 +201,7 @@ public class EventScript : MonoBehaviour
 			if(other.tag == "Player")
 			{
 				//TODO: Change this to all connected players
-				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetActiveEvent(this.gameObject, other.gameObject.GetComponent<PlayerControlScript>().GetOwner());
+				//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIIn>().SetActiveEvent(this.gameObject, other.gameObject.GetComponent<PlayerControlScript>().GetOwner());
 				m_hasStarted = true;
 			}
 		}
@@ -294,7 +294,7 @@ public class EventScript : MonoBehaviour
 			{
 				//Tie!
 				//Alert GUI that host needs to select an option
-				GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().HostShouldTieBreak();
+				//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().HostShouldTieBreak();
 				isTie = true;
 				break;
 			}
@@ -368,7 +368,7 @@ public class EventScript : MonoBehaviour
 			m_selectedPlayer = null;
 			StartCoroutine(ListenForPlayerSelection(outcomePlayerReqdFor));
 			m_delayedOutcomeText = groupToBeTriggered.groupOutcomeText;
-			GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecievePlayerRequiresSelectingForEvent("A player selection is required");
+			//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecievePlayerRequiresSelectingForEvent("A player selection is required");
 			return "A player selection is required";
 		}
 		else
@@ -377,7 +377,7 @@ public class EventScript : MonoBehaviour
 			string text = "YOU SHOULDN'T SEE THIS";
 			if(groupToBeTriggered != null)
 				text = groupToBeTriggered.groupOutcomeText;
-			GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecieveEventTextFromEventCompletion(text);
+			//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecieveEventTextFromEventCompletion(text);
 			m_eventShouldSelfDestruct = true;
 			return text;
 		}
@@ -523,7 +523,7 @@ public class EventScript : MonoBehaviour
 
 		//We've been given a player, now fire the outcome
 		FireEventOutcome(outcome);
-		GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecieveEventTextFromEventCompletion(m_delayedOutcomeText);
+		//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RecieveEventTextFromEventCompletion(m_delayedOutcomeText);
 		m_eventShouldSelfDestruct = true;
 	}
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class GUIClientConnectedScreen : BaseGUIScreen 
@@ -13,7 +13,7 @@ public class GUIClientConnectedScreen : BaseGUIScreen
 	void Start () 
     {
 	    m_priorityValue = 1;
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
 	}
     
     /* Custom Functions */
@@ -36,7 +36,7 @@ public class GUIClientConnectedScreen : BaseGUIScreen
     
     void ClientConnectingBackActivate()
     {
-        m_gscCache.BackToMenu();
+        m_gscCache.SwitchToMainMenu();
         m_gscCache.WipeConnectionInfo();
         Network.Disconnect();
     }

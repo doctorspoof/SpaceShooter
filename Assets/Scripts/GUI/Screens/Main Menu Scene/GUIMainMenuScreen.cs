@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Text.RegularExpressions;
 
@@ -18,7 +18,7 @@ public class GUIMainMenuScreen : BaseGUIScreen
         m_priorityValue = 1;
  
         m_username = PlayerPrefs.GetString("LastUsername", "Name");       
-        m_gscCache = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        m_gscCache = GameStateController.Instance();
     }
     
     /* Custom Functions */
@@ -63,7 +63,7 @@ public class GUIMainMenuScreen : BaseGUIScreen
         {
             if (GUI.Button(new Rect(225, 500, 285, 50), "OPTIONS", "Shared"))
             {
-                m_gscCache.OpenOptionMenu();
+                m_gscCache.SwitchToOptions();
             }
         }
         else
@@ -98,7 +98,8 @@ public class GUIMainMenuScreen : BaseGUIScreen
     {
         if (m_username != "Name" && m_username != "")
         {
-            m_gscCache.SwitchToJoinScreen();
+            m_gscCache.SwitchToIPInput();
+            GetComponent<GUIMainMenuMaster>().SetUsername(m_username);
             PlayerPrefs.SetString("LastUsername", m_username);
         }
     }
