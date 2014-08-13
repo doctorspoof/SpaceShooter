@@ -28,8 +28,8 @@ public class EnemyGroup : MonoBehaviour
     List<AIOrder<EnemyGroup>> defaultOrders = new List<AIOrder<EnemyGroup>>();
 
     //An array of lists with indexes based on GetShipSize() eg. m_children[GetShipSize().Medium]
-    List<EnemyScript>[] m_children;
-    public List<EnemyScript>[] Children
+    List<ShipEnemy>[] m_children;
+    public List<ShipEnemy>[] Children
     {
         get { return m_children; }
     }
@@ -65,10 +65,10 @@ public class EnemyGroup : MonoBehaviour
 
     void Awake()
     {
-        m_children = new List<EnemyScript>[4];
+        m_children = new List<ShipEnemy>[4];
         for (int i = 0; i < m_children.Length; ++i)
         {
-            m_children[i] = new List<EnemyScript>();
+            m_children[i] = new List<ShipEnemy>();
         }
 
         m_behaviour = GroupBehaviour.StayWithSlowest;
@@ -99,7 +99,7 @@ public class EnemyGroup : MonoBehaviour
 
         Debug.DrawRay(transform.position, transform.up, Color.red);
 
-        //EnemyScript script;
+        //ShipEnemy script;
         //groupReforming = !InFormation(out script);
 
         CheckAndAttackPlayersInRange(50);
@@ -208,9 +208,9 @@ public class EnemyGroup : MonoBehaviour
                                    group.RotateTowards(pointOfInterest);
 
                                    group.SetBehaviour(GroupBehaviour.StayWithSlowest);
-                                   foreach (List<EnemyScript> tier in group.Children)
+                                   foreach (List<ShipEnemy> tier in group.Children)
                                    {
-                                       foreach (EnemyScript ship in tier)
+                                       foreach (ShipEnemy ship in tier)
                                        {
                                            //int indexOfShip = group.Children[(int)ship.GetShipSize()].IndexOf(ship);
 
@@ -287,9 +287,9 @@ public class EnemyGroup : MonoBehaviour
                                group.RotateTowards(pointOfInterest);
 
                                group.SetBehaviour(GroupBehaviour.Attack);
-                               foreach (List<EnemyScript> tier in group.Children)
+                               foreach (List<ShipEnemy> tier in group.Children)
                                {
-                                   foreach (EnemyScript ship in tier)
+                                   foreach (ShipEnemy ship in tier)
                                    {
 
                                        ship.SetTarget(attackableObject);
@@ -324,9 +324,9 @@ public class EnemyGroup : MonoBehaviour
         if (orderQueue.Count > 0)
         {
             orderQueue.RemoveAt(0);
-            foreach (List<EnemyScript> tier in m_children)
+            foreach (List<ShipEnemy> tier in m_children)
             {
-                foreach (EnemyScript ship in tier)
+                foreach (ShipEnemy ship in tier)
                 {
                     CancelShipCurrentOrder(ship);
                 }
@@ -338,7 +338,7 @@ public class EnemyGroup : MonoBehaviour
     /// Cancels the order of a specific ship
     /// </summary>
     /// <param name="ship"></param>
-    public void CancelShipCurrentOrder(EnemyScript ship)
+    public void CancelShipCurrentOrder(ShipEnemy ship)
     {
         ship.CancelOrder();
     }
@@ -349,9 +349,9 @@ public class EnemyGroup : MonoBehaviour
     /// <returns>Returns true if members are still completing orders</returns>
     public bool GroupStillHasMembersWithOrder()
     {
-        foreach (List<EnemyScript> tier in m_children)
+        foreach (List<ShipEnemy> tier in m_children)
         {
-            foreach (EnemyScript ship in tier)
+            foreach (ShipEnemy ship in tier)
             {
                 if (ship.GetCurrentOrder() != Order.Idle)
                     return true;
@@ -365,7 +365,7 @@ public class EnemyGroup : MonoBehaviour
     /// </summary>
     /// <param name="enemyShip">Enemy ship to be added</param>
     /// <returns>Returns true if successful (if object is not null)</returns>
-    public bool AddEnemyToGroup(EnemyScript enemyShip)
+    public bool AddEnemyToGroup(ShipEnemy enemyShip)
     {
         if (null == enemyShip)
         {
@@ -400,7 +400,7 @@ public class EnemyGroup : MonoBehaviour
     /// </summary>
     /// <param name="enemyShip">Ship to be removed</param>
     /// <returns>Returns true if successfully removed</returns>
-    public bool RemoveEnemyFromGroup(EnemyScript enemyShip)
+    public bool RemoveEnemyFromGroup(ShipEnemy enemyShip)
     {
         if (null == enemyShip)
         {
@@ -484,9 +484,9 @@ public class EnemyGroup : MonoBehaviour
         foreach (EnemyGroup group in groups)
         {
 
-            foreach (List<EnemyScript> listTier in group.Children)
+            foreach (List<ShipEnemy> listTier in group.Children)
             {
-                foreach (EnemyScript script in listTier)
+                foreach (ShipEnemy script in listTier)
                 {
                     m_children[(int)script.GetShipSize()].Add(script);
                 }
@@ -509,7 +509,7 @@ public class EnemyGroup : MonoBehaviour
         ResetAllFormationsPositions();
     }
 
-    EnemyScript slowestShip = null;
+    ShipEnemy slowestShip = null;
 
     /// <summary>
     /// Returns the slowest ship in the group
@@ -520,9 +520,9 @@ public class EnemyGroup : MonoBehaviour
         return slowestShip.GetMaxShipSpeed();
 
         //float slowestSpeed = -1;
-        //foreach (List<EnemyScript> shipTier in m_children)
+        //foreach (List<ShipEnemy> shipTier in m_children)
         //{
-        //    foreach (EnemyScript enemy in shipTier)
+        //    foreach (ShipEnemy enemy in shipTier)
         //    {
         //        if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
         //        {
@@ -537,14 +537,14 @@ public class EnemyGroup : MonoBehaviour
     /// Returns the slowest ship of the group
     /// </summary>
     /// <returns></returns>
-    public EnemyScript GetSlowestShip()
+    public ShipEnemy GetSlowestShip()
     {
         return slowestShip;
         //float slowestSpeed = -1;
-        //EnemyScript ship = null;
-        //foreach (List<EnemyScript> shipTier in m_children)
+        //ShipEnemy ship = null;
+        //foreach (List<ShipEnemy> shipTier in m_children)
         //{
-        //    foreach (EnemyScript enemy in shipTier)
+        //    foreach (ShipEnemy enemy in shipTier)
         //    {
         //        if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
         //        {
@@ -556,13 +556,13 @@ public class EnemyGroup : MonoBehaviour
         //return ship;
     }
 
-    public EnemyScript CalculateSlowestShip()
+    public ShipEnemy CalculateSlowestShip()
     {
         float slowestSpeed = -1;
-        EnemyScript ship = null;
-        foreach (List<EnemyScript> shipTier in m_children)
+        ShipEnemy ship = null;
+        foreach (List<ShipEnemy> shipTier in m_children)
         {
-            foreach (EnemyScript enemy in shipTier)
+            foreach (ShipEnemy enemy in shipTier)
             {
                 if (-1 == slowestSpeed || enemy.GetMaxShipSpeed() < slowestSpeed)
                 {
@@ -577,9 +577,9 @@ public class EnemyGroup : MonoBehaviour
     //public void UpdateGroupCentre()
     //{
     //    Vector2 returnee = new Vector2(0, 0);
-    //    foreach (List<EnemyScript> shipTier in m_children)
+    //    foreach (List<ShipEnemy> shipTier in m_children)
     //    {
-    //        foreach (EnemyScript enemy in shipTier)
+    //        foreach (ShipEnemy enemy in shipTier)
     //        {
     //            returnee += (Vector2)(enemy.rigidbody.transform.position - enemy.LastFramePosition);
     //        }
@@ -591,10 +591,10 @@ public class EnemyGroup : MonoBehaviour
     /// used when you want to add an array of ships translation to the group centre
     /// </summary>
     /// <param name="ship"></param>
-    //public void AddToGroupCentre(EnemyScript[] ships)
+    //public void AddToGroupCentre(ShipEnemy[] ships)
     //{
     //    Vector2 returnee = new Vector2(0, 0);
-    //    foreach (EnemyScript ship in ships)
+    //    foreach (ShipEnemy ship in ships)
     //    {
     //        returnee += (Vector2)(ship.rigidbody.transform.position - ship.LastFramePosition);
     //    }
@@ -607,9 +607,9 @@ public class EnemyGroup : MonoBehaviour
     /// </summary>
     //private void UpdateLastPositions()
     //{
-    //    foreach (List<EnemyScript> shipTier in m_children)
+    //    foreach (List<ShipEnemy> shipTier in m_children)
     //    {
-    //        foreach (EnemyScript enemy in shipTier)
+    //        foreach (ShipEnemy enemy in shipTier)
     //        {
     //            enemy.LastFramePosition = enemy.rigidbody.transform.position;
     //        }
@@ -623,9 +623,9 @@ public class EnemyGroup : MonoBehaviour
         if (m_shipCount == 0)
             return returnee;
 
-        foreach (List<EnemyScript> shipTier in m_children)
+        foreach (List<ShipEnemy> shipTier in m_children)
         {
-            foreach (EnemyScript enemy in shipTier)
+            foreach (ShipEnemy enemy in shipTier)
             {
                 returnee += (Vector2)enemy.transform.position;
             }
@@ -641,9 +641,9 @@ public class EnemyGroup : MonoBehaviour
     public float GetMinimumRangeOfGroup()
     {
         float minRange = 0;
-        foreach (List<EnemyScript> shipTier in m_children)
+        foreach (List<ShipEnemy> shipTier in m_children)
         {
-            foreach (EnemyScript enemy in shipTier)
+            foreach (ShipEnemy enemy in shipTier)
             {
                 if (0 == minRange || enemy.GetMinimumWeaponRange() < minRange)
                 {
@@ -658,9 +658,9 @@ public class EnemyGroup : MonoBehaviour
     public float GetMaximumRangeOfGroup()
     {
         float maxRange = 0;
-        foreach (List<EnemyScript> shipTier in m_children)
+        foreach (List<ShipEnemy> shipTier in m_children)
         {
-            foreach (EnemyScript enemy in shipTier)
+            foreach (ShipEnemy enemy in shipTier)
             {
                 if (0 == maxRange || enemy.GetMinimumWeaponRange() > maxRange)
                 {
@@ -675,13 +675,13 @@ public class EnemyGroup : MonoBehaviour
     /// Gets all the ships that are currently in the formation
     /// </summary>
     /// <returns></returns>
-    public void SortShipsWithRegardsToFormation(out List<EnemyScript> inFormation, out List<EnemyScript> outOfFormation)
+    public void SortShipsWithRegardsToFormation(out List<ShipEnemy> inFormation, out List<ShipEnemy> outOfFormation)
     {
-        inFormation = new List<EnemyScript>();
-        outOfFormation = new List<EnemyScript>();
-        foreach (List<EnemyScript> shipTier in m_children)
+        inFormation = new List<ShipEnemy>();
+        outOfFormation = new List<ShipEnemy>();
+        foreach (List<ShipEnemy> shipTier in m_children)
         {
-            foreach (EnemyScript ship in shipTier)
+            foreach (ShipEnemy ship in shipTier)
             {
                 if (ship.InFormation(0.8f))
                 {
@@ -732,9 +732,9 @@ public class EnemyGroup : MonoBehaviour
     public void ResetAllFormationsPositions()
     {
         ResetFormationPosition();
-        //foreach (List<EnemyScript> shipTier in m_children)
+        //foreach (List<ShipEnemy> shipTier in m_children)
         //{
-        //    foreach (EnemyScript enemy in shipTier)
+        //    foreach (ShipEnemy enemy in shipTier)
         //    {
         //        SetShipGetFormationPosition()(enemy);
         //    }
@@ -752,8 +752,8 @@ public class EnemyGroup : MonoBehaviour
 
     void GenerateCircleFormation()
     {
-        //EnemyScript largestShip = GetLargestShipInGroup();
-        EnemyScript largestShipInLayer = null, largestShipInLastLayer = null;
+        //ShipEnemy largestShip = GetLargestShipInGroup();
+        ShipEnemy largestShipInLayer = null, largestShipInLastLayer = null;
         float radius = 0;
 
         for (int i = 0; i < m_children.Length; ++i)
@@ -809,7 +809,7 @@ public class EnemyGroup : MonoBehaviour
         float width = 0, height = 0;
 
         {
-            EnemyScript largestShipInLayer = null, largestShipInLastLayer = null;
+            ShipEnemy largestShipInLayer = null, largestShipInLastLayer = null;
 
             for (int i = 0; i < m_children.Length; ++i)
             {
@@ -827,7 +827,7 @@ public class EnemyGroup : MonoBehaviour
 
                     //each ship in a layer needs to be checked individually due to potentially having different sizes in same GetShipSize()Class
                     float layerWidth = 0;
-                    foreach (EnemyScript ship in m_children[i])
+                    foreach (ShipEnemy ship in m_children[i])
                     {
                         layerWidth += ship.GetShipWidth() + 1;
                     }
@@ -849,7 +849,7 @@ public class EnemyGroup : MonoBehaviour
 
 
         {
-            EnemyScript largestShipInLayer = null, largestShipInLastLayer = null;
+            ShipEnemy largestShipInLayer = null, largestShipInLastLayer = null;
 
             float spacingBetweenLayers = 0;
 
@@ -917,7 +917,7 @@ public class EnemyGroup : MonoBehaviour
     void GenerateLineFormation()
     {
 
-        List<EnemyScript> firstHalf = new List<EnemyScript>(), secondHalf = new List<EnemyScript>();
+        List<ShipEnemy> firstHalf = new List<ShipEnemy>(), secondHalf = new List<ShipEnemy>();
         float widthOfLine = 0;
 
         // go from smaller ships to largest as the smaller ships are the ones that start on the ends with larger ships in middle
@@ -953,7 +953,7 @@ public class EnemyGroup : MonoBehaviour
 
         for (int i = 0; i < firstHalf.Count; ++i)
         {
-            EnemyScript ship = firstHalf[i];
+            ShipEnemy ship = firstHalf[i];
 
             if (i > 0)
             {
@@ -1000,7 +1000,7 @@ public class EnemyGroup : MonoBehaviour
             if (m_children[i].Count > 0)
             {
 
-                foreach (EnemyScript ship in m_children[i])
+                foreach (ShipEnemy ship in m_children[i])
                 {
                     centreOfRows[i] += ship.GetFormationPosition();
                 }
@@ -1013,7 +1013,7 @@ public class EnemyGroup : MonoBehaviour
         {
             for (int j = 0; j < m_children[i].Count; ++j)
             {
-                //EnemyScript ship = m_children[i][j];
+                //ShipEnemy ship = m_children[i][j];
 
                 float arrowheadAngle = 90.0f;
 
@@ -1063,9 +1063,9 @@ public class EnemyGroup : MonoBehaviour
 
     public bool InFormation()
     {
-        foreach (List<EnemyScript> shipTier in m_children)
+        foreach (List<ShipEnemy> shipTier in m_children)
         {
-            foreach (EnemyScript enemy in shipTier)
+            foreach (ShipEnemy enemy in shipTier)
             {
                 if (!enemy.InFormation(0.8f))
                 {
@@ -1076,13 +1076,13 @@ public class EnemyGroup : MonoBehaviour
         return true;
     }
 
-    public EnemyScript GetShipFurthestOutOfFormation()
+    public ShipEnemy GetShipFurthestOutOfFormation()
     {
-        EnemyScript shipFurthestOutOfFormation = null;
+        ShipEnemy shipFurthestOutOfFormation = null;
         float shipFurthestFromFormationDistance = 0;
-        foreach (List<EnemyScript> shipTier in m_children)
+        foreach (List<ShipEnemy> shipTier in m_children)
         {
-            foreach (EnemyScript enemy in shipTier)
+            foreach (ShipEnemy enemy in shipTier)
             {
                 if (shipFurthestOutOfFormation == null || shipFurthestFromFormationDistance < enemy.GetDistanceFromFormation())
                 {
@@ -1116,15 +1116,15 @@ public class EnemyGroup : MonoBehaviour
         }
     }
 
-    public EnemyScript GetLargestShip(List<EnemyScript> list)
+    public ShipEnemy GetLargestShip(List<ShipEnemy> list)
     {
         if (list.Count == 0)
             return null;
 
-        EnemyScript returnee = null;
+        ShipEnemy returnee = null;
         float size = 0;
 
-        foreach (EnemyScript ship in list)
+        foreach (ShipEnemy ship in list)
         {
             if (returnee == null || ship.GetMaxSize() > size)
             {
@@ -1136,19 +1136,19 @@ public class EnemyGroup : MonoBehaviour
         return returnee;
     }
 
-    public EnemyScript GetLargestShipInGroup()
+    public ShipEnemy GetLargestShipInGroup()
     {
         if (m_shipCount == 0)
         {
             return null;
         }
 
-        EnemyScript largestShip = null;
+        ShipEnemy largestShip = null;
         float size = 0;
 
-        foreach (List<EnemyScript> list in m_children)
+        foreach (List<ShipEnemy> list in m_children)
         {
-            EnemyScript largestShipInList = GetLargestShip(list);
+            ShipEnemy largestShipInList = GetLargestShip(list);
             if (largestShip == null || largestShipInList.GetMaxSize() > size)
             {
                 largestShip = largestShipInList;
@@ -1159,15 +1159,15 @@ public class EnemyGroup : MonoBehaviour
         return largestShip;
     }
 
-    public EnemyScript GetWidestShip(List<EnemyScript> list)
+    public ShipEnemy GetWidestShip(List<ShipEnemy> list)
     {
         if (list.Count == 0)
             return null;
 
-        EnemyScript returnee = null;
+        ShipEnemy returnee = null;
         float size = 0;
 
-        foreach (EnemyScript ship in list)
+        foreach (ShipEnemy ship in list)
         {
             if (returnee == null || ship.GetShipWidth() > size)
             {
@@ -1179,15 +1179,15 @@ public class EnemyGroup : MonoBehaviour
         return returnee;
     }
 
-    public EnemyScript GetLongestShip(List<EnemyScript> list)
+    public ShipEnemy GetLongestShip(List<ShipEnemy> list)
     {
         if (list.Count == 0)
             return null;
 
-        EnemyScript returnee = null;
+        ShipEnemy returnee = null;
         float size = 0;
 
-        foreach (EnemyScript ship in list)
+        foreach (ShipEnemy ship in list)
         {
             if (returnee == null || ship.GetShipHeight() > size)
             {
@@ -1203,9 +1203,9 @@ public class EnemyGroup : MonoBehaviour
     {
         float radius = 0;
 
-        foreach (List<EnemyScript> list in m_children)
+        foreach (List<ShipEnemy> list in m_children)
         {
-            foreach (EnemyScript ship in list)
+            foreach (ShipEnemy ship in list)
             {
                 if (Vector2.Distance(transform.position, ship.GetFormationPosition()) > radius)
                 {
@@ -1224,19 +1224,19 @@ public class EnemyGroup : MonoBehaviour
             return;
 
         // sort the ships into who is inFormation and outOfFormation
-        List<EnemyScript> inFormation, outOfFormation;
+        List<ShipEnemy> inFormation, outOfFormation;
         SortShipsWithRegardsToFormation(out inFormation, out outOfFormation);
 
         // grab the slowest ship so we can find the maximum speed of the group when inFormation
-        EnemyScript slowestShip = GetSlowestShip();
+        ShipEnemy slowestShip = GetSlowestShip();
         float maxSpeedOfShipsInFormation = slowestShip.GetMaxShipSpeed();
 
         if (outOfFormation.Count > 0)
         {
 
-            //EnemyScript shipFurthestOutOfFormation = GetShipFurthestOutOfFormation();
-            List<EnemyScript> shipsAhead = new List<EnemyScript>();
-            foreach (EnemyScript ship in outOfFormation)
+            //ShipEnemy shipFurthestOutOfFormation = GetShipFurthestOutOfFormation();
+            List<ShipEnemy> shipsAhead = new List<ShipEnemy>();
+            foreach (ShipEnemy ship in outOfFormation)
             {
 
                 float dotAheadOfGroup = Vector2.Dot(Vector3.Normalize((Vector2)ship.transform.position - ship.GetWorldCoordinatesOfFormationPosition(transform.position)),
@@ -1260,7 +1260,7 @@ public class EnemyGroup : MonoBehaviour
 
         }
 
-        foreach (EnemyScript ship in inFormation)
+        foreach (ShipEnemy ship in inFormation)
         {
             ship.SetCurrentShipSpeed(maxSpeedOfShipsInFormation);
         }

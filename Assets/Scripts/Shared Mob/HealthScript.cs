@@ -365,16 +365,16 @@ public class HealthScript : MonoBehaviour
 						{
 							//Alert enemy it's dying and should kamikaze
 							//Debug.Log("Enemy: " + this.name + " is enraged!");
-							this.GetComponent<EnemyScript>().AlertLowHP(firer);
+							this.GetComponent<ShipEnemy>().AlertLowHP(firer);
 						}
 						else if(!hasBeenHitAlready)
 						{
 							hasBeenHitAlready = true;
-							this.GetComponent<EnemyScript>().AlertFirstHit(firer);
+							this.GetComponent<ShipEnemy>().AlertFirstHit(firer);
 						}
 						else
 						{
-							this.GetComponent<EnemyScript>().NotifyEnemyUnderFire(firer);
+							this.GetComponent<ShipEnemy>().NotifyEnemyUnderFire(firer);
 						}
 					}
 				}
@@ -494,7 +494,7 @@ public class HealthScript : MonoBehaviour
 			if(killer != null && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
                 PlayerControlScript playerShip = killer.transform.root.GetComponent<PlayerControlScript>();
-                playerShip.AddCash(this.GetComponent<EnemyScript>().GetBounty());
+                playerShip.AddCash(this.GetComponent<ShipEnemy>().GetBounty());
 			}
 
             if(Network.isServer)

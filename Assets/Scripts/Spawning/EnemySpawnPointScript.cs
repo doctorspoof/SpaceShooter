@@ -190,7 +190,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             {
                 GameObject enemy = (GameObject)Network.Instantiate(spawn.prefab, spawn.location, this.transform.rotation, 0);
 
-                EnemyScript script = enemy.GetComponent<EnemyScript>();
+                ShipEnemy script = enemy.GetComponent<ShipEnemy>();
                 spawn.parentGroup.AddEnemyToGroup(script);
                 group = spawn.parentGroup;
 

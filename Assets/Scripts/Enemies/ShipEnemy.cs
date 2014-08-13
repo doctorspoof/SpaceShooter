@@ -2,15 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum Order
-{
-    Idle = 0,
-    Move = 1,
-    Attack = 2,
-    Explore = 3,
-    Protect = 4
-}
-
 public enum ShipSize
 {
     Utility = 0,
@@ -19,35 +10,31 @@ public enum ShipSize
     Small = 3
 }
 
-public class EnemyScript : Ship
+public class ShipEnemy : Ship
 {
 
-    [SerializeField] int m_bountyAmount = 1;
-    
-    //[SerializeField] bool m_hasTurrets = false;
-    
-    [SerializeField] Order m_currentOrder = Order.Idle;
+    [SerializeField]
+    int m_bountyAmount = 1;
 
-    [SerializeField] string[] m_allowedAttacksForShip;
+    [SerializeField]
+    string[] m_allowedAttacksForShip;
 
-    [SerializeField] ShipSize m_shipSize;
-
+    [SerializeField]
+    ShipSize m_shipSize;
 
 
-    
 
-    GameObject m_target;
 
-    Vector2 m_moveTarget;
 
     Vector2 m_formationPosition;
 
     int m_sendCounter = 0;
-    //float m_prevZRot = 0.0f;
+
+    AIShipOrder m_currentOrder = AIShipOrder.Move;
+    GameObject m_target = null;
+    Vector2 m_targetMove;
 
 
-
-    EnemyGroup m_parentGroup;
 
     IAttack m_currentAttackType = null;
     float m_randomOffsetFromTarget = 0;
@@ -55,26 +42,6 @@ public class EnemyScript : Ship
 
 
     #region getset
-
-    public Vector2 GetFormationPosition()
-    {
-        return m_formationPosition;
-    }
-
-    public void SetFormationPosition(Vector2 formationPosition_)
-    {
-        m_formationPosition = formationPosition_;
-    }
-
-    public Order GetCurrentOrder()
-    {
-        return m_currentOrder;
-    }
-
-    public GameObject GetTarget()
-    {
-        return m_target;
-    }
 
     public int GetBountyAmount()
     {
@@ -86,11 +53,6 @@ public class EnemyScript : Ship
         return m_shipSize;
     }
 
-    public void SetParentGroup(EnemyGroup group)
-    {
-        m_parentGroup = group;
-    }
-
     public void SetMoveTarget(Vector2 target)
     {
         if (Vector3.Distance((Vector2)transform.position, target) < 0.8f)
@@ -98,13 +60,7 @@ public class EnemyScript : Ship
             return;
         }
 
-        m_moveTarget = target;
-        m_currentOrder = Order.Move;
-    }
-
-    public Vector2 GetMoveTarget()
-    {
-        return m_moveTarget;
+        m_targetMove = target;
     }
 
     /// <summary>
@@ -121,26 +77,19 @@ public class EnemyScript : Ship
             EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
             turretScript.SetTarget(m_target);
         }
-
-        m_currentOrder = Order.Attack;
-    }
-
-    public int GetBounty()
-    {
-        return m_bountyAmount;
     }
 
     #endregion getset
 
-    
 
-    protected override void Awake()
+
+    protected virtual void Awake()
     {
         base.Awake();
     }
 
     // Use this for initialization
-    void Start()
+    protected virtual void Start()
     {
         m_shipTransform = transform;
         ResetThrusters();
@@ -151,7 +100,7 @@ public class EnemyScript : Ship
         ResetShipSpeed();
     }
 
-    protected override void Update()
+    protected virtual void Update()
     {
         base.Update();
 
@@ -160,64 +109,54 @@ public class EnemyScript : Ship
 
             switch (m_currentOrder)
             {
-                case Order.Idle:
-                    {
-                        break;
-                    }
-                case Order.Move:
-                    {
-                        MoveTowardTarget();
-
-                        if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_moveTarget) < 0.64f || m_parentGroup.HasGroupArrivedAtLocation())
-                        {
-                            m_currentOrder = Order.Idle;
-                        }
-
-                        break;
-                    }
-                case Order.Attack:
+                case (AIShipOrder.Attack):
                     {
                         if (m_target == null)
                         {
-                            m_currentOrder = Order.Idle;
+                            m_currentOrder = AIShipOrder.Idle;
                             break;
                         }
 
-                        Vector3 direction = Vector3.Normalize(m_target.transform.position - m_shipTransform.position);
-                        Ray ray = new Ray(m_shipTransform.position, direction);
+                        //Vector3 direction = Vector3.Normalize(m_target.transform.position - m_shipTransform.position);
+                        //Ray ray = new Ray(m_shipTransform.position, direction);
 
-                        float shipDimension = 0;
-                        Ship targetShip = m_target.GetComponent<Ship>();
-                        if (targetShip != null)
-                        {
-                            shipDimension = targetShip.GetCalculatedSizeByPosition(m_shipTransform.position);
-                        }
+                        //float shipDimension = 0;
+                        //Ship targetShip = m_target.GetComponent<Ship>();
+                        //if (targetShip != null)
+                        //{
+                        //    shipDimension = targetShip.GetCalculatedSizeByPosition(m_shipTransform.position);
+                        //}
 
-                        float minWeaponRange = GetMinimumWeaponRange();
+                        //float minWeaponRange = GetMinimumWeaponRange();
 
-                        float totalRange = minWeaponRange <= shipDimension ? minWeaponRange + shipDimension : minWeaponRange;
+                        //float totalRange = minWeaponRange <= shipDimension ? minWeaponRange + shipDimension : minWeaponRange;
 
-                        RaycastHit hit;
-                        if (!m_target.collider.Raycast(ray, out hit, totalRange))
-                        {
-                            Vector2 normalOfDirection = GetNormal(direction);
+                        //RaycastHit hit;
+                        //if (!m_target.collider.Raycast(ray, out hit, totalRange))
+                        //{
+                        //    Vector2 normalOfDirection = GetNormal(direction);
 
-                            RotateTowards((Vector2)m_target.transform.position + (m_randomOffsetFromTarget * normalOfDirection));
+                        //    RotateTowards((Vector2)m_target.transform.position + (m_randomOffsetFromTarget * normalOfDirection));
 
-                            rigidbody.AddForce(m_shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
-                        }
-                        else
-                        {
-                            m_currentAttackType.Attack(this, m_target);
-                        }
-
+                        //    rigidbody.AddForce(m_shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
+                        //}
+                        //else
+                        //{
+                        //    m_currentAttackType.Attack(this, m_target);
+                        //}
                         break;
                     }
-                case Order.Explore:
+                case (AIShipOrder.Move):
                     {
+                        MoveTowardTarget();
+
+                        if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_targetMove) < 0.64f)
+                        {
+                            m_currentOrder = AIShipOrder.Idle;
+                        }
                         break;
                     }
-                case Order.Protect:
+                default:
                     {
                         break;
                     }
@@ -226,32 +165,21 @@ public class EnemyScript : Ship
         }
     }
 
-    void OnDestroy()
-    {
-
-        if (m_parentGroup != null)
-            m_parentGroup.RemoveEnemyFromGroup(this);
-    }
-
     public void AlertLowHP(GameObject lastHit)
     {
 
     }
     public void AlertFirstHit(GameObject shooter)
     {
-        
+
     }
 
     public void NotifyEnemyUnderFire(GameObject attacker)
     {
-        if (m_parentGroup != null)
-        {
-            m_parentGroup.CancelAllOrders();
-            m_parentGroup.OrderAttack(attacker.transform.root.gameObject);
-        }
+        GetAINode().RequestConsiderationOfOrder(AIHierarchyRelation.Parent, (int)AIShipOrder.Attack, new object[] { attacker });
     }
 
-    
+
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
     {
         m_sendCounter++;
@@ -312,7 +240,7 @@ public class EnemyScript : Ship
 
     public void OnPlayerLoss()
     {
-        
+
     }
 
     public void TellEnemyToFreeze()
@@ -391,10 +319,10 @@ public class EnemyScript : Ship
 
     void MoveTowardTarget()
     {
-        if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position), m_moveTarget) > Vector2.Distance(m_shipTransform.position, m_moveTarget))
+        if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position), m_targetMove) > Vector2.Distance(m_shipTransform.position, m_targetMove))
         {
             Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
-            Vector2 distanceToTargetPosition = (m_moveTarget - (Vector2)m_shipTransform.position);
+            Vector2 distanceToTargetPosition = (m_targetMove - (Vector2)m_shipTransform.position);
 
             float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
             Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
@@ -402,13 +330,13 @@ public class EnemyScript : Ship
             //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
             //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
             //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-            //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+            //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.transform.position));
 
             RotateTowards((Vector2)m_shipTransform.position + directionToMove);
         }
         else
         {
-            RotateTowards(GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+            RotateTowards(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
         }
 
         rigidbody.AddForce(m_shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
@@ -421,8 +349,8 @@ public class EnemyScript : Ship
     /// <returns></returns>
     public Vector2 GetVectorDistanceFromClosestFormation()
     {
-        Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position);
-        Vector2 directionFromTargetToGroupPosition = currentGroupFormationPosition - m_moveTarget;
+        Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentTransform.position);
+        Vector2 directionFromTargetToGroupPosition = currentGroupFormationPosition - m_targetMove;
 
         Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition).normalized;
 
@@ -445,7 +373,7 @@ public class EnemyScript : Ship
 
     public float GetDistanceFromFormation()
     {
-        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position));
+        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
     }
 
     public Vector2 GetNormal(Vector2 direction)
@@ -460,7 +388,7 @@ public class EnemyScript : Ship
     /// <returns></returns>
     public bool InFormation(float distance)
     {
-        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentGroup.transform.position)) < distance;
+        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.position)) < distance;
     }
 
     /// <summary>
@@ -470,7 +398,7 @@ public class EnemyScript : Ship
     /// <returns></returns>
     public Vector2 GetWorldCoordinatesOfFormationPosition(Vector2 targetLocation)
     {
-        return (Vector2)(m_parentGroup.transform.rotation * m_formationPosition) + targetLocation;
+        return (Vector2)(m_parentTransform.rotation * m_formationPosition) + targetLocation;
     }
 
     /// <summary>
@@ -479,14 +407,99 @@ public class EnemyScript : Ship
     /// <returns></returns>
     public Vector2 GetLocalFormationPosition()
     {
-        return m_parentGroup.transform.rotation * m_formationPosition;
+        return m_parentTransform.rotation * m_formationPosition;
     }
 
     public bool CancelOrder()
     {
         m_target = null;
-        m_currentOrder = Order.Idle;
+        m_currentOrder = AIShipOrder.Idle;
         return true;
+    }
+
+    public virtual bool ReceiveOrder(int orderID_, object[] listOfParameters)
+    {
+        switch ((AIShipOrder)orderID_)
+        {
+            case (AIShipOrder.Attack):
+                {
+                    SetTarget((GameObject)listOfParameters[0]);
+                    return true;
+                }
+            case (AIShipOrder.Move):
+                {
+                    SetMoveTarget((Vector2)listOfParameters[0]);
+                    return true;
+                }
+            default:
+                {
+                    return false;
+                }
+        }
+    }
+
+    public virtual bool GiveOrder(int orderID_, object[] listOfParameters)
+    {
+        if (base.GiveOrder(orderID_, listOfParameters))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public virtual bool ConsiderOrder(int orderID_, object[] listOfParameters)
+    {
+        if (base.ConsiderOrder(orderID_, listOfParameters))
+        {
+            return true;
+        }
+
+        switch ((AIShipOrder)orderID_)
+        {
+            case(AIShipOrder.Attack):
+                {
+                    // TODO: subordinate is attacked and wants to concentrate fire
+                    return false;
+                }
+            default:
+                {
+                    return false;
+                }
+        }
+    }
+
+    public virtual object[] RequestInformation(int informationID_)
+    {
+        object[] returnee = null;
+        if ((returnee = base.RequestInformation(informationID_)) != null)
+        {
+            return returnee;
+        }
+
+        switch ((AIShipRequestInfo)informationID_)
+        {
+            default:
+                {
+                    return returnee;
+                }
+        }
+    }
+
+    public virtual bool Notify(int informationID_, object[] listOfParameters)
+    {
+        if (base.Notify(informationID_, listOfParameters))
+        {
+            return true;
+        }
+
+        switch ((AIShipNotifyInfo)informationID_)
+        {
+            default:
+                {
+                    return false;
+                }
+        }
     }
 
 }

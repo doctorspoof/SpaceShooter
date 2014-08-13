@@ -1,13 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum AIShipOrder
+{
+    Idle = 0,
+    Move = 1,
+    Attack = 2
+}
+
+public enum AIShipRequestInfo
+{
+    Transform = 0,
+    Move = 1,
+    Target = 2
+}
+
+public enum AIShipNotifyInfo
+{
+    ParentChanged = 0
+}
+
 [RequireComponent(typeof(MeshFilter))]
-public class Ship : MonoBehaviour
+public class Ship : MonoBehaviour, IEntity
 {
 
     [SerializeField] protected string m_ownerSt;
-
-    [SerializeField] bool m_isPlayerControlScript = false;
 
     [SerializeField] float m_maxShipSpeed;
     [SerializeField] float m_currentShipSpeed = 0.0f;
@@ -35,17 +52,20 @@ public class Ship : MonoBehaviour
 
     bool m_afterburnersFiring = false, m_afterburnersRecharged = true;
     float m_currentAfterburnerTime = 0.0f, m_currentAfterburnerRechargeTime = 0.0f;
-    
+
     float m_currentAngularVelocity = 0;
+    float m_currentRotation = 0, m_lastRotation = 0;
     float m_maxThrusterVelocitySeen = 0, m_maxAngularVelocitySeen = 0;
 
     int shaderCounter = 0;
 
+
     //bool coroutineIsRunning = false;
     //bool coroutineForceStopped = false;
-    
 
 
+
+    protected Transform m_parentTransform = null;
 
     Transform m_thrustersHolder = null, m_afterburnersHolder = null;
     Thruster[] m_thrusters = null, m_afterburners = null;
@@ -56,6 +76,8 @@ public class Ship : MonoBehaviour
     protected Rigidbody m_shipRigidbody;
 
     GameObject m_shieldCache = null;
+
+    AINode m_node;
 
     //this was mainly for testing, may be deleted eventually
 #pragma warning disable 0414
@@ -157,11 +179,34 @@ public class Ship : MonoBehaviour
         return m_owner;
     }
 
+    public AINode GetAINode()
+    {
+        return m_node;
+    }
+
+    public void SetParentShip(Ship parent_)
+    {
+        m_node.SetParent(parent_.GetAINode());
+    }
+
+    public void AddChildShip(Ship child_)
+    {
+        m_node.AddChild(child_.GetAINode());
+    }
+
 #endregion
 
     protected virtual void Awake()
     {
-        Init();
+        shipID = ids++;
+
+        m_shipTransform = transform;
+        m_shipRigidbody = rigidbody;
+
+        if (GetShipWidth() == 0 || GetShipHeight() == 0)
+            SetShipSizes();
+
+        m_node = new AINode(this);
     }
 
     protected virtual void Update()
@@ -193,13 +238,14 @@ public class Ship : MonoBehaviour
             }
         }
 
+        UpdateCurrentAngularVelocity();
+
         // we cant calculate the max velocity neatly so we check to see if its larger
         if ((m_maxThrusterVelocitySeen < m_shipRigidbody.velocity.magnitude))
         {
             m_maxThrusterVelocitySeen = m_shipRigidbody.velocity.magnitude;
         }
 
-        //maxAngularVelocitySeen -= 0.05f;
         if ((m_maxAngularVelocitySeen < Mathf.Abs(m_currentAngularVelocity)))
         {
             m_maxAngularVelocitySeen = Mathf.Abs(m_currentAngularVelocity);
@@ -209,20 +255,15 @@ public class Ship : MonoBehaviour
 
         UpdateThrusters();
 
-
     }
 
-    void Init()
+    /// <summary>
+    /// Clean up AINode. DO NOT LET THE DEAD SUFFER ETERNAL LIFE, HAVE THEY NOT BEEN HURT ENOUGH?!
+    /// </summary>
+    void OnDestroy()
     {
-        shipID = ids++;
 
-        m_shipTransform = transform;
-        m_shipRigidbody = rigidbody;
-
-        if (GetShipWidth() == 0 || GetShipHeight() == 0)
-            SetShipSizes();
-
-        m_isPlayerControlScript = this.GetType() == typeof(PlayerControlScript);
+        m_node.Destroy();
     }
 
     public void ResetShipSpeed()
@@ -291,8 +332,6 @@ public class Ship : MonoBehaviour
         float currentAngle = transform.rotation.eulerAngles.z;
 
         float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
-        m_currentAngularVelocity = nextAngle - currentAngle;
-        UpdateThrusterAngularCurrent();
 
         if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
         {
@@ -366,25 +405,33 @@ public class Ship : MonoBehaviour
         return (m_afterburnersFiring == false && m_afterburnersRecharged == false);
     }
 
-    // TODO: remove all network code. cache the last rotation and base thrusters off that
-    public void UpdateThrusterAngularCurrent()
-    {
-        if (m_owner == Network.player || (!m_isPlayerControlScript && Network.isServer))
-            networkView.RPC("PropagateNewThrusterAngularCurrent", RPCMode.Others, m_currentAngularVelocity);
-    }
-
-    [RPC]
-    void PropagateNewThrusterAngularCurrent(float currentAngularVelocity_)
-    {
-        m_currentAngularVelocity = currentAngularVelocity_;
-    }
-
     void UpdateThrusters()
     {
+        
+        
         foreach (Thruster thruster in m_thrusters)
         {
             if (thruster != null)
                 thruster.Calculate(m_maxThrusterVelocitySeen, m_currentAngularVelocity, m_maxAngularVelocitySeen);
+        }
+    }
+
+    void UpdateCurrentAngularVelocity()
+    {
+        m_lastRotation = m_currentRotation;
+        m_currentRotation = transform.rotation.eulerAngles.z;
+        
+        if (m_lastRotation - m_currentRotation > 180)
+        {
+            m_currentAngularVelocity = m_currentRotation - (m_lastRotation - 360);
+        }
+        else if (m_lastRotation - m_currentRotation < -179)
+        {
+            m_currentAngularVelocity = (m_currentRotation - 360) - m_lastRotation;
+        }
+        else
+        {
+            m_currentAngularVelocity = m_currentRotation - m_lastRotation;
         }
     }
 
@@ -572,6 +619,77 @@ public class Ship : MonoBehaviour
         }
 
         return m_shieldCache;
+    }
+
+    public virtual bool ReceiveOrder(int orderID_, object[] listOfParameters)
+    {
+        switch((AIShipOrder)orderID_)
+        {
+            case(AIShipOrder.Move):
+                {
+                    return false;
+                }
+            default:
+                {
+                    return false;
+                }
+        }
+    }
+
+    public virtual bool GiveOrder(int orderID_, object[] listOfParameters)
+    {
+        m_node.OrderChildren(orderID_, listOfParameters);
+        return true;
+    }
+
+    public virtual bool ConsiderOrder(int orderID_, object[] listOfParameters)
+    {
+        switch ((AIShipOrder)orderID_)
+        {
+            default:
+                {
+                    return false;
+                }
+        }
+    }
+
+    public virtual object[] RequestInformation(int informationID_)
+    {
+        switch((AIShipRequestInfo)informationID_)
+        {
+            case(AIShipRequestInfo.Transform):
+                {
+                    return new object[] { m_shipTransform };
+                }
+            case(AIShipRequestInfo.Move):
+                {
+                    return null;
+                }
+            case(AIShipRequestInfo.Target):
+                {
+                    return null;
+                }
+            default:
+                {
+                    return null;
+                }
+        }
+    }
+
+    public virtual bool Notify(int informationID_, object[] listOfParameters)
+    {
+        switch ((AIShipNotifyInfo)informationID_)
+        {
+            case (AIShipNotifyInfo.ParentChanged):
+                {
+                    m_parentTransform = (Transform)listOfParameters[0];
+                    return true;
+                }
+            default:
+                {
+                    return false;
+                }
+        }
     }
 
 }

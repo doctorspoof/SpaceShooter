@@ -1126,7 +1126,7 @@ public class GameStateController : MonoBehaviour
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in enemies)
         {
-            enemy.GetComponent<EnemyScript>().OnPlayerWin();
+            enemy.GetComponent<ShipEnemy>().OnPlayerWin();
         }
 
         //Stop CShip from moving
@@ -1220,7 +1220,7 @@ public class GameStateController : MonoBehaviour
             GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
             foreach(GameObject enemy in enemies)
             {
-                enemy.GetComponent<EnemyScript>().OnPlayerLoss();
+                enemy.GetComponent<ShipEnemy>().OnPlayerLoss();
             }
         }*/
 
