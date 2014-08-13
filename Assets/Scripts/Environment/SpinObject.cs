@@ -2,7 +2,10 @@
 
 
 
-public sealed class ObjectSpin : MonoBehaviour
+/// <summary>
+/// Quite literally just spins an object around an axis every FixedUpdate().
+/// </summary>
+public sealed class SpinObject : MonoBehaviour
 {
     /// <summary>
     /// Determines the axis than an object should spin on.
@@ -33,7 +36,7 @@ public sealed class ObjectSpin : MonoBehaviour
     #region Behaviour functions
 
     /// <summary>
-    /// Caches the transform
+    /// Caches the transform.
     /// </summary>
     void Awake()
     {
@@ -52,17 +55,17 @@ public sealed class ObjectSpin : MonoBehaviour
         {
             case RotationAxis.xRot:
             {
-                transf.RotateAround(transf.position, transf.right, m_spinRate * Time.deltaTime);
+                transf.RotateAround (transf.position, transf.right, m_spinRate * Time.deltaTime);
                 break;
             }
             case RotationAxis.yRot:
             {
-                transf.RotateAround(transf.position, transf.up, m_spinRate * Time.deltaTime);
+                transf.RotateAround (transf.position, transf.up, m_spinRate * Time.deltaTime);
                 break;
             }
             case RotationAxis.zRot:
             {
-                transf.RotateAround(transf.position, transf.forward, m_spinRate * Time.deltaTime);
+                transf.RotateAround (transf.position, transf.forward, m_spinRate * Time.deltaTime);
                 break;
             }
         }

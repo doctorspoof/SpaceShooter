@@ -62,11 +62,14 @@ public class LootTableScript : MonoBehaviour
 		}
 	}
 
-    public int[] RequestItemListByTime(float time, bool[] stockFlags, int numItemsReq)
+    public List<ItemWrapper> RequestItemListByTime(float time, List<Element> stockFlags, int numItemsReq)
     {
         //Bool array, order is:
         //Weapons - Shields - Engines - Plating - CWeapons
-        
+
+        return new List<ItemWrapper>(0);
+
+        /*
         //Initialise output array
         List<int> outputL = new List<int>();
         //int[] output = new int[numItemsReq];
@@ -113,7 +116,7 @@ public class LootTableScript : MonoBehaviour
                 
             //Get an item from the appropriate list
             int i = Random.Range(0, m_itemTiers[currentTier - 1].Count);
-            ItemWrapper iSc = m_itemTiers[currentTier - 1][i].itemObject.GetComponent<ItemWrapper>();
+            ItemWrapper iSc = m_itemTiers[currentTier - 1][i].itemObject;
             if(stockFlags[(int)iSc.GetItemType()])
             {
                 outputL.Add(iSc.GetItemID());
@@ -126,7 +129,7 @@ public class LootTableScript : MonoBehaviour
         }
         
         //Output List should now be full, so return the array
-        return outputL.ToArray();
+        return outputL.ToArray();*/
     }
 
 	public int[] RequestItemByApproximateValue(float value, bool[] stockFlags, float[] rarityMods, int numItemsReq)
