@@ -95,7 +95,7 @@ Renderer:
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: 728c7fcc10e4d974cb1359ba94b1fbec, type: 2}
+  - {fileID: 2100000, guid: f1c80fd51d8c84343bdbe75a618bbb4a, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -158,6 +158,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_bulletDamage: 50
   m_bulletMinDamage: 1
+  m_damageType: 0
   m_bulletSpeed: 10
   m_bulletMinimumSpeed: 2.5
   m_bulletMaxLifetime: 5
@@ -167,7 +168,6 @@ MonoBehaviour:
   m_pierceDamageModifier: .400000006
   m_pierceSpeedModifier: .699999988
   m_isHoming: 1
-  m_homingRange: 15
   m_homingRotateSpeed: .5
   m_isAOE: 1
   m_aoeDamageAccuracy: 0
@@ -175,8 +175,6 @@ MonoBehaviour:
   m_aoeMaxDamageRange: .25
   m_aoeMaxExplosiveForce: 15
   m_aoeMinExplosiveForce: 5
-  firer: {fileID: 0}
-  m_homingTarget: {fileID: 0}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -188,12 +186,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 8
-  _uvTieY: 8
-  _fps: 10
-  m_shouldReverse: 0
+  m_tilesX: 6
+  m_tilesY: 6
+  m_fps: 10
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

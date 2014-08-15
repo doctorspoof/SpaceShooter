@@ -2796,13 +2796,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 3
+  m_tilesY: 3
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400038
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2814,13 +2814,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 7
+  m_tilesY: 1
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400040
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2832,13 +2832,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 3
+  m_tilesY: 3
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2850,13 +2850,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 3
+  m_tilesY: 3
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400044
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2868,13 +2868,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 3
+  m_tilesY: 3
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2886,13 +2886,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 3
+  m_tilesY: 3
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2904,13 +2904,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 3
+  m_tilesY: 3
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400050
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2922,13 +2922,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 1
-  m_uvTieY: 1
+  m_tilesX: 3
+  m_tilesY: 3
   m_fps: 10
-  m_frameOffset: 0
-  m_shouldReverse: 1
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400052
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -85,8 +85,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_beamDamage: 100
   m_beamLength: 20
+  m_damageType: 2
   m_impactForce: 100
-  firer: {fileID: 0}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -98,12 +98,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 4
-  _uvTieY: 1
-  _fps: 30
-  m_shouldReverse: 0
+  m_tilesX: 4
+  m_tilesY: 4
+  m_fps: 8
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!148 &14800002
 NetworkView:
   m_ObjectHideFlags: 1

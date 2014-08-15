@@ -341,7 +341,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 77.9320602, y: 109.024048, z: 10}
+  m_LocalPosition: {x: 52.6627541, y: 143.344513, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400014}
@@ -878,15 +878,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 100000, guid: 01af7ba42b275f346baf8f22959f0616, type: 2}
-  m_maximumHealth: 100
-  m_currentHealth: 0
-  m_pathToShieldObject: Composite Collider/Shield
   m_maximumShield: 85
   m_currentShield: 0
+  m_maximumHealth: 100
+  m_currentHealth: 0
   m_shieldRechargeRate: 2
   m_timeToRechargeShield: 3
-  m_shouldStop: 0
-  m_isInvincible: 0
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -898,28 +895,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61226d5b1d62304d909df1c10b142f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shipTransform: {fileID: 0}
-  shipRigidbody: {fileID: 0}
+  m_ownerSt: 
+  m_isPlayerControlScript: 0
   m_maxShipSpeed: 360
   m_currentShipSpeed: 0
-  afterburnerIncreaseOfSpeed: 0
-  afterburnerLength: 0
-  afterburnerRechargeTime: 0
+  m_afterburnerIncreaseOfSpeed: 0
+  m_afterburnerLength: 0
+  m_afterburnerRechargeTime: 0
   m_rotateSpeed: 100
   m_ramDamageMultiplier: 2.5
   maunuallySetWidthAndHeight: 0
-  weaponRange: 0
+  m_minWeaponRange: 0
+  m_maxWeaponRange: 0
   m_shipWidth: 2
   m_shipHeight: 2
+  m_pathToShieldObject: Composite Collider/Shield
   shipID: -1
   m_bountyAmount: 15
-  m_hasTurrets: 0
   m_currentOrder: 0
-  allowedAttacksForShip:
-  - AttackStrafeRight
-  - AttackStrafeLeft
-  shipSize: 2
-  m_pathToShieldObject: Composite Collider/Shield
+  m_allowedAttacksForShip: []
+  m_shipSize: 0
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -937,7 +932,6 @@ MonoBehaviour:
   m_burstFireTime: 2
   m_firesInBursts: 0
   m_firesSequentially: 0
-  m_shotsFiredInBurst: 1
   m_fireNow: 0
 --- !u!114 &11400006
 MonoBehaviour:
@@ -950,13 +944,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
+  m_tilesX: 5
+  m_tilesY: 5
+  m_fps: 10
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -968,13 +962,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 5
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
+  m_tilesX: 5
+  m_tilesY: 5
+  m_fps: 10
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400010
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -986,13 +980,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
+  m_tilesX: 6
+  m_tilesY: 6
+  m_fps: 10
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400012
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1004,13 +998,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 6
-  _uvTieY: 6
-  _fps: 60
-  _frameOffset: 0
-  m_shouldReverse: 0
+  m_tilesX: 6
+  m_tilesY: 6
+  m_fps: 10
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400014
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1022,17 +1016,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5a3c710d3d5cbf40ad4121fa14b98dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  primitiveQuad: {fileID: 0}
-  removeShipAfterSeconds: -1
-  explosions:
-  - explosionPrefabs:
-    - {fileID: 100000, guid: 5f86f9da513c93e4fbea0cabdd34dd44, type: 2}
-    - {fileID: 100000, guid: 75aee9c489749624d9b977f9b7eb00f6, type: 2}
-    - {fileID: 100000, guid: 3d56c3dc7212b474ebdc5f46af8a0952, type: 2}
-    localPosition: {x: 0, y: 0, z: -.0500000007}
-    localScale: {x: 4, y: 4, z: 1}
-    timeAfterDeathThatExplosionStarts: 0
-  fragments: []
+  m_primitiveQuad: {fileID: 0}
+  m_removeShipAfterSeconds: 0
+  m_explosions: []
+  m_fragments: []
 --- !u!114 &11400016
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1044,7 +1031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 0
+  m_firesWithTurn: 0
 --- !u!114 &11400018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1056,7 +1043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 0
+  m_firesWithTurn: 0
 --- !u!114 &11400020
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1068,7 +1055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 0
+  m_firesWithTurn: 0
 --- !u!114 &11400022
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1080,7 +1067,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 262afa51cc0c9fb46becb08375f50984, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firesWithTurn: 0
+  m_firesWithTurn: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

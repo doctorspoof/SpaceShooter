@@ -62,7 +62,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 66.255394, y: -7.36372375, z: 10.4999943}
+  m_LocalPosition: {x: 54.5705605, y: 145.437363, z: 10.4999943}
   m_LocalScale: {x: 12, y: 12, z: 10}
   m_Children:
   - {fileID: 400004}
@@ -169,21 +169,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f74edbac18d1db469a4cc2575ca05ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_shopType: 1
   m_shopRotationSpeed: 5
   m_priceMultiplier: 1
-  m_shopType: 1
   m_dockPoint: {fileID: 100002}
-  m_canStockWeapons: 1
-  m_weaponRarityMod: 1
-  m_canStockShields: 1
-  m_shieldRarityMod: 1
-  m_canStockEngines: 1
-  m_engineRarityMod: 1
-  m_canStockPlating: 1
-  m_platingRarityMod: 1
-  m_canStockCWeapons: 0
-  m_cWeaponRarityMod: 1
-  RESETINVENTORY: 0
+  m_canStock: 
+  DebugResetInventory: 0
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -195,13 +186,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 5
-  _uvTieY: 1
-  _fps: 6
-  _frameOffset: 0
-  m_shouldReverse: 1
+  m_tilesX: 5
+  m_tilesY: 1
+  m_fps: 10
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 1
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -213,13 +204,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _uvTieX: 7
-  _uvTieY: 1
-  _fps: 10
-  _frameOffset: 0
-  m_shouldReverse: 0
+  m_tilesX: 7
+  m_tilesY: 1
+  m_fps: 10
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400006
 MonoBehaviour:
   m_ObjectHideFlags: 1

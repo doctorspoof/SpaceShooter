@@ -313,7 +313,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: .00109656586, w: .999999464}
-  m_LocalPosition: {x: .330427766, y: 284.868805, z: 10}
+  m_LocalPosition: {x: 53.2372131, y: 143.581345, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400004}
@@ -1054,13 +1054,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 5
-  m_uvTieY: 5
+  m_tilesX: 5
+  m_tilesY: 5
   m_fps: 60
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400010
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1096,13 +1096,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 5
-  m_uvTieY: 5
+  m_tilesX: 5
+  m_tilesY: 5
   m_fps: 60
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400016
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1114,13 +1114,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 5
-  m_uvTieY: 5
+  m_tilesX: 5
+  m_tilesY: 5
   m_fps: 60
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1156,13 +1156,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 5
-  m_uvTieY: 5
+  m_tilesX: 5
+  m_tilesY: 5
   m_fps: 60
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1186,13 +1186,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 5
-  m_uvTieY: 5
+  m_tilesX: 5
+  m_tilesY: 5
   m_fps: 60
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400028
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1204,13 +1204,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 5
-  m_uvTieY: 5
+  m_tilesX: 5
+  m_tilesY: 5
   m_fps: 60
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!114 &11400030
 MonoBehaviour:
   m_ObjectHideFlags: 1

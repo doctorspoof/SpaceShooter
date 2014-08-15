@@ -163,13 +163,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_uvTieX: 2
-  m_uvTieY: 2
+  m_tilesX: 2
+  m_tilesY: 2
   m_fps: 4
-  m_frameOffset: 0
-  m_shouldReverse: 0
+  m_startingIndex: 0
   m_isForwards: 1
-  shouldDieAfterFirstRun: 0
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 0
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

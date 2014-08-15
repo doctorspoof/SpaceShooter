@@ -148,7 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 5
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -408,7 +408,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 7
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -575,7 +575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 7
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -1559,10 +1559,10 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 779021241}
-  - {fileID: 1337935898}
   - {fileID: 1339814088}
   - {fileID: 61916492}
   - {fileID: 800427921}
+  - {fileID: 1337935898}
   m_Father: {fileID: 0}
 --- !u!1001 &762900438
 Prefab:
@@ -1957,7 +1957,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 5
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -4002,7 +4002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 5
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -4151,7 +4151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 5
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -4586,7 +4586,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 7
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -5545,7 +5545,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 7
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
@@ -5748,7 +5748,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilesX: 1
+  m_tilesX: 7
   m_tilesY: 1
   m_fps: 10
   m_startingIndex: 0
