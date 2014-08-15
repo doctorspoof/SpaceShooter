@@ -914,6 +914,10 @@ public class GameStateController : MonoBehaviour
     {
         m_GUIManager.GetComponent<GUIInGameMaster>().ToggleSmallMapState();
     }
+    public void PassNewWeaponReferenceToGUI(GameObject weapon)
+    {
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughPlayerWeaponReference(weapon);
+    }
     #endregion
 
     #region GameState Changing

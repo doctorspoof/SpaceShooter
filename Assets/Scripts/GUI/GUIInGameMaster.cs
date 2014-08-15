@@ -108,6 +108,10 @@ public class GUIInGameMaster : GUIBaseMaster
     #endregion
     
     #region Specific Toggles/Calls
+    public void PassThroughPlayerWeaponReference(GameObject weapon)
+    {
+        GetComponent<GUIInGameHUDScreen>().SetWeaponReference(weapon.GetComponent<EquipmentWeapon>());
+    }
     public void ToggleBigMapState()
     {
         GetComponent<GUIMapOverlayScreen>().ToggleBigMap();

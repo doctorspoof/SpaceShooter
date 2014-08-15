@@ -1282,7 +1282,7 @@ public class PlayerControlScript : Ship
 						//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
 						Debug.Log ("Weapon is not homing. Alerting GUI.");
 					}
-				
+                        
 					//Take new weapon out of inventory
 					//RemoveItemFromInventory(m_playerInventory[slot]);*/
 					RemoveItemFromInventoryLocalOnly(m_playerInventory[slot]);
@@ -1353,8 +1353,9 @@ public class PlayerControlScript : Ship
 	[RPC] void ReturnInfoToEquippingClient(int weaponID)
 	{
         ItemWrapper equipmentObject = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(weaponID);
-
 		m_equippedWeaponItem = equipmentObject;
+        
+        m_gscCache.PassNewWeaponReferenceToGUI(GetWeaponObject());
 	}
 
 	public void SetNewTargetLock(GameObject target)
@@ -1582,7 +1583,8 @@ public class PlayerControlScript : Ship
 				return child.gameObject;
 			}
 		}
-
+        
+        Debug.Log ("ERROR: Player couldn't find attached weapon object");
 		return null;
 	}
 

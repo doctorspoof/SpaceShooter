@@ -57,8 +57,9 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     GameStateController m_gscCache;
     HealthScript m_playerHPCache;
     HealthScript m_cShipHPCache;
+    EquipmentWeapon m_playerWeaponCache;
     
-    #region
+    #region Setters
     public void SetCShipReference(GameObject cship)
     {
         m_cShipHPCache = cship.GetComponent<HealthScript>();
@@ -66,6 +67,11 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     public void SetPlayerReference(GameObject ship)
     {
         m_playerHPCache = ship.GetComponent<HealthScript>();
+    }
+    public void SetWeaponReference(EquipmentWeapon weapon)
+    {
+        Debug.Log ("Received new weapon reference: " + weapon);
+        m_playerWeaponCache = weapon;
     }
     #endregion
     
@@ -185,18 +191,50 @@ public class GUIInGameHUDScreen : BaseGUIScreen
                 GUI.Label(new Rect(700, 200, 200, 80), "Respawning...", "No Box");
             }
         }
+        
+        if(!Screen.showCursor)
+            DrawCursor();
     }
     
     void DrawCursor()
     {
+        Matrix4x4 oldMat = GUI.matrix;
+        GUI.matrix = Matrix4x4.identity;
+        Vector3 mousePos = Input.mousePosition;
+        
+        //Try and do locked target
+        if(m_targetGO != null)
+        {
+            Vector3 targetPos = m_targetGO.transform.position;
+            GUI.DrawTexture(new Rect(targetPos.x - 20, targetPos.y - 20, 40, 40), m_lockedTarget);
+        }
+    
         if (m_playerHPCache != null)
         {
             //Cursor
-            Matrix4x4 oldMat = GUI.matrix;
-            GUI.matrix = Matrix4x4.identity;
-            Vector3 mousePos = Input.mousePosition;
+            if(m_isLockedOn)
+            {
+                GUI.DrawTexture(new Rect(mousePos.x - 25, (Screen.height - mousePos.y) - 25, 50, 50), m_cursorLocked);
+            }
+            else if(m_isLockingOn)
+            {
+                GUI.DrawTexture(new Rect(mousePos.x - 25, (Screen.height - mousePos.y) - 25, 50, 50), m_cursorLocking);
+            }
+            else
+            {
+                GUI.DrawTexture(new Rect(mousePos.x - 25, (Screen.height - mousePos.y) - 25, 50, 50), m_cursor);
+            }
             
             
+            //Now do reload bar
+            float reloadPercent = m_playerWeaponCache.GetReloadPercentage();
+            int reloadBarMaxWidth = 16;
+            int reloadBarMaxHeight = 24;
+            float reloadBarHeight = (reloadBarMaxHeight * reloadPercent);
+            
+            GUI.DrawTexture(new Rect(mousePos.x + 14, (Screen.height - mousePos.y) + 6, reloadBarMaxWidth, reloadBarMaxHeight), m_reloadBackground);
+            GUI.DrawTextureWithTexCoords(new Rect(mousePos.x + 14, (Screen.height - mousePos.y) + 6 + (reloadBarMaxHeight - reloadBarHeight), reloadBarMaxWidth * reloadPercent, reloadBarHeight), m_reloadBar, 
+                                        new Rect(0, 0, reloadPercent, reloadPercent));
         }
     }
 }

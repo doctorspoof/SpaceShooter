@@ -424,17 +424,26 @@ public class EquipmentWeapon : MonoBehaviour
 
     public void ParentWeaponToOwner(string player)
     {
+        GameStateController m_gscCache = GameStateController.Instance();
         //Debug.Log ("Passing name: " + player + " through to parent weapon process.");
         networkView.RPC("TellWeaponParentToPlayerThroughNetworkPlayer", RPCMode.Others, player);
+        
+        NetworkPlayer netPlayer = m_gscCache.GetNetworkPlayerFromID(m_gscCache.GetIDFromName(player));
+        if(netPlayer == Network.player)
+            m_gscCache.PassNewWeaponReferenceToGUI(this.gameObject);
     }
 
     [RPC] void TellWeaponParentToPlayerThroughNetworkPlayer(string player)
     {
-        GameStateController gsc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>();
+        GameStateController m_gscCache = GameStateController.Instance();
 
-        GameObject playerGO = gsc.GetPlayerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(gsc.GetIDFromName(player)));
+        NetworkPlayer netPlayer = m_gscCache.GetNetworkPlayerFromID(m_gscCache.GetIDFromName(player));
+        GameObject playerGO = m_gscCache.GetPlayerFromNetworkPlayer(netPlayer);
         Debug.Log("Attaching weapon: " + this.name + " to gameObject: " + playerGO.name + ", through name: " + player);
         this.transform.parent = playerGO.transform;
         this.transform.localPosition = m_requiredOffset;
+        
+        if(Network.player == netPlayer)
+            m_gscCache.PassNewWeaponReferenceToGUI(this.gameObject);            
     }
 }
