@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 public interface IEntity
 {
-
     AINode GetAINode();
 
     void SetAINode(AINode node_);

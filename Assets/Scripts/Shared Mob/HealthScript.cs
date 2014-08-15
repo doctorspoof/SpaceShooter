@@ -4,8 +4,6 @@ using System.Collections;
 public class HealthScript : MonoBehaviour 
 {
 	//Only need to use this for the capital ship
-	[SerializeField] GameObject m_gameStateController;
-	
 	[SerializeField] GameObject m_DeathObjectRef;
 
     [SerializeField] int m_maximumShield = 100;
@@ -281,7 +279,7 @@ public class HealthScript : MonoBehaviour
 			//Tell gamecontroller the capital ship is under attack
 			if(this.tag == "Capital")
             {
-                gameState.CapitalShipHasTakenDamage();
+                GameStateController.Instance().CapitalShipHasTakenDamage();
             }
 				
 		}
@@ -349,7 +347,7 @@ public class HealthScript : MonoBehaviour
 				if(this.tag == "Capital")
 				{
 					if(firer != null && firer.tag != "Asteroid")
-						m_GameStateController.GetComponent<GameStateController>().CapitalShipHasTakenDamage();
+                        GameStateController.Instance().CapitalShipHasTakenDamage();
 				}
 				
 				if(this.tag == "Enemy")
@@ -455,7 +453,7 @@ public class HealthScript : MonoBehaviour
 				Debug.Log ("[HealthScript]: Player has died!");
 				
 				Debug.Log ("[HealthScript]: Alerting GameController...");
-				GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDied(this.gameObject);
+                GameStateController.Instance().NotifyLocalPlayerHasDied(this.gameObject);
 				//networkView.RPC ("PropagatePlayerDeath", RPCMode.Others);
 				Debug.Log ("[HealthScript]: Destroying object...");
                 networkView.RPC("PropagateEntityDied", RPCMode.All);
@@ -473,10 +471,9 @@ public class HealthScript : MonoBehaviour
 		else if(this.tag == "Capital")
 		{
 			//Capital ship has been destroyed, game over
-			//m_GameStateController.GetComponent<GameStateController>().CapitalShipHasBeenDestroyed();
 			if(Network.isServer)
 			{
-				m_GameStateController.GetComponent<GameStateController>().TellAllClientsCapitalShipHasBeenDestroyed();
+                GameStateController.Instance().TellAllClientsCapitalShipHasBeenDestroyed();
 				//Network.Destroy(this.gameObject);
 			}
 			
@@ -531,7 +528,7 @@ public class HealthScript : MonoBehaviour
 	[RPC]
 	void PropagatePlayerHasJustDied()
 	{
-		GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDied(this.gameObject);
+        GameStateController.Instance().NotifyLocalPlayerHasDied(this.gameObject);
 		//Network.Destroy (this.gameObject);
 	}
 

@@ -157,7 +157,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
                 if (enemy != null)// && )IsEnemyInViewableRange(enemy.transform.position))
                 {
                     Vector2 pingPos = WorldToMapPos(enemy.transform.position);
-                    if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+                    if(enemy.GetComponent<ShipEnemy>().GetShipSize() == ShipSize.Utility)
                     {
                         GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.5f), pingPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_specEnemyBlob);
                     }
@@ -304,7 +304,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
                     
                     if (drawRect.Contains(finalDrawPos))
                     {
-                        if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+                        if(enemy.GetComponent<ShipEnemy>().GetShipSize() == ShipSize.Utility)
                         {
                             GUI.DrawTexture(new Rect(finalDrawPos.x - (m_blobSize * 0.5f),
                                                      finalDrawPos.y - (m_blobSize * 0.5f),
@@ -408,7 +408,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
                     //if(IsEnemyInViewableRange(enemy.transform.position))
                     //{
                     Vector2 pingPos = WorldToSmallMapPos(enemy.transform.position);
-                    if(enemy.GetComponent<EnemyScript>().GetShipSize() == ShipSize.Utility)
+                    if(enemy.GetComponent<ShipEnemy>().GetShipSize() == ShipSize.Utility)
                     {
                         GUI.DrawTexture(new Rect(pingPos.x - (m_blobSize * 0.25f), pingPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_specEnemyBlob);
                     }

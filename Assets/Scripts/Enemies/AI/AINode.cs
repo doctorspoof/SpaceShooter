@@ -16,6 +16,9 @@ public class AINode
     AINode m_parent;
 
 
+    public delegate void OnChildEvent(AINode child_);
+    public OnChildEvent onChildAdded;
+    public OnChildEvent onChildRemoved;
 
     IEntity m_entity;
 
@@ -30,6 +33,11 @@ public class AINode
     {
         m_children.Add(node_);
         node_.SetParent(this);
+
+        if (onChildAdded != null && onChildAdded.GetInvocationList().Length > 0)
+        {
+            onChildAdded(node_);
+        }
     }
 
     public void RemoveChild(AINode node_)
@@ -37,6 +45,10 @@ public class AINode
         if (m_children.Remove(node_))
         {
             node_.SetParent(null);
+            if (onChildAdded != null && onChildRemoved.GetInvocationList().Length > 0)
+            {
+                onChildRemoved(node_);
+            }
         }
     }
 

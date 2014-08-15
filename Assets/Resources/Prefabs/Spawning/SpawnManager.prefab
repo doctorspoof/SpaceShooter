@@ -38,29 +38,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves:
-  - defaultOrderTargetTags: []
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 48
-  m_singleLargeWave:
-  - defaultOrderTargetTags:
-    - Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 36
-  m_specialWaves:
-  - defaultOrderTargetTags:
-    - Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100026, guid: 41af5e54d04f27141b2112f1fb0c15c0, type: 2}
-      m_numEnemy: 2
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1
   m_timeCountInMinutes: 25
   m_multiplierAtTimeRequired: 5
-  m_secondsBetweenWaves: 40
+  m_secondsBetweenWaves: 10
   m_lastTimeModifier: 0
   m_lastTimeSpawn: 0
 --- !u!1001 &100100000

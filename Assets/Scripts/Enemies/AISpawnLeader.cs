@@ -20,14 +20,15 @@ public class AISpawnLeader : MonoBehaviour, IEntity
         m_node = node_;
     }
 
-    public List<string> GetTargetTags()
-    {
-        return targetTags;
-    }
+    //public List<string> GetTargetTags()
+    //{
+    //    return targetTags;
+    //}
 
     public void AddTargetTag(string tag_)
     {
         targetTags.Add(tag_);
+        Debug.Log("Adding tag_ = " + tag_ + " count now = " + targetTags.Count);
     }
 
 
@@ -39,7 +40,7 @@ public class AISpawnLeader : MonoBehaviour, IEntity
         m_node = new AINode(this);
     }
 
-    public bool ReceiveOrder(int orderID_, object[] listOfParameters)
+    public virtual bool ReceiveOrder(int orderID_, object[] listOfParameters)
     {
         switch ((AIShipOrder)orderID_)
         {
@@ -50,13 +51,13 @@ public class AISpawnLeader : MonoBehaviour, IEntity
         }
     }
 
-    public bool GiveOrder(int orderID_, object[] listOfParameters)
+    public virtual bool GiveOrder(int orderID_, object[] listOfParameters)
     {
         GetAINode().OrderChildren(orderID_, listOfParameters);
         return true;
     }
 
-    public bool ConsiderOrder(int orderID_, object[] listOfParameters)
+    public virtual bool ConsiderOrder(int orderID_, object[] listOfParameters)
     {
         switch ((AIShipOrder)orderID_)
         {
@@ -67,7 +68,7 @@ public class AISpawnLeader : MonoBehaviour, IEntity
         }
     }
 
-    public bool RequestOrder(IEntity entity_)
+    public virtual bool RequestOrder(IEntity entity_)
     {
         System.Type entityType = entity_.GetType();
 
@@ -79,9 +80,12 @@ public class AISpawnLeader : MonoBehaviour, IEntity
                 // find a new target, but if one does not exist return false
                 if ((target = GetClosestTarget()) == null)
                 {
+                    Debug.Log("Running return");
                     return false;
                 }
             }
+
+            Debug.Log("Running2");
 
             entity_.GiveOrder((int)AIShipOrder.Attack, new object[] { target });
 
@@ -91,7 +95,7 @@ public class AISpawnLeader : MonoBehaviour, IEntity
         return false;
     }
 
-    public object[] RequestInformation(int informationID_)
+    public virtual object[] RequestInformation(int informationID_)
     {
         switch ((AIShipRequestInfo)informationID_)
         {
@@ -102,7 +106,7 @@ public class AISpawnLeader : MonoBehaviour, IEntity
         }
     }
 
-    public bool Notify(int informationID_, object[] listOfParameters)
+    public virtual bool Notify(int informationID_, object[] listOfParameters)
     {
         switch ((AIShipNotifyInfo)informationID_)
         {
@@ -115,12 +119,15 @@ public class AISpawnLeader : MonoBehaviour, IEntity
 
     GameObject GetClosestTarget()
     {
+        Debug.Log("targetTag count = " + targetTags.Count);
         foreach (string tag in targetTags)
         {
+            Debug.Log("Iterating targetTags");
             GameObject[] defaultTargets = GameObject.FindGameObjectsWithTag(tag);
 
             if (defaultTargets != null)
             {
+                Debug.Log("defualtTargets not null");
                 float closest = 0;
                 GameObject closestTarget = null;
                 foreach (GameObject potentialTarget in defaultTargets)

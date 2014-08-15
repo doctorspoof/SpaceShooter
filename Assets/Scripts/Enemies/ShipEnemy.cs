@@ -29,9 +29,10 @@ public class ShipEnemy : Ship
 
     int m_sendCounter = 0;
 
-    AIShipOrder m_currentOrder = AIShipOrder.Move;
+    AIShipOrder m_currentOrder = AIShipOrder.Idle;
     GameObject m_target = null;
     Vector2 m_targetMove;
+    Vector2 m_formationPosition;
 
 
 
@@ -52,14 +53,14 @@ public class ShipEnemy : Ship
         return m_shipSize;
     }
 
-    public void SetMoveTarget(Vector2 target)
+    public void SetMoveTarget(Vector2 target_)
     {
-        if (Vector3.Distance((Vector2)transform.position, target) < 0.8f)
+        if (Vector3.Distance((Vector2)transform.position, target_) < 0.8f)
         {
             return;
         }
-
-        m_targetMove = target;
+        Debug.Log("Set move target to = " + target_);
+        m_targetMove = target_;
     }
 
     /// <summary>
@@ -159,12 +160,26 @@ public class ShipEnemy : Ship
                     }
                 case (AIShipOrder.Move):
                     {
-                        MoveTowardTarget();
+                        MoveTowardTarget(m_targetMove);
 
                         if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_targetMove) < 0.64f)
                         {
                             m_currentOrder = AIShipOrder.Idle;
                         }
+                        break;
+                    }
+                case(AIShipOrder.StayInFormation):
+                    {
+                        // if we are out of position, move towards formation position
+                        if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_targetMove) > 0.64f)
+                        {
+                            MoveTowardTarget(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
+                        }
+                        break;
+                    }
+                case(AIShipOrder.Idle):
+                    {
+                        GetAINode().GetParent().GetEntity().RequestOrder(this);
                         break;
                     }
                 default:
@@ -174,11 +189,6 @@ public class ShipEnemy : Ship
             }
 
         }
-    }
-
-    void OnDestroy()
-    {
-        Debug.Log("I have been murdered!");
     }
 
     public void AlertLowHP(GameObject lastHit)
@@ -332,30 +342,29 @@ public class ShipEnemy : Ship
         return m_maxWeaponRange;
     }
 
-    void MoveTowardTarget()
+    void MoveTowardTarget(Vector2 moveTarget_)
     {
-        //Debug.Log("parent = " + (m_parentTransform == null) + " m_targetMove = " + m_targetMove);
         // TODO: this was reliant on the EnemyGroup. Needs changing so that it can follow its own target, or stay in formation otherwise.
-        if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position), m_targetMove) > Vector2.Distance(m_shipTransform.position, m_targetMove))
-        {
-            Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
-            Vector2 distanceToTargetPosition = (m_targetMove - (Vector2)m_shipTransform.position);
+        //if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position), m_targetMove) > Vector2.Distance(m_shipTransform.position, m_targetMove))
+        //{
+        //    Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
+        //    Vector2 distanceToTargetPosition = (m_targetMove - (Vector2)m_shipTransform.position);
 
-            float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
-            Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
+        //    float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
+        //    Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
 
-            //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
-            //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
-            //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-            //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.transform.position));
+        //    //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
+        //    //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
+        //    //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
+        //    //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.transform.position));
 
-            RotateTowards((Vector2)m_shipTransform.position + directionToMove);
-        }
-        else
-        {
-            RotateTowards(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
-        }
-
+        //    RotateTowards((Vector2)m_shipTransform.position + directionToMove);
+        //}
+        //else
+        //{
+        //    RotateTowards(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
+        //}
+        RotateTowards(moveTarget_);
         rigidbody.AddForce(m_shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
     }
 
@@ -445,12 +454,14 @@ public class ShipEnemy : Ship
                 }
             case (AIShipOrder.Move):
                 {
+                    Debug.Log("ReceivedOrder to move");
                     SetMoveTarget((Vector2)listOfParameters[0]);
                     return true;
                 }
             case(AIShipOrder.StayInFormation):
                 {
                     m_currentOrder = AIShipOrder.StayInFormation;
+                    m_formationPosition = (Vector2)listOfParameters[0];
                     return true;
                 }
             default:
@@ -487,6 +498,11 @@ public class ShipEnemy : Ship
         }
     }
 
+    public override bool RequestOrder(IEntity entity_)
+    {
+        return false;
+    }
+
     public override object[] RequestInformation(int informationID_)
     {
         object[] returnee = null;
@@ -513,6 +529,27 @@ public class ShipEnemy : Ship
 
         switch ((AIShipNotifyInfo)informationID_)
         {
+            case(AIShipNotifyInfo.ChildAdded):
+            case(AIShipNotifyInfo.ChildRemoved):
+                {
+                    List<AINode> children = GetAINode().GetChildren();
+                    List<Ship> ships = new List<Ship>();
+                    children.ForEach(
+                            x =>
+                            {
+                                ships.Add((Ship)x.GetEntity());
+                            }
+                        );
+
+                    List<Vector2> formationPositions = Formations.GenerateCircleFormation(ships);
+
+                    for(int i = 0; i < children.Count; ++i)
+                    {
+                        children[i].ReceiveOrder((int)AIShipOrder.StayInFormation, new object[] { formationPositions[i] });
+                    }
+
+                    return true;
+                }
             default:
                 {
                     return false;

@@ -19,12 +19,16 @@ public enum AIShipRequestInfo
 public enum AIShipNotifyInfo
 {
     ParentChanged = 0,
-    SetFormationPosition = 1
+    ChildAdded = 1,
+    ChildRemoved = 2,
+    SetFormationPosition = 3
 }
 
 [RequireComponent(typeof(MeshFilter))]
 public class Ship : MonoBehaviour, IEntity
 {
+
+    public int depth;
 
     [SerializeField] protected string m_ownerSt;
 
@@ -210,6 +214,16 @@ public class Ship : MonoBehaviour, IEntity
             SetShipSizes();
 
         m_node = new AINode(this);
+
+        m_node.onChildAdded += x =>
+        {
+            this.Notify((int)AIShipNotifyInfo.ChildAdded, new object[] { x });
+        };
+
+        m_node.onChildRemoved += x =>
+        {
+            this.Notify((int)AIShipNotifyInfo.ChildRemoved, new object[] { x });
+        };
     }
 
     protected virtual void Start()

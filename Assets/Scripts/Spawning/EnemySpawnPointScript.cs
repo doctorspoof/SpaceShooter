@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class SpawnLocation
 {
     public float timeUntilStart, currentTime = 0, scale;
+    public Vector3 position;
     public GameObject shipObject;
 }
 
@@ -197,8 +198,6 @@ public class EnemySpawnPointScript : MonoBehaviour
 
             List<SpawnLocation> locations = GenerateSpawnLocations(ships.Count);
 
-            Debug.Log("ship count = " + ships.Count + " location count = " + locations.Count);
-
             BindSpawns(ships, locations);
 
             Activate(true);
@@ -221,6 +220,8 @@ public class EnemySpawnPointScript : MonoBehaviour
         {
             spawns_[i].scale = ships_[i].GetMaxSize();
             spawns_[i].shipObject = ships_[i].gameObject;
+            spawns_[i].shipObject.transform.position = spawns_[i].position;
+            spawns_[i].shipObject.SetActive(false);
         }
 
         m_enemiesWaitingToSpawn.AddRange(spawns_);
@@ -235,11 +236,11 @@ public class EnemySpawnPointScript : MonoBehaviour
 
         for(int i = 0; i < count_; ++i)
         {
-            Vector3 spawnLocation = this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), 0);
+            Vector3 spawnLocation = this.transform.position + new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f), -1);
 
             float timeUntilStart = Random.Range(0, m_maxTimeBetweenFirstAndLastSpawn) + m_timeBeforeScalingWormhole + m_timeTakenToScaleWormhole;
 
-            SpawnLocation newLocation = new SpawnLocation{ timeUntilStart = timeUntilStart };
+            SpawnLocation newLocation = new SpawnLocation{ timeUntilStart = timeUntilStart, position = spawnLocation };
             bool added = false;
 
             for (int j = 0; j < locations.Count; ++j)
@@ -270,8 +271,6 @@ public class EnemySpawnPointScript : MonoBehaviour
         script.Run(timeTillDestroy_ - 1.3f);
         Destroy(spawnedEffect, timeTillDestroy_ - 0.2f);
     }
-
-    
 
     void SetWormholeSize(float t_)
     {

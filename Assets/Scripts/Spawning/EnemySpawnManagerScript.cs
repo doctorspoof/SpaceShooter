@@ -35,6 +35,7 @@ public class WaveInfo
 
     void SetHierarchy(AINode prefabParent_, AINode newParent_, ref List<GameObject> objectsInstantiated_)
     {
+        depth++;
         // Setup the parent so that it works in the scene
         GameObject parent = ((Component)newParent_.GetEntity()).gameObject;
 
@@ -48,6 +49,8 @@ public class WaveInfo
             Component childComp = (Component)child.GetEntity();
             GameObject newObj = childComp.GetComponent<Cloneable>().Clone(new Vector3(), Quaternion.identity);
 
+            newObj.GetComponent<Ship>().depth = depth;
+
             // get the new instatiated objects entity
             IEntity newChild = GetIEntity(newObj);
 
@@ -57,7 +60,7 @@ public class WaveInfo
             // recurse
             SetHierarchy(child, newChild.GetAINode(), ref objectsInstantiated_);
         }
-
+        depth--;
     }
 
     public static IEntity GetIEntity(GameObject object_)
@@ -235,7 +238,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     GameObject GetPrefab(string shipName_)
     {
-        return Resources.Load<GameObject>("Prefabs/Enemies/" + shipName_);
+        return UnityEngine.Resources.Load<GameObject>("Prefabs/Enemies/" + shipName_);
     }
 
     public void BeginSpawning()
