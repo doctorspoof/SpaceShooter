@@ -304,7 +304,7 @@ public class GUIShopDockScreen : BaseGUIScreen
             //Finally, Leave button
             if (shouldRecieveInput && !m_shopConfirmBuy && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
             {
-                //TODO: Make this just send a message to GSC, let GSC handle all this
+                m_gscCache.SwitchToInGame();
                 
                 //m_PlayerHasDockedAtShop = false;
                 //m_shopDockedAt = null;

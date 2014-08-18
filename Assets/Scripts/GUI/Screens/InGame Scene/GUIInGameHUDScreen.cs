@@ -21,6 +21,8 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     [SerializeField]        Texture m_lockedTarget;
     
     // Internal members
+    bool m_cshipIsDockable = false;
+    bool m_shopIsDockable = false;
     bool m_shouldShowCShipUnderFire = false;
     bool m_playerHasDied = false;
     bool m_isOnCShipDeathSequence = false;
@@ -34,6 +36,14 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     GameObject m_targetGO = null;
     
     #region Setters
+    public void SetCShipDockable(bool state)
+    {
+        m_cshipIsDockable = state;
+    }
+    public void SetShopDockable(bool state)
+    {
+        m_shopIsDockable = state;
+    }
     public void SetPlayerDead(bool state)
     {
         m_playerHasDied = state;
@@ -51,6 +61,11 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     {
         m_isOutOfBounds = state; 
     }
+    public void SetLockingState(bool locked, bool locking)
+    {
+        m_isLockedOn = locked;
+        m_isLockingOn = locking;
+    }
     #endregion
     
     // Cached members
@@ -66,6 +81,7 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     }
     public void SetPlayerReference(GameObject ship)
     {
+        Debug.Log ("PlayerCache was set");
         m_playerHPCache = ship.GetComponent<HealthScript>();
     }
     public void SetWeaponReference(EquipmentWeapon weapon)
@@ -80,6 +96,7 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     {
         m_priorityValue = 1;
         m_gscCache = GameStateController.Instance();
+        GetComponent<GUIMapOverlayScreen>().UpdateShopList();
     }
     
     void Update ()
@@ -192,6 +209,12 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             }
         }
         
+        if(m_cshipIsDockable)
+            GUI.Label(new Rect(700, 750, 200, 100), "Press X to dock at capital ship");
+            
+        if(m_shopIsDockable)
+            GUI.Label(new Rect(700, 750, 200, 100), "Press X to dock at trading station");
+        
         if(!Screen.showCursor)
             DrawCursor();
     }
@@ -236,5 +259,8 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTextureWithTexCoords(new Rect(mousePos.x + 14, (Screen.height - mousePos.y) + 6 + (reloadBarMaxHeight - reloadBarHeight), reloadBarMaxWidth * reloadPercent, reloadBarHeight), m_reloadBar, 
                                         new Rect(0, 0, reloadPercent, reloadPercent));
         }
+        
+        //Reset the matrix!
+        GUI.matrix = oldMat;
     }
 }

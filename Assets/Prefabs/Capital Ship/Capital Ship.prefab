@@ -2989,7 +2989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_inventory:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: aa2ed2b9777c2d746b74405771f540b9, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

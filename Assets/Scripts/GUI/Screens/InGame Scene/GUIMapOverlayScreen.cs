@@ -52,6 +52,10 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     {
         m_playerShips = GameObject.FindGameObjectsWithTag("Player");
     }
+    public void UpdateShopList()
+    {
+        m_shops = GameObject.FindGameObjectsWithTag("Shop");
+    }
     #endregion
     
     float m_blobSize;

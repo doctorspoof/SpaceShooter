@@ -13,45 +13,31 @@ public enum DockingState
 
 public class PlayerControlScript : Ship
 {
-
-	[SerializeField] bool m_shouldRecieveInput = true;
-
-	[SerializeField] float m_baseEngineSpeed = 5.0f;
-	[SerializeField] float m_baseEngineTurnSpeed = 1.0f;
-
-	[SerializeField] int m_baseShipHull = 25;
-	[SerializeField] float m_baseShipWeight = 0.05f;
-
-	[SerializeField] float m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
-	[SerializeField] float m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
-
-    [SerializeField] float m_playerStrafeMod = 0.6f;
-
-	[SerializeField] int m_currentCash = 0;
+    /* Serializable Members */
+	[SerializeField] bool   m_shouldRecieveInput = true;
+	[SerializeField] float  m_baseEngineSpeed = 5.0f;
+	[SerializeField] float  m_baseEngineTurnSpeed = 1.0f;
+	[SerializeField] int    m_baseShipHull = 25;
+	[SerializeField] float  m_baseShipWeight = 0.05f;
+	[SerializeField] float  m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
+	[SerializeField] float  m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
+    [SerializeField] float  m_playerStrafeMod = 0.6f;
+	[SerializeField] int    m_currentCash = 0;
 
     //Inventory
     [SerializeField] ItemWrapper m_equippedWeaponItem;
     [SerializeField] ItemWrapper m_equippedShieldItem;
     [SerializeField] ItemWrapper m_equippedEngineItem;
     [SerializeField] ItemWrapper m_equippedPlatingItem;
-
     [SerializeField] List<ItemWrapper> m_playerInventory;
 
-
-
-
+    /* Internal Members */
     bool m_isAnimating = false;
     DockingState m_currentDockingState = DockingState.NOTDOCKING;
-
     Vector3 m_targetPoint = Vector3.zero;
-
-    float m_dockingTime = 0.0f;				//Used to determine if the player should continue the docking attempt
-
+    float m_dockingTime = 0.0f;				    //Used to determine if the player should continue the docking attempt
     //bool m_shouldPlaySound = false;
-
-    // Use this for initialization
     float m_volumeHolder = 1.0f;
-
     bool m_useController = false;
     Quaternion m_targetAngle;
 
@@ -60,11 +46,30 @@ public class PlayerControlScript : Ship
     bool m_isInRangeOfCapitalDock = false;
     bool m_isInRangeOfTradingDock = false;
     GameObject m_nearbyShop = null;
+    
+    // Homing Stuff
+    bool m_currentWeaponNeedsLockon = false;
+    bool m_correctScreenToHome = false;
+    bool m_isLockingOn = false;
+    float m_lockOnTime = 0.0f;
+    float m_reqLockOnTime = 0.7f;
+    GameObject m_lockingTarget = null;
+    GameObject m_lockedOnTarget = null;
+    
+    #region getters
+    public GameObject GetLockedTarget()
+    {
+        return m_lockedOnTarget;
+    }
+    public bool GetNeedsLock()
+    {
+        return m_currentWeaponNeedsLockon;
+    }
+    #endregion
 
-
-
-
-    GameObject m_CShip = null;
+    /* Cached members */
+    GameObject m_cShipCache = null;
+    GameObject[] m_shops = null;
     GameStateController m_gscCache = null;
     GUIInGameMaster m_guiCache = null;
 
@@ -174,11 +179,15 @@ public class PlayerControlScript : Ship
     {
         m_nearbyShop = shop_;
     }
+    
+    public void SetCorrectHomingScreen(bool ready)
+    {
+        m_correctScreenToHome = ready;
+    }
 
     #endregion
 
-    
-
+    /* Unity Functions */
     protected override void Awake()
     {
         base.Awake();
@@ -187,12 +196,9 @@ public class PlayerControlScript : Ship
 
     void Start()
     {
-
         m_volumeHolder = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
-
         m_playerInventory = new List<ItemWrapper>(5);
 
-        //ResetEquippedWeapon();
         if (Network.isServer)
         {
             ResetEquippedWeapon();
@@ -201,7 +207,6 @@ public class PlayerControlScript : Ship
             ResetEquippedPlating();
         }
 
-        //timeSinceLastPacket = Time.realtimeSinceStartup;
         m_gscCache = GameStateController.Instance();
         StartCoroutine(EnsureEquipmentValidity());
     }
@@ -209,7 +214,6 @@ public class PlayerControlScript : Ship
     protected override void Update()
     {
         base.Update();
-
         m_ownerSt = m_owner.ToString();
 
         if (m_owner == Network.player)
@@ -252,8 +256,7 @@ public class PlayerControlScript : Ship
                     
                     if ((m_useController && Input.GetButtonDown("X360B")) || (!m_useController && Input.GetMouseButtonDown(2)))
                     {
-                        //TODO: REDO HOMING SYSTEM
-                        //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().RequestBreakLock();
+                        BreakLock();
                     }
 
                     if (m_useController)
@@ -293,6 +296,56 @@ public class PlayerControlScript : Ship
                         {
                             this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
                         }
+                        
+                        //Now attempting homing lockon
+                        if(m_correctScreenToHome && m_currentWeaponNeedsLockon)
+                        {
+                            //If we have no target at all, begin looking for one
+                            if(m_lockedOnTarget == null)
+                            {
+                                RaycastHit info;
+                                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                                int mask = (1 << 11 | 1 << 24);
+                                bool hit = Physics.Raycast(ray, out info, 200, mask);
+                            
+                                //Only do stuff if the raycast actually hits anything
+                                if(hit)
+                                {
+                                    //If we're currently trying to lock on to something, make sure we're still hovering and then increase the timer
+                                    //Otherwise, look for a new target
+                                    if(m_isLockingOn)
+                                    {
+                                        //If the target we're hovering over isn't the target we were trying to lock to, reset the lock
+                                        //Otherwise, carry on letting the timer tick up (read: do nothing)
+                                        if(m_lockingTarget != info.collider.attachedRigidbody.gameObject)
+                                        {
+                                            ResetHomingLockVars();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        m_lockingTarget = info.collider.attachedRigidbody.gameObject;
+                                        m_isLockingOn = true;
+                                        m_lockOnTime = 0.0f;
+                                        m_guiCache.PassThroughHomingState(false, true);
+                                    }
+                                }
+                                else
+                                {
+                                    //Ensure homing vars are unset
+                                    ResetHomingLockVars();
+                                }
+                            }
+                            //If we do have a target, make sure it's still in range
+                            else
+                            {
+                                float distanceToTarget = Vector3.Distance(m_lockedOnTarget.transform.position, this.transform.position);
+                                if(distanceToTarget > GetWeaponObject().GetComponent<EquipmentWeapon>().GetBulletMaxDistance())
+                                {
+                                    BreakLock();
+                                }
+                            }
+                        }
                     }
 
                     //Listen for combat input
@@ -320,6 +373,12 @@ public class PlayerControlScript : Ship
             //    }
             //}
 
+            //Increment homing vars, if appropriate
+            if(m_correctScreenToHome && m_currentWeaponNeedsLockon)
+            {
+                UpdateHomingVars();
+            }
+
             //Finish by checking to make sure we're not too far from 0,0
             float distance = (this.transform.position - new Vector3(0, 0, 10)).sqrMagnitude;
             if (m_playerIsOutOfBounds)
@@ -340,6 +399,35 @@ public class PlayerControlScript : Ship
                     m_playerIsOutOfBounds = true;
                 }
             }
+            
+            //Finally, check distances to dock and shops
+            float cshipDist = Vector3.Distance(m_cShipCache.transform.position, this.transform.position);
+            if(cshipDist < 7.5f)
+            {
+                SetIsInRangeOfCapitalDock(true);
+                m_guiCache.PassThroughCShipDockableState(true);
+                
+            }
+            else
+            {
+                SetIsInRangeOfCapitalDock(false);
+                m_guiCache.PassThroughCShipDockableState(false);
+            }
+            
+            GameObject nearestShop = GetClosestShop();
+            float shopDist = Vector3.Distance(nearestShop.transform.position, this.transform.position);
+            if(shopDist < 1.5f)
+            {
+                m_nearbyShop = nearestShop;
+                m_isInRangeOfTradingDock = true;
+                m_guiCache.PassThroughShopDockableState(true);
+            }
+            else
+            {
+                m_nearbyShop = null;
+                m_isInRangeOfTradingDock = false;
+                m_guiCache.PassThroughShopDockableState(false);
+            }
         }
         else
         {
@@ -353,6 +441,7 @@ public class PlayerControlScript : Ship
             Screen.showCursor = true;
     }
 
+    /* Custom Functions */
     [RPC] void PropagateCashAmount(int amount)
     {
         m_currentCash = amount;
@@ -377,8 +466,8 @@ public class PlayerControlScript : Ship
             m_shouldRecieveInput = false;*/
 
             //Begin the animation sequence
-            m_CShip = GameObject.FindGameObjectWithTag("Capital");
-            m_targetPoint = m_CShip.transform.position + (m_CShip.transform.right * 7.0f) + (m_CShip.transform.up * 1.5f);
+            m_cShipCache = GameObject.FindGameObjectWithTag("Capital");
+            m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.right * 7.0f) + (m_cShipCache.transform.up * 1.5f);
             m_currentDockingState = DockingState.OnApproach;
             //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
             m_isAnimating = true;
@@ -391,6 +480,25 @@ public class PlayerControlScript : Ship
             m_shouldRecieveInput = false;
 
         }
+    }
+    
+    GameObject GetClosestShop()
+    {
+        if(m_shops == null)
+            m_shops = GameObject.FindGameObjectsWithTag("Shop");
+
+        float shortestDistance = 999;
+        GameObject shortestShop = null;
+        foreach (GameObject shop in m_shops)
+        {
+            float distance = Vector3.Distance(shop.transform.position, this.transform.position);
+            if (shortestShop == null || distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                shortestShop = shop;
+            }
+        }
+        return shortestShop;
     }
 
     private void UpdateFromController()
@@ -649,9 +757,9 @@ public class PlayerControlScript : Ship
     void UpdateDockingState()
     {
         //If for any reason CShip is not set, find it
-        if (m_CShip == null)
+        if (m_cShipCache == null)
         {
-            m_CShip = GameObject.FindGameObjectWithTag("Capital");
+            m_cShipCache = GameObject.FindGameObjectWithTag("Capital");
         }
 
         //If still on the entrance phases, allow cancelling with 'X'
@@ -679,11 +787,11 @@ public class PlayerControlScript : Ship
             case DockingState.OnApproach:
                 {
                     // Make sure targetPoint is up to date
-                    m_targetPoint = m_CShip.transform.position + (m_CShip.transform.right * 7.0f);
+                    m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.right * 7.0f);
 
                     // Move towards entrance point
                     Vector3 direction = m_targetPoint - transform.position;
-                    Vector3 rotation = -m_CShip.transform.right;
+                    Vector3 rotation = -m_cShipCache.transform.right;
                     MoveToDockPoint(direction, rotation);
 
                     // If we're near, switch to onEntry
@@ -699,7 +807,7 @@ public class PlayerControlScript : Ship
                             // Kill our speed temporarily
                             rigidbody.isKinematic = true;
                             m_currentDockingState = DockingState.OnEntry;
-                            m_targetPoint = m_CShip.transform.position + (m_CShip.transform.up * 1.5f);
+                            m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.up * 1.5f);
                             rigidbody.isKinematic = false;
                             this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
                         }
@@ -724,11 +832,11 @@ public class PlayerControlScript : Ship
             case DockingState.OnEntry:
                 {
                     //Make sure targetPoint is up to date
-                    m_targetPoint = m_CShip.transform.position;
+                    m_targetPoint = m_cShipCache.transform.position;
 
                     //Rotate towards entrance point
                     Vector3 direction = m_targetPoint - transform.position;
-                    Vector3 rotation = -m_CShip.transform.right;
+                    Vector3 rotation = -m_cShipCache.transform.right;
                     MoveToDockPoint(direction, rotation);
 
                     //If we're near, switch to docked and cut input. Then alert GUI we've docked
@@ -743,9 +851,9 @@ public class PlayerControlScript : Ship
 
                             // Perform docking process
                             m_currentDockingState = DockingState.Docked;
-                            transform.rotation = m_CShip.transform.rotation;
+                            transform.rotation = m_cShipCache.transform.rotation;
                             GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
-                            transform.parent = m_CShip.transform;
+                            transform.parent = m_cShipCache.transform;
                             rigidbody.isKinematic = true;
                             networkView.RPC("PropagateInvincibility", RPCMode.All, true);
                         }
@@ -773,14 +881,14 @@ public class PlayerControlScript : Ship
                     //We shouldn't need to do anything. Await GUI telling us we're done
 
                     // Stop exception spam by ensuring the CShip is alive
-                    if (m_CShip)
+                    if (m_cShipCache)
                     {
                         //Ensure rotation matches CShip
-                        transform.rotation = m_CShip.transform.rotation;
+                        transform.rotation = m_cShipCache.transform.rotation;
 
                         //Also position
                         float oldZ = transform.position.z;
-                        transform.position = new Vector3(m_CShip.transform.position.x, m_CShip.transform.position.y, oldZ);
+                        transform.position = new Vector3(m_cShipCache.transform.position.x, m_cShipCache.transform.position.y, oldZ);
 
                     }
                     break;
@@ -791,7 +899,7 @@ public class PlayerControlScript : Ship
                     this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
 
                     //If we're far enough away, stop animating
-                    Vector3 dir = m_CShip.transform.position - transform.position;
+                    Vector3 dir = m_cShipCache.transform.position - transform.position;
                     if (dir.magnitude >= 12.0f)
                     {
                         //Fly free!
@@ -867,8 +975,7 @@ public class PlayerControlScript : Ship
 	{
 		if(m_owner == Network.player)
 		{
-            //TODO: Part of homing lockon system
-			//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(state);
+            m_currentWeaponNeedsLockon = state;
 		}
 	}
 
@@ -1113,15 +1220,13 @@ public class PlayerControlScript : Ship
 					{
 						if(newWeapon.GetComponent<ItemWrapper>().GetItemPrefab().GetComponent<EquipmentWeapon>().GetNeedsLockon())
 						{
-                            //TODO: HOMING STUFF
-							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(true);
 							Debug.Log ("New weapon is homing, alerting GUI...");
+                            networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, true);
 						}
 						else
 						{
-                            //TODO: HOMING STUFF
-							//GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().SetCurrentWeaponNeedsLockon(false);
 							Debug.Log ("Weapon is not homing. Alerting GUI.");
+                            networkView.RPC ("PropagateWeaponResetHomingBool", RPCMode.All, false);
 						}
 					}
 				
@@ -1134,7 +1239,6 @@ public class PlayerControlScript : Ship
 					this.GetComponent<PlayerWeaponScript>().EquipWeapon(weapon);
 
 					//Send relevant info back to client
-					
 					networkView.RPC ("ReturnInfoToEquippingClient", m_owner, m_equippedWeaponItem.GetComponent<ItemWrapper>().GetItemID());
 
 					//Take new weapon out of inventory
@@ -1361,7 +1465,6 @@ public class PlayerControlScript : Ship
 	public void SetNewTargetLock(GameObject target)
 	{
 		GetWeaponObject().GetComponent<EquipmentWeapon>().SetTarget(target);
-		//Debug.Log ("Receieved target lock on enemy: " + target.name);
 	}
 
 	public void UnsetTargetLock()
@@ -1427,11 +1530,47 @@ public class PlayerControlScript : Ship
 	}*/
 
 
-	
+    #region HomingFunctions 
+    void BreakLock()
+    {
+        m_lockOnTime = 0.0f;
+        m_lockedOnTarget = null;
+        m_guiCache.PassThroughHomingState(false, false);
+        UnsetTargetLock();
+    }
+    void ResetHomingLockVars()
+    {
+        m_lockingTarget = null;
+        m_lockedOnTarget = null;
+        m_lockOnTime = 0.0f;
+        m_isLockingOn = false;
+        m_guiCache.PassThroughHomingState(false, false);
+    }
+    void UpdateHomingVars()
+    {
+        if(m_isLockingOn)
+        {
+            m_lockOnTime += Time.deltaTime;
+            if(m_lockOnTime >= m_reqLockOnTime)
+            {
+                m_lockedOnTarget = m_lockingTarget;
+                m_lockingTarget = null;
+                m_isLockingOn = false;
+                m_lockOnTime = 0.0f;
+                
+                //Tell weapon
+                SetNewTargetLock(m_lockedOnTarget);
+                
+                //Update lock state to gui
+                m_guiCache.PassThroughHomingState(true, false);
+            }
+        }
+    }
+    #endregion
 
 	public void InitPlayerOnCShip(GameObject CShip)
 	{
-		this.m_CShip = CShip;
+		this.m_cShipCache = CShip;
 		m_targetPoint = CShip.transform.position;
 
 		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
@@ -1535,7 +1674,6 @@ public class PlayerControlScript : Ship
 	public void TellOtherClientsShipHasOwner(NetworkPlayer player)
 	{
 		networkView.RPC ("SetOwner", RPCMode.Others, player);
-		//Also tell GUI to update player blobs for map
 		m_guiCache.ResetPlayerList();
 	}
 
@@ -1565,7 +1703,6 @@ public class PlayerControlScript : Ship
 	public void TellShipStopRecievingInput()
 	{
 		m_shouldRecieveInput = false;
-		//networkView.RPC ("PropagateRecieveInput", RPCMode.Others);
 	}
 
 	[RPC] void PropagateRecieveInput()
@@ -1627,15 +1764,12 @@ public class PlayerControlScript : Ship
 		return null;
 	}
 
-	
-
 	[RPC] void PropagateExplosiveForce (float x, float y, float range, float minForce, float maxForce, int mode = (int) ForceMode.Force)
 	{
 		// Use the players z position to stop the force causing players to move upwards all the time
 		Vector3 position = new Vector3 (x, y, transform.position.z);
 		rigidbody.AddCustomExplosionForce (position, range, minForce, maxForce, (ForceMode) mode);
 	}
-
 
 	public void ApplyExplosiveForceOverNetwork (float x, float y, float range, float minForce, float maxForce, ForceMode mode = ForceMode.Force)
 	{

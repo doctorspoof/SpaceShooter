@@ -7,6 +7,9 @@ public class GUIInGameMaster : GUIBaseMaster
     // Serializable Members
     [SerializeField]        GUISkin m_mainMenuSkin;
 
+    // Cached Members
+    PlayerControlScript     m_pcsCache;
+
 	/* Unity Functions */
 	void Start () 
     {
@@ -44,6 +47,7 @@ public class GUIInGameMaster : GUIBaseMaster
                 temp.Add(GetComponent<GUIInGameHUDScreen>());
                 temp.Add(GetComponent<GUIMapOverlayScreen>());
                 UpdateScreensToDraw(temp);
+                AlertPlayerHomingReady(true);
                 break;
             }
             case GameState.InGameConnectionLost:
@@ -51,6 +55,7 @@ public class GUIInGameMaster : GUIBaseMaster
                 List<BaseGUIScreen> temp = new List<BaseGUIScreen>(m_listOfScreensToDraw);
                 temp.Add(GetComponent<GUIDisconnectedScreen>());
                 UpdateScreensToDraw(temp);
+                AlertPlayerHomingReady(false);
                 break;
             }
             case GameState.InGameCShipDock:
@@ -59,6 +64,7 @@ public class GUIInGameMaster : GUIBaseMaster
                 temp.Add(GetComponent<GUIInGameHUDScreen>());
                 temp.Add(GetComponent<GUICShipDockScreen>());
                 UpdateScreensToDraw(temp);
+                AlertPlayerHomingReady(false);
                 break;
             }
             case GameState.InGameShopDock:
@@ -67,6 +73,7 @@ public class GUIInGameMaster : GUIBaseMaster
                 temp.Add(GetComponent<GUIInGameHUDScreen>());
                 temp.Add(GetComponent<GUIShopDockScreen>());
                 UpdateScreensToDraw(temp);
+                AlertPlayerHomingReady(false);
                 break;
             }
             case GameState.InGameGameOver:
@@ -74,6 +81,7 @@ public class GUIInGameMaster : GUIBaseMaster
                 List<BaseGUIScreen> temp = new List<BaseGUIScreen>(m_listOfScreensToDraw);
                 temp.Add(GetComponent<GUILossSplashScreen>());
                 UpdateScreensToDraw(temp);
+                AlertPlayerHomingReady(false);
                 break;
             }
             case GameState.InGameMenu:
@@ -81,6 +89,7 @@ public class GUIInGameMaster : GUIBaseMaster
                 List<BaseGUIScreen> temp = new List<BaseGUIScreen>(m_listOfScreensToDraw);
                 temp.Add(GetComponent<GUIEscapeMenuScreen>());
                 UpdateScreensToDraw(temp);
+                AlertPlayerHomingReady(false);
                 break;
             }
             default:
@@ -104,10 +113,19 @@ public class GUIInGameMaster : GUIBaseMaster
         GetComponent<GUIInGameHUDScreen>().SetPlayerReference(player);
         GetComponent<GUICShipDockScreen>().SetPlayerReference(player);
         GetComponent<GUIShopDockScreen>().SetPlayerReference(player);
+        m_pcsCache = player.GetComponent<PlayerControlScript>();
     }
     #endregion
     
     #region Specific Toggles/Calls
+    public void PassThroughCShipDockableState(bool dockable)
+    {
+        GetComponent<GUIInGameHUDScreen>().SetCShipDockable(dockable);
+    }
+    public void PassThroughShopDockableState(bool dockable)
+    {
+        GetComponent<GUIInGameHUDScreen>().SetShopDockable(dockable);
+    }
     public void PassThroughPlayerWeaponReference(GameObject weapon)
     {
         GetComponent<GUIInGameHUDScreen>().SetWeaponReference(weapon.GetComponent<EquipmentWeapon>());
@@ -155,6 +173,19 @@ public class GUIInGameMaster : GUIBaseMaster
     public void ResetPlayerList()
     {
         GetComponent<GUIMapOverlayScreen>().ResetPlayerList();
+    }
+    
+    public void PassThroughHomingState(bool locked, bool locking)
+    {
+        GetComponent<GUIInGameHUDScreen>().SetLockingState(locked, locking);
+    }
+    #endregion
+    
+    #region External Script Access
+    void AlertPlayerHomingReady(bool ready)
+    {
+        if(m_pcsCache != null)
+            m_pcsCache.SetCorrectHomingScreen(ready);
     }
     #endregion
 }

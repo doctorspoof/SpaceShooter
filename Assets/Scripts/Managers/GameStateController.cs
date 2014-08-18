@@ -1360,6 +1360,7 @@ public class GameStateController : MonoBehaviour
         //m_GUIManager.GetComponent<GUIManager>().CloseMap();
         //m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtCapital(true);
         Screen.showCursor = true;
+        ChangeGameState(GameState.InGameCShipDock);
         Camera.main.GetComponent<CameraScript>().TellCameraPlayerIsDocked();
     }
 
@@ -1368,6 +1369,7 @@ public class GameStateController : MonoBehaviour
         //m_GUIManager.GetComponent<GUIManager>().CloseMap();
         //m_GUIManager.GetComponent<GUIManager>().SetPlayerHasDockedAtShop(true);
         Screen.showCursor = true;
+        ChangeGameState(GameState.InGameShopDock);
         m_GUIManager.GetComponent<GUIInGameMaster>().SetDockedShop(shop);
     }
 
