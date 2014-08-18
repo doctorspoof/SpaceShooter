@@ -13,39 +13,40 @@ public enum DockingState
 
 public class PlayerControlScript : Ship
 {
-    /* Serializable Members */
-	[SerializeField] bool   m_shouldRecieveInput = true;
-	[SerializeField] float  m_baseEngineSpeed = 5.0f;
-	[SerializeField] float  m_baseEngineTurnSpeed = 1.0f;
-	[SerializeField] int    m_baseShipHull = 25;
-	[SerializeField] float  m_baseShipWeight = 0.05f;
-	[SerializeField] float  m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
-	[SerializeField] float  m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
-    [SerializeField] float  m_playerStrafeMod = 0.6f;
-	[SerializeField] int    m_currentCash = 0;
+    #region Serializable Members
+	[SerializeField] bool               m_shouldRecieveInput = true;
+	[SerializeField] float              m_baseEngineSpeed = 5.0f;
+	[SerializeField] float              m_baseEngineTurnSpeed = 1.0f;
+	[SerializeField] int                m_baseShipHull = 25;
+	[SerializeField] float              m_baseShipWeight = 0.05f;
+	[SerializeField] float              m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
+	[SerializeField] float              m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
+    [SerializeField] float              m_playerStrafeMod = 0.6f;
+	[SerializeField] int                m_currentCash = 0;
 
     //Inventory
-    [SerializeField] ItemWrapper m_equippedWeaponItem;
-    [SerializeField] ItemWrapper m_equippedShieldItem;
-    [SerializeField] ItemWrapper m_equippedEngineItem;
-    [SerializeField] ItemWrapper m_equippedPlatingItem;
-    [SerializeField] List<ItemWrapper> m_playerInventory;
+    [SerializeField] ItemWrapper        m_equippedWeaponItem;
+    [SerializeField] ItemWrapper        m_equippedShieldItem;
+    [SerializeField] ItemWrapper        m_equippedEngineItem;
+    [SerializeField] ItemWrapper        m_equippedPlatingItem;
+    [SerializeField] List<ItemWrapper>  m_playerInventory;
+    #endregion
 
-    /* Internal Members */
-    bool m_isAnimating = false;
-    DockingState m_currentDockingState = DockingState.NOTDOCKING;
-    Vector3 m_targetPoint = Vector3.zero;
-    float m_dockingTime = 0.0f;				    //Used to determine if the player should continue the docking attempt
-    //bool m_shouldPlaySound = false;
+    #region Internal Members
+    // Misc Stuff
     float m_volumeHolder = 1.0f;
     bool m_useController = false;
     Quaternion m_targetAngle;
-
     bool m_playerIsOutOfBounds = false;
 
+    // Docking Stuff
+    float m_dockingTime = 0.0f;                 //Used to determine if the player should continue the docking attempt
     bool m_isInRangeOfCapitalDock = false;
     bool m_isInRangeOfTradingDock = false;
     GameObject m_nearbyShop = null;
+    bool m_isAnimating = false;
+    DockingState m_currentDockingState = DockingState.NOTDOCKING;
+    Vector3 m_targetPoint = Vector3.zero;
     
     // Homing Stuff
     bool m_currentWeaponNeedsLockon = false;
@@ -66,14 +67,16 @@ public class PlayerControlScript : Ship
         return m_currentWeaponNeedsLockon;
     }
     #endregion
+    #endregion
 
-    /* Cached members */
+    #region Cached Members
     GameObject m_cShipCache = null;
     GameObject[] m_shops = null;
     GameStateController m_gscCache = null;
     GUIInGameMaster m_guiCache = null;
 
     #region getset
+    #endregion
 
     public int GetCash()
 	{
@@ -344,6 +347,7 @@ public class PlayerControlScript : Ship
     }
 
     /* Custom Functions */
+    
     #region Cash-related functions
     [RPC] void PropagateCashAmount(int amount)
     {
