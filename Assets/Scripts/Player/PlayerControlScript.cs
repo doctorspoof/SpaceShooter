@@ -108,11 +108,9 @@ public class PlayerControlScript : Ship
         return m_equippedPlatingItem;
     }
 
-
     public void SetEquippedPlatingItem(ItemWrapper platingItem_)
     {
         m_equippedPlatingItem = platingItem_;
-
     }
 
     public ItemWrapper GetEquipedEngineItem()
@@ -184,7 +182,6 @@ public class PlayerControlScript : Ship
     {
         m_correctScreenToHome = ready;
     }
-
     #endregion
 
     /* Unity Functions */
@@ -262,116 +259,21 @@ public class PlayerControlScript : Ship
                     if (m_useController)
                     {
                         //Don't rotate to face cursor, instead, listen for right stick input
-                        float v = Input.GetAxis("RightStickVertical");
-                        float h = Input.GetAxis("RightStickHorizontal");
-
-                        if (v != 0 || h != 0)
-                        {
-                            float angle = (Mathf.Atan2(v, h) - Mathf.PI / 2) * Mathf.Rad2Deg;
-                            Quaternion target = Quaternion.Euler(new Vector3(0, 0, angle));
-                            m_targetAngle = target;
-                        }
-
-                        transform.rotation = Quaternion.Slerp(transform.rotation, m_targetAngle, GetRotateSpeed() * Time.deltaTime);
-
-                        if (Input.GetAxis("X360Triggers") < 0)
-                            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
-                        else if (Input.GetAxis("X360Triggers") == 0)
-                            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+                        ListenForControllerShootStick();
                     }
                     else
                     {
                         //Here, it should rotate to face the mouse cursor
-                        var objectPos = Camera.main.WorldToScreenPoint(transform.position);
-                        var dir = Input.mousePosition - objectPos;
-
-                        RotateTowards(transform.position + dir);
-
-                        if (Input.GetMouseButton(0))
-                        {
-                            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
-                        }
-
-                        if (Input.GetMouseButtonUp(0))
-                        {
-                            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
-                        }
+                        RotateTowardsMouse();
                         
-                        //Now attempting homing lockon
+                        //Now attempt homing lockon
                         if(m_correctScreenToHome && m_currentWeaponNeedsLockon)
                         {
-                            //If we have no target at all, begin looking for one
-                            if(m_lockedOnTarget == null)
-                            {
-                                RaycastHit info;
-                                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                                int mask = (1 << 11 | 1 << 24);
-                                bool hit = Physics.Raycast(ray, out info, 200, mask);
-                            
-                                //Only do stuff if the raycast actually hits anything
-                                if(hit)
-                                {
-                                    //If we're currently trying to lock on to something, make sure we're still hovering and then increase the timer
-                                    //Otherwise, look for a new target
-                                    if(m_isLockingOn)
-                                    {
-                                        //If the target we're hovering over isn't the target we were trying to lock to, reset the lock
-                                        //Otherwise, carry on letting the timer tick up (read: do nothing)
-                                        if(m_lockingTarget != info.collider.attachedRigidbody.gameObject)
-                                        {
-                                            ResetHomingLockVars();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        m_lockingTarget = info.collider.attachedRigidbody.gameObject;
-                                        m_isLockingOn = true;
-                                        m_lockOnTime = 0.0f;
-                                        m_guiCache.PassThroughHomingState(false, true);
-                                    }
-                                }
-                                else
-                                {
-                                    //Ensure homing vars are unset
-                                    ResetHomingLockVars();
-                                }
-                            }
-                            //If we do have a target, make sure it's still in range
-                            else
-                            {
-                                float distanceToTarget = Vector3.Distance(m_lockedOnTarget.transform.position, this.transform.position);
-                                if(distanceToTarget > GetWeaponObject().GetComponent<EquipmentWeapon>().GetBulletMaxDistance())
-                                {
-                                    BreakLock();
-                                }
-                            }
+                            UpdateHoming();
                         }
                     }
-
-                    //Listen for combat input
-                    /*if((useController && Input.GetAxis("X360Triggers") < 0) || (!useController && Input.GetMouseButton(0)))
-                    {
-                        this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
-                    }
-
-                    if((useController && Input.GetAxis("X360Triggers") == 0) || (!useController && Input.GetMouseButtonUp(0)))
-                        this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();*/
-
                 }
             }
-            //Now finish up by applying vevlocity + momentum
-            //this.transform.position += m_currentVelocity;
-            //m_currentVelocity *= 0.995f;
-
-            //if (!receivedInput)
-            //{
-            //    if (shouldPlaySound)
-            //    {
-            //        shouldPlaySound = false;
-            //        this.audio.Stop();
-            //        networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, false);
-            //    }
-            //}
 
             //Increment homing vars, if appropriate
             if(m_correctScreenToHome && m_currentWeaponNeedsLockon)
@@ -442,6 +344,7 @@ public class PlayerControlScript : Ship
     }
 
     /* Custom Functions */
+    #region Cash-related functions
     [RPC] void PropagateCashAmount(int amount)
     {
         m_currentCash = amount;
@@ -454,7 +357,9 @@ public class PlayerControlScript : Ship
         else
             return false;
     }
+    #endregion
 
+    #region Dock-related functions
     private void StartDocking()
     {
         if (m_isInRangeOfCapitalDock)
@@ -500,7 +405,275 @@ public class PlayerControlScript : Ship
         }
         return shortestShop;
     }
+    
+    void UpdateDockingState()
+    {
+        //If for any reason CShip is not set, find it
+        if (m_cShipCache == null)
+        {
+            m_cShipCache = GameObject.FindGameObjectWithTag("Capital");
+        }
+        
+        //Now animate based on state
+        switch (m_currentDockingState)
+        {
+            case DockingState.NOTDOCKING:
+            {
+                //We shouldn't even be here man
+                //We shouln't even BE here!
+                m_isAnimating = false;
+                networkView.RPC("PropagateInvincibility", RPCMode.All, false);
+                rigidbody.isKinematic = false;
+                break;
+            }
+            case DockingState.OnApproach:
+            {
+                // Make sure targetPoint is up to date
+                m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.right * 7.0f);
+                
+                // Move towards entrance point
+                Vector3 direction = m_targetPoint - transform.position;
+                Vector3 rotation = -m_cShipCache.transform.right;
+                MoveToDockPoint(direction, rotation);
+                
+                // If we're near, switch to onEntry
+                if (direction.magnitude <= 1.35f)
+                {
+                    m_dockingTime += Time.deltaTime;
+                    
+                    if (m_dockingTime >= 0.36f)
+                    {
+                        // Reset the docking time
+                        m_dockingTime = 0f;
+                        
+                        // Kill our speed temporarily
+                        rigidbody.isKinematic = true;
+                        m_currentDockingState = DockingState.OnEntry;
+                        m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.up * 1.5f);
+                        rigidbody.isKinematic = false;
+                        this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
+                    }
+                }
+                
+                else
+                {
+                    m_dockingTime = 0f;
+                }
+                
+                //Play sounds
+                /*if (!shouldPlaySound)
+                        {
+                            shouldPlaySound = true;
+                            this.audio.volume = volumeHolder;
+                            this.audio.Play();
+                            networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+                        }
+                        recievedInput = true;*/
+                break;
+            }
+            case DockingState.OnEntry:
+            {
+                //Make sure targetPoint is up to date
+                m_targetPoint = m_cShipCache.transform.position;
+                
+                //Rotate towards entrance point
+                Vector3 direction = m_targetPoint - transform.position;
+                Vector3 rotation = -m_cShipCache.transform.right;
+                MoveToDockPoint(direction, rotation);
+                
+                //If we're near, switch to docked and cut input. Then alert GUI we've docked
+                if (direction.magnitude <= 1.5f)
+                {
+                    m_dockingTime += Time.deltaTime;
+                    
+                    if (m_dockingTime >= 0.25f)
+                    {
+                        // Reset the docking time
+                        m_dockingTime = 0f;
+                        
+                        // Perform docking process
+                        m_currentDockingState = DockingState.Docked;
+                        transform.rotation = m_cShipCache.transform.rotation;
+                        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
+                        transform.parent = m_cShipCache.transform;
+                        rigidbody.isKinematic = true;
+                        networkView.RPC("PropagateInvincibility", RPCMode.All, true);
+                    }
+                }
+                
+                else
+                {
+                    // Reset the docking time
+                    m_dockingTime = 0f;
+                }
+                
+                //Play sounds
+                /*if (!shouldPlaySound)
+                        {
+                            shouldPlaySound = true;
+                            this.audio.volume = volumeHolder;
+                            this.audio.Play();
+                            networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
+                        }
+                        recievedInput = true;*/
+                break;
+            }
+            case DockingState.Docked:
+            {
+                //We shouldn't need to do anything. Await GUI telling us we're done
+                
+                // Stop exception spam by ensuring the CShip is alive
+                if (m_cShipCache)
+                {
+                    //Ensure rotation matches CShip
+                    transform.rotation = m_cShipCache.transform.rotation;
+                    
+                    //Also position
+                    float oldZ = transform.position.z;
+                    transform.position = new Vector3(m_cShipCache.transform.position.x, m_cShipCache.transform.position.y, oldZ);
+                    
+                }
+                break;
+            }
+            case DockingState.Exiting:
+            {
+                //Accelerate forwards
+                this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+                
+                //If we're far enough away, stop animating
+                Vector3 dir = m_cShipCache.transform.position - transform.position;
+                if (dir.magnitude >= 12.0f)
+                {
+                    //Fly free!
+                    m_currentDockingState = DockingState.NOTDOCKING;
+                    m_isAnimating = false;
+                    this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
+                    networkView.RPC("PropagateInvincibility", RPCMode.All, false);
+                    rigidbody.isKinematic = false;
+                }
+                break;
+            }
+        }
+    }
+    
+    public void TellPlayerStopDocking()
+    {
+        //Alert the camera
+        Camera.main.GetComponent<CameraScript>().TellCameraPlayerIsUnDocked();
+        
+        //Unparent ourselves
+        transform.parent = null;
+        
+        //Reinstate movement (although input should never be cut anyway)
+        m_shouldRecieveInput = true;
+        networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+        rigidbody.isKinematic = false;
+        
+        //Alert animation it needs to leave
+        m_currentDockingState = DockingState.Exiting;
+    }
+    
+    [RPC] void PropagateInvincibility(bool state)
+    {
+        GetComponent<HealthScript>().SetInvincible(state);
+    }
+    
+    void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
+    {
+        float magnitude = moveTo.magnitude;
+        float playerSpeedDistance = 200f;
+        float dockSpeedDistance = 80f;
+        float desiredDockSpeed = 0f;
+        
+        if (GetCurrentShipSpeed() > m_maxDockingSpeed)
+        {
+            // Use the players speed
+            if (magnitude > playerSpeedDistance)
+            {
+                desiredDockSpeed = GetCurrentShipSpeed();
+            }
+            
+            // Lerp between the players movement speed and the max docking speed
+            else if (magnitude > dockSpeedDistance)
+            {
+                desiredDockSpeed = Mathf.Lerp(GetCurrentMomentum(), m_maxDockingSpeed, (magnitude - dockSpeedDistance) / (playerSpeedDistance - dockSpeedDistance));
+            }
+            
+            else
+            {
+                desiredDockSpeed = m_maxDockingSpeed;
+            }
+        }
+        else
+        {
+            desiredDockSpeed = GetCurrentShipSpeed();
+        }
+        
+        //Debug.LogError("desiredDockSpeed = " + desiredDockSpeed + " maxShipMomentum = " + GetMaxShipSpeed());
+        
+        this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * rigidbody.mass * Time.deltaTime);
+        
+        // Rotate towards point
+        Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(rotateTo.y, rotateTo.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
+        transform.rotation = Quaternion.Slerp(transform.rotation, target, m_dockRotateSpeed * Time.deltaTime);
+    }
+    #endregion
 
+    #region Input/Update Functions
+    void RotateTowardsMouse()
+    {
+        var objectPos = Camera.main.WorldToScreenPoint(transform.position);
+        var dir = Input.mousePosition - objectPos;
+        
+        RotateTowards(transform.position + dir);
+        
+        if (Input.GetMouseButton(0))
+        {
+            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+        }
+        
+        if (Input.GetMouseButtonUp(0))
+        {
+            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+        }
+    }
+    
+    void ListenForControllerShootStick()
+    {
+        float v = Input.GetAxis("RightStickVertical");
+        float h = Input.GetAxis("RightStickHorizontal");
+        
+        if (v != 0 || h != 0)
+        {
+            float angle = (Mathf.Atan2(v, h) - Mathf.PI / 2) * Mathf.Rad2Deg;
+            Quaternion target = Quaternion.Euler(new Vector3(0, 0, angle));
+            m_targetAngle = target;
+        }
+        
+        transform.rotation = Quaternion.Slerp(transform.rotation, m_targetAngle, GetRotateSpeed() * Time.deltaTime);
+        
+        if (Input.GetAxis("X360Triggers") < 0)
+            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+        else if (Input.GetAxis("X360Triggers") == 0)
+            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+    }
+    
+    public void TellShipStartRecievingInput()
+    {
+        m_shouldRecieveInput = true;
+    }
+    
+    public void TellShipStopRecievingInput()
+    {
+        m_shouldRecieveInput = false;
+    }
+    
+    [RPC] void PropagateRecieveInput()
+    {
+        m_shouldRecieveInput = false;
+        this.GetComponent<HealthScript>().SetShouldStop(true);
+    }
+    
     private void UpdateFromController()
     {
         if (Input.GetAxis("LeftStickVertical") > 0)
@@ -753,192 +926,19 @@ public class PlayerControlScript : Ship
             m_gscCache.ToggleSmallMapState();
         }
     }
-
-    void UpdateDockingState()
+    
+    public void SetInputMethod(bool useControl)
     {
-        //If for any reason CShip is not set, find it
-        if (m_cShipCache == null)
-        {
-            m_cShipCache = GameObject.FindGameObjectWithTag("Capital");
-        }
-
-        //If still on the entrance phases, allow cancelling with 'X'
-        /*if(Input.GetKey (KeyCode.X))
-            {
-                if(m_currentDockingState == DockingState.OnApproach || m_currentDockingState == DockingState.OnEntry)
-                {
-                    //Cancel the animation
-                    m_isAnimating = false;
-                }
-            }*/
-
-        //Now animate based on state
-        switch (m_currentDockingState)
-        {
-            case DockingState.NOTDOCKING:
-                {
-                    //We shouldn't even be here man
-                    //We shouln't even BE here!
-                    m_isAnimating = false;
-                    networkView.RPC("PropagateInvincibility", RPCMode.All, false);
-                    rigidbody.isKinematic = false;
-                    break;
-                }
-            case DockingState.OnApproach:
-                {
-                    // Make sure targetPoint is up to date
-                    m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.right * 7.0f);
-
-                    // Move towards entrance point
-                    Vector3 direction = m_targetPoint - transform.position;
-                    Vector3 rotation = -m_cShipCache.transform.right;
-                    MoveToDockPoint(direction, rotation);
-
-                    // If we're near, switch to onEntry
-                    if (direction.magnitude <= 1.35f)
-                    {
-                        m_dockingTime += Time.deltaTime;
-
-                        if (m_dockingTime >= 0.36f)
-                        {
-                            // Reset the docking time
-                            m_dockingTime = 0f;
-
-                            // Kill our speed temporarily
-                            rigidbody.isKinematic = true;
-                            m_currentDockingState = DockingState.OnEntry;
-                            m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.up * 1.5f);
-                            rigidbody.isKinematic = false;
-                            this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
-                        }
-                    }
-
-                    else
-                    {
-                        m_dockingTime = 0f;
-                    }
-
-                    //Play sounds
-                    /*if (!shouldPlaySound)
-                    {
-                        shouldPlaySound = true;
-                        this.audio.volume = volumeHolder;
-                        this.audio.Play();
-                        networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-                    }
-                    recievedInput = true;*/
-                    break;
-                }
-            case DockingState.OnEntry:
-                {
-                    //Make sure targetPoint is up to date
-                    m_targetPoint = m_cShipCache.transform.position;
-
-                    //Rotate towards entrance point
-                    Vector3 direction = m_targetPoint - transform.position;
-                    Vector3 rotation = -m_cShipCache.transform.right;
-                    MoveToDockPoint(direction, rotation);
-
-                    //If we're near, switch to docked and cut input. Then alert GUI we've docked
-                    if (direction.magnitude <= 1.5f)
-                    {
-                        m_dockingTime += Time.deltaTime;
-
-                        if (m_dockingTime >= 0.25f)
-                        {
-                            // Reset the docking time
-                            m_dockingTime = 0f;
-
-                            // Perform docking process
-                            m_currentDockingState = DockingState.Docked;
-                            transform.rotation = m_cShipCache.transform.rotation;
-                            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
-                            transform.parent = m_cShipCache.transform;
-                            rigidbody.isKinematic = true;
-                            networkView.RPC("PropagateInvincibility", RPCMode.All, true);
-                        }
-                    }
-
-                    else
-                    {
-                        // Reset the docking time
-                        m_dockingTime = 0f;
-                    }
-
-                    //Play sounds
-                    /*if (!shouldPlaySound)
-                    {
-                        shouldPlaySound = true;
-                        this.audio.volume = volumeHolder;
-                        this.audio.Play();
-                        networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-                    }
-                    recievedInput = true;*/
-                    break;
-                }
-            case DockingState.Docked:
-                {
-                    //We shouldn't need to do anything. Await GUI telling us we're done
-
-                    // Stop exception spam by ensuring the CShip is alive
-                    if (m_cShipCache)
-                    {
-                        //Ensure rotation matches CShip
-                        transform.rotation = m_cShipCache.transform.rotation;
-
-                        //Also position
-                        float oldZ = transform.position.z;
-                        transform.position = new Vector3(m_cShipCache.transform.position.x, m_cShipCache.transform.position.y, oldZ);
-
-                    }
-                    break;
-                }
-            case DockingState.Exiting:
-                {
-                    //Accelerate forwards
-                    this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
-
-                    //If we're far enough away, stop animating
-                    Vector3 dir = m_cShipCache.transform.position - transform.position;
-                    if (dir.magnitude >= 12.0f)
-                    {
-                        //Fly free!
-                        m_currentDockingState = DockingState.NOTDOCKING;
-                        m_isAnimating = false;
-                        this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
-                        networkView.RPC("PropagateInvincibility", RPCMode.All, false);
-                        rigidbody.isKinematic = false;
-                    }
-
-                    //Play the sound
-                    //if (!shouldPlaySound)
-                    //{
-                    //    shouldPlaySound = true;
-                    //    this.audio.volume = volumeHolder;
-                    //    this.audio.Play();
-                    //    networkView.RPC("PropagateIsPlayingSound", RPCMode.Others, shouldPlaySound);
-                    //}
-                    //recievedInput = true;
-                    break;
-                }
-        }
+        m_useController = useControl;
     }
+    #endregion
 
-	[RPC] void PropagateIsPlayingSound(bool isPlaying)
-	{
-		//m_shouldPlaySound = isPlaying;
-
-		if(isPlaying)
-		{
-			this.audio.volume = m_volumeHolder;
-			this.audio.Play();
-		}
-		else
-		{
-			this.audio.Stop();
-		}
-	}
-
+    #region Equipment Functions
+    public float GetReloadPercentage()
+    {
+        return GetWeaponObject().GetComponent<EquipmentWeapon>().GetReloadPercentage();
+    }
+    
 	public void EquipEngineStats(float moveSpeed, float turnSpeed, float strafeMod)
 	{
         SetMaxShipSpeed(m_baseEngineSpeed + moveSpeed);
@@ -1104,8 +1104,62 @@ public class PlayerControlScript : Ship
             }
         }
     }
-
+    
+    public GameObject GetWeaponObject()
+    {
+        foreach(Transform child in transform)
+        {
+            if(child.tag == "Weapon")
+            {
+                return child.gameObject;
+            }
+        }
+        
+        Debug.Log ("ERROR: Player couldn't find attached weapon object");
+        return null;
+    }
+    
+    GameObject GetShieldObject()
+    {
+        foreach(Transform child in transform)
+        {
+            if(child.tag == "ShieldItem")
+            {
+                return child.gameObject;
+            }
+        }
+        
+        return null;
+    }
+    
+    GameObject GetEngineObject()
+    {
+        foreach(Transform child in transform)
+        {
+            if(child.tag == "Engine")
+            {
+                return child.gameObject;
+            }
+        }
+        
+        return null;
+    }
+    
+    GameObject GetPlatingObject()
+    {
+        foreach(Transform child in transform)
+        {
+            if(child.tag == "Plating")
+            {
+                return child.gameObject;
+            }
+        }
+        
+        return null;
+    }
+    #endregion
 	
+    #region Inventory
 	public void AddItemToInventoryLocalOnly(ItemWrapper itemWrapper)
 	{
 		if(!IsInventoryFull())
@@ -1461,26 +1515,35 @@ public class PlayerControlScript : Ship
         
         m_gscCache.PassNewWeaponReferenceToGUI(GetWeaponObject());
 	}
+    
+    /// <summary>
+    /// You probably don't want to use this. This will return the weapon, shield, plating or engine based on what number you pass.
+    /// The numbers correspond to how they're displayed in the GUI to the player
+    /// </summary>
+    public ItemWrapper GetEquipmentFromSlot (int slotNumber)
+    {
+        switch (slotNumber)
+        {
+        case 1:
+            return m_equippedWeaponItem;
+            
+        case 2:
+            return m_equippedShieldItem;
+            
+        case 3:
+            return m_equippedPlatingItem;
+            
+        case 4:
+            return m_equippedEngineItem;
+            
+        default:
+            return null;
+        }
+    }
+    #endregion
 
-	public void SetNewTargetLock(GameObject target)
-	{
-		GetWeaponObject().GetComponent<EquipmentWeapon>().SetTarget(target);
-	}
-
-	public void UnsetTargetLock()
-	{
-		GetWeaponObject().GetComponent<EquipmentWeapon>().UnsetTarget();
-	}
-
-	public float GetReloadPercentage()
-	{
-		return GetWeaponObject().GetComponent<EquipmentWeapon>().GetReloadPercentage();
-	}
-
-	/*
-	
-
-	float timeSinceLastPacket;
+    #region Network Sync
+	/*float timeSinceLastPacket;
 	IEnumerator DeadReckonPosition(Vector3 newPos, Vector3 newVel)
 	{
 		Debug.Log ("Received new velocity: " + newVel + ", against current velocity: " + this.rigidbody.velocity);
@@ -1528,7 +1591,7 @@ public class PlayerControlScript : Ship
 		
 		this.rigidbody.velocity = newVel;
 	}*/
-
+    #endregion
 
     #region HomingFunctions 
     void BreakLock()
@@ -1566,8 +1629,66 @@ public class PlayerControlScript : Ship
             }
         }
     }
+    void UpdateHoming()
+    {
+        //If we have no target at all, begin looking for one
+        if(m_lockedOnTarget == null)
+        {
+            RaycastHit info;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            int mask = (1 << 11 | 1 << 24);
+            bool hit = Physics.Raycast(ray, out info, 200, mask);
+            
+            //Only do stuff if the raycast actually hits anything
+            if(hit)
+            {
+                //If we're currently trying to lock on to something, make sure we're still hovering and then increase the timer
+                //Otherwise, look for a new target
+                if(m_isLockingOn)
+                {
+                    //If the target we're hovering over isn't the target we were trying to lock to, reset the lock
+                    //Otherwise, carry on letting the timer tick up (read: do nothing)
+                    if(m_lockingTarget != info.collider.attachedRigidbody.gameObject)
+                    {
+                        ResetHomingLockVars();
+                    }
+                }
+                else
+                {
+                    m_lockingTarget = info.collider.attachedRigidbody.gameObject;
+                    m_isLockingOn = true;
+                    m_lockOnTime = 0.0f;
+                    m_guiCache.PassThroughHomingState(false, true);
+                }
+            }
+            else
+            {
+                //Ensure homing vars are unset
+                ResetHomingLockVars();
+            }
+        }
+        //If we do have a target, make sure it's still in range
+        else
+        {
+            float distanceToTarget = Vector3.Distance(m_lockedOnTarget.transform.position, this.transform.position);
+            if(distanceToTarget > GetWeaponObject().GetComponent<EquipmentWeapon>().GetBulletMaxDistance())
+            {
+                BreakLock();
+            }
+        }
+    }
+    public void SetNewTargetLock(GameObject target)
+    {
+        GetWeaponObject().GetComponent<EquipmentWeapon>().SetTarget(target);
+    }
+    
+    public void UnsetTargetLock()
+    {
+        GetWeaponObject().GetComponent<EquipmentWeapon>().UnsetTarget();
+    }
     #endregion
 
+    #region Setup, Init and Respawning
 	public void InitPlayerOnCShip(GameObject CShip)
 	{
 		this.m_cShipCache = CShip;
@@ -1579,73 +1700,6 @@ public class PlayerControlScript : Ship
 		m_isAnimating = true;
 		m_currentDockingState = DockingState.Docked;
 		GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
-	}
-
-	public void TellPlayerStopDocking()
-	{
-		//Alert the camera
-		Camera.main.GetComponent<CameraScript>().TellCameraPlayerIsUnDocked();
-
-		//Unparent ourselves
-		transform.parent = null;
-
-		//Reinstate movement (although input should never be cut anyway)
-		m_shouldRecieveInput = true;
-		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
-		rigidbody.isKinematic = false;
-
-		//Alert animation it needs to leave
-		m_currentDockingState = DockingState.Exiting;
-	}
-
-	public void SetInputMethod(bool useControl)
-	{
-		m_useController = useControl;
-	}
-
-	[RPC] void PropagateInvincibility(bool state)
-	{
-		GetComponent<HealthScript>().SetInvincible(state);
-	}
-	
-	void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)
-	{
-		float magnitude = moveTo.magnitude;
-        float playerSpeedDistance = 200f;
-		float dockSpeedDistance = 80f;
-		float desiredDockSpeed = 0f;
-		
-		if (GetCurrentShipSpeed() > m_maxDockingSpeed)
-		{
-			// Use the players speed
-            if (magnitude > playerSpeedDistance)
-			{
-                desiredDockSpeed = GetCurrentShipSpeed();
-			}
-			
-			// Lerp between the players movement speed and the max docking speed
-            else if (magnitude > dockSpeedDistance)
-			{
-                desiredDockSpeed = Mathf.Lerp(GetCurrentMomentum(), m_maxDockingSpeed, (magnitude - dockSpeedDistance) / (playerSpeedDistance - dockSpeedDistance));
-			}
-			
-			else
-			{
-				desiredDockSpeed = m_maxDockingSpeed;
-			}
-		}
-		else
-		{
-            desiredDockSpeed = GetCurrentShipSpeed();
-		}
-
-        //Debug.LogError("desiredDockSpeed = " + desiredDockSpeed + " maxShipMomentum = " + GetMaxShipSpeed());
-
-		this.rigidbody.AddForce (moveTo.normalized * desiredDockSpeed * rigidbody.mass * Time.deltaTime);
-		
-		// Rotate towards point
-        Quaternion target = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(rotateTo.y, rotateTo.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
-        transform.rotation = Quaternion.Slerp(transform.rotation, target, m_dockRotateSpeed * Time.deltaTime);
 	}
 
 	public void Respawn()
@@ -1694,75 +1748,22 @@ public class PlayerControlScript : Ship
 		//this.GetComponent<RemotePlayerInterp>().localPlayer = this.gameObject;
 		m_owner = player;
 	}
+    #endregion
 
-	public void TellShipStartRecievingInput()
-	{
-		m_shouldRecieveInput = true;
-	}
-
-	public void TellShipStopRecievingInput()
-	{
-		m_shouldRecieveInput = false;
-	}
-
-	[RPC] void PropagateRecieveInput()
-	{
-		m_shouldRecieveInput = false;
-		this.GetComponent<HealthScript>().SetShouldStop(true);
-	}
-
-	public GameObject GetWeaponObject()
-	{
-		foreach(Transform child in transform)
-		{
-			if(child.tag == "Weapon")
-			{
-				return child.gameObject;
-			}
-		}
+    [RPC] void PropagateIsPlayingSound(bool isPlaying)
+    {
+        //m_shouldPlaySound = isPlaying;
         
-        Debug.Log ("ERROR: Player couldn't find attached weapon object");
-		return null;
-	}
-
-	GameObject GetShieldObject()
-	{
-		foreach(Transform child in transform)
-		{
-			if(child.tag == "ShieldItem")
-			{
-				return child.gameObject;
-			}
-		}
-
-		return null;
-	}
-
-	GameObject GetEngineObject()
-	{
-		foreach(Transform child in transform)
-		{
-			if(child.tag == "Engine")
-			{
-				return child.gameObject;
-			}
-		}
-		
-		return null;
-	}
-
-	GameObject GetPlatingObject()
-	{
-		foreach(Transform child in transform)
-		{
-			if(child.tag == "Plating")
-			{
-				return child.gameObject;
-			}
-		}
-		
-		return null;
-	}
+        if(isPlaying)
+        {
+            this.audio.volume = m_volumeHolder;
+            this.audio.Play();
+        }
+        else
+        {
+            this.audio.Stop();
+        }
+    }
 
 	[RPC] void PropagateExplosiveForce (float x, float y, float range, float minForce, float maxForce, int mode = (int) ForceMode.Force)
 	{
@@ -1775,31 +1776,4 @@ public class PlayerControlScript : Ship
 	{
 		networkView.RPC ("PropagateExplosiveForce", RPCMode.Others, x, y, range, minForce, maxForce, (int) mode);
 	}
-
-	
-	/// <summary>
-	/// You probably don't want to use this. This will return the weapon, shield, plating or engine based on what number you pass.
-	/// The numbers correspond to how they're displayed in the GUI to the player
-	/// </summary>
-	public ItemWrapper GetEquipmentFromSlot (int slotNumber)
-	{
-		switch (slotNumber)
-		{
-			case 1:
-				return m_equippedWeaponItem;
-				
-			case 2:
-				return m_equippedShieldItem;
-				
-			case 3:
-				return m_equippedPlatingItem;
-				
-			case 4:
-				return m_equippedEngineItem;
-				
-			default:
-				return null;
-		}
-	}
-
 }
