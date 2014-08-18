@@ -43,7 +43,7 @@ MonoBehaviour:
   m_currentHealthModifier: 1
   m_timeCountInMinutes: 25
   m_multiplierAtTimeRequired: 5
-  m_secondsBetweenWaves: 10
+  m_secondsBetweenWaves: 40
   m_lastTimeModifier: 0
   m_lastTimeSpawn: 0
 --- !u!1001 &100100000

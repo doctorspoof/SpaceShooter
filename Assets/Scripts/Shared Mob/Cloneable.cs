@@ -7,7 +7,6 @@ public class Cloneable : MonoBehaviour
     public GameObject Clone(Vector3 position_, Quaternion rotation_)
     {
         GameObject clone = CreateClone(position_, rotation_);
-        clone.SetActive(true);
 
         NetworkView view = GetComponent<NetworkView>();
 
@@ -26,7 +25,10 @@ public class Cloneable : MonoBehaviour
 
     GameObject CreateClone(Vector3 position_, Quaternion rotation_)
     {
-        return (GameObject)Instantiate(gameObject, position_, rotation_);
+        GameObject clone = GetICloneable(gameObject).Clone();
+        clone.transform.position = position_;
+        clone.transform.rotation = rotation_;
+        return clone;
     }
 
     [RPC] void PropagateClone(Vector3 position_, Quaternion rotation_, NetworkViewID id_)
@@ -35,4 +37,21 @@ public class Cloneable : MonoBehaviour
         obj.networkView.viewID = id_;
     }
 
+    public static ICloneable GetICloneable(GameObject object_)
+    {
+        foreach (Component comp in object_.GetComponents<Component>())
+        {
+            if (comp is ICloneable)
+            {
+                return comp as ICloneable;
+            }
+        }
+
+        return null;
+    }
+}
+
+public interface ICloneable
+{
+    GameObject Clone();
 }

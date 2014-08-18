@@ -25,7 +25,7 @@ public enum AIShipNotifyInfo
 }
 
 [RequireComponent(typeof(MeshFilter))]
-public class Ship : MonoBehaviour, IEntity
+public class Ship : MonoBehaviour, IEntity, ICloneable
 {
 
     public int depth;
@@ -50,6 +50,8 @@ public class Ship : MonoBehaviour, IEntity
 
     [SerializeField] float m_shipWidth;
     [SerializeField] float m_shipHeight;
+
+    [SerializeField] bool m_special;
 
     [SerializeField] string m_pathToShieldObject = "Composite Collider/Shield";
 
@@ -88,11 +90,17 @@ public class Ship : MonoBehaviour, IEntity
 
     //this was mainly for testing, may be deleted eventually
 #pragma warning disable 0414
-    [SerializeField] int shipID = -1;
+    [SerializeField] public int shipID = -1;
     static int ids = 0;
 #pragma warning restore 0414
 
     #region getset
+
+    public bool IsSpecial()
+    {
+        return m_special;
+    }
+
     public float GetMaxShipSpeed()
     {
         return m_maxShipSpeed;
@@ -233,6 +241,7 @@ public class Ship : MonoBehaviour, IEntity
         {
             m_parentTransform = (Transform)info[0];
         }
+
         
     }
 
@@ -692,14 +701,6 @@ public class Ship : MonoBehaviour, IEntity
                 {
                     return new object[] { m_shipTransform };
                 }
-            case(AIShipRequestInfo.Move):
-                {
-                    return null;
-                }
-            case(AIShipRequestInfo.Target):
-                {
-                    return null;
-                }
             default:
                 {
                     return null;
@@ -726,6 +727,13 @@ public class Ship : MonoBehaviour, IEntity
                     return false;
                 }
         }
+    }
+
+    public virtual GameObject Clone()
+    {
+        GameObject obj = (GameObject)Instantiate(gameObject);
+        obj.SetActive(true);
+        return obj;
     }
 
 }

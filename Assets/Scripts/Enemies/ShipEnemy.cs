@@ -19,9 +19,6 @@ public class ShipEnemy : Ship
     [SerializeField]
     string[] m_allowedAttacksForShip;
 
-    [SerializeField]
-    ShipSize m_shipSize;
-
 
 
 
@@ -29,10 +26,10 @@ public class ShipEnemy : Ship
 
     int m_sendCounter = 0;
 
+    [SerializeField]
     AIShipOrder m_currentOrder = AIShipOrder.Idle;
     GameObject m_target = null;
     Vector2 m_targetMove;
-    Vector2 m_formationPosition;
 
 
 
@@ -46,11 +43,6 @@ public class ShipEnemy : Ship
     public int GetBountyAmount()
     {
         return m_bountyAmount;
-    }
-
-    public ShipSize GetShipSize()
-    {
-        return m_shipSize;
     }
 
     public void SetMoveTarget(Vector2 target_)
@@ -77,6 +69,8 @@ public class ShipEnemy : Ship
             EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
             turretScript.SetTarget(m_target);
         }
+
+        m_currentOrder = AIShipOrder.Attack;
     }
 
     public GameObject GetTarget()
@@ -129,6 +123,8 @@ public class ShipEnemy : Ship
                             break;
                         }
 
+                        MoveTowardTarget(m_target.transform.position);
+
                         //Vector3 direction = Vector3.Normalize(m_target.transform.position - m_shipTransform.position);
                         //Ray ray = new Ray(m_shipTransform.position, direction);
 
@@ -170,6 +166,7 @@ public class ShipEnemy : Ship
                     }
                 case(AIShipOrder.StayInFormation):
                     {
+
                         // if we are out of position, move towards formation position
                         if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_targetMove) > 0.64f)
                         {
@@ -179,7 +176,7 @@ public class ShipEnemy : Ship
                     }
                 case(AIShipOrder.Idle):
                     {
-                        GetAINode().GetParent().GetEntity().RequestOrder(this);
+                        //GetAINode().GetParent().GetEntity().RequestOrder(this);
                         break;
                     }
                 default:
@@ -454,7 +451,6 @@ public class ShipEnemy : Ship
                 }
             case (AIShipOrder.Move):
                 {
-                    Debug.Log("ReceivedOrder to move");
                     SetMoveTarget((Vector2)listOfParameters[0]);
                     return true;
                 }
