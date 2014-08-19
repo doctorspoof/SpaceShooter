@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 
-
-
 /// <summary>
 /// Quite literally just spins an object around an axis every FixedUpdate().
 /// </summary>
@@ -17,21 +15,14 @@ public sealed class SpinObject : MonoBehaviour
         zRot = 2
     }
 
-
     #region Unity modifiable variables
-    
     [SerializeField] RotationAxis m_axisToRotateAround = RotationAxis.zRot; //!< Which axis should the object rotate around.
     [SerializeField] float m_spinRate = 0f;                                  //!< How fast should the object spin.
-
     #endregion
-
 
     #region Internal data
-
     Transform transf = null;    //!< A cache of the transform for the sake of efficiency.
-
     #endregion
-
 
     #region Behaviour functions
 
@@ -41,10 +32,8 @@ public sealed class SpinObject : MonoBehaviour
     void Awake()
     {
         transf = transform;
-       
         transf.localPosition = CompareTag ("Star") ? new Vector3 (0, 0, 15.0f) : Vector3.zero;
     }
-
 
     /// <summary>
     /// Rotates around the desired axis.
