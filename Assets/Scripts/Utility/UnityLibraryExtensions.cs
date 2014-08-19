@@ -116,7 +116,7 @@ public static class UnityLibraryExtensions
             return toReturn.ToArray();
         }
 
-        return T[0];
+        return new T[0];
     }
 
 
