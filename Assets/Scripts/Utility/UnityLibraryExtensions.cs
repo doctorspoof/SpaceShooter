@@ -94,6 +94,31 @@ public static class UnityLibraryExtensions
 	}
 
 
+    /// <summary>
+    /// Returns an array which doesn't contain nulls.
+    /// </summary>
+    /// <returns>A null-less array.</returns>
+    /// <param name="array">The array to get information from.</param>
+    public static T[] NoNulls<T> (this T[] array)
+    {
+        if (array != null)
+        {
+            List<T> toReturn = new List<T>(array.Length);
+
+            for (int i = 0; i < array.Length; ++i)
+            {
+                if (array[i] != null)
+                {
+                    toReturn.Add (array[i]);
+                }
+            }
+
+            return toReturn.ToArray();
+        }
+
+        return T[0];
+    }
+
 
 	/// <summary>
 	/// Returns an array of GameObject objects which is gained through calling ".gameObject" on each Component.
