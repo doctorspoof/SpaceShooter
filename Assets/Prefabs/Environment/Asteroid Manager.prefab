@@ -11,7 +11,7 @@ GameObject:
   - 114: {fileID: 11400000}
   m_Layer: 0
   m_Name: Asteroid Manager
-  m_TagString: Untagged
+  m_TagString: AsteroidManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -54,6 +54,7 @@ MonoBehaviour:
   m_ringThickness: 10
   m_numAsteroids: 400
   m_shouldBeRingBelt: 1
+  m_testAsteroidSpawn: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

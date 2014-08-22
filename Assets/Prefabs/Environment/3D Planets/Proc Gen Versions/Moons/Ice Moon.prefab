@@ -9,7 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400000}
   m_Layer: 0
-  m_Name: PlanetIce
+  m_Name: Ice Moon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +47,7 @@ GameObject:
   - 95: {fileID: 9500002}
   m_Layer: 0
   m_Name: MeshShadow
-  m_TagString: Untagged
+  m_TagString: Shadow
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -60,7 +60,7 @@ Transform:
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: -.707105994, w: .707107604}
   m_LocalPosition: {x: 265, y: 0, z: 43}
-  m_LocalScale: {x: .75, y: .75, z: .75}
+  m_LocalScale: {x: .5, y: .5, z: .75}
   m_Children:
   - {fileID: 400002}
   - {fileID: 400004}
@@ -182,8 +182,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f63f0b7f3862f841917854855e4c7a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SpinRate: 10
-  rotAxis: 1
+  m_axisToRotateAround: 2
+  m_spinRate: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
