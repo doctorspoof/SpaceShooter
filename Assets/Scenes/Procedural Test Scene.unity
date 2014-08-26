@@ -172,6 +172,9 @@ MonoBehaviour:
   m_asteroidManager: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
   m_shop: {fileID: 100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_shipyard: {fileID: 100002, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
+  m_levelBoundary: {fileID: 100000, guid: 568a554ab59114d75b7022f051c4d2d9, type: 2}
+  m_cShipStartPoint: {fileID: 0}
+  m_cShipEndPoint: {fileID: 0}
   m_seed: 0
   m_tempDestroyScene: 0
   m_tempGenerateScene: 0
@@ -1135,7 +1138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1558293152
 Transform:
   m_ObjectHideFlags: 0

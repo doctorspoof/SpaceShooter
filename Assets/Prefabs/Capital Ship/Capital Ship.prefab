@@ -2463,7 +2463,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ownerSt: 
   m_isPlayerControlScript: 0
-  m_maxShipSpeed: 0
+  m_maxShipSpeed: 300
   m_currentShipSpeed: 0
   m_afterburnerIncreaseOfSpeed: 10
   m_afterburnerLength: 0

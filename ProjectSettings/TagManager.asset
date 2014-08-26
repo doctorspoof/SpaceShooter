@@ -32,6 +32,7 @@ TagManager:
   - AsteroidManager
   - Shadow
   - AsteroidParent
+  - LevelBoundary
   - 
   Builtin Layer 0: Default
   Builtin Layer 1: TransparentFX

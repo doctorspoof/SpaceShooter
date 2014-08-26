@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
-
 /// <summary>
 /// The Resources class is effectively a struct of the three different resources in the game. This allows us to group the resources together
 /// into a single object.
@@ -16,8 +14,6 @@ using System.Linq;
     [Range (0, 100000)] public int fuel = 500;  //!< The amount of fuel available.
 
 }
-
-
 
 /// <summary>
 /// The primary class used to control the players Capital Ship. This is used to manage the resources available in the ship, the cash available,
@@ -154,7 +150,7 @@ public sealed class CapitalShipScript : Ship
         base.Awake();
 
         // Stop all natural rigidbody movement if the ship should be anchored
-        rigidbody.isKinematic = m_shouldAnchor;
+        //rigidbody.isKinematic = m_shouldAnchor;
 
         RefreshTurretCache();
     }
@@ -170,6 +166,7 @@ public sealed class CapitalShipScript : Ship
         if (temp != null)
         {
             m_targetPoint = temp.transform;
+            m_shouldMoveToTarget = true;
         }
 
         // Set up the external reference to the ItemIDHolder

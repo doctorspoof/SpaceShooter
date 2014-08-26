@@ -12,7 +12,7 @@ GameObject:
   - 114: {fileID: 11400000}
   m_Layer: 0
   m_Name: LevelBoundary
-  m_TagString: Untagged
+  m_TagString: LevelBoundary
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -39,10 +39,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12cb11e053eb7460689e20b7d43a249f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_boundaryScale: {x: 650, y: 650, z: 650}
-  destroyAsteroids: 1
-  destroyPlayers: 0
-  destroyEnemies: 0
+  m_boundaryScale: {x: 1, y: 1, z: 1}
+  m_destroyAsteroids: 1
+  m_destroyPlayers: 0
+  m_destroyEnemies: 0
 --- !u!135 &13500000
 SphereCollider:
   m_ObjectHideFlags: 1

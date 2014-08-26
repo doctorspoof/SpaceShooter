@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -11,6 +11,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
     [SerializeField]        GameObject          m_asteroidManager;
     [SerializeField]        GameObject          m_shop;
     [SerializeField]        GameObject          m_shipyard;
+    [SerializeField]        GameObject          m_levelBoundary;
+    [SerializeField]        GameObject          m_cShipStartPoint;
+    [SerializeField]        GameObject          m_cShipEndPoint;
     [SerializeField]        int                 m_seed =            0;
     [SerializeField]        bool                m_tempDestroyScene = false;
     [SerializeField]        bool                m_tempGenerateScene = false;
@@ -83,10 +86,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
             int ringLevel = rand.Next(0, 2) + i;
             if(ringLevel <= planetRingCounter)
                 ringLevel = planetRingCounter + 1;
-            float distance = 200;
+            float distance = 150;
             for(int j = 0; j < ringLevel; j++)
             {
-                distance += ringLevel * (100 * Random.Range(0.9f, 1.1f));
+                distance += ringLevel * (50 * Random.Range(0.9f, 1.1f));
             }
             planetRingCounter = ringLevel;
             int heatEffect = Mathf.RoundToInt((distance * Random.Range(0.9f, 1.1f)) / 205);
@@ -108,23 +111,23 @@ public class ProceduralLevelGenerator : MonoBehaviour
             
             //Position
             Vector2 tempPos = Vector2.zero + (direction * distance);
-            float scale = Random.Range(0.9f, 4.2f);
+            float scale = Random.Range(0.9f, 2.4f);
             Debug.Log ("Planet " + i + ") Spawning planet #" + planet + " with direction: " + direction + " at distance: " + distance + ", and scale: " + scale);
             
             GameObject planetObject = Instantiate(m_planetsPrefabs[planet], new Vector3(tempPos.x, tempPos.y, 15.0f), Random.rotation) as GameObject;
             m_spawnedPlanets.Add(planetObject);
             
             //Check for furthest extent
-            if(Mathf.Abs(tempPos.x) > furthestExtent)
-                furthestExtent = Mathf.Abs(tempPos.x);
-            else if(Mathf.Abs(tempPos.y) > furthestExtent)
-                furthestExtent = Mathf.Abs(tempPos.y);
+            float checkDist = Vector2.Distance(new Vector2(tempPos.x, tempPos.y), Vector2.zero);
+            Debug.Log("Testing new extent of: " + checkDist);
+            if(checkDist > furthestExtent)
+                furthestExtent = checkDist;
             
             //Scale
             planetObject.transform.localScale = new Vector3(scale, scale, scale);
             
             //If the planet is above a certain size, consider giving it a belt of it's own
-            if(scale > 2.8f)
+            if(scale > 1.8f)
             {
                 int decider = rand.Next(0, 10);
                 if(decider == 6)
@@ -139,6 +142,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
                     asManSc.SetRange(range);
                     
                     //Check extent
+                    Debug.Log("Testing new extent of: " + range);
                     if(range > furthestExtent)
                         furthestExtent = range;
                     
@@ -154,7 +158,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
                     asManSc.SetIsRing(true);
                     
                     //Test
-                    Debug.LogWarning ("Planet " + i + "): Spawning asteroid belt around planet '" + planetObject + "', with range of " + range + ", consisting of " + numAster + " asteroids.");
+                    Debug.Log ("Planet " + i + "): Spawning asteroid belt around planet '" + planetObject + "', with range of " + range + ", consisting of " + numAster + " asteroids.");
                     asManSc.SetTestSpawns(true);
                 }
             }
@@ -187,10 +191,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
                 m_spawnedPlanets.Add(moonObject);
                 
                 //Check extent
-                if(Mathf.Abs(tempMoonPos.x) > furthestExtent)
-                    furthestExtent = Mathf.Abs(tempMoonPos.x);
-                else if(Mathf.Abs(tempMoonPos.y) > furthestExtent)
-                    furthestExtent = Mathf.Abs(tempMoonPos.y);
+                float checkMoonDist = Vector2.Distance(new Vector2(tempMoonPos.x, tempMoonPos.y), Vector2.zero);
+                Debug.Log("Testing new extent of: " + checkMoonDist);
+                if(checkMoonDist > furthestExtent)
+                    furthestExtent = checkMoonDist;
                 
                 //Scale
                 float newScale = moonObject.transform.localScale.x * moonScale;
@@ -225,10 +229,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
             if(ringLevel <= asteroidRingCounter)
                 ringLevel = asteroidRingCounter + 1;
             //float range = 150 + (ringLevel * (100 * Random.Range(0.9f, 1.1f)));
-            float range = 150;
+            float range = 100;
             for(int j = 0; j < ringLevel; j++)
             {
-                range += (100 * Random.Range(0.9f, 1.1f));
+                range += (50 * Random.Range(0.9f, 1.1f));
             }
             asteroidRingCounter = ringLevel;
             asManSc.SetRange(range);
@@ -332,10 +336,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
                 m_planetsUsedByShops.Add (targetPlanet);
                 
                 //Check extent
-                if(Mathf.Abs(shopPos.x) > furthestExtent)
-                    furthestExtent = Mathf.Abs(shopPos.x);
-                else if(Mathf.Abs(shopPos.y) > furthestExtent)
-                    furthestExtent = Mathf.Abs(shopPos.y);
+                float checkShopDist = Vector2.Distance(new Vector2(shopPos.x, shopPos.y), Vector2.zero);
+                if(checkShopDist > furthestExtent)
+                    furthestExtent = checkShopDist;
 
             }
             else
@@ -355,7 +358,27 @@ public class ProceduralLevelGenerator : MonoBehaviour
         #endregion
 
         //Truncate level boundary
+        #region LevelBoundary, Spawns and Exit
+
+        // Boundary 
+        GameObject levelBound = Instantiate(m_levelBoundary, Vector3.zero, Quaternion.identity) as GameObject;
+        LevelBoundary lbSc = levelBound.GetComponent<LevelBoundary>();
         
+        float boundaryDist = (furthestExtent + 50.0f) * 2.0f;
+        lbSc.SetBoundaryScale(new Vector3(boundaryDist, boundaryDist, boundaryDist));
+        
+        //Spawn + Exit points
+        GameObject start = new GameObject("Capital Start Point");
+        start.transform.position = new Vector3(-furthestExtent, 0, 10.5f);
+        start.transform.rotation = Quaternion.Euler(0, 0, -90);
+        start.tag = "CSStart";
+        
+        GameObject end = new GameObject("Capital End Point");
+        end.transform.position = new Vector3(furthestExtent, 0, 10.5f);
+        end.transform.rotation = Quaternion.Euler(0, 0, 90);
+        end.tag = "CSTarget";
+        
+        #endregion
     }
     
     #region HelperFuncs
@@ -402,6 +425,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         m_spawnedShops = new List<GameObject>();
         m_spawnedPlanets = new List<GameObject>();
         m_planetsUsedByShops = new List<GameObject>();
+        ResetSeed();
         GenerateLevel();
         
         float timeTaken = (Time.realtimeSinceStartup - beginTimer);
@@ -443,6 +467,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
         {
             Destroy (stars[i]);
         }
+        
+        Debug.Log ("Destroying level boundary...");
+        Destroy (GameObject.FindGameObjectWithTag("LevelBoundary"));
         
         Debug.Log ("Done. Scene should now be empty!");
         
