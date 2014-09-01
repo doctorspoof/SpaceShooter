@@ -16,6 +16,8 @@ public sealed class AsteroidManager : MonoBehaviour
 	[SerializeField, Range (0, 800)]    int m_numAsteroids;                 // How many asteroids to spawn each time
 	[SerializeField]                    bool m_shouldBeRingBelt = true;     // Determines whether to spawn a ring of asteroids or a circular field
     [SerializeField]                    bool m_testAsteroidSpawn = false;   // Test function to spawn asteroids + see where they lie
+    
+    [SerializeField]                    Texture m_asteroidManagerBlip;      // GUI will access this at runtime
 	
     //Setters here, because procgen will need to alter these, and is too dumb to use the editor
     #region Setters
@@ -38,6 +40,10 @@ public sealed class AsteroidManager : MonoBehaviour
     public void SetTestSpawns(bool test_)
     {
         m_testAsteroidSpawn = test_;
+    }
+    public void ForceSpawnAsteroidsTestSP()
+    {
+        SpawnAsteroidsSPTEST();
     }
     #endregion
     #endregion

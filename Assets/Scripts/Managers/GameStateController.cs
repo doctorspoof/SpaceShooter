@@ -698,6 +698,10 @@ public class GameStateController : MonoBehaviour
     {
         m_AsteroidManagers = GameObject.FindGameObjectsWithTag("AsteroidManager");
     }
+    public void UpdateShopReferences()
+    {
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughUpdateShopReferences();
+    }
 
     [RPC] void ChangeToInGame()
     {

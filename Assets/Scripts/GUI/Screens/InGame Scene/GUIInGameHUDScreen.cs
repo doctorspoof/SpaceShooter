@@ -89,6 +89,10 @@ public class GUIInGameHUDScreen : BaseGUIScreen
         Debug.Log ("Received new weapon reference: " + weapon);
         m_playerWeaponCache = weapon;
     }
+    public void SetShopReferences()
+    {
+        GetComponent<GUIMapOverlayScreen>().UpdateShopList();
+    }
     #endregion
     
     /* Unity Functions */
@@ -96,7 +100,6 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     {
         m_priorityValue = 1;
         m_gscCache = GameStateController.Instance();
-        GetComponent<GUIMapOverlayScreen>().UpdateShopList();
     }
     
     void Update ()

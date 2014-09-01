@@ -162,20 +162,18 @@ MonoBehaviour:
   - {fileID: 100000, guid: 9b99b52e14b1e2d4b95a97923779ba96, type: 2}
   m_planetsPrefabs:
   - {fileID: 100000, guid: cded552870663234691963192b3979b7, type: 2}
-  - {fileID: 100000, guid: 540fd20bade58c74cbab7ce0e1473124, type: 2}
+  - {fileID: 100000, guid: e96e085b48f467147a80e099d7e38c03, type: 2}
   - {fileID: 100006, guid: 17737cf9ccafc6849899949a177ccb57, type: 2}
+  - {fileID: 100000, guid: 540fd20bade58c74cbab7ce0e1473124, type: 2}
   - {fileID: 100000, guid: d2a618873b7758b408ea251f8b9bb316, type: 2}
   - {fileID: 100000, guid: 874c48fbbd76c3a4fa19b197eb59f21c, type: 2}
-  m_moonPrefabs:
-  - {fileID: 100000, guid: 83da1bc8e692404439779555bcd7aeb8, type: 2}
-  - {fileID: 100000, guid: c7213e9e680791646936c3cd3acade0d, type: 2}
+  m_ringObjects:
+  - {fileID: 100000, guid: dc58d6c86d0791f4a8633f9da7aa5fc7, type: 2}
   m_asteroidManager: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
   m_shop: {fileID: 100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_shipyard: {fileID: 100002, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
   m_levelBoundary: {fileID: 100000, guid: 568a554ab59114d75b7022f051c4d2d9, type: 2}
-  m_cShipStartPoint: {fileID: 0}
-  m_cShipEndPoint: {fileID: 0}
-  m_seed: 0
+  m_seed: 9964
   m_tempDestroyScene: 0
   m_tempGenerateScene: 0
 --- !u!4 &775522648
@@ -1138,7 +1136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1558293152
 Transform:
   m_ObjectHideFlags: 0

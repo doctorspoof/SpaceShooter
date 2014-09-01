@@ -82,6 +82,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25d95a5a15dabf04e98f0e0a232bcef7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_starTemperature: 34000
+  m_starAge: 3.79999995
+  m_starMass: 20
   m_damagePerTick: 5
   m_tickTime: .0500000007
 --- !u!1001 &100100000

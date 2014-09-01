@@ -320,18 +320,21 @@ public class PlayerControlScript : Ship
             }
             
             GameObject nearestShop = GetClosestShop();
-            float shopDist = Vector3.Distance(nearestShop.transform.position, this.transform.position);
-            if(shopDist < 1.5f)
+            if(nearestShop != null)
             {
-                m_nearbyShop = nearestShop;
-                m_isInRangeOfTradingDock = true;
-                m_guiCache.PassThroughShopDockableState(true);
-            }
-            else
-            {
-                m_nearbyShop = null;
-                m_isInRangeOfTradingDock = false;
-                m_guiCache.PassThroughShopDockableState(false);
+                float shopDist = Vector3.Distance(nearestShop.transform.position, this.transform.position);
+                if(shopDist < 1.5f)
+                {
+                    m_nearbyShop = nearestShop;
+                    m_isInRangeOfTradingDock = true;
+                    m_guiCache.PassThroughShopDockableState(true);
+                }
+                else
+                {
+                    m_nearbyShop = null;
+                    m_isInRangeOfTradingDock = false;
+                    m_guiCache.PassThroughShopDockableState(false);
+                }
             }
         }
         else

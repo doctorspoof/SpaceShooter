@@ -167,6 +167,10 @@ public sealed class Shop : MonoBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        Debug.Log ("Shop was told to destroy.");
+    }
 
     /// <summary>
     /// Update the rotation over the network.

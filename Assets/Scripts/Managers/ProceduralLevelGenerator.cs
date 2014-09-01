@@ -2,18 +2,26 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+public enum PlanetType
+{
+    Volcanic = 1,
+    Desert = 2,
+    Terran = 3,
+    Barren = 4,
+    GasGiant = 5,
+    Ice = 6
+}
+
 public class ProceduralLevelGenerator : MonoBehaviour 
 {
     /* Serializable Members */
     [SerializeField]        GameObject[]        m_starPrefabs;
     [SerializeField]        GameObject[]        m_planetsPrefabs;
-    [SerializeField]        GameObject[]        m_moonPrefabs;
+    [SerializeField]        GameObject[]        m_ringObjects;
     [SerializeField]        GameObject          m_asteroidManager;
     [SerializeField]        GameObject          m_shop;
     [SerializeField]        GameObject          m_shipyard;
     [SerializeField]        GameObject          m_levelBoundary;
-    [SerializeField]        GameObject          m_cShipStartPoint;
-    [SerializeField]        GameObject          m_cShipEndPoint;
     [SerializeField]        int                 m_seed =            0;
     [SerializeField]        bool                m_tempDestroyScene = false;
     [SerializeField]        bool                m_tempGenerateScene = false;
@@ -23,9 +31,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
     float furthestExtent = 0.0f;
     
     #region SpawnedObjects
-    List<GameObject> m_spawnedPlanets;
-    List<GameObject> m_planetsUsedByShops;
-    List<GameObject> m_spawnedShops;
+    List<GameObject>    m_spawnedPlanets;
+    List<float>         m_spawnPlanetsDistances;
+    List<GameObject>    m_planetsUsedByShops;
+    List<GameObject>    m_spawnedShops;
     #endregion
 
     /* Unity Functions */
@@ -34,7 +43,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         //Remove nulls from arrays
         m_starPrefabs = m_starPrefabs.NoNulls();
         m_planetsPrefabs = m_planetsPrefabs.NoNulls();
-        m_moonPrefabs = m_moonPrefabs.NoNulls();
+        m_ringObjects = m_ringObjects.NoNulls();
     }
 
 	void Start () 
@@ -42,7 +51,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         if(m_seed == 0)
             ResetSeed();
             
-        RequestGenerateLevel();
+        RequestGenerateLevel(false);
 	}
     
     void Update()
@@ -56,7 +65,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         if(m_tempGenerateScene)
         {
             m_tempGenerateScene = false;
-            RequestGenerateLevel();
+            RequestGenerateLevel(true);
         }
     }
     
@@ -69,41 +78,80 @@ public class ProceduralLevelGenerator : MonoBehaviour
         Random.seed = m_seed;
         Debug.Log ("Beginning procedural system generation, with seed value of: " + m_seed);
         
+        // Cached system variables
+        float effectStarpowerCache = -1f;
+        float starRelativeSizeScale = 1.0f;
+        
+        int orbitObjectNum = 0;
+        float expectedDistance = 0.0f;
+        
         #region Star
         int star = rand.Next(0, m_starPrefabs.Length);
         Debug.Log ("Spawning star #" + star + "...");
         float randomZ = Random.Range(0, 360);
+        //NOTE: Change the z position if stars become 3D
         Instantiate(m_starPrefabs[star], new Vector3(0f, 0f, 15.0f), Quaternion.Euler(0, 0, randomZ));
+        effectStarpowerCache = 0;
+        GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+        float overallScale = 0;
+        float totalScale = 0;
+        float totalMass = 0;
+        float oldestAge = 0;
+        foreach(GameObject starGO in stars)
+        {
+            effectStarpowerCache += starGO.GetComponent<StarScript>().GetStarTemperature();
+            totalScale += starGO.transform.localScale.x;
+            
+            totalMass += starGO.GetComponent<StarScript>().GetStarMass();
+            
+            float age = starGO.GetComponent<StarScript>().GetStarAge();
+            if(age > oldestAge)
+                oldestAge = age;
+        }
+
+        //Set caches
+        overallScale = totalScale / stars.Length;
+        starRelativeSizeScale = totalScale / 75.0f;
+        effectStarpowerCache /= overallScale;
+        
+        orbitObjectNum = 4 + Mathf.RoundToInt((13.0f - oldestAge) * 0.6f);
+        expectedDistance = 560.0f + (totalMass * 2.0f);
+        Debug.Log ("System is expected to hold approximately " + orbitObjectNum + " natural objects, within a projected distance of " + expectedDistance + ".");
         #endregion
         
+        
+        #region First Pass
+        
+        // Generic calculations here    
+        int numPlanets = Mathf.RoundToInt(orbitObjectNum * Random.Range(0.45f, 0.75f));
+        int numMoons = Mathf.RoundToInt((orbitObjectNum - 4) * Random.Range (0.6f, 0.85f));
+        int numBelts = Mathf.RoundToInt((orbitObjectNum - 4) * Random.Range (0.35f, 0.5f));
+        int numFields = Mathf.RoundToInt((orbitObjectNum - 6) * Random.Range(0.33f, 0.425f));
+        
+        float planetSizeModLower = (0.28f + (4.5f / orbitObjectNum));
+        float planetSizeModUpper = (0.08f + (8.75f / orbitObjectNum));
+            
+        
         #region Planets
-        int numPlanets = rand.Next(2, 7);
         int planetRingCounter = 0;
-        Debug.Log ("Spawning " + numPlanets + " planets...");
+        int spawnedMoonCounter = 0;
+        
+        Debug.Log("Spawning " + numPlanets + " planets...");
         for(int i = 0; i < numPlanets; i++)
         {
-            //Planet type should be affected by distance to star (hotter planets when closer)
             int ringLevel = rand.Next(0, 2) + i;
             if(ringLevel <= planetRingCounter)
                 ringLevel = planetRingCounter + 1;
-            float distance = 150;
-            for(int j = 0; j < ringLevel; j++)
-            {
-                distance += ringLevel * (50 * Random.Range(0.9f, 1.1f));
-            }
             planetRingCounter = ringLevel;
-            int heatEffect = Mathf.RoundToInt((distance * Random.Range(0.9f, 1.1f)) / 205);
-            int planet = rand.Next(0, m_planetsPrefabs.Length);
+            float distance = 35 * starRelativeSizeScale;
+            for(int j = 0; j< ringLevel; j++)
+            {
+                distance += (50 * starRelativeSizeScale * Random.Range (0.9f, 1.1f));
+            }
             
-            if(heatEffect > planet)
-                planet++;
-            else if(heatEffect < planet)
-                planet--;
-                
-            if(planet >= m_planetsPrefabs.Length)
-                planet = m_planetsPrefabs.Length - 1;
-            else if(planet < 0)
-                planet = 0;
+            //Get what type of planet this one should be
+            PlanetType typeToSpawn = GetPlanetTypeFromDistanceToSunpower(distance, effectStarpowerCache);
+            int planet = (int)(typeToSpawn) - 1;
             
             //Direction
             Vector2 direction = Random.insideUnitCircle;
@@ -111,13 +159,19 @@ public class ProceduralLevelGenerator : MonoBehaviour
             
             //Position
             Vector2 tempPos = Vector2.zero + (direction * distance);
-            float scale = Random.Range(0.9f, 2.4f);
+            float scale = Random.Range(planetSizeModLower, planetSizeModUpper);
             Debug.Log ("Planet " + i + ") Spawning planet #" + planet + " with direction: " + direction + " at distance: " + distance + ", and scale: " + scale);
             
-            GameObject planetObject = Instantiate(m_planetsPrefabs[planet], new Vector3(tempPos.x, tempPos.y, 15.0f), Random.rotation) as GameObject;
+            GameObject planetObject = Instantiate(m_planetsPrefabs[planet], new Vector3(tempPos.x, tempPos.y, 100.0f), Random.rotation) as GameObject;
             m_spawnedPlanets.Add(planetObject);
+            m_spawnPlanetsDistances.Add(distance);
             
-            //Check for furthest extent
+            //Do type/size modifiers
+            if(typeToSpawn == PlanetType.GasGiant)
+                scale *= Random.Range(1.05f, 1.4f);
+            else if(typeToSpawn == PlanetType.Volcanic || typeToSpawn == PlanetType.Ice)
+                scale *= Random.Range(0.75f, 0.95f);
+            
             float checkDist = Vector2.Distance(new Vector2(tempPos.x, tempPos.y), Vector2.zero);
             Debug.Log("Testing new extent of: " + checkDist);
             if(checkDist > furthestExtent)
@@ -126,82 +180,81 @@ public class ProceduralLevelGenerator : MonoBehaviour
             //Scale
             planetObject.transform.localScale = new Vector3(scale, scale, scale);
             
-            //If the planet is above a certain size, consider giving it a belt of it's own
-            if(scale > 1.8f)
+            //See if we should spawn a ring
+            float baseRingChance = Random.Range(3.0f, 4.5f);
+            baseRingChance += scale;
+            
+            if(typeToSpawn == PlanetType.GasGiant)
+                baseRingChance += 1.0f;
+                
+            if(baseRingChance >= 6.2f)
             {
-                int decider = rand.Next(0, 10);
-                if(decider == 6)
-                {
-                    //Do one ring
-                    GameObject asteroidMan = Instantiate(m_asteroidManager, Vector3.zero, Quaternion.identity) as GameObject;
-                    AsteroidManager asManSc = asteroidMan.GetComponent<AsteroidManager>();
-                    asteroidMan.transform.position = planetObject.transform.position;
-                    
-                    //Set range
-                    float range = 10 + (30 * Random.Range(0.85f, 1.15f));
-                    asManSc.SetRange(range);
-                    
-                    //Check extent
-                    Debug.Log("Testing new extent of: " + range);
-                    if(range > furthestExtent)
-                        furthestExtent = range;
-                    
-                    //Thickness
-                    float thickness = Random.Range(2.5f, 6.5f);
-                    asManSc.SetThickness(thickness);
-                    
-                    //Number
-                    int numAster = (int)(range * 3.0f);
-                    asManSc.SetAsteroidNum(numAster);
-                    
-                    //Ensure ring
-                    asManSc.SetIsRing(true);
-                    
-                    //Test
-                    Debug.Log ("Planet " + i + "): Spawning asteroid belt around planet '" + planetObject + "', with range of " + range + ", consisting of " + numAster + " asteroids.");
-                    asManSc.SetTestSpawns(true);
-                }
+                int ringType = Random.Range(0, m_ringObjects.Length);
+                Debug.Log ("Planet " + i + ") Spawning a ring of type " + ringType + "...");
+                GameObject ring = Instantiate(m_ringObjects[ringType], tempPos, Quaternion.identity) as GameObject;
+                
+                ring.transform.parent = planetObject.transform;
+                ring.transform.localPosition = Vector3.zero;
+                ring.transform.localScale = new Vector3(50.0f, 50.0f, 50.0f);
+                
+                //Work out a suitable rotation for the ring
+                
+                float randX = Random.Range(-85.0f, 85.0f);
+                float randY = Random.Range(-85.0f, 85.0f);
+                
+                Quaternion ringRot = Quaternion.Euler(randX, randY, 0);
+                ring.transform.rotation = ringRot;
             }
             
-            //Decide if the planet should have a moon
-            int numMoons = rand.Next(0, 3);
-            Debug.Log ("Planet " + i + "): Spawning " + numMoons + " moons...");
-            for(int j = 0; j < numMoons; j++)
+            //Moons
+            if(spawnedMoonCounter < numMoons)
             {
-                //Decide on the type of moon to spawn
-                int moon = rand.Next(0, m_moonPrefabs.Length);
+                float moonChance = Random.Range (-1.5f, 3.0f);
+                int numMoonsToSpawn = (int)(scale - moonChance);
                 
-                //Decide on direction from parent planet
-                //Vector2 moonDirection = Random.insideUnitCircle;
-                Vector3 moonDirection = Random.onUnitSphere;
-                //direction.Normalize();
-                
-                //Decide on distance
-                float ringFactor = scale * 30.0f; //should make rings for moons approximately accurate
-                float moonDistance = ringFactor + (i * (ringFactor * 0.5f * Random.Range(0.8f, 1.2f)));
-                
-                //Position
-                Vector3 tempMoonPos = new Vector3(tempPos.x, tempPos.y, 15.0f) + (moonDirection * moonDistance);
-                float moonScale = Random.Range(0.8f, 1.2f);
-                
-                //Instantiate
-                Debug.Log ("Planet " + i + ") Moon " + j + "] Spawning moon #" + moon + " with direction: " + moonDirection + " at distance: " + moonDistance + ", and scale factor " + moonScale);
-                //GameObject moonObject = Instantiate(m_moonPrefabs[moon], new Vector3(tempMoonPos.x, tempMoonPos.y, 15.0f), Random.rotation) as GameObject;
-                GameObject moonObject = Instantiate(m_moonPrefabs[moon], tempMoonPos, Random.rotation) as GameObject;
-                m_spawnedPlanets.Add(moonObject);
-                
-                //Check extent
-                float checkMoonDist = Vector2.Distance(new Vector2(tempMoonPos.x, tempMoonPos.y), Vector2.zero);
-                Debug.Log("Testing new extent of: " + checkMoonDist);
-                if(checkMoonDist > furthestExtent)
-                    furthestExtent = checkMoonDist;
-                
-                //Scale
-                float newScale = moonObject.transform.localScale.x * moonScale;
-                moonObject.transform.localScale = new Vector3(newScale, newScale , newScale);
-                
-                //Parent
-                moonObject.transform.parent = planetObject.transform;
+                Debug.Log ("Planet " + i + ") Spawning " + numMoonsToSpawn + " moons...");
+                for(int j = 0; j < numMoonsToSpawn; j++)
+                {
+                    ++spawnedMoonCounter;
+                    
+                    //Work out dist, then planet as normal
+                    float moonDist = 45.0f * scale;
+                    for(int ring = 0; ring < j; ring++)
+                    {
+                        moonDist += (15.0f * Random.Range (0.9f, 1.1f)) * scale;
+                    }
+                    
+                    PlanetType moonTypeToSpawn = GetMoonTypeFromDistanceToSunPowerAndParentType(distance, effectStarpowerCache, typeToSpawn);
+                    int moonType = (int)(moonTypeToSpawn) - 1;
+                    
+                    //Direction
+                    Vector2 moonDirection = Random.insideUnitCircle;
+                    direction.Normalize();
+                    
+                    //Position
+                    Vector2 moonTempPos = tempPos + (moonDirection * moonDist);
+                    float moonScale = Random.Range(0.2f * scale, 0.3f * scale);
+                    Debug.Log ("Planet " + i + ") Moon " + j + ") Spawning moon #" + moonType + " with direction: " + direction + " at distance: " + distance + ", and scale: " + moonScale);
+                    
+                    GameObject moonObject = Instantiate(m_planetsPrefabs[moonType], new Vector3(moonTempPos.x, moonTempPos.y, 100.0f), Random.rotation) as GameObject;
+                    m_spawnedPlanets.Add(moonObject);
+                    
+                    moonObject.transform.parent = planetObject.transform;
+                    
+                    //Do type/size modifiers
+                    if(moonTypeToSpawn == PlanetType.GasGiant)
+                        moonScale *= Random.Range(1.05f, 1.4f);
+                    else if(moonTypeToSpawn == PlanetType.Volcanic || typeToSpawn == PlanetType.Ice)
+                        moonScale *= Random.Range(0.75f, 0.95f);
+                    
+                    float checkMoonDist = Vector2.Distance(new Vector2(moonTempPos.x, moonTempPos.y), Vector2.zero);
+                    Debug.Log("Testing new extent of: " + checkMoonDist);
+                    if(checkMoonDist > furthestExtent)
+                        furthestExtent = checkMoonDist;
+                    
+                    //Scale
+                    moonObject.transform.localScale = new Vector3(moonScale, moonScale, moonScale);
+                }
             }
         }
         
@@ -209,17 +262,17 @@ public class ProceduralLevelGenerator : MonoBehaviour
         GameObject[] shadows = GameObject.FindGameObjectsWithTag("Shadow");
         for(int i = 0; i < shadows.Length; i++)
         {
-            Quaternion target = Quaternion.LookRotation(Vector3.zero - shadows[i].transform.position) * Quaternion.FromToRotation(Vector3.forward, Vector3.up);
+            Quaternion target = Quaternion.LookRotation(new Vector3(0, 0, shadows[i].transform.position.z) - shadows[i].transform.position) * Quaternion.FromToRotation(Vector3.forward, Vector3.up);
             shadows[i].transform.rotation = target;
         }
         #endregion
         
-        #region AsteroidManagers
-        int numAsteroidBelts = rand.Next(1,5);
+        
+        #region Asteroids
         int asteroidRingCounter = 0;
         
-        Debug.Log ("Spawning " + numAsteroidBelts + " asteroid belts...");
-        for(int i = 0; i < numAsteroidBelts; i++)
+        Debug.Log ("Spawning " + numBelts + " asteroid belts...");
+        for(int i = 0; i < numBelts; i++)
         {
             GameObject asteroidMan = Instantiate(m_asteroidManager, Vector3.zero, Quaternion.identity) as GameObject;
             AsteroidManager asManSc = asteroidMan.GetComponent<AsteroidManager>();
@@ -228,11 +281,11 @@ public class ProceduralLevelGenerator : MonoBehaviour
             int ringLevel = rand.Next(1, 3) + i;
             if(ringLevel <= asteroidRingCounter)
                 ringLevel = asteroidRingCounter + 1;
-            //float range = 150 + (ringLevel * (100 * Random.Range(0.9f, 1.1f)));
-            float range = 100;
+            
+            float range = 60 * starRelativeSizeScale;
             for(int j = 0; j < ringLevel; j++)
             {
-                range += (50 * Random.Range(0.9f, 1.1f));
+                range += (50 * starRelativeSizeScale * Random.Range(0.9f, 1.1f));
             }
             asteroidRingCounter = ringLevel;
             asManSc.SetRange(range);
@@ -246,7 +299,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             asManSc.SetThickness(thickness);
             
             //Number
-            int numAster = (int)(range * 2.25f);
+            int numAster = (int)(range); 
             asManSc.SetAsteroidNum(numAster);
             
             //Ensure ring
@@ -254,36 +307,36 @@ public class ProceduralLevelGenerator : MonoBehaviour
             
             //Test
             Debug.Log ("Spawning asteroid belt with a range of " + range + " (ring level: " + ringLevel + ")....");
-            asManSc.SetTestSpawns(true);
+            asManSc.ForceSpawnAsteroidsTestSP();
         }
         
-        int numAsteroidFields = rand.Next(0,3);
-        for(int i = 0; i < numAsteroidFields; i++)
+        for(int i = 0; i < numFields; i++)
         {
             GameObject asteroidMan = Instantiate(m_asteroidManager, Vector3.zero, Quaternion.identity) as GameObject;
             AsteroidManager asManSc = asteroidMan.GetComponent<AsteroidManager>();
-        
+            
             //Generate a size for the field
             float range = Random.Range (50.0f, 150.0f);
             
             //Find a suitable position
             Vector3 fieldPos = GetFreeFloatingRandomPosition(range);
-        
+            
             //Ensure field
             asManSc.SetIsRing(false);
             
             //Set field vars
             asManSc.SetRange(range);
             asteroidMan.transform.position = fieldPos;
-            float asteroidDensity = Random.Range (2.5f, 6.0f);
+            float asteroidDensity = Random.Range (2.0f, 3.0f);
             int numAster = (int)(range * asteroidDensity);
             asManSc.SetAsteroidNum(numAster);
             
             //Test
             Debug.Log ("Spawning asteroid field with a range of " + range + ", centered on position " + fieldPos + ", with " + numAster + " asteroids.");
-            asManSc.SetTestSpawns(true);
+            asManSc.ForceSpawnAsteroidsTestSP();
         }
         #endregion
+        
         
         #region Shops/Shipyards
         int numShops = rand.Next(3, 7);
@@ -300,8 +353,10 @@ public class ProceduralLevelGenerator : MonoBehaviour
                 //Get a parent planet
                 GameObject targetPlanet = null;
                 bool isUseable = false;
+                int counter = 0;
                 while(!isUseable)
                 {
+                    counter++;
                     int spPlID = rand.Next(0, m_spawnedPlanets.Count);
                     
                     if(!m_planetsUsedByShops.Contains(m_spawnedPlanets[spPlID]))
@@ -309,39 +364,49 @@ public class ProceduralLevelGenerator : MonoBehaviour
                         targetPlanet = m_spawnedPlanets[spPlID];
                         isUseable = true;
                     }
+                    else if(counter > 6)
+                    {
+                        isUseable = true;
+                        isOrbital = false;
+                    }
                 }
                 
-                //Get a direction
-                Vector2 shopDir = Random.insideUnitCircle;
-                shopDir.Normalize();
-                Vector3 shopTrueDir = new Vector3(shopDir.x, shopDir.y, 15.0f);
-                
-                //Get a relative distance
-                float shopDist = targetPlanet.transform.localScale.x * 20.0f;
-                
-                //Calculate the position
-                Vector3 shopPos = targetPlanet.transform.position + (shopTrueDir * shopDist);
-                
-                string shopName = isShipyard ? "shipyard" : "shop";
-                Debug.Log ("Spawning " + shopName + " orbiting planet: " + targetPlanet.name + ".");
-                GameObject shop = null;
-                if(isShipyard)
-                    shop = Instantiate(m_shipyard, shopPos, Quaternion.identity) as GameObject;
-                else
-                    shop = Instantiate(m_shop, shopPos, Quaternion.identity) as GameObject;
+                if(isOrbital)
+                {
+                    //Get a direction
+                    Vector2 shopDir = Random.insideUnitCircle;
+                    shopDir.Normalize();
+                    Vector3 shopTrueDir = new Vector3(shopDir.x, shopDir.y, 15.0f);
                     
-                shop.transform.position = new Vector3(shop.transform.position.x, shop.transform.position.y, 11.0f);
-                
-                m_spawnedShops.Add (shop);
-                m_planetsUsedByShops.Add (targetPlanet);
-                
-                //Check extent
-                float checkShopDist = Vector2.Distance(new Vector2(shopPos.x, shopPos.y), Vector2.zero);
-                if(checkShopDist > furthestExtent)
-                    furthestExtent = checkShopDist;
-
+                    //Get a relative distance
+                    float shopDist = targetPlanet.transform.localScale.x * 20.0f;
+                    
+                    //Calculate the position
+                    Vector3 shopPos = targetPlanet.transform.position + (shopTrueDir * shopDist);
+                    
+                    string shopName = isShipyard ? "shipyard" : "shop";
+                    Debug.Log ("Spawning " + shopName + " orbiting planet: " + targetPlanet.name + ".");
+                    GameObject shop = null;
+                    if(isShipyard)
+                        shop = Instantiate(m_shipyard, shopPos, Quaternion.identity) as GameObject;
+                    else
+                        shop = Instantiate(m_shop, shopPos, Quaternion.identity) as GameObject;
+                    
+                    shop.transform.position = new Vector3(shop.transform.position.x, shop.transform.position.y, 11.0f);
+                    
+                    m_spawnedShops.Add (shop);
+                    m_planetsUsedByShops.Add (targetPlanet);
+                    
+                    shop.transform.parent = targetPlanet.transform;
+                    
+                    //Check extent
+                    float checkShopDist = Vector2.Distance(new Vector2(shopPos.x, shopPos.y), Vector2.zero);
+                    if(checkShopDist > furthestExtent)
+                        furthestExtent = checkShopDist;
+                }
             }
-            else
+            
+            if(!isOrbital)
             {
                 Vector3 randomPos = GetFreeFloatingRandomPosition(15.0f);
                 
@@ -356,6 +421,40 @@ public class ProceduralLevelGenerator : MonoBehaviour
             }
         }
         #endregion
+        
+        
+        #endregion
+        
+        
+        #region SecondPass
+        // In this pass, we will sanity check what we have so far, and make sure everything we have makes at least theoretical sense
+        
+        // First, make sure nothing is inside the sun
+        /*Collider[] objsInsideSun = Physics.OverlapSphere(new Vector3(0, 0, 50.0f), totalScale);
+        Rigidbody[] uniqueObjsInSun = objsInsideSun.GetAttachedRigidbodies().GetUniqueOnly();
+        
+        Debug.Log ("Found " + uniqueObjsInSun.Length + " objects inside the sun's radius. Destroying...");
+        for(int i = 0; i < uniqueObjsInSun.Length; i++)
+        {
+            Debug.Log ("Destroying " + uniqueObjsInSun[i] + "...");
+            Destroy(uniqueObjsInSun[i].gameObject);
+        }
+        
+        // Now check all planet ring levels, and 'circlecast' to destroy any asteroids that would impede their orbit
+        CirclecastPlanetsToAbsorbAsteroids();*/
+        #endregion
+
+        #region ThirdPass
+        //Check asteroids again, to compensate for bigger planets
+        //CirclecastPlanetsToAbsorbAsteroids();
+        
+        // Unparent all shops
+        GameObject[] shops = GameObject.FindGameObjectsWithTag("Shop");
+        for(int i = 0; i < shops.Length; i++)
+        {
+            shops[i].transform.parent = null;
+        }
+        #endregion
 
         //Truncate level boundary
         #region LevelBoundary, Spawns and Exit
@@ -364,17 +463,17 @@ public class ProceduralLevelGenerator : MonoBehaviour
         GameObject levelBound = Instantiate(m_levelBoundary, Vector3.zero, Quaternion.identity) as GameObject;
         LevelBoundary lbSc = levelBound.GetComponent<LevelBoundary>();
         
-        float boundaryDist = (furthestExtent + 50.0f) * 2.0f;
+        float boundaryDist = (furthestExtent + 50.0f);
         lbSc.SetBoundaryScale(new Vector3(boundaryDist, boundaryDist, boundaryDist));
         
         //Spawn + Exit points
         GameObject start = new GameObject("Capital Start Point");
-        start.transform.position = new Vector3(-furthestExtent, 0, 10.5f);
+        start.transform.position = new Vector3(-(furthestExtent + 50.0f), 0, 10.5f);
         start.transform.rotation = Quaternion.Euler(0, 0, -90);
         start.tag = "CSStart";
         
         GameObject end = new GameObject("Capital End Point");
-        end.transform.position = new Vector3(furthestExtent, 0, 10.5f);
+        end.transform.position = new Vector3((furthestExtent + 50.0f), 0, 10.5f);
         end.transform.rotation = Quaternion.Euler(0, 0, 90);
         end.tag = "CSTarget";
         
@@ -382,9 +481,171 @@ public class ProceduralLevelGenerator : MonoBehaviour
     }
     
     #region HelperFuncs
+    void CirclecastPlanetsToAbsorbAsteroids()
+    {
+        for(int i = 0; i < m_spawnPlanetsDistances.Count; i++)
+        {
+            float width = m_spawnedPlanets[i].transform.localScale.x * m_spawnedPlanets[i].transform.localScale.x * 45.0f;
+            Debug.Log ("Width value: " + width);
+            float minDist = m_spawnPlanetsDistances[i] - width;
+            float maxDist = m_spawnPlanetsDistances[i] + width;
+            
+            Rigidbody[] lowerThanMaxs = Physics.OverlapSphere(new Vector3(0, 0, 50.0f), maxDist, 1 << Layers.asteroid).GetAttachedRigidbodies().GetUniqueOnly();
+            Rigidbody[] lowerThanMins = Physics.OverlapSphere(new Vector3(0, 0, 50.0f), minDist, 1 << Layers.asteroid).GetAttachedRigidbodies().GetUniqueOnly();
+            
+            // Destroy objects within range
+            int asteroidsMulched = DestroyObjectsWithinRange(lowerThanMins, lowerThanMaxs);
+            
+            // Increase the size of the colliding planet, to simulate mass collection from collision
+            // TODO: add mass here
+            float oldScale = m_spawnedPlanets[i].transform.localScale.x;
+            oldScale += (asteroidsMulched * 0.001f);
+            m_spawnedPlanets[i].transform.localScale = new Vector3(oldScale, oldScale, oldScale);
+        }
+    }
+    
     void ResetSeed()
     {
         m_seed = Random.Range(0, int.MaxValue);
+    }
+    
+    /// <summary>
+    /// Destroys the objects within range of a planet.
+    /// </summary>
+    /// <returns> Returns the number of objects destroyed in this path. </returns>
+    /// <param name="objectsLowerThanMin">Objects lower than minimum extent.</param>
+    /// <param name="objectsLowerThanMax">Objects lower than maximum extent.</param>
+    int DestroyObjectsWithinRange(Rigidbody[] objectsLowerThanMin, Rigidbody[] objectsLowerThanMax)
+    {
+        List<GameObject> toDestroy = new List<GameObject>();
+        
+        for(int i = 0; i < objectsLowerThanMax.Length; i++)
+        {
+            //If object is within the max, but not within the min, it means it's in the DANGER ZONE
+            if(!objectsLowerThanMin.Contains(objectsLowerThanMax[i]))
+            {
+                toDestroy.Add(objectsLowerThanMax[i].gameObject);
+            }
+        }
+        
+        int numDestroyed = toDestroy.Count;
+        Debug.Log ("Found " + numDestroyed + " objects in a planet's orbital path. Destroying...");
+        for(int i = 0; i < toDestroy.Count; i++)
+        {
+            Destroy(toDestroy[i]);
+        }
+        
+        return numDestroyed;
+    }
+    
+    PlanetType GetMoonTypeFromDistanceToSunPowerAndParentType(float distance, float sunPower, PlanetType parentType)
+    {
+        float effectiveTempRating = distance / sunPower;
+        
+        switch(parentType)
+        {
+            case PlanetType.Volcanic:
+            {
+                effectiveTempRating -= 0.05f;
+                break;
+            }
+            case PlanetType.Desert:
+            {
+                
+                break;
+            }
+            case PlanetType.Terran:
+            {
+                
+                break;
+            }
+            case PlanetType.Barren:
+            {
+                
+                break;
+            }
+            case PlanetType.GasGiant:
+            {
+                effectiveTempRating -= 0.1f;
+                break;
+            }
+            case PlanetType.Ice:
+            {
+                
+                break;
+            }
+        }
+        
+        //Now find the appropriate moontype
+        if(effectiveTempRating <= 0.3f)
+        {
+            return PlanetType.Volcanic;
+        }
+        else if(effectiveTempRating <= 0.5f)
+        {
+            return PlanetType.Terran;
+        }
+        else if(effectiveTempRating <= 0.9f)
+        {
+            return PlanetType.Barren;
+        }
+        else
+        {
+            return PlanetType.Ice;
+        }
+    }
+    PlanetType GetPlanetTypeFromDistanceToSunpower(float distance, float sunPower)
+    {
+        float effectiveTemperatureRating = distance / sunPower;
+        
+        if(effectiveTemperatureRating <= 0.27f)
+        {
+            return PlanetType.Volcanic;
+        }
+        else if(effectiveTemperatureRating <= 0.3f)
+        {
+            int random = Random.Range (0, 2);
+            if(random == 0)
+                return PlanetType.Volcanic;
+            else
+                return PlanetType.Desert;
+        }
+        else if(effectiveTemperatureRating <= 0.45f)
+        {
+            return PlanetType.Desert;
+        }
+        else if(effectiveTemperatureRating <= 0.5f)
+        {
+            int random = Random.Range (0, 2);
+            if(random == 0)
+                return PlanetType.Desert;
+            else
+                return PlanetType.Terran;
+        }
+        else if(effectiveTemperatureRating <= 0.64f)
+        {
+            return PlanetType.Terran;
+        }
+        else if(effectiveTemperatureRating <= 0.68f)
+        {
+            int random = Random.Range (0, 2);
+            if(random == 0)
+                return PlanetType.Terran;
+            else
+                return PlanetType.Barren;
+        }
+        else if(effectiveTemperatureRating <= 0.9f)
+        {
+            return PlanetType.Barren;
+        }
+        else if(effectiveTemperatureRating <= 1.2f)
+        {
+            return PlanetType.GasGiant;
+        }
+        else
+        {
+            return PlanetType.Ice;
+        }
     }
     
     Vector3 GetFreeFloatingRandomPosition(float requiredRange)
@@ -417,19 +678,24 @@ public class ProceduralLevelGenerator : MonoBehaviour
     #endregion
     
     #region ExternalCalls
-    public void RequestGenerateLevel()
+    public void RequestGenerateLevel(bool resetSeed)
     {
         Debug.Log ("Receieved level generation request...");
         float beginTimer = Time.realtimeSinceStartup;
     
         m_spawnedShops = new List<GameObject>();
         m_spawnedPlanets = new List<GameObject>();
+        m_spawnPlanetsDistances = new List<float>();
         m_planetsUsedByShops = new List<GameObject>();
-        ResetSeed();
+        if(resetSeed)
+            ResetSeed();
         GenerateLevel();
         
         float timeTaken = (Time.realtimeSinceStartup - beginTimer);
         Debug.Log ("Completed level generation request. Time taken: " + timeTaken);
+        
+        Debug.Log ("Sending new references to GSC...");
+        GameStateController.Instance().UpdateShopReferences();
     }
     
     public void DestroyCurrentLevel()
@@ -475,7 +741,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         Debug.Log ("Resetting holders and seed...");
         m_seed = 0;
+        m_spawnPlanetsDistances = new List<float>();
         m_spawnedPlanets = new List<GameObject>();
+        m_planetsUsedByShops = new List<GameObject>();
         m_spawnedShops = new List<GameObject>();
     }
     #endregion

@@ -118,6 +118,10 @@ public class GUIInGameMaster : GUIBaseMaster
     #endregion
     
     #region Specific Toggles/Calls
+    public void PassThroughUpdateShopReferences()
+    {
+        GetComponent<GUIMapOverlayScreen>().UpdateShopList();
+    }
     public void PassThroughCShipDockableState(bool dockable)
     {
         GetComponent<GUIInGameHUDScreen>().SetCShipDockable(dockable);
