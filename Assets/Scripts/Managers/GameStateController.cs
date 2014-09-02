@@ -682,10 +682,8 @@ public class GameStateController : MonoBehaviour
         GameObject capital = (GameObject)Network.Instantiate(m_capitalShip, spawnPoint.transform.position, spawnPoint.transform.rotation, 0);
         capital.GetComponent<HealthScript>().SetGameStateController(this.gameObject);
         m_ingameCapitalShip = capital;
-        //Debug.Log("Spawned a capital ship");
-        //GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<EnemySpawnManagerScript>().RecieveInGameCapitalShip(capital);
+        //capital.GetComponent<Ship>()
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
-        //capital.GetComponent<CapitalShipScript>().shouldStart = true;
     }
 
     [RPC] void SendCShipRefToClients()
@@ -1032,9 +1030,9 @@ public class GameStateController : MonoBehaviour
 
         //Use this to force start new wave when one has completed
         //Whenever we call respawn order, reset count to 0
-        m_numDeadPCs = 0;
-        networkView.RPC("TellAllDeadPlayersRespawn", RPCMode.All);
-        PlayerRequestsRoundStart();
+        //m_numDeadPCs = 0;
+        //networkView.RPC("TellAllDeadPlayersRespawn", RPCMode.All);
+        //PlayerRequestsRoundStart();
     }
 
     
@@ -1130,8 +1128,9 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void CapitalShipArrivesAtVictoryPoint()
     {
+        //Old way
         //Stop all enemies
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        /*GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in enemies)
         {
             enemy.GetComponent<EnemyScript>().OnPlayerWin();
@@ -1148,7 +1147,10 @@ public class GameStateController : MonoBehaviour
 
         //Tell GUI to display victory splash
         //m_GUIManager.GetComponent<GUIManager>().ShowVictorySplash();
-        m_gameStopped = true;
+        m_gameStopped = true;*/
+        
+        //New way
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship ready to jump!", 999999.0f);
     }
     
     public void CapitalShipHasTakenDamage()
@@ -1162,7 +1164,7 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void PropagateCapitalShipUnderFire()
     {
-        m_GUIManager.GetComponent<GUIInGameMaster>().StartPopupCShipTakenDamage();
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship is under attack!", 1.5f);
     }
 
     void ResendLossState()

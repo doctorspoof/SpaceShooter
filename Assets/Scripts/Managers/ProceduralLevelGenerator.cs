@@ -731,11 +731,18 @@ public class ProceduralLevelGenerator : MonoBehaviour
         GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
         for(int i = 0; i < stars.Length; i++)
         {
-            Destroy (stars[i]);
+            if(stars[i] != null)
+            {
+                Destroy(stars[i].transform.root.gameObject);
+            }
         }
         
         Debug.Log ("Destroying level boundary...");
         Destroy (GameObject.FindGameObjectWithTag("LevelBoundary"));
+        
+        Debug.Log ("Destroying CShip start/end points...");
+        Destroy (GameObject.FindGameObjectWithTag("CSStart"));
+         Destroy (GameObject.FindGameObjectWithTag("CSTarget"));
         
         Debug.Log ("Done. Scene should now be empty!");
         

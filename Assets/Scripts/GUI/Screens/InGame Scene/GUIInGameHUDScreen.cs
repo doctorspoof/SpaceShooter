@@ -1,5 +1,18 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+public class GUIAlert
+{
+    public GUIAlert(string message, float time)
+    {
+        alertMessage = message;
+        timeRemaining = time;
+    }
+
+    public string alertMessage;
+    public float timeRemaining;
+}
 
 public class GUIInGameHUDScreen : BaseGUIScreen 
 {
@@ -30,12 +43,18 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     bool m_isOutOfBounds = false;
     float m_cShipAttackTimer = 0.0f;
     
+    List<GUIAlert> m_currentGUIAlerts;
+    
     //Locking vars
     bool m_isLockedOn = false;
     bool m_isLockingOn = false;
     GameObject m_targetGO = null;
     
     #region Setters
+    public void AddNewGUIAlert(string message, float displayTime)
+    {
+        m_currentGUIAlerts.Add(new GUIAlert(message, displayTime));
+    }
     public void SetCShipDockable(bool state)
     {
         m_cshipIsDockable = state;
@@ -100,6 +119,7 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     {
         m_priorityValue = 1;
         m_gscCache = GameStateController.Instance();
+        m_currentGUIAlerts = new List<GUIAlert>();
     }
     
     void Update ()
@@ -110,6 +130,13 @@ public class GUIInGameHUDScreen : BaseGUIScreen
                 m_cShipAttackTimer += Time.deltaTime;
             else
                 m_shouldShowCShipUnderFire = false;
+        }
+        
+        for(int i = 0; i < m_currentGUIAlerts.Count; i++)
+        {
+            m_currentGUIAlerts[i].timeRemaining -= Time.deltaTime;
+            if(m_currentGUIAlerts[i].timeRemaining <= 0.0f)
+                m_currentGUIAlerts.RemoveAt(i);
         }
     }
     
@@ -192,10 +219,15 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.Label(new Rect(1225, 85, 180, 44), "$ " + m_cShipHPCache.GetComponent<CapitalShipScript>().GetBankedCash(), "No Box");
         }
         
-        if(m_shouldShowCShipUnderFire)
+        for(int i = 0; i < m_currentGUIAlerts.Count; i++)
+        {
+            GUI.Label(new Rect(1205, 130 + (50 * i), 220, 44), m_currentGUIAlerts[i].alertMessage, "Shared");
+        }
+        
+        /*if(m_shouldShowCShipUnderFire)
         {
             GUI.Label (new Rect(1205, 130, 220, 44), "Capital ship under attack!", "Shared");
-        }
+        }*/
         
         if (m_playerHasDied && !m_isOnCShipDeathSequence)
         {
