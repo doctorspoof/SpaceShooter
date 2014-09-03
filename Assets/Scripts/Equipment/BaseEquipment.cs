@@ -16,7 +16,8 @@ public abstract class BaseEquipment : MonoBehaviour
         {
             return m_augmentSlots[index];
         }
-        catch (System.Exception ex) {
+        catch (System.Exception ex) 
+        {
             Debug.Log ("Exception caught: " + ex.Message);
         }
         
@@ -29,7 +30,8 @@ public abstract class BaseEquipment : MonoBehaviour
         {
             m_augmentSlots[index] = reference;
         }
-        catch (System.Exception ex) {
+        catch (System.Exception ex) 
+        {
             Debug.Log ("Exception caught: " + ex.Message);
         }
         
