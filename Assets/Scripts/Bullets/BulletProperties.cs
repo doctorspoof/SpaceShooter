@@ -37,6 +37,8 @@ using System.Collections.Generic;
             aoeMaxFalloff = copy.aoeMaxFalloff;
         }
     }
+    
+    public AOEAttributes () { }
 }
 
 
@@ -71,6 +73,8 @@ using System.Collections.Generic;
             target = copy.target;
         }
     }
+    
+    public HomingAttributes () { }
 }
 
 
@@ -103,6 +107,8 @@ using System.Collections.Generic;
             pierceModifier = copy.pierceModifier;
         }
     }
+    
+    public PiercingAttributes () { }
 }
 
 
@@ -112,6 +118,7 @@ using System.Collections.Generic;
 /// </summary>
 [System.Serializable] public sealed class SpecialAttributes
 {
+    [Range (0f, 1f)]        public float    chanceToJump = 0f;      //!< How much of a percentage chance to jump to a another target on hit
     [Range (0f, 1f)]        public float    chanceToDisable = 0f;   //!< How much of a percentage chance to disable the target on hit the bullet should have.
     [Range (0f, 100f)]      public float    disableEffect = 0f;     //!< How many seconds to disable the target for on hit.
     [Range (0f, 100f)]      public float    slowEffect = 0f;        //!< How long to slow the enemy for on hit.
@@ -132,6 +139,7 @@ using System.Collections.Generic;
 
         else
         {
+            chanceToJump = copy.chanceToJump;
             chanceToDisable = copy.chanceToDisable;
             disableEffect = copy.disableEffect;
             slowEffect = copy.slowEffect;
@@ -139,6 +147,8 @@ using System.Collections.Generic;
             dotEffect = copy.dotEffect;
         }
     }
+    
+    public SpecialAttributes () { }
 }
 
 #endregion

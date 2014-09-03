@@ -39,13 +39,13 @@ public sealed class Augment
     #region Getters & setters
     
     // Getters
-    int GetTier()
+    public int GetTier()
     {
         return m_tier;
     }
     
     
-    Element GetElement()
+    public Element GetElement()
     {
         return m_element;
     }
