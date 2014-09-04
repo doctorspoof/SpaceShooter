@@ -2,14 +2,17 @@
 using System.Collections;
 
 public abstract class BaseEquipment : MonoBehaviour
-{
-    [SerializeField]    protected Augment[] m_augmentSlots;
+{    
+    [SerializeField, Range (0, 20)]     protected   int         m_numAugments = 1;
+    [SerializeField]                    protected   Augment[]   m_augmentSlots = null;
     
     #region Getters/Setters
+
     public int GetMaxAugmentNum()
     {
         return m_augmentSlots.Length;
     }
+
     public Augment GetAugmentInSlot(int index)
     {
         try
@@ -24,6 +27,7 @@ public abstract class BaseEquipment : MonoBehaviour
         Debug.Log ("Couldn't access augment at index " + index);
         return null;
     }
+
     public void SetAugmentIntoSlot(int index, Augment reference)
     {
         try
@@ -38,9 +42,55 @@ public abstract class BaseEquipment : MonoBehaviour
         ResetToBaseStats();
         CalculateCurrentStats();
     }
+
     #endregion
-    
+
+    #region Behaviour Functions
+
+    protected virtual void Awake()
+    {
+        if (m_augmentSlots.Length != m_numAugments)
+        {
+            ResizeAugments (m_numAugments);
+        }
+
+        ResetToBaseStats();
+        CalculateCurrentStats();
+    }
+
+    #endregion
+
     #region Custom Functions
+
+    /// <summary>
+    /// Resizes the augments array to the ideal size losing all data beyond the given size. Will not modify the array on failure.
+    /// </summary>
+    /// <param name="idealLength">The target length for the augments array.</param>
+    protected void ResizeAugments (int idealLength)
+    {
+        if (idealLength >= 0)
+        {
+            // Avoid out-of-range errors by checking for the maximum value for the loop
+            int maxLength = m_augmentSlots.Length < idealLength ? m_augmentSlots.Length : idealLength;
+            Augment[] augments = new Augment[idealLength];
+
+            // Copy the data across
+            for (int i = 0; i < maxLength; ++i)
+            {
+                augments[i] = m_augmentSlots[i];
+            }
+
+            m_augmentSlots = augments;
+        }
+
+        else
+        {
+            Debug.LogError ("Attempt to resize " + name + ".BaseEquipment.m_augmentSlots with idealLength of: " + idealLength);
+        }
+    }
+
+
+
     protected abstract void CalculateCurrentStats();
     protected abstract void ResetToBaseStats();
     

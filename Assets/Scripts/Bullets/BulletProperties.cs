@@ -191,7 +191,7 @@ public sealed class BulletProperties
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BulletProperties"/> class. Note: this will leave unnecessary values null, so if aoe.m_isAOE == false then
+    /// Initializes a new instance of the <see cref="BulletProperties"/> class. Note: this will leave unnecessary values null, so if aoe.isAOE == false then
     /// aoe will remain null. This is to save on memory and initialisation time. If you merely want to share a pointer then use the operator= constructor.
     /// </summary>
     /// <param name="rhs">The BulletProperties to take values from.</param>
@@ -233,6 +233,39 @@ public sealed class BulletProperties
             {
                 special = new SpecialAttributes (copy.special);
             }
+        }
+    }
+
+    #endregion
+
+
+    #region Functions
+
+    /// <summary>
+    /// Unlike the copy constructor CloneProperties will copy all values regardless of whether they're necessary or not.
+    /// </summary>
+    /// <param name="clone">The properties to clone.</param>
+    public void CloneProperties (BulletProperties clone)
+    {
+        if (clone == null)
+        {
+            Debug.LogError ("Attempt to clone a BulletProperties object, clone == null");
+        }
+
+        else
+        {
+            isBeam = clone.isBeam;
+            damage = clone.damage;
+            reach = clone.reach;
+            lifetime = clone.lifetime;
+
+            aoe = new AOEAttributes (clone.aoe);
+            homing = new HomingAttributes (clone.homing);
+            piercing = new PiercingAttributes (clone.piercing);
+            special = new SpecialAttributes (clone.special);
+          
+            firer = clone.firer;
+            appliedElements = clone.appliedElements;
         }
     }
 

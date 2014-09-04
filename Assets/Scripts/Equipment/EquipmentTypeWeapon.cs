@@ -2,39 +2,33 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class EquipmentTypeWeapon : BaseEquipment 
+public sealed class EquipmentTypeWeapon : BaseEquipment 
 {
     #region Serializable Properties
-    [SerializeField]        int numAugments = 1;
-    #endregion
 
     // Base stats to reset to and start from
-    [SerializeField]                                BulletProperties        baseBulletStats;
-    [SerializeField, Range(0.001f, 10.0f)]          float                   baseWeaponReloadTime = 0.7f;
+    [SerializeField]                            BulletProperties    m_baseBulletStats = null;
+    [SerializeField, Range (0.001f, 10.0f)]     float               m_baseWeaponReloadTime = 0.7f;
     
     // Current stats (base + augment effects)
-                                                    BulletProperties        currentBulletStats;
-                                                    float                   currentWeaponReloadTime = 0.0f;
-                                                    
-    // Internal usage members
-    float currentReloadCounter = 0.0f;
+                                                BulletProperties    m_currentBulletStats = null;
+                                                float               m_currentWeaponReloadTime = 0.0f;
 
-    #region Unity Functions
-    void Start()
-    {
-        m_augmentSlots = new Augment[numAugments];
-    }
     #endregion
+
+
+    // Internal usage members
+    float m_currentReloadCounter = 0.0f;
 
     #region Overrides
     
     protected override void ResetToBaseStats()
     {
-        currentBulletStats = new BulletProperties(baseBulletStats);
-        currentWeaponReloadTime = baseWeaponReloadTime;
+        m_currentBulletStats.CloneProperties(m_baseBulletStats);
+        m_currentWeaponReloadTime = m_baseWeaponReloadTime;
     }
     
-	protected override void CalculateCurrentStats ()
+	protected override void CalculateCurrentStats()
     {
         for(int i = 0; i < m_augmentSlots.Length; i++)
         {
@@ -96,15 +90,15 @@ public class EquipmentTypeWeapon : BaseEquipment
     
     void IncreaseBulletDamage(int increment)
     {
-        if(currentBulletStats.special != null && currentBulletStats.special.dotEffect != 0)
+        if(m_currentBulletStats.special != null && m_currentBulletStats.special.dotEffect != 0f)
         {
             //Increase dot instead
-            currentBulletStats.special.dotEffect += increment;
+            m_currentBulletStats.special.dotEffect += increment;
         }
         else
         {
             //Increase damage as normal
-            currentBulletStats.damage += increment;
+            m_currentBulletStats.damage += increment;
         }
     }
     
@@ -113,10 +107,10 @@ public class EquipmentTypeWeapon : BaseEquipment
     protected override void ElementResponseFire (int tier)
     {
         //If the aoe component doesn't exist, make one and initialise to base
-        if(currentBulletStats.aoe == null)
+        if(m_currentBulletStats.aoe == null)
         {
             AOEAttributes newAoE = new AOEAttributes();
-            currentBulletStats.aoe = newAoE;
+            m_currentBulletStats.aoe = newAoE;
             
             //Give it default vales
             newAoE.isAOE = true;
@@ -128,7 +122,7 @@ public class EquipmentTypeWeapon : BaseEquipment
         //Otherwise, add effects on to the existing component
         else
         {
-            AOEAttributes oldAoE = currentBulletStats.aoe;
+            AOEAttributes oldAoE = m_currentBulletStats.aoe;
             
             oldAoE.aoeRange += 4.5f;
             oldAoE.aoeMaxDamageRange += 0.5f;
@@ -139,17 +133,17 @@ public class EquipmentTypeWeapon : BaseEquipment
         //Now do non-aoe stuff
 
         IncreaseBulletDamage(12);
-        currentWeaponReloadTime += 0.5f;
+        m_currentWeaponReloadTime += 0.5f;
         
         //Finally, add the element applied to the bullet
-        currentBulletStats.appliedElements.Add(Element.Fire);
+        m_currentBulletStats.appliedElements.Add(Element.Fire);
     }
     protected override void ElementResponseIce (int tier)
     {
-        if(currentBulletStats.special == null)
+        if(m_currentBulletStats.special == null)
         {
             SpecialAttributes newSpec = new SpecialAttributes();
-            currentBulletStats.special = newSpec;
+            m_currentBulletStats.special = newSpec;
             
             //Initialise
             newSpec.chanceToJump = 0f; 
@@ -161,7 +155,7 @@ public class EquipmentTypeWeapon : BaseEquipment
         }
         else
         {
-            SpecialAttributes oldSpec = currentBulletStats.special;
+            SpecialAttributes oldSpec = m_currentBulletStats.special;
             
             oldSpec.slowEffect += 0.6f;
         }
@@ -170,26 +164,26 @@ public class EquipmentTypeWeapon : BaseEquipment
         IncreaseBulletDamage(4);
         
         //Add the element
-        currentBulletStats.appliedElements.Add(Element.Ice);
+        m_currentBulletStats.appliedElements.Add(Element.Ice);
     }
     protected override void ElementResponseEarth (int tier)
     {
         //Nothing special here, just stats
         IncreaseBulletDamage(35);
-        currentBulletStats.reach += 4.0f;
-        currentBulletStats.lifetime -= 0.3f;
+        m_currentBulletStats.reach += 4.0f;
+        m_currentBulletStats.lifetime -= 0.3f;
         
-        currentWeaponReloadTime += 1.0f;
+        m_currentWeaponReloadTime += 1.0f;
         
         //Add the element
-        currentBulletStats.appliedElements.Add(Element.Earth);
+        m_currentBulletStats.appliedElements.Add(Element.Earth);
     }
     protected override void ElementResponseLightning (int tier)
     {
-        if(currentBulletStats.special == null)
+        if(m_currentBulletStats.special == null)
         {
             SpecialAttributes newSpec = new SpecialAttributes();
-            currentBulletStats.special = newSpec;
+            m_currentBulletStats.special = newSpec;
             
             //Initialise
             newSpec.chanceToJump = 0.2f; 
@@ -201,7 +195,7 @@ public class EquipmentTypeWeapon : BaseEquipment
         }
         else
         {
-            SpecialAttributes oldSpec = currentBulletStats.special;
+            SpecialAttributes oldSpec = m_currentBulletStats.special;
             
             oldSpec.chanceToJump += 0.2f;
         }
@@ -210,32 +204,32 @@ public class EquipmentTypeWeapon : BaseEquipment
         IncreaseBulletDamage(4);
         
         //Add to element list
-        currentBulletStats.appliedElements.Add(Element.Lightning);
+        m_currentBulletStats.appliedElements.Add(Element.Lightning);
     }
     protected override void ElementResponseLight (int tier)
     {
         //TODO: rethink reload vs beams, light stacking etc.
-        if(!currentBulletStats.isBeam)
+        if(!m_currentBulletStats.isBeam)
         {
-            currentBulletStats.isBeam = true;
+            m_currentBulletStats.isBeam = true;
         }
         else
         {
-            currentBulletStats.damage += 4;
-            currentWeaponReloadTime += 1.5f;
+            m_currentBulletStats.damage += 4;
+            m_currentWeaponReloadTime += 1.5f;
         }
         
         IncreaseBulletDamage(4);
         
         //Add to element list
-        currentBulletStats.appliedElements.Add(Element.Light);
+        m_currentBulletStats.appliedElements.Add(Element.Light);
     }
     protected override void ElementResponseDark (int tier)
     {
-        if(currentBulletStats.special == null)
+        if(m_currentBulletStats.special == null)
         {
             SpecialAttributes newSpec = new SpecialAttributes();
-            currentBulletStats.special = newSpec;
+            m_currentBulletStats.special = newSpec;
             
             //Initialise
             newSpec.chanceToJump = 0.0f; 
@@ -247,7 +241,7 @@ public class EquipmentTypeWeapon : BaseEquipment
         }
         else
         {
-            SpecialAttributes oldSpec = currentBulletStats.special;
+            SpecialAttributes oldSpec = m_currentBulletStats.special;
             
             oldSpec.disableEffect += 0.15f;
         }
@@ -256,14 +250,14 @@ public class EquipmentTypeWeapon : BaseEquipment
         IncreaseBulletDamage(4);
         
         //Add to element list
-        currentBulletStats.appliedElements.Add(Element.Dark);
+        m_currentBulletStats.appliedElements.Add(Element.Dark);
     }
     protected override void ElementResponseSpirit (int tier)
     {
-        if(currentBulletStats.piercing == null)
+        if(m_currentBulletStats.piercing == null)
         {
             PiercingAttributes newPier = new PiercingAttributes();
-            currentBulletStats.piercing = newPier;
+            m_currentBulletStats.piercing = newPier;
             
             //Initialise
             newPier.isPiercing = true;
@@ -272,7 +266,7 @@ public class EquipmentTypeWeapon : BaseEquipment
         }
         else
         {
-            PiercingAttributes oldPier = currentBulletStats.piercing;
+            PiercingAttributes oldPier = m_currentBulletStats.piercing;
             
             oldPier.maxPiercings += 2;
             oldPier.pierceModifier -= 0.15f;
@@ -281,14 +275,14 @@ public class EquipmentTypeWeapon : BaseEquipment
         IncreaseBulletDamage(4);
         
         //Add to element list
-        currentBulletStats.appliedElements.Add(Element.Spirit);
+        m_currentBulletStats.appliedElements.Add(Element.Spirit);
     }
     protected override void ElementResponseGravity (int tier)
     {
-        if(currentBulletStats.homing == null)
+        if(m_currentBulletStats.homing == null)
         {
             HomingAttributes newHome = new HomingAttributes();
-            currentBulletStats.homing = newHome;
+            m_currentBulletStats.homing = newHome;
             
             newHome.isHoming = true;
             newHome.homingRange = 8.5f;
@@ -296,7 +290,7 @@ public class EquipmentTypeWeapon : BaseEquipment
         }
         else
         {
-            HomingAttributes oldHome = currentBulletStats.homing;
+            HomingAttributes oldHome = m_currentBulletStats.homing;
             
             oldHome.homingRange += 4.0f;
             oldHome.homingTurnRate += 1.25f;
@@ -306,23 +300,23 @@ public class EquipmentTypeWeapon : BaseEquipment
         IncreaseBulletDamage(4);
         
         //Add to element list
-        currentBulletStats.appliedElements.Add(Element.Gravity);
+        m_currentBulletStats.appliedElements.Add(Element.Gravity);
     }
     protected override void ElementResponseAir (int tier)
     {
         //Nothing special here
-        currentBulletStats.reach += 4.0f;
-        baseWeaponReloadTime -= 0.4f;
+        m_currentBulletStats.reach += 4.0f;
+        m_baseWeaponReloadTime -= 0.4f;
         
         //Add element to list
-        currentBulletStats.appliedElements.Add(Element.Air);
+        m_currentBulletStats.appliedElements.Add(Element.Air);
     }
     protected override void ElementResponseOrganic (int tier)
     {
-        if(currentBulletStats.special == null)
+        if(m_currentBulletStats.special == null)
         {
             SpecialAttributes newSpec = new SpecialAttributes();
-            currentBulletStats.special = newSpec;
+            m_currentBulletStats.special = newSpec;
             
             //Initialise
             newSpec.chanceToJump = 0.0f; 
@@ -330,21 +324,21 @@ public class EquipmentTypeWeapon : BaseEquipment
             newSpec.disableEffect = 0f;     
             newSpec.slowEffect = 0.0f;        
             newSpec.dotDuration = 2.0f;      
-            newSpec.dotEffect = currentBulletStats.damage;
+            newSpec.dotEffect = m_currentBulletStats.damage;
         }
         else
         {
-            SpecialAttributes oldSpec = currentBulletStats.special;
+            SpecialAttributes oldSpec = m_currentBulletStats.special;
             
             oldSpec.dotDuration -= 0.5f;
-            currentBulletStats.damage = (int)currentBulletStats.special.dotEffect;
+            m_currentBulletStats.damage = (int)m_currentBulletStats.special.dotEffect;
             IncreaseBulletDamage(6);
         }
         
         IncreaseBulletDamage(4);
     
         //Add element to list
-        currentBulletStats.appliedElements.Add(Element.Organic);
+        m_currentBulletStats.appliedElements.Add(Element.Organic);
     }
     
     #endregion
