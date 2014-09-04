@@ -2,6 +2,132 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+
+
+namespace ElementalValuesWeapon
+{
+    /// <summary>
+    /// The Fire elemental should cause an AoE effect on a weapon and increase the effectiveness of that AoE damage when stacked.
+    /// </summary>
+    public sealed class Fire
+    {
+        public const bool   isAoe                   = true;     //!< Ensure the bullet gets set to be AoE.
+
+        public const float  damageMulti             = -0.1f,    //!< Decrease the base bullet damage.
+                            reloadTimeMulti         = 0.1f,     //!< Increase the reload time.
+                            aoeRangeMulti           = 0.1f,     //!< Extend the range of the AoE effect.
+                            aoeMaxDamageRangeMulti  = 0.1f,     //!< Extend the range at which enemies will receive maximum damage with no falloff.
+                            aoeExplosiveForceMulti  = 0.1f,     //!< Increase the force applied to enemies.
+                            aoeMaxFalloffInc        = 0.1f;     //!< Increment the max falloff effect.
+    }
+
+
+    /// <summary>
+    /// The Ice elemental should increase damage slightly but also cause a slowing effect on hit which progressively gets longer when stacked.
+    /// </summary>
+    public sealed class Ice
+    {
+        public const float  damageMulti             = 0.1f,     //!< Increase the base bullet damage.
+                            reloadTimeMulti         = -0.1f,    //!< Decrease the reload time.
+                            slowDurationInc         = 0.5f;     //!< Increment the slow effect of the bullet.
+    }
+
+
+    /// <summary>
+    /// The Earth elemental should cause the bullet to act more like a cannon, high burst damage, long recovery and moderate speed.
+    /// </summary>
+    public sealed class Earth
+    {
+        public const float  damageMulti             = 0.2f,     //!< Increase the base damage significantly.
+                            reloadTimeMulti         = 0.2f,     //!< Increase the reload time (negative)
+                            reachMulti              = 0.1f,     //!< Increase the max distance of the bullet.
+                            lifetimeMulti           = -0.1f;    //!< Decrease the lifetime (increasing the speed).
+                            
+    }
+
+
+    /// <summary>
+    /// The lightning elemental should cause the bullet to jump between targets on hit, sharing damage with a nearby foe.
+    /// </summary>
+    public sealed class Lightning
+    {
+        public const float  damageMulti             = -0.1f,     //!< Decrease base damage slightly.
+                            chanceToJumpInc         = 0.1f;      //!< Add to the percentage chance.
+    }
+
+
+    /// <summary>
+    /// Light should enable beam functionality but also give a buff to damage but increase the reload time.
+    /// </summary>
+    public sealed class Light
+    {
+        public const bool   isBeam                  = true;     //!< Enable beam functionality
+
+        public const float  damageMulti             = 0.1f,     //!< Increase base bullet damage slightly.
+                            reloadTimeMulti         = 0.1f;     //!< Increase the reload time (negative).
+
+    }
+
+
+    /// <summary>
+    /// Dark gives a chance on hit to disable targets.
+    /// </summary>
+    public sealed class Dark
+    {
+        public const float  damageMulti             = 0.1f,     //!< Increase the base damage of the bullet.
+                            chanceToDisableInc      = 0.1f,     //!< Increment the chance to disable targets.
+                            disableDurationInc      = 0.1f;     //!< Incrememnt the duration of the disable effect.
+    }
+
+
+    /// <summary>
+    /// The Spirit element is all about piercing through targets in an etherial manner.
+    /// </summary>
+    public sealed class Spirit
+    {
+        public const bool   isPiercing              = true;     //!< Enable piercing functionality on bullets.
+
+        public const float  damageMulti             = 0.1f,     //!< Increase zee base damage captain!
+                            maxPiercingsMulti       = 0.5f,     //!< Increase the number of piercings possible.
+                            piercingModifierInc     = 0.1f;     //!< Reduce the amount piercing reducues damage and speed.                                                        
+    }
+
+
+    /// <summary>
+    /// Gravity enables and increases homing functionality of a bullet.
+    /// </summary>
+    public sealed class Gravity
+    {
+        public const bool   isHoming                = true;     //!< Enable homing functionality on the bullet.
+
+        public const float  damageMulti             = 0.1f,     //!< Increase damage lulz.
+                            homingRangeMulti        = 0.1f,     //!< Increase the homing range.
+                            homingTurnRateMulti     = 0.1f;     //!< Increase the speed at which the bullet can turn.
+    }
+
+
+    /// <summary>
+    /// Air is more of a helper element, it reduces cooldown and increases the reach of the bullet to make up for other elements.
+    /// </summary>
+    public sealed class Air
+    {
+        public const float  reloadTimeMulti         = -0.1f,    //!< Reduce the reload time of the weapon.
+                            reachMulti              = 0.1f;     //!< Increase the range of the bullet.
+    }
+
+
+    /// <summary>
+    /// Organic enables and enhances damage-over-time functionality based on the bullets base damage.
+    /// </summary>
+    public sealed class Organic
+    {
+        public const float  dotDurationInc          = 0.1f,     //!< Increment the duration DoT is applied.
+                            dotEffectInc            = 0.1f;     //!< Increment the percentage of the base damage to be applied over time.
+    }
+}
+
+
+
 public sealed class EquipmentTypeWeapon : BaseEquipment 
 {
     #region Serializable Properties
@@ -131,7 +257,6 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         }
         
         //Now do non-aoe stuff
-
         IncreaseBulletDamage(12);
         m_currentWeaponReloadTime += 0.5f;
         
@@ -148,8 +273,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             //Initialise
             newSpec.chanceToJump = 0f; 
             newSpec.chanceToDisable = 0f;   
-            newSpec.disableEffect = 0f;     
-            newSpec.slowEffect = 0.75f;        
+            newSpec.disableDuration = 0f;     
+            newSpec.slowDuration = 0.75f;        
             newSpec.dotDuration = 0f;      
             newSpec.dotEffect = 0f; 
         }
@@ -157,7 +282,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         {
             SpecialAttributes oldSpec = m_currentBulletStats.special;
             
-            oldSpec.slowEffect += 0.6f;
+            oldSpec.slowDuration += 0.6f;
         }
         
         //Do non-special stuff
@@ -188,8 +313,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             //Initialise
             newSpec.chanceToJump = 0.2f; 
             newSpec.chanceToDisable = 0f;   
-            newSpec.disableEffect = 0f;     
-            newSpec.slowEffect = 0.0f;        
+            newSpec.disableDuration = 0f;     
+            newSpec.slowDuration = 0.0f;        
             newSpec.dotDuration = 0f;      
             newSpec.dotEffect = 0f; 
         }
@@ -234,8 +359,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             //Initialise
             newSpec.chanceToJump = 0.0f; 
             newSpec.chanceToDisable = 0.15f;   
-            newSpec.disableEffect = 0f;     
-            newSpec.slowEffect = 0.0f;        
+            newSpec.disableDuration = 0f;     
+            newSpec.slowDuration = 0.0f;        
             newSpec.dotDuration = 0f;      
             newSpec.dotEffect = 0f; 
         }
@@ -243,7 +368,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         {
             SpecialAttributes oldSpec = m_currentBulletStats.special;
             
-            oldSpec.disableEffect += 0.15f;
+            oldSpec.disableDuration += 0.15f;
         }
         
         //Non-special
@@ -321,8 +446,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             //Initialise
             newSpec.chanceToJump = 0.0f; 
             newSpec.chanceToDisable = 0.0f;   
-            newSpec.disableEffect = 0f;     
-            newSpec.slowEffect = 0.0f;        
+            newSpec.disableDuration = 0f;     
+            newSpec.slowDuration = 0.0f;        
             newSpec.dotDuration = 2.0f;      
             newSpec.dotEffect = m_currentBulletStats.damage;
         }
