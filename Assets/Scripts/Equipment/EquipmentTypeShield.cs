@@ -5,7 +5,7 @@ public class EquipmentTypeShield : BaseEquipment
 {
     protected override void CalculateCurrentStats ()
     {
-        throw new System.NotImplementedException ();
+        //throw new System.NotImplementedException ();
     }
     
     protected override void ElementResponseAir (int tier)
@@ -60,6 +60,6 @@ public class EquipmentTypeShield : BaseEquipment
     
     protected override void ResetToBaseStats ()
     {
-        throw new System.NotImplementedException ();
+        //throw new System.NotImplementedException ();
     }
 }

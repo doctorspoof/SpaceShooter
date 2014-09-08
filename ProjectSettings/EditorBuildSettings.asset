@@ -7,7 +7,7 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/Scenes/MainMenuScene.unity
-  - enabled: 0
-    path: Assets/Scenes/InGameTestScene.unity
   - enabled: 1
+    path: Assets/Scenes/InGameTestScene.unity
+  - enabled: 0
     path: Assets/Scenes/Procedural Test Scene.unity

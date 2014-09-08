@@ -3,8 +3,9 @@ using System.Collections;
 
 public abstract class BaseEquipment : MonoBehaviour
 {    
-    [SerializeField, Range (0, 20)]     protected   int         m_numAugments = 1;
-    [SerializeField]                    protected   Augment[]   m_augmentSlots = null;
+    [SerializeField, Range (0, 20)]     protected   int             m_numAugments = 1;
+    [SerializeField]                    protected   Augment[]       m_augmentSlots = null;
+    [SerializeField]                    protected   ItemWrapper[]   m_augmentItemSlots = null;
     
     #region Getters/Setters
 
@@ -27,8 +28,37 @@ public abstract class BaseEquipment : MonoBehaviour
         Debug.Log ("Couldn't access augment at index " + index);
         return null;
     }
+    public ItemWrapper GetItemWrapperInSlot(int index)
+    {
+        try
+        {
+            return m_augmentItemSlots[index];
+        }
+        catch (System.Exception ex) 
+        {
+            Debug.Log ("Exception caught: " + ex.Message);
+        }
+        
+        Debug.Log ("Couldn't access item at index " + index);
+        return null;
+    }
 
-    public void SetAugmentIntoSlot(int index, Augment reference)
+    public bool SetAugmentItemIntoSlot(int index, ItemWrapper reference)
+    {
+        try
+        {
+            m_augmentItemSlots[index] = reference;
+            SetAugmentIntoSlot(index, reference.GetItemPrefab().GetComponent<Augment>());
+            return true;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log ("Exception caught: " + ex.Message);
+        }
+        
+        return false;
+    }
+    void SetAugmentIntoSlot(int index, Augment reference)
     {
         try
         {
@@ -37,6 +67,24 @@ public abstract class BaseEquipment : MonoBehaviour
         catch (System.Exception ex) 
         {
             Debug.Log ("Exception caught: " + ex.Message);
+        }
+        
+        ResetToBaseStats();
+        CalculateCurrentStats();
+    }
+    
+    public bool RemoveAugmentItemFromSlot(int index, ItemWrapper reference)
+    {
+        if(m_augmentItemSlots[index] == reference)
+        {
+            m_augmentItemSlots[index] = null;
+            m_augmentSlots[index] = null;
+            return true;
+        }
+        else
+        {
+            Debug.Log ("Item at " + index + " was not expected item '" + reference.GetItemName());
+            return false;
         }
         
         ResetToBaseStats();
@@ -53,6 +101,8 @@ public abstract class BaseEquipment : MonoBehaviour
         {
             ResizeAugments (m_numAugments);
         }
+        
+        m_augmentItemSlots = new ItemWrapper[m_numAugments];
 
         ResetToBaseStats();
         CalculateCurrentStats();

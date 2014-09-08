@@ -11,7 +11,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     [SerializeField, Range (0.001f, 10.0f)]     float               m_baseWeaponReloadTime = 0.7f;
     
     // Current stats (base + augment effects)
-                                                BulletProperties    m_currentBulletStats = null;
+    [SerializeField]                            BulletProperties    m_currentBulletStats = null;
                                                 float               m_currentWeaponReloadTime = 0.0f;
 
     #endregion
@@ -24,6 +24,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     
     protected override void ResetToBaseStats()
     {
+        m_currentBulletStats = new BulletProperties();
         m_currentBulletStats.CloneProperties(m_baseBulletStats);
         m_currentWeaponReloadTime = m_baseWeaponReloadTime;
     }
@@ -32,57 +33,60 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         for(int i = 0; i < m_augmentSlots.Length; i++)
         {
-            switch(m_augmentSlots[i].GetElement())
+            if(m_augmentSlots[i] != null)
             {
-                case Element.Fire:
+                switch(m_augmentSlots[i].GetElement())
                 {
-                    ElementResponseFire(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Ice:
-                {
-                    ElementResponseIce(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Earth:
-                {
-                    ElementResponseEarth(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Lightning:
-                {
-                    ElementResponseLightning(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Light:
-                {
-                    ElementResponseLight(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Dark:
-                {
-                    ElementResponseDark(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Spirit:
-                {
-                    ElementResponseSpirit(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Gravity:
-                {
-                    ElementResponseGravity(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Air:
-                {
-                    ElementResponseAir(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Organic:
-                {
-                    ElementResponseOrganic(m_augmentSlots[i].GetTier());
-                    break;
+                    case Element.Fire:
+                    {
+                        ElementResponseFire(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Ice:
+                    {
+                        ElementResponseIce(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Earth:
+                    {
+                        ElementResponseEarth(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Lightning:
+                    {
+                        ElementResponseLightning(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Light:
+                    {
+                        ElementResponseLight(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Dark:
+                    {
+                        ElementResponseDark(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Spirit:
+                    {
+                        ElementResponseSpirit(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Gravity:
+                    {
+                        ElementResponseGravity(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Air:
+                    {
+                        ElementResponseAir(m_augmentSlots[i].GetTier());
+                        break;
+                    }
+                    case Element.Organic:
+                    {
+                        ElementResponseOrganic(m_augmentSlots[i].GetTier());
+                        break;
+                    }
                 }
             }
         }

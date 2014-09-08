@@ -171,7 +171,7 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTexture(new Rect(175, 80, 10, 50), m_barEnd);
             GUI.DrawTexture(new Rect(185, 80, 200, 50), m_barMid);
             GUI.DrawTexture(new Rect(395, 80, -10, 50), m_barEnd);
-            GUI.Label(new Rect(195, 85, 180, 44), "$ " + m_playerHPCache.gameObject.GetComponent<PlayerControlScript>().GetCash(), "No Box");
+            GUI.Label(new Rect(195, 85, 180, 44), "$ " + m_playerHPCache.gameObject.GetComponent<Inventory>().GetCurrentCash(), "No Box");
         }
         else
         {

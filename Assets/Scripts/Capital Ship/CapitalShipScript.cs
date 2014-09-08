@@ -273,7 +273,7 @@ public sealed class CapitalShipScript : Ship
     public void TellServerEquipTurret (int turretSlot, ItemWrapper turret)
     {
         // Ensure the item is correct
-        int itemID = turret ? turret.GetItemID() : -1;
+        /*int itemID = turret ? turret.GetItemID() : -1;
         
         if (turretSlot >= 0 && turretSlot < m_attachedTurretsItemWrappers.Length &&
             itemID >= 0 && turret.GetItemType() == ItemType.CapitalWeapon)
@@ -288,7 +288,7 @@ public sealed class CapitalShipScript : Ship
             {
                 networkView.RPC ("ReplaceTurretAtPosition", RPCMode.Server, turretSlot, itemID);
             }
-        }
+        }*/
     }
 
 

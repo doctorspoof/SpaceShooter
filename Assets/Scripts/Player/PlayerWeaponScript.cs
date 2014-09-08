@@ -24,7 +24,7 @@ public class PlayerWeaponScript : MonoBehaviour
 			{
 				//Re-request a weapon object from player (only serverside)
 				Debug.Log ("Weapon object is null. Resetting weapon.");
-				this.GetComponent<PlayerControlScript>().ResetEquippedWeapon();
+				//this.GetComponent<PlayerControlScript>().ResetEquippedWeapon();
 			}
 			else
 			{

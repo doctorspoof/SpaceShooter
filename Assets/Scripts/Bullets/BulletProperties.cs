@@ -159,7 +159,7 @@ using System.Collections.Generic;
 /// <summary>
 /// A class to be used as a struct to contain all properties which a bullet needs to function with the flexible augment system.
 /// </summary>
-public sealed class BulletProperties
+[System.Serializable] public sealed class BulletProperties
 {
     #region Member variables
 

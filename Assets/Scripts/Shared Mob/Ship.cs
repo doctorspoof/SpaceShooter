@@ -381,11 +381,11 @@ public class Ship : MonoBehaviour
 
     void UpdateThrusters()
     {
-        foreach (Thruster thruster in m_thrusters)
+        /*foreach (Thruster thruster in m_thrusters)
         {
             if (thruster != null)
                 thruster.Calculate(m_maxThrusterVelocitySeen, m_currentAngularVelocity, m_maxAngularVelocitySeen);
-        }
+        }*/
     }
 
     public void ResetThrusters()
@@ -396,7 +396,7 @@ public class Ship : MonoBehaviour
     [RPC]
     void PropagateResetThrusters()
     {
-        ResetThrusterObjects();
+        //ResetThrusterObjects();
         m_maxThrusterVelocitySeen = 0;
         m_maxAngularVelocitySeen = 0;
     }

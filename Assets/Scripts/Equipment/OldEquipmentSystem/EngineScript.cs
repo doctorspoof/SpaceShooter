@@ -50,6 +50,6 @@ public class EngineScript : MonoBehaviour
 		Debug.Log ("Attaching engine: " + this.name + " to gameObject: " + playerGO.name + ", through name: " + name);
 		this.transform.parent = playerGO.transform;
 		this.transform.localPosition = m_requiredOffset;
-		playerGO.GetComponent<PlayerControlScript>().EquipEngineStats(m_engineMoveSpeed, m_engineTurnSpeed, m_engineStrafeModifier);
+		//playerGO.GetComponent<PlayerControlScript>().EquipEngineStats(m_engineMoveSpeed, m_engineTurnSpeed, m_engineStrafeModifier);
 	}
 }

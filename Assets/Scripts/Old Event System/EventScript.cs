@@ -83,13 +83,13 @@ public class EventRequirement
 				else
 					return false;
 			}
-			case ResourceType.PlayerCash:
+			/*case ResourceType.PlayerCash:
 			{
-				if(player.GetComponent<PlayerControlScript>().GetCash() >= requiredAmount)
+				if(player.GetComponent<Inventory>().GetCurrentCash() >= requiredAmount)
 					return true;
 				else
 					return false;
-			}
+			}*/
 		}
 
 		Debug.LogWarning ("Couldn't find enum type: " + requiredResource.ToString ());
@@ -433,10 +433,10 @@ public class EventScript : MonoBehaviour
 			case OutcomeType.AffectsPlayerCash:
 			{
 				//We should be passed a player that will be affected, so we'll store that in a temp for now
-				if(outcome.outcomeMagnitude < 0)
+				/*if(outcome.outcomeMagnitude < 0)
 					m_selectedPlayer.GetComponent<PlayerControlScript>().RemoveCash(-outcome.outcomeMagnitude);
 				else
-					m_selectedPlayer.GetComponent<PlayerControlScript>().AddCash(outcome.outcomeMagnitude);
+					m_selectedPlayer.GetComponent<PlayerControlScript>().AddCash(outcome.outcomeMagnitude);*/
 				break;
 			}
 			case OutcomeType.CreatesNewSpawnPoint:
