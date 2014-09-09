@@ -7,9 +7,9 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// The Fire elemental should cause an AoE effect on a weapon and increase the effectiveness of that AoE damage when stacked.
     /// </summary>
-    public sealed class Fire
+    public static class Fire
     {
-        public const bool   isAoe                   = true;     //!< Ensure the bullet gets set to be AoE.
+        public const bool   isAOE                   = true;     //!< Ensure the bullet gets set to be AoE.
 
         public const float  damageMulti             = -0.1f,    //!< Decrease the base bullet damage.
                             reloadTimeMulti         = 0.1f,     //!< Increase the reload time.
@@ -23,7 +23,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// The Ice elemental should increase damage slightly but also cause a slowing effect on hit which progressively gets longer when stacked.
     /// </summary>
-    public sealed class Ice
+    public static class Ice
     {
         public const float  damageMulti             = 0.1f,     //!< Increase the base bullet damage.
                             reloadTimeMulti         = -0.1f,    //!< Decrease the reload time.
@@ -34,7 +34,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// The Earth elemental should cause the bullet to act more like a cannon, high burst damage, long recovery and moderate speed.
     /// </summary>
-    public sealed class Earth
+    public static class Earth
     {
         public const float  damageMulti             = 0.2f,     //!< Increase the base damage significantly.
                             reloadTimeMulti         = 0.2f,     //!< Increase the reload time (negative)
@@ -46,7 +46,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// The lightning elemental should cause the bullet to jump between targets on hit, sharing damage with a nearby foe.
     /// </summary>
-    public sealed class Lightning
+    public static class Lightning
     {
         public const float  damageMulti             = -0.1f,     //!< Decrease base damage slightly.
                             chanceToJumpInc         = 0.1f;      //!< Add to the percentage chance.
@@ -56,7 +56,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// Light should enable beam functionality but also give a buff to damage but increase the reload time.
     /// </summary>
-    public sealed class Light
+    public static class Light
     {
         public const bool   isBeam                  = true;     //!< Enable beam functionality
 
@@ -68,7 +68,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// Dark gives a chance on hit to disable targets.
     /// </summary>
-    public sealed class Dark
+    public static class Dark
     {
         public const float  damageMulti             = 0.1f,     //!< Increase the base damage of the bullet.
                             chanceToDisableInc      = 0.1f,     //!< Increment the chance to disable targets.
@@ -79,7 +79,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// The Spirit element is all about piercing through targets in an etherial manner.
     /// </summary>
-    public sealed class Spirit
+    public static class Spirit
     {
         public const bool   isPiercing              = true;     //!< Enable piercing functionality on bullets.
 
@@ -92,7 +92,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// Gravity enables and increases homing functionality of a bullet.
     /// </summary>
-    public sealed class Gravity
+    public static class Gravity
     {
         public const bool   isHoming                = true;     //!< Enable homing functionality on the bullet.
 
@@ -105,7 +105,7 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// Air is more of a helper element, it reduces cooldown and increases the reach of the bullet to make up for other elements.
     /// </summary>
-    public sealed class Air
+    public static class Air
     {
         public const float  reloadTimeMulti         = -0.1f,    //!< Reduce the reload time of the weapon.
                             reachMulti              = 0.1f;     //!< Increase the range of the bullet.
@@ -115,14 +115,14 @@ namespace ElementalValuesWeapon
     /// <summary>
     /// Organic enables and enhances damage-over-time functionality based on the bullets base damage.
     /// </summary>
-    public sealed class Organic
+    public static class Organic
     {
         public const float  dotDurationInc          = 0.1f,     //!< Increment the duration DoT is applied.
                             dotEffectInc            = 0.1f;     //!< Increment the percentage of the base damage to be applied over time.
     }
 
 
-    public sealed class TierScalar
+    public static class TierScalar
     {
         public const float  tierOne                 = 1f,       //!< The scalar for tier one effects.
                             tierTwo                 = 2f,       //!< The scalar for tier two effects.
@@ -170,7 +170,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     float m_currentReloadCounter = 0.0f;
 
 
-    #region Overrides
+    #region BaseEquipment overrides
     
     /// <summary>
     /// Resets the bullet stats and reload time to their default values.
@@ -192,301 +192,182 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             if (m_augmentSlots[i] != null)
             {
                 float scalar = ElementalValuesWeapon.TierScalar.GetScalar (m_augmentSlots[i].GetTier());
+                Element element = m_augmentSlots[i].GetElement();
 
-                switch (m_augmentSlots[i].GetElement())
+                switch (element)
                 {
                     case Element.Fire:
                     {
                         ElementResponseFire (scalar);
                         break;
                     }
+
                     case Element.Ice:
                     {
                         ElementResponseIce (scalar);
                         break;
                     }
+
                     case Element.Earth:
                     {
                         ElementResponseEarth (scalar);
                         break;
                     }
+
                     case Element.Lightning:
                     {
                         ElementResponseLightning (scalar);
                         break;
                     }
+
                     case Element.Light:
                     {
                         ElementResponseLight (scalar);
                         break;
                     }
+
                     case Element.Dark:
                     {
                         ElementResponseDark (scalar);
                         break;
                     }
+
                     case Element.Spirit:
                     {
                         ElementResponseSpirit (scalar);
                         break;
                     }
+
                     case Element.Gravity:
                     {
                         ElementResponseGravity (scalar);
                         break;
                     }
+
                     case Element.Air:
                     {
                         ElementResponseAir (scalar);
                         break;
                     }
+
                     case Element.Organic:
                     {
                         ElementResponseOrganic (scalar);
                         break;
                     }
                 }
+
+                m_currentBulletStats.appliedElements.Add (element);
             }
         }
     }
+   
 
-    
-    //Element Responses
-    //TODO: Add in tier effects
     protected override void ElementResponseFire (float scalar)
     {
-        //If the aoe component doesn't exist, make one and initialise to base
-        if(m_currentBulletStats.aoe == null)
-        {
-            AOEAttributes newAoE = new AOEAttributes();
-            m_currentBulletStats.aoe = newAoE;
-            
-            //Give it default vales
-            newAoE.isAOE = true;
-            newAoE.aoeRange = 5.0f;
-            newAoE.aoeMaxDamageRange = 1.25f;
-            newAoE.aoeExplosiveForce = 10.0f;
-            newAoE.aoeMaxFalloff = 0.4f;
-        }
-        //Otherwise, add effects on to the existing component
-        else
-        {
-            AOEAttributes oldAoE = m_currentBulletStats.aoe;
-            
-            oldAoE.aoeRange += 4.5f;
-            oldAoE.aoeMaxDamageRange += 0.5f;
-            oldAoE.aoeExplosiveForce += 5.0f;
-            oldAoE.aoeMaxFalloff -= 0.1f;
-        }
-        
-        //Now do non-aoe stuff
-        // IncreaseBulletDamage(12);
-        m_currentWeaponReloadTime += 0.5f;
-        
-        //Finally, add the element applied to the bullet
-        m_currentBulletStats.appliedElements.Add(Element.Fire);
+        // Change base effectiveness
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Fire.damageMulti * scalar);
+        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Fire.reloadTimeMulti * scalar;
+
+        // AoE effectiveness
+        m_currentBulletStats.aoe.isAOE                  = ElementalValuesWeapon.Fire.isAOE;
+        m_currentBulletStats.aoe.aoeRange               += m_baseBulletStats.aoe.aoeRange * ElementalValuesWeapon.Fire.aoeRangeMulti * scalar;
+        m_currentBulletStats.aoe.aoeMaxDamageRange      += m_baseBulletStats.aoe.aoeMaxDamageRange * ElementalValuesWeapon.Fire.aoeMaxDamageRangeMulti * scalar;
+        m_currentBulletStats.aoe.aoeExplosiveForce      += m_baseBulletStats.aoe.aoeExplosiveForce * ElementalValuesWeapon.Fire.aoeExplosiveForceMulti * scalar;
+        m_currentBulletStats.aoe.aoeMaxFalloff          += ElementalValuesWeapon.Fire.aoeMaxFalloffInc * scalar;
     }
+
+
     protected override void ElementResponseIce (float scalar)
     {
-        if(m_currentBulletStats.special == null)
-        {
-            SpecialAttributes newSpec = new SpecialAttributes();
-            m_currentBulletStats.special = newSpec;
-            
-            //Initialise
-            newSpec.chanceToJump = 0f; 
-            newSpec.chanceToDisable = 0f;   
-            newSpec.disableDuration = 0f;     
-            newSpec.slowDuration = 0.75f;        
-            newSpec.dotDuration = 0f;      
-            newSpec.dotEffect = 0f; 
-        }
-        else
-        {
-            SpecialAttributes oldSpec = m_currentBulletStats.special;
-            
-            oldSpec.slowDuration += 0.6f;
-        }
-        
-        //Do non-special stuff
-        // IncreaseBulletDamage(4);
-        
-        //Add the element
-        m_currentBulletStats.appliedElements.Add(Element.Ice);
+        // Change base effectiveness
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Ice.damageMulti * scalar);
+        m_currentReloadCounter                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Ice.reloadTimeMulti * scalar;
+
+        // Special effects
+        m_currentBulletStats.special.slowDuration       += ElementalValuesWeapon.Ice.slowDurationInc * scalar;
     }
+
+
     protected override void ElementResponseEarth (float scalar)
     {
-        //Nothing special here, just stats
-        // IncreaseBulletDamage(35);
-        m_currentBulletStats.reach += 4.0f;
-        m_currentBulletStats.lifetime -= 0.3f;
-        
-        m_currentWeaponReloadTime += 1.0f;
-        
-        //Add the element
-        m_currentBulletStats.appliedElements.Add(Element.Earth);
+        // Change base effectiveness
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Earth.damageMulti * scalar);
+        m_currentBulletStats.reach                      += m_baseBulletStats.reach * ElementalValuesWeapon.Earth.reachMulti * scalar;
+        m_currentBulletStats.lifetime                   += m_baseBulletStats.lifetime * ElementalValuesWeapon.Earth.lifetimeMulti * scalar;
+        m_currentReloadCounter                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Earth.reloadTimeMulti * scalar;       
     }
+
+
     protected override void ElementResponseLightning (float scalar)
     {
-        if(m_currentBulletStats.special == null)
-        {
-            SpecialAttributes newSpec = new SpecialAttributes();
-            m_currentBulletStats.special = newSpec;
-            
-            //Initialise
-            newSpec.chanceToJump = 0.2f; 
-            newSpec.chanceToDisable = 0f;   
-            newSpec.disableDuration = 0f;     
-            newSpec.slowDuration = 0.0f;        
-            newSpec.dotDuration = 0f;      
-            newSpec.dotEffect = 0f; 
-        }
-        else
-        {
-            SpecialAttributes oldSpec = m_currentBulletStats.special;
-            
-            oldSpec.chanceToJump += 0.2f;
-        }
+        // Change base effectiveness
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Lightning.damageMulti * scalar);
         
-        //Do non-special stuff
-        // IncreaseBulletDamage(4);
-        
-        //Add to element list
-        m_currentBulletStats.appliedElements.Add(Element.Lightning);
+        // Special effects
+        m_currentBulletStats.special.chanceToJump       += ElementalValuesWeapon.Lightning.chanceToJumpInc * scalar;
     }
+
+
     protected override void ElementResponseLight (float scalar)
     {
-        //TODO: rethink reload vs beams, light stacking etc.
-        if(!m_currentBulletStats.isBeam)
-        {
-            m_currentBulletStats.isBeam = true;
-        }
-        else
-        {
-            m_currentBulletStats.damage += 4;
-            m_currentWeaponReloadTime += 1.5f;
-        }
+        // Change base effectiveness
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Light.damageMulti * scalar);
+        m_currentReloadCounter                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Light.reloadTimeMulti * scalar;
         
-        // IncreaseBulletDamage(4);
-        
-        //Add to element list
-        m_currentBulletStats.appliedElements.Add(Element.Light);
+        // Enable beam effectiveness
+        m_currentBulletStats.isBeam                     = ElementalValuesWeapon.Light.isBeam;
     }
+
+
     protected override void ElementResponseDark (float scalar)
     {
-        if(m_currentBulletStats.special == null)
-        {
-            SpecialAttributes newSpec = new SpecialAttributes();
-            m_currentBulletStats.special = newSpec;
-            
-            //Initialise
-            newSpec.chanceToJump = 0.0f; 
-            newSpec.chanceToDisable = 0.15f;   
-            newSpec.disableDuration = 0f;     
-            newSpec.slowDuration = 0.0f;        
-            newSpec.dotDuration = 0f;      
-            newSpec.dotEffect = 0f; 
-        }
-        else
-        {
-            SpecialAttributes oldSpec = m_currentBulletStats.special;
-            
-            oldSpec.disableDuration += 0.15f;
-        }
-        
-        //Non-special
-        // IncreaseBulletDamage(4);
-        
-        //Add to element list
-        m_currentBulletStats.appliedElements.Add(Element.Dark);
+        // Change base effectiveness
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Dark.damageMulti * scalar);
+
+        // Increase disability functionality
+        m_currentBulletStats.special.chanceToDisable    += ElementalValuesWeapon.Dark.chanceToDisableInc * scalar;
+        m_currentBulletStats.special.disableDuration    += ElementalValuesWeapon.Dark.disableDurationInc * scalar;
     }
+
+
     protected override void ElementResponseSpirit (float scalar)
     {
-        if(m_currentBulletStats.piercing == null)
-        {
-            PiercingAttributes newPier = new PiercingAttributes();
-            m_currentBulletStats.piercing = newPier;
-            
-            //Initialise
-            newPier.isPiercing = true;
-            newPier.maxPiercings = 2;
-            newPier.pierceModifier = 0.7f;
-        }
-        else
-        {
-            PiercingAttributes oldPier = m_currentBulletStats.piercing;
-            
-            oldPier.maxPiercings += 2;
-            oldPier.pierceModifier -= 0.15f;
-        }
+        // Change base effectiveness
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Spirit.damageMulti * scalar);
         
-        // IncreaseBulletDamage(4);
-        
-        //Add to element list
-        m_currentBulletStats.appliedElements.Add(Element.Spirit);
+        // Piercing effectiveness
+        m_currentBulletStats.piercing.isPiercing        = ElementalValuesWeapon.Spirit.isPiercing;
+        m_currentBulletStats.piercing.maxPiercings      += (int) (m_baseBulletStats.piercing.maxPiercings * ElementalValuesWeapon.Spirit.maxPiercingsMulti * scalar);
+        m_currentBulletStats.piercing.pierceModifier    += ElementalValuesWeapon.Spirit.piercingModifierInc * scalar;
     }
+
+
     protected override void ElementResponseGravity (float scalar)
     {
-        if(m_currentBulletStats.homing == null)
-        {
-            HomingAttributes newHome = new HomingAttributes();
-            m_currentBulletStats.homing = newHome;
-            
-            newHome.isHoming = true;
-            newHome.homingRange = 8.5f;
-            newHome.homingTurnRate = 4.5f;
-        }
-        else
-        {
-            HomingAttributes oldHome = m_currentBulletStats.homing;
-            
-            oldHome.homingRange += 4.0f;
-            oldHome.homingTurnRate += 1.25f;
-        }
+        // Change base effectiveness
+        m_currentBulletStats.damage                 += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Gravity.damageMulti * scalar);
         
-        
-        // IncreaseBulletDamage(4);
-        
-        //Add to element list
-        m_currentBulletStats.appliedElements.Add(Element.Gravity);
+        // Homing effectiveness
+        m_currentBulletStats.homing.isHoming        = ElementalValuesWeapon.Gravity.isHoming;
+        m_currentBulletStats.homing.homingRange     += m_baseBulletStats.homing.homingRange * ElementalValuesWeapon.Gravity.homingRangeMulti * scalar;
+        m_currentBulletStats.homing.homingTurnRate  += m_baseBulletStats.homing.homingTurnRate * ElementalValuesWeapon.Gravity.homingTurnRateMulti * scalar;
     }
+
+
     protected override void ElementResponseAir (float scalar)
     {
-        //Nothing special here
-        m_currentBulletStats.reach += 4.0f;
-        m_baseWeaponReloadTime -= 0.4f;
-        
-        //Add element to list
-        m_currentBulletStats.appliedElements.Add(Element.Air);
+        // Change base effectiveness
+        m_currentBulletStats.reach                  += m_baseBulletStats.reach * ElementalValuesWeapon.Air.reachMulti * scalar;
+        m_currentReloadCounter                      += m_baseWeaponReloadTime * ElementalValuesWeapon.Air.reloadTimeMulti * scalar;
     }
+
+
     protected override void ElementResponseOrganic (float scalar)
     {
-        if(m_currentBulletStats.special == null)
-        {
-            SpecialAttributes newSpec = new SpecialAttributes();
-            m_currentBulletStats.special = newSpec;
-            
-            //Initialise
-            newSpec.chanceToJump = 0.0f; 
-            newSpec.chanceToDisable = 0.0f;   
-            newSpec.disableDuration = 0f;     
-            newSpec.slowDuration = 0.0f;        
-            newSpec.dotDuration = 2.0f;      
-            newSpec.dotEffect = m_currentBulletStats.damage;
-        }
-        else
-        {
-            SpecialAttributes oldSpec = m_currentBulletStats.special;
-            
-            oldSpec.dotDuration -= 0.5f;
-            m_currentBulletStats.damage = (int)m_currentBulletStats.special.dotEffect;
-            // IncreaseBulletDamage(6);
-        }
-        
-        // IncreaseBulletDamage(4);
-    
-        //Add element to list
-        m_currentBulletStats.appliedElements.Add(Element.Organic);
+        // DoT effectiveness
+        m_currentBulletStats.special.dotDuration    += ElementalValuesWeapon.Organic.dotDurationInc * scalar;
+        m_currentBulletStats.special.dotEffect      += m_baseBulletStats.damage * ElementalValuesWeapon.Organic.dotEffectInc * scalar;
     }
     
     #endregion
