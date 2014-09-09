@@ -160,8 +160,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     [SerializeField, Range (0.001f, 10f)]   float               m_baseWeaponReloadTime = 0.7f;
     
     // Current stats (base + augment effects)
-                                            BulletProperties    m_currentBulletStats = null;
-                                            float               m_currentWeaponReloadTime = 0.0f;
+    public                                        BulletProperties    m_currentBulletStats = new BulletProperties();
+    public                                        float               m_currentWeaponReloadTime = 0.0f;
 
     #endregion
 
@@ -282,7 +282,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         // Change base effectiveness
         m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Ice.damageMulti * scalar);
-        m_currentReloadCounter                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Ice.reloadTimeMulti * scalar;
+        m_currentWeaponReloadTime                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Ice.reloadTimeMulti * scalar;
 
         // Special effects
         m_currentBulletStats.special.slowDuration       += ElementalValuesWeapon.Ice.slowDurationInc * scalar;
@@ -295,7 +295,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Earth.damageMulti * scalar);
         m_currentBulletStats.reach                      += m_baseBulletStats.reach * ElementalValuesWeapon.Earth.reachMulti * scalar;
         m_currentBulletStats.lifetime                   += m_baseBulletStats.lifetime * ElementalValuesWeapon.Earth.lifetimeMulti * scalar;
-        m_currentReloadCounter                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Earth.reloadTimeMulti * scalar;       
+        m_currentWeaponReloadTime                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Earth.reloadTimeMulti * scalar;       
     }
 
 
@@ -313,7 +313,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         // Change base effectiveness
         m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Light.damageMulti * scalar);
-        m_currentReloadCounter                          += m_baseWeaponReloadTime * ElementalValuesWeapon.Light.reloadTimeMulti * scalar;
+        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Light.reloadTimeMulti * scalar;
         
         // Enable beam effectiveness
         m_currentBulletStats.isBeam                     = ElementalValuesWeapon.Light.isBeam;
@@ -346,28 +346,28 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     protected override void ElementResponseGravity (float scalar)
     {
         // Change base effectiveness
-        m_currentBulletStats.damage                 += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Gravity.damageMulti * scalar);
+        m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Gravity.damageMulti * scalar);
         
         // Homing effectiveness
-        m_currentBulletStats.homing.isHoming        = ElementalValuesWeapon.Gravity.isHoming;
-        m_currentBulletStats.homing.homingRange     += m_baseBulletStats.homing.homingRange * ElementalValuesWeapon.Gravity.homingRangeMulti * scalar;
-        m_currentBulletStats.homing.homingTurnRate  += m_baseBulletStats.homing.homingTurnRate * ElementalValuesWeapon.Gravity.homingTurnRateMulti * scalar;
+        m_currentBulletStats.homing.isHoming            = ElementalValuesWeapon.Gravity.isHoming;
+        m_currentBulletStats.homing.homingRange         += m_baseBulletStats.homing.homingRange * ElementalValuesWeapon.Gravity.homingRangeMulti * scalar;
+        m_currentBulletStats.homing.homingTurnRate      += m_baseBulletStats.homing.homingTurnRate * ElementalValuesWeapon.Gravity.homingTurnRateMulti * scalar;
     }
 
 
     protected override void ElementResponseAir (float scalar)
     {
         // Change base effectiveness
-        m_currentBulletStats.reach                  += m_baseBulletStats.reach * ElementalValuesWeapon.Air.reachMulti * scalar;
-        m_currentReloadCounter                      += m_baseWeaponReloadTime * ElementalValuesWeapon.Air.reloadTimeMulti * scalar;
+        m_currentBulletStats.reach                      += m_baseBulletStats.reach * ElementalValuesWeapon.Air.reachMulti * scalar;
+        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Air.reloadTimeMulti * scalar;
     }
 
 
     protected override void ElementResponseOrganic (float scalar)
     {
         // DoT effectiveness
-        m_currentBulletStats.special.dotDuration    += ElementalValuesWeapon.Organic.dotDurationInc * scalar;
-        m_currentBulletStats.special.dotEffect      += m_baseBulletStats.damage * ElementalValuesWeapon.Organic.dotEffectInc * scalar;
+        m_currentBulletStats.special.dotDuration        += ElementalValuesWeapon.Organic.dotDurationInc * scalar;
+        m_currentBulletStats.special.dotEffect          += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Organic.dotEffectInc * scalar);
     }
     
     #endregion

@@ -1025,7 +1025,67 @@ MonoBehaviour:
   m_augmentSlots:
   - {fileID: 0}
   - {fileID: 0}
+  m_augmentItemSlots: []
+  m_baseBulletStats:
+    isBeam: 0
+    damage: 20
+    reach: 10
+    lifetime: 2
+    aoe:
+      isAOE: 0
+      aoeRange: 5
+      aoeMaxDamageRange: .25
+      aoeExplosiveForce: 5
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 10
+      homingTurnRate: 25
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 5
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
   m_baseWeaponReloadTime: .699999988
+  m_currentBulletStats:
+    isBeam: 0
+    damage: 0
+    reach: 0
+    lifetime: 1
+    aoe:
+      isAOE: 0
+      aoeRange: 0
+      aoeMaxDamageRange: 0
+      aoeExplosiveForce: 0
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 0
+      homingTurnRate: 0
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 0
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
+  m_currentWeaponReloadTime: 0
 --- !u!114 &11400006
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1236,6 +1296,7 @@ MonoBehaviour:
   m_augmentSlots:
   - {fileID: 0}
   - {fileID: 0}
+  m_augmentItemSlots: []
 --- !u!114 &11400034
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1252,6 +1313,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  m_augmentItemSlots: []
 --- !u!114 &11400036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1268,6 +1330,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  m_augmentItemSlots: []
 --- !u!114 &11400038
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1279,7 +1342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67e2a18c60a43504fad28082d81b903a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_maxInventorySize: 5
+  m_maxInventorySize: 10
   m_maxHeldMass: 100
   m_maxHeldFuel: 100
   m_maxHeldWater: 100
@@ -1290,7 +1353,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 72198a4f204a16449bd9560f645683e3, type: 2}
   - {fileID: 11400000, guid: f2c1b780115051f4cb440ad569bd5db2, type: 2}
   - {fileID: 11400000, guid: 73aeeb21d7e8e4c449654128e98689f3, type: 2}
+  - {fileID: 11400000, guid: 7a125b9c203ec694abbf60c00e62c162, type: 2}
+  - {fileID: 11400000, guid: 838f4bbcafe4d714484334ad3b094b4f, type: 2}
+  - {fileID: 11400000, guid: 0b38f48b455dc63468a39bb55fd1ce45, type: 2}
   - {fileID: 11400000, guid: a53f04ec8001b074e9e98a1ddab9c2e0, type: 2}
+  - {fileID: 11400000, guid: cdaa67abd4b4fed48a4971fc11ead7d5, type: 2}
+  - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

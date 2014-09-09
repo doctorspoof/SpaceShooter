@@ -120,10 +120,10 @@ using System.Collections.Generic;
 {
     [Range (0f, 1f)]        public float    chanceToJump = 0f;      //!< How much of a percentage chance to jump to a another target on hit
     [Range (0f, 1f)]        public float    chanceToDisable = 0f;   //!< How much of a percentage chance to disable the target on hit the bullet should have.
-    [Range (0f, 100f)]      public float    disableDuration = 0f;     //!< How many seconds to disable the target for on hit.
-    [Range (0f, 100f)]      public float    slowDuration = 0f;        //!< How long to slow the enemy for on hit.
+    [Range (0f, 100f)]      public float    disableDuration = 0f;   //!< How many seconds to disable the target for on hit.
+    [Range (0f, 100f)]      public float    slowDuration = 0f;      //!< How long to slow the enemy for on hit.
     [Range (0f, 100f)]      public float    dotDuration = 0f;       //!< How long damage over time should be applied.
-    [Range (0f, 100f)]      public float    dotEffect = 0f;         //!< How much damage should be dealt by damage over time.
+    [Range (0, 100)]        public int      dotEffect = 0;          //!< How much damage should be dealt by damage over time.
 
 
     /// <summary>
