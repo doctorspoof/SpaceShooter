@@ -21,3 +21,4 @@
 *.db
 *.db.meta
 *.DS_Store
+*.ini
