@@ -702,8 +702,8 @@ public class GUICShipDockScreen : BaseGUIScreen
     
     void DrawHoverText(string text, Vector2 mousePos)
     {
-        float width = 200;
-        float height = GUI.skin.GetStyle("Hover").CalcHeight(new GUIContent(text), 200);
+        float width = 400;
+        float height = GUI.skin.GetStyle("Hover").CalcHeight(new GUIContent(text), 400);
         GUI.Label(new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, GUI.skin.GetStyle("Hover"));
     }
     
