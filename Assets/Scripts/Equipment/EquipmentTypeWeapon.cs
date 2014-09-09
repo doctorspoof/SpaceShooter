@@ -40,7 +40,6 @@ namespace ElementalValuesWeapon
                             reloadTimeMulti         = 0.2f,     //!< Increase the reload time (negative)
                             reachMulti              = 0.1f,     //!< Increase the max distance of the bullet.
                             lifetimeMulti           = -0.1f;    //!< Decrease the lifetime (increasing the speed).
-                            
     }
 
 
@@ -63,7 +62,6 @@ namespace ElementalValuesWeapon
 
         public const float  damageMulti             = 0.1f,     //!< Increase base bullet damage slightly.
                             reloadTimeMulti         = 0.1f;     //!< Increase the reload time (negative).
-
     }
 
 
