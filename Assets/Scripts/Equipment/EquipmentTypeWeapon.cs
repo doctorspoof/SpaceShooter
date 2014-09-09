@@ -1,6 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 
 
@@ -124,6 +122,33 @@ namespace ElementalValuesWeapon
         public const float  dotDurationInc          = 0.1f,     //!< Increment the duration DoT is applied.
                             dotEffectInc            = 0.1f;     //!< Increment the percentage of the base damage to be applied over time.
     }
+
+
+    public sealed class TierScalar
+    {
+        public const float  tierOne                 = 1f,       //!< The scalar for tier one effects.
+                            tierTwo                 = 2f,       //!< The scalar for tier two effects.
+                            tierThree               = 3f,       //!< The scalar for tier three effects.
+                            tierFour                = 4f,       //!< The scalar for tier four effects.
+                            tierFive                = 5f;       //!< The scalar for tier five effects.
+
+
+        public static float GetScalar (int tier)
+        {
+            switch (tier)
+            {
+                case 1: return tierOne;
+                case 2: return tierTwo;                
+                case 3: return tierThree;                
+                case 4: return tierFour;
+                case 5: return tierFive;
+                
+                default: 
+                    Debug.LogError ("Couldn't find the corresponding scalar value.");
+                    return 0f;
+            }
+        }
+    }
 }
 
 
@@ -133,12 +158,12 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     #region Serializable Properties
 
     // Base stats to reset to and start from
-    [SerializeField]                            BulletProperties    m_baseBulletStats = null;
-    [SerializeField, Range (0.001f, 10.0f)]     float               m_baseWeaponReloadTime = 0.7f;
+    [SerializeField]                        BulletProperties    m_baseBulletStats = null;
+    [SerializeField, Range (0.001f, 10f)]   float               m_baseWeaponReloadTime = 0.7f;
     
     // Current stats (base + augment effects)
-                                                BulletProperties    m_currentBulletStats = null;
-                                                float               m_currentWeaponReloadTime = 0.0f;
+                                            BulletProperties    m_currentBulletStats = null;
+                                            float               m_currentWeaponReloadTime = 0.0f;
 
     #endregion
 
@@ -146,91 +171,91 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     // Internal usage members
     float m_currentReloadCounter = 0.0f;
 
+
     #region Overrides
     
+    /// <summary>
+    /// Resets the bullet stats and reload time to their default values.
+    /// </summary>
     protected override void ResetToBaseStats()
     {
-        m_currentBulletStats.CloneProperties(m_baseBulletStats);
+        m_currentBulletStats.CloneProperties (m_baseBulletStats);
         m_currentWeaponReloadTime = m_baseWeaponReloadTime;
     }
-    
+
+
+    /// <summary>
+    /// Calculates the current stats based on the equipped augments and their tier.
+    /// </summary>
 	protected override void CalculateCurrentStats()
     {
-        for(int i = 0; i < m_augmentSlots.Length; i++)
+        for (int i = 0; i < m_augmentSlots.Length; i++)
         {
-            switch(m_augmentSlots[i].GetElement())
+            if (m_augmentSlots[i] != null)
             {
-                case Element.Fire:
+                float scalar = ElementalValuesWeapon.TierScalar.GetScalar (m_augmentSlots[i].GetTier());
+
+                switch (m_augmentSlots[i].GetElement())
                 {
-                    ElementResponseFire(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Ice:
-                {
-                    ElementResponseIce(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Earth:
-                {
-                    ElementResponseEarth(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Lightning:
-                {
-                    ElementResponseLightning(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Light:
-                {
-                    ElementResponseLight(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Dark:
-                {
-                    ElementResponseDark(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Spirit:
-                {
-                    ElementResponseSpirit(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Gravity:
-                {
-                    ElementResponseGravity(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Air:
-                {
-                    ElementResponseAir(m_augmentSlots[i].GetTier());
-                    break;
-                }
-                case Element.Organic:
-                {
-                    ElementResponseOrganic(m_augmentSlots[i].GetTier());
-                    break;
+                    case Element.Fire:
+                    {
+                        ElementResponseFire (scalar);
+                        break;
+                    }
+                    case Element.Ice:
+                    {
+                        ElementResponseIce (scalar);
+                        break;
+                    }
+                    case Element.Earth:
+                    {
+                        ElementResponseEarth (scalar);
+                        break;
+                    }
+                    case Element.Lightning:
+                    {
+                        ElementResponseLightning (scalar);
+                        break;
+                    }
+                    case Element.Light:
+                    {
+                        ElementResponseLight (scalar);
+                        break;
+                    }
+                    case Element.Dark:
+                    {
+                        ElementResponseDark (scalar);
+                        break;
+                    }
+                    case Element.Spirit:
+                    {
+                        ElementResponseSpirit (scalar);
+                        break;
+                    }
+                    case Element.Gravity:
+                    {
+                        ElementResponseGravity (scalar);
+                        break;
+                    }
+                    case Element.Air:
+                    {
+                        ElementResponseAir (scalar);
+                        break;
+                    }
+                    case Element.Organic:
+                    {
+                        ElementResponseOrganic (scalar);
+                        break;
+                    }
                 }
             }
         }
     }
-    
-    void IncreaseBulletDamage(int increment)
-    {
-        if(m_currentBulletStats.special != null && m_currentBulletStats.special.dotEffect != 0f)
-        {
-            //Increase dot instead
-            m_currentBulletStats.special.dotEffect += increment;
-        }
-        else
-        {
-            //Increase damage as normal
-            m_currentBulletStats.damage += increment;
-        }
-    }
+
     
     //Element Responses
     //TODO: Add in tier effects
-    protected override void ElementResponseFire (int tier)
+    protected override void ElementResponseFire (float scalar)
     {
         //If the aoe component doesn't exist, make one and initialise to base
         if(m_currentBulletStats.aoe == null)
@@ -257,13 +282,13 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         }
         
         //Now do non-aoe stuff
-        IncreaseBulletDamage(12);
+        // IncreaseBulletDamage(12);
         m_currentWeaponReloadTime += 0.5f;
         
         //Finally, add the element applied to the bullet
         m_currentBulletStats.appliedElements.Add(Element.Fire);
     }
-    protected override void ElementResponseIce (int tier)
+    protected override void ElementResponseIce (float scalar)
     {
         if(m_currentBulletStats.special == null)
         {
@@ -286,15 +311,15 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         }
         
         //Do non-special stuff
-        IncreaseBulletDamage(4);
+        // IncreaseBulletDamage(4);
         
         //Add the element
         m_currentBulletStats.appliedElements.Add(Element.Ice);
     }
-    protected override void ElementResponseEarth (int tier)
+    protected override void ElementResponseEarth (float scalar)
     {
         //Nothing special here, just stats
-        IncreaseBulletDamage(35);
+        // IncreaseBulletDamage(35);
         m_currentBulletStats.reach += 4.0f;
         m_currentBulletStats.lifetime -= 0.3f;
         
@@ -303,7 +328,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         //Add the element
         m_currentBulletStats.appliedElements.Add(Element.Earth);
     }
-    protected override void ElementResponseLightning (int tier)
+    protected override void ElementResponseLightning (float scalar)
     {
         if(m_currentBulletStats.special == null)
         {
@@ -326,12 +351,12 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         }
         
         //Do non-special stuff
-        IncreaseBulletDamage(4);
+        // IncreaseBulletDamage(4);
         
         //Add to element list
         m_currentBulletStats.appliedElements.Add(Element.Lightning);
     }
-    protected override void ElementResponseLight (int tier)
+    protected override void ElementResponseLight (float scalar)
     {
         //TODO: rethink reload vs beams, light stacking etc.
         if(!m_currentBulletStats.isBeam)
@@ -344,12 +369,12 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             m_currentWeaponReloadTime += 1.5f;
         }
         
-        IncreaseBulletDamage(4);
+        // IncreaseBulletDamage(4);
         
         //Add to element list
         m_currentBulletStats.appliedElements.Add(Element.Light);
     }
-    protected override void ElementResponseDark (int tier)
+    protected override void ElementResponseDark (float scalar)
     {
         if(m_currentBulletStats.special == null)
         {
@@ -372,12 +397,12 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         }
         
         //Non-special
-        IncreaseBulletDamage(4);
+        // IncreaseBulletDamage(4);
         
         //Add to element list
         m_currentBulletStats.appliedElements.Add(Element.Dark);
     }
-    protected override void ElementResponseSpirit (int tier)
+    protected override void ElementResponseSpirit (float scalar)
     {
         if(m_currentBulletStats.piercing == null)
         {
@@ -397,12 +422,12 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             oldPier.pierceModifier -= 0.15f;
         }
         
-        IncreaseBulletDamage(4);
+        // IncreaseBulletDamage(4);
         
         //Add to element list
         m_currentBulletStats.appliedElements.Add(Element.Spirit);
     }
-    protected override void ElementResponseGravity (int tier)
+    protected override void ElementResponseGravity (float scalar)
     {
         if(m_currentBulletStats.homing == null)
         {
@@ -422,12 +447,12 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         }
         
         
-        IncreaseBulletDamage(4);
+        // IncreaseBulletDamage(4);
         
         //Add to element list
         m_currentBulletStats.appliedElements.Add(Element.Gravity);
     }
-    protected override void ElementResponseAir (int tier)
+    protected override void ElementResponseAir (float scalar)
     {
         //Nothing special here
         m_currentBulletStats.reach += 4.0f;
@@ -436,7 +461,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         //Add element to list
         m_currentBulletStats.appliedElements.Add(Element.Air);
     }
-    protected override void ElementResponseOrganic (int tier)
+    protected override void ElementResponseOrganic (float scalar)
     {
         if(m_currentBulletStats.special == null)
         {
@@ -457,10 +482,10 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             
             oldSpec.dotDuration -= 0.5f;
             m_currentBulletStats.damage = (int)m_currentBulletStats.special.dotEffect;
-            IncreaseBulletDamage(6);
+            // IncreaseBulletDamage(6);
         }
         
-        IncreaseBulletDamage(4);
+        // IncreaseBulletDamage(4);
     
         //Add element to list
         m_currentBulletStats.appliedElements.Add(Element.Organic);

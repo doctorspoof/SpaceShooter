@@ -94,15 +94,16 @@ public abstract class BaseEquipment : MonoBehaviour
     protected abstract void CalculateCurrentStats();
     protected abstract void ResetToBaseStats();
     
-    protected abstract void ElementResponseFire(int tier);
-    protected abstract void ElementResponseIce(int tier);
-    protected abstract void ElementResponseEarth(int tier);
-    protected abstract void ElementResponseLightning(int tier);
-    protected abstract void ElementResponseLight(int tier);
-    protected abstract void ElementResponseDark(int tier);
-    protected abstract void ElementResponseSpirit(int tier);
-    protected abstract void ElementResponseGravity(int tier);
-    protected abstract void ElementResponseAir(int tier);
-    protected abstract void ElementResponseOrganic(int tier);
+    protected abstract void ElementResponseFire (float scalar);
+    protected abstract void ElementResponseIce (float scalar);
+    protected abstract void ElementResponseEarth (float scalar);
+    protected abstract void ElementResponseLightning (float scalar);
+    protected abstract void ElementResponseLight (float scalar);
+    protected abstract void ElementResponseDark (float scalar);
+    protected abstract void ElementResponseSpirit (float scalar);
+    protected abstract void ElementResponseGravity (float scalar);
+    protected abstract void ElementResponseAir (float scalar);
+    protected abstract void ElementResponseOrganic (float scalar);
+
     #endregion
 }
