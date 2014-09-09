@@ -282,106 +282,50 @@ public class GUICShipDockScreen : BaseGUIScreen
                 
                 /* Weapons */
                 GUI.Label(new Rect(405, 260, 125, 40), "Weapon Slots:", "No Box");
-                int numSlotsW = m_playerCache.GetComponent<EquipmentTypeWeapon>().GetMaxAugmentNum();
+                EquipmentTypeWeapon weaponEquip = m_playerCache.GetComponent<EquipmentTypeWeapon>();
+                int numSlotsW = weaponEquip.GetMaxAugmentNum();
                 
                 for(int i = 0; i < numSlotsW; i++)
                 {
                     Rect rect = new Rect(540 + (70 * i), 290, 50, 50);
-                    ItemWrapper slotAug = m_playerCache.GetComponent<EquipmentTypeWeapon>().GetItemWrapperInSlot(i);
-                    if(slotAug != null)
-                        GUI.Label(rect, slotAug.GetIcon());
-                    else
-                        GUI.Label(rect, "", "Button");
-                    m_augmentWeaponSlotRects.Add(rect);
-                    
-                    if (shouldRecieveInput && currentEvent.type == EventType.MouseDown)
-                    {
-                        if(rect.Contains(mousePos))
-                        {
-                            augmentTakenFrom = m_playerCache.GetComponent<EquipmentTypeWeapon>();
-                            m_currentDraggedItem = slotAug;
-                            m_currentDraggedItemIsFromPlayerInv = false;
-                            m_currentDraggedItemInventoryId = i;
-                        }
-                    }
+                    ItemWrapper slotAug = weaponEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentWeaponSlotRects, i, slotAug, weaponEquip, shouldRecieveInput, mousePos, currentEvent.type);
                 }
                 
                 /* Shields */
                 GUI.Label (new Rect(405, 360, 125, 40), "Shield slots:", "No Box");
-                int numSlotsS = m_playerCache.GetComponent<EquipmentTypeShield>().GetMaxAugmentNum();
+                EquipmentTypeShield shieldEquip = m_playerCache.GetComponent<EquipmentTypeShield>();
+                int numSlotsS = shieldEquip.GetMaxAugmentNum();
                 
                 for(int i = 0; i < numSlotsS; i++)
                 {
                     Rect rect = new Rect(540 + (70 * i), 390, 50, 50);
-                    ItemWrapper slotAug = m_playerCache.GetComponent<EquipmentTypeShield>().GetItemWrapperInSlot(i);
-                    if(slotAug != null)
-                        GUI.Label(rect, slotAug.GetIcon());
-                    else
-                        GUI.Label(rect, "", "Button");
-                    m_augmentShieldSlotRects.Add(rect);
-                    
-                    if(shouldRecieveInput && currentEvent.type == EventType.MouseDown)
-                    {
-                        if(rect.Contains(mousePos))
-                        {
-                            augmentTakenFrom = m_playerCache.GetComponent<EquipmentTypeShield>();
-                            m_currentDraggedItem = slotAug;
-                            m_currentDraggedItemIsFromPlayerInv = false;
-                            m_currentDraggedItemInventoryId = i;
-                        }
-                    }
+                    ItemWrapper slotAug = shieldEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentShieldSlotRects, i, slotAug, shieldEquip, shouldRecieveInput, mousePos, currentEvent.type);
                 }
                 
                 /* Plating */
                 GUI.Label (new Rect(405, 460, 125, 40), "Plating slots:", "No Box");
-                int numSlotsP = m_playerCache.GetComponent<EquipmentTypePlating>().GetMaxAugmentNum();
+                EquipmentTypePlating platingEquip = m_playerCache.GetComponent<EquipmentTypePlating>();
+                int numSlotsP = platingEquip.GetMaxAugmentNum();
                 
                 for(int i = 0; i < numSlotsP; i++)
                 {
                     Rect rect = new Rect(540 + (70 * i), 490, 50, 50);
-                    ItemWrapper slotAug = m_playerCache.GetComponent<EquipmentTypePlating>().GetItemWrapperInSlot(i);
-                    if(slotAug != null)
-                        GUI.Label(rect, slotAug.GetIcon());
-                    else
-                        GUI.Label(rect, "", "Button");
-                    m_augmentPlatingSlotRects.Add(rect);
-                    
-                    if(shouldRecieveInput && currentEvent.type == EventType.MouseDown)
-                    {
-                        if(rect.Contains(mousePos))
-                        {
-                            augmentTakenFrom = m_playerCache.GetComponent<EquipmentTypePlating>();
-                            m_currentDraggedItem = slotAug;
-                            m_currentDraggedItemIsFromPlayerInv = false;
-                            m_currentDraggedItemInventoryId = i;
-                        }
-                    }
+                    ItemWrapper slotAug = platingEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentPlatingSlotRects, i, slotAug, platingEquip, shouldRecieveInput, mousePos, currentEvent.type);
                 }
                 
                 /* Engines */
                 GUI.Label(new Rect(405, 560, 125, 40), "Engine slots:", "No Box");
-                int numSlotsE = m_playerCache.GetComponent<EquipmentTypeEngine>().GetMaxAugmentNum();
+                EquipmentTypeEngine engineEquip = m_playerCache.GetComponent<EquipmentTypeEngine>();
+                int numSlotsE = engineEquip.GetMaxAugmentNum();
                 
                 for(int i = 0; i < numSlotsE; i++)
                 {
                     Rect rect = new Rect(540 + (70 * i), 590, 50, 50);
-                    ItemWrapper slotAug = m_playerCache.GetComponent<EquipmentTypeEngine>().GetItemWrapperInSlot(i);
-                    if(slotAug != null)
-                        GUI.Label(rect, slotAug.GetIcon());
-                    else
-                        GUI.Label(rect, "", "Button");
-                    m_augmentEngineSlotRects.Add(rect);
-                    
-                    if(shouldRecieveInput && currentEvent.type == EventType.MouseDown)
-                    {
-                        if(rect.Contains(mousePos))
-                        {
-                            augmentTakenFrom = m_playerCache.GetComponent<EquipmentTypeEngine>();
-                            m_currentDraggedItem = slotAug;
-                            m_currentDraggedItemIsFromPlayerInv = false;
-                            m_currentDraggedItemInventoryId = i;
-                        }
-                    }
+                    ItemWrapper slotAug = engineEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentEngineSlotRects, i, slotAug, engineEquip, shouldRecieveInput, mousePos, currentEvent.type);
                 }
                 
                 #endregion
@@ -465,177 +409,25 @@ public class GUICShipDockScreen : BaseGUIScreen
                         for(int i = 0; i < m_augmentWeaponSlotRects.Count; i++)
                         {   
                             //Check weapons
-                            if(m_augmentWeaponSlotRects[i].Contains(mousePos))
-                            {
-                                ItemWrapper augInSlot = m_playerCache.GetComponent<EquipmentTypeWeapon>().GetItemWrapperInSlot(i);
-                                if(m_currentDraggedItemIsFromPlayerInv)
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        ItemWrapper temp = m_currentDraggedItem;
-                                        m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(augInSlot);
-                                        
-                                        m_playerCache.GetComponent<EquipmentTypeWeapon>().SetAugmentItemIntoSlot(i, temp);
-                                    }
-                                    else
-                                    {
-                                        if(m_playerCache.GetComponent<EquipmentTypeWeapon>().SetAugmentItemIntoSlot(i, m_currentDraggedItem))
-                                        {
-                                            m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        //Put dragged item into new slot
-                                        m_playerCache.GetComponent<EquipmentTypeWeapon>().RemoveAugmentItemFromSlot(i, augInSlot);
-                                        m_playerCache.GetComponent<EquipmentTypeWeapon>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                        
-                                        //Put old item into old slot
-                                        augmentTakenFrom.SetAugmentItemIntoSlot(m_currentDraggedItemInventoryId, augInSlot);
-                                    }
-                                    else
-                                    {
-                                        augmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
-                                        m_playerCache.GetComponent<EquipmentTypeWeapon>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                    }
-                                }
-                            }
+                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentWeaponSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeWeapon>(), mousePos);
                         }
                         
                         for(int i = 0; i < m_augmentShieldSlotRects.Count; i++)
                         {
                             //Check shields
-                            if(m_augmentShieldSlotRects[i].Contains(mousePos))
-                            {
-                                ItemWrapper augInSlot = m_playerCache.GetComponent<EquipmentTypeShield>().GetItemWrapperInSlot(i);
-                                if(m_currentDraggedItemIsFromPlayerInv)
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        ItemWrapper temp = m_currentDraggedItem;
-                                        m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(augInSlot);
-                                        
-                                        m_playerCache.GetComponent<EquipmentTypeShield>().SetAugmentItemIntoSlot(i, temp);
-                                    }
-                                    else
-                                    {
-                                        if(m_playerCache.GetComponent<EquipmentTypeShield>().SetAugmentItemIntoSlot(i, m_currentDraggedItem))
-                                        {
-                                            m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        //Put dragged item into new slot
-                                        m_playerCache.GetComponent<EquipmentTypeShield>().RemoveAugmentItemFromSlot(i, augInSlot);
-                                        m_playerCache.GetComponent<EquipmentTypeShield>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                        
-                                        //Put old item into old slot
-                                        augmentTakenFrom.SetAugmentItemIntoSlot(m_currentDraggedItemInventoryId, augInSlot);
-                                    }
-                                    else
-                                    {
-                                        augmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
-                                        m_playerCache.GetComponent<EquipmentTypeShield>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                    }
-                                }
-                            }
+                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentShieldSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeShield>(), mousePos);
                         }
                         
                         for(int i = 0; i < m_augmentPlatingSlotRects.Count; i++)
                         {
                             //Check plating
-                            if(m_augmentPlatingSlotRects[i].Contains(mousePos))
-                            {
-                                ItemWrapper augInSlot = m_playerCache.GetComponent<EquipmentTypePlating>().GetItemWrapperInSlot(i);
-                                if(m_currentDraggedItemIsFromPlayerInv)
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        ItemWrapper temp = m_currentDraggedItem;
-                                        m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(augInSlot);
-                                        
-                                        m_playerCache.GetComponent<EquipmentTypePlating>().SetAugmentItemIntoSlot(i, temp);
-                                    }
-                                    else
-                                    {
-                                        if(m_playerCache.GetComponent<EquipmentTypePlating>().SetAugmentItemIntoSlot(i, m_currentDraggedItem))
-                                        {
-                                            m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        //Put dragged item into new slot
-                                        m_playerCache.GetComponent<EquipmentTypePlating>().RemoveAugmentItemFromSlot(i, augInSlot);
-                                        m_playerCache.GetComponent<EquipmentTypePlating>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                        
-                                        //Put old item into old slot
-                                        augmentTakenFrom.SetAugmentItemIntoSlot(m_currentDraggedItemInventoryId, augInSlot);
-                                    }
-                                    else
-                                    {
-                                        augmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
-                                        m_playerCache.GetComponent<EquipmentTypePlating>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                    }
-                                }
-                            }
+                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentPlatingSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypePlating>(), mousePos);
                         }
                         
                         for(int i = 0; i < m_augmentEngineSlotRects.Count; i++)
                         {
                             //Check engine
-                            if(m_augmentEngineSlotRects[i].Contains(mousePos))
-                            {
-                                ItemWrapper augInSlot = m_playerCache.GetComponent<EquipmentTypeEngine>().GetItemWrapperInSlot(i);
-                                if(m_currentDraggedItemIsFromPlayerInv)
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        ItemWrapper temp = m_currentDraggedItem;
-                                        m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(augInSlot);
-                                        
-                                        m_playerCache.GetComponent<EquipmentTypeEngine>().SetAugmentItemIntoSlot(i, temp);
-                                    }
-                                    else
-                                    {
-                                        if(m_playerCache.GetComponent<EquipmentTypeEngine>().SetAugmentItemIntoSlot(i, m_currentDraggedItem))
-                                        {
-                                            m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if(augInSlot != null)
-                                    {
-                                        //Put dragged item into new slot
-                                        m_playerCache.GetComponent<EquipmentTypeEngine>().RemoveAugmentItemFromSlot(i, augInSlot);
-                                        m_playerCache.GetComponent<EquipmentTypeEngine>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                        
-                                        //Put old item into old slot
-                                        augmentTakenFrom.SetAugmentItemIntoSlot(m_currentDraggedItemInventoryId, augInSlot);
-                                    }
-                                    else
-                                    {
-                                        augmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
-                                        m_playerCache.GetComponent<EquipmentTypeEngine>().SetAugmentItemIntoSlot(i, m_currentDraggedItem);
-                                    }
-                                }
-                            }
+                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentEngineSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeEngine>(), mousePos);
                         }
                         
                         if(m_currentDraggedItem != null)
@@ -660,7 +452,6 @@ public class GUICShipDockScreen : BaseGUIScreen
                     {
                         GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemWrapper>().GetIcon());
                     }
-                    
                 }
                 else if(shouldRecieveInput)
                 {
@@ -915,6 +706,27 @@ public class GUICShipDockScreen : BaseGUIScreen
         float height = GUI.skin.GetStyle("Hover").CalcHeight(new GUIContent(text), 200);
         GUI.Label(new Rect(mousePos.x + 10, mousePos.y - 5, width, height), text, GUI.skin.GetStyle("Hover"));
     }
+    
+    void DrawAugmentSlot(Rect rect, List<Rect> listToAddTo, int index, ItemWrapper augment, BaseEquipment equipType, bool shouldInput, Vector3 mousePos, EventType current)
+    {
+        if(augment != null)
+            GUI.Label(rect, augment.GetIcon());
+        else
+            GUI.Label(rect, "", "Button");
+            
+        listToAddTo.Add(rect);
+        
+        if(shouldInput && current == EventType.MouseDown)
+        {
+            if(rect.Contains(mousePos))
+            {
+                augmentTakenFrom = equipType;
+                m_currentDraggedItem = augment;
+                m_currentDraggedItemIsFromPlayerInv = false;
+                m_currentDraggedItemInventoryId = index;
+            }
+        }
+    }
     #endregion
     
     #region AnimationFunctions
@@ -1003,6 +815,49 @@ public class GUICShipDockScreen : BaseGUIScreen
     #endregion
     
     #region Drag&Drop Handling
+    void CheckMouseUpIsWithinEquipmentSlotRect(Rect rectangleToCheck, int index, BaseEquipment equipmentType, Vector3 mousePos)
+    {
+        if(rectangleToCheck.Contains(mousePos))
+        {
+            ItemWrapper augInSlot = equipmentType.GetItemWrapperInSlot(index);
+            if(m_currentDraggedItemIsFromPlayerInv)
+            {
+                if(augInSlot != null)
+                {
+                    ItemWrapper temp = m_currentDraggedItem;
+                    m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
+                    m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(augInSlot);
+                    
+                    equipmentType.SetAugmentItemIntoSlot(index, temp);
+                }
+                else
+                {
+                    if(equipmentType.SetAugmentItemIntoSlot(index, m_currentDraggedItem))
+                    {
+                        m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
+                    }
+                }
+            }
+            else
+            {
+                if(augInSlot != null)
+                {
+                    //Put dragged item into new slot
+                    equipmentType.RemoveAugmentItemFromSlot(index, augInSlot);
+                    equipmentType.SetAugmentItemIntoSlot(index, m_currentDraggedItem);
+                    
+                    //Put old item into old slot
+                    augmentTakenFrom.SetAugmentItemIntoSlot(m_currentDraggedItemInventoryId, augInSlot);
+                }
+                else
+                {
+                    augmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
+                    equipmentType.SetAugmentItemIntoSlot(index, m_currentDraggedItem);
+                }
+            }
+        }
+    }
+    
     void HandleItemDrop(bool isLeftPanel, Vector2 mousePos)
     {
         NetworkInventory inventory = m_cshipCache.GetComponent<NetworkInventory>();

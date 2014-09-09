@@ -6,7 +6,7 @@ public static class ItemDescriptionHolder
 {
 	static Dictionary<int, string> m_descriptionID = new Dictionary<int, string>()
 	{
-		{0, "Type: Blaster\r\nBasic blaster firing supercharged bolts of ionised plasma"},
+        {0, "Type: Fire\r\nTier: 1\r\nWeapon: Bullets explode on contact\r\nShield: Explosive pulse when shield collapses\r\nPlating: Burn enemies in physical contact\r\nEngine: Increased straight-line speed"},
 		{1, "Type: Shotgun\r\nArchaic, slug-based weapon that fires multiple shots in a wide arc. Effective against multiple small targets"},
 		{2, "Type: Missile\r\nMissile launcher capable of both dumbfire and homing lock-on. Effective against either groups of foes or single large targets"},
 		{3, "Type: Laser\r\nBeam weaponry created by firing focused light through radioactive crystals"},
