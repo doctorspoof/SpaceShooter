@@ -73,22 +73,31 @@ public abstract class BaseEquipment : MonoBehaviour
         CalculateCurrentStats();
     }
     
-    public bool RemoveAugmentItemFromSlot(int index, ItemWrapper reference)
+    public bool RemoveAugmentItemFromSlot (int index, ItemWrapper reference)
     {
-        if(m_augmentItemSlots[index] == reference)
+        try
         {
-            m_augmentItemSlots[index] = null;
-            m_augmentSlots[index] = null;
-            return true;
+            if (m_augmentItemSlots[index] == reference)
+            {
+                m_augmentItemSlots[index] = null;
+                m_augmentSlots[index] = null;
+            }            
+            
+            else
+            {
+                throw new System.Exception ("Item at " + index + " was not expected item '" + reference.GetItemName());
+            }
         }
-        else
+
+        catch (System.Exception error)
         {
-            Debug.Log ("Item at " + index + " was not expected item '" + reference.GetItemName());
+            Debug.LogError (error.Message);
             return false;
         }
-        
+
         ResetToBaseStats();
         CalculateCurrentStats();
+        return true;
     }
 
     #endregion
