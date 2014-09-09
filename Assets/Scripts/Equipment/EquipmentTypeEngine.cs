@@ -8,52 +8,52 @@ public sealed class EquipmentTypeEngine : BaseEquipment
         //throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseAir (int tier)
+    protected override void ElementResponseAir (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseFire (int tier)
+    protected override void ElementResponseFire (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseDark (int tier)
+    protected override void ElementResponseDark (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseEarth (int tier)
+    protected override void ElementResponseEarth (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseGravity (int tier)
+    protected override void ElementResponseGravity (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseIce (int tier)
+    protected override void ElementResponseIce (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseLight (int tier)
+    protected override void ElementResponseLight (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseLightning (int tier)
+    protected override void ElementResponseLightning (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseOrganic (int tier)
+    protected override void ElementResponseOrganic (float scalar)
     {
         throw new System.NotImplementedException ();
     }
 
-    protected override void ElementResponseSpirit (int tier)
+    protected override void ElementResponseSpirit (float scalar)
     {
         throw new System.NotImplementedException ();
     }
