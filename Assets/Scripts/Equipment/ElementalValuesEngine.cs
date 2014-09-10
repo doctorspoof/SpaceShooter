@@ -87,7 +87,7 @@ namespace ElementalValuesEngine
 	{
 		public const bool   gravityControl         	= true;     //!< Enable gravity control.
 		
-		public const float  maxGravitychangeInc   	= 0.1f ;    //!< Increase the extra gravity that can be applied to the engines.
+		public const float  maxGravityChangeInc   	= 0.1f ;    //!< Increase the extra gravity that can be applied to the engines.
 	}
 	
 	
