@@ -7,7 +7,7 @@ public class AttackShieldShipCircleClockwise : IAttack
     //[SerializeField]
     //bool clockwise;
 
-    public override void Attack(EnemyScript ship, GameObject target)
+    public override void Attack(ShipEnemy ship, GameObject target)
     {
         float distance = 10.0f;
 

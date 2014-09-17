@@ -250,6 +250,7 @@ GameObject:
   - 148: {fileID: 14800000}
   - 114: {fileID: 11400006}
   - 114: {fileID: 11400018}
+  - 114: {fileID: 11400028}
   m_Layer: 11
   m_Name: Enemy Support Shield
   m_TagString: Enemy
@@ -1061,6 +1062,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_firesWithTurn: 0
+--- !u!114 &11400028
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f74cb1b1c6b86b14696d5b74647af106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!135 &13500000
 SphereCollider:
   m_ObjectHideFlags: 1

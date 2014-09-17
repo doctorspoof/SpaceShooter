@@ -7,7 +7,7 @@ public class AttackShieldShipCircleAntiClockwise : IAttack
     //[SerializeField]
     //bool clockwise;
 
-    public override void Attack(EnemyScript ship, GameObject target)
+    public override void Attack(ShipEnemy ship, GameObject target)
     {
         float weaponRange = ship.GetMinimumWeaponRange();
 

@@ -11,9 +11,8 @@ GameObject:
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
   - 114: {fileID: 11400000}
-  - 114: {fileID: 11400002}
   m_Layer: 0
-  m_Name: SpawnEffect
+  m_Name: FinalSpawnEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,13 +35,13 @@ Renderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_LightmapIndex: 255
   m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
   m_Materials:
-  - {fileID: 2100000, guid: c9b1e2d3609e5054792750e84323dd68, type: 2}
+  - {fileID: 2100000, guid: bc6df2ca5f449e44cae18a1c76fdc79d, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 0
@@ -64,30 +63,26 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14334a1ac892e6a40992fc7bdb188771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_tilesX: 8
   m_tilesY: 8
+<<<<<<< HEAD:Assets/Prefabs/Spawning/FinalSpawnEffect.prefab
   m_fps: 10
   m_startingIndex: 0
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
---- !u!114 &11400002
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 100000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fd1966a8e786d14d93937118a57d11e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  finalEffectPrefab: {fileID: 100000, guid: 4ea847b86d68ae141ad240218c512852, type: 2}
+=======
+  m_fps: 60
+  m_startingIndex: 0
+  m_isForwards: 1
+  m_shouldReverse: 0
+  m_shouldDieAfterFirstRun: 1
+>>>>>>> ai:Assets/Resources/Prefabs/Spawning/FinalSpawnEffect.prefab
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

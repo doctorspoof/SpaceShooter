@@ -268,6 +268,7 @@ GameObject:
   - 54: {fileID: 5400000}
   - 148: {fileID: 14800000}
   - 114: {fileID: 11400008}
+  - 114: {fileID: 11400024}
   m_Layer: 11
   m_Name: Enemy Player Hunter
   m_TagString: Enemy
@@ -948,6 +949,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_firesWithTurn: 0
+--- !u!114 &11400024
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f74cb1b1c6b86b14696d5b74647af106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

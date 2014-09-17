@@ -38,13 +38,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves:
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 48
-  m_singleLargeWave: []
-  m_specialWaves: []
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1

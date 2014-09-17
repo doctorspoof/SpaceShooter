@@ -4,7 +4,7 @@ using System.Collections;
 public class AttackStrafeLeft : IAttack
 {
 
-    public override void Attack(EnemyScript ship, GameObject target)
+    public override void Attack(ShipEnemy ship, GameObject target)
     {
 		float timeTakenToTravel = Vector3.Distance(target.transform.position, ship.transform.position) / ship.GetComponent<EnemyWeaponScript>().GetBulletSpeed();
 		Vector3 predictedTargetPos = target.transform.position + (target.rigidbody.velocity * timeTakenToTravel);

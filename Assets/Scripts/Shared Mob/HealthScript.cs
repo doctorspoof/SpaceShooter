@@ -4,8 +4,6 @@ using System.Collections;
 public class HealthScript : MonoBehaviour 
 {
 	//Only need to use this for the capital ship
-	[SerializeField] GameObject m_GameStateController;
-	
 	[SerializeField] GameObject m_DeathObjectRef;
 
     [SerializeField] int m_maximumShield = 100;
@@ -35,10 +33,6 @@ public class HealthScript : MonoBehaviour
     bool hasBeenHitAlready = false;
 
     #region getset
-    public void SetGameStateController(GameObject controller)
-    {
-        m_GameStateController = controller;
-    }
 
     public bool GetShouldStop()
     {
@@ -285,8 +279,7 @@ public class HealthScript : MonoBehaviour
 			//Tell gamecontroller the capital ship is under attack
 			if(this.tag == "Capital")
             {
-                GameStateController gameState = m_GameStateController.GetComponent<GameStateController>();
-                gameState.CapitalShipHasTakenDamage();
+                GameStateController.Instance().CapitalShipHasTakenDamage();
             }
 				
 		}
@@ -354,7 +347,7 @@ public class HealthScript : MonoBehaviour
 				if(this.tag == "Capital")
 				{
 					if(firer != null && firer.tag != "Asteroid")
-						m_GameStateController.GetComponent<GameStateController>().CapitalShipHasTakenDamage();
+                        GameStateController.Instance().CapitalShipHasTakenDamage();
 				}
 				
 				if(this.tag == "Enemy")
@@ -365,16 +358,16 @@ public class HealthScript : MonoBehaviour
 						{
 							//Alert enemy it's dying and should kamikaze
 							//Debug.Log("Enemy: " + this.name + " is enraged!");
-							this.GetComponent<EnemyScript>().AlertLowHP(firer);
+							this.GetComponent<ShipEnemy>().AlertLowHP(firer);
 						}
 						else if(!hasBeenHitAlready)
 						{
 							hasBeenHitAlready = true;
-							this.GetComponent<EnemyScript>().AlertFirstHit(firer);
+							this.GetComponent<ShipEnemy>().AlertFirstHit(firer);
 						}
 						else
 						{
-							this.GetComponent<EnemyScript>().NotifyEnemyUnderFire(firer);
+							this.GetComponent<ShipEnemy>().NotifyEnemyUnderFire(firer);
 						}
 					}
 				}
@@ -460,7 +453,7 @@ public class HealthScript : MonoBehaviour
 				Debug.Log ("[HealthScript]: Player has died!");
 				
 				Debug.Log ("[HealthScript]: Alerting GameController...");
-				GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDied(this.gameObject);
+                GameStateController.Instance().NotifyLocalPlayerHasDied(this.gameObject);
 				//networkView.RPC ("PropagatePlayerDeath", RPCMode.Others);
 				Debug.Log ("[HealthScript]: Destroying object...");
                 networkView.RPC("PropagateEntityDied", RPCMode.All);
@@ -478,10 +471,9 @@ public class HealthScript : MonoBehaviour
 		else if(this.tag == "Capital")
 		{
 			//Capital ship has been destroyed, game over
-			//m_GameStateController.GetComponent<GameStateController>().CapitalShipHasBeenDestroyed();
 			if(Network.isServer)
 			{
-				m_GameStateController.GetComponent<GameStateController>().TellAllClientsCapitalShipHasBeenDestroyed();
+                GameStateController.Instance().TellAllClientsCapitalShipHasBeenDestroyed();
 				//Network.Destroy(this.gameObject);
 			}
 			
@@ -494,7 +486,7 @@ public class HealthScript : MonoBehaviour
 			if(killer != null && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
                 PlayerControlScript playerShip = killer.transform.root.GetComponent<PlayerControlScript>();
-                playerShip.AddCash(this.GetComponent<EnemyScript>().GetBounty());
+                playerShip.AddCash(this.GetComponent<ShipEnemy>().GetBountyAmount());
 			}
 
             if(Network.isServer)
@@ -536,7 +528,7 @@ public class HealthScript : MonoBehaviour
 	[RPC]
 	void PropagatePlayerHasJustDied()
 	{
-		GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDied(this.gameObject);
+        GameStateController.Instance().NotifyLocalPlayerHasDied(this.gameObject);
 		//Network.Destroy (this.gameObject);
 	}
 

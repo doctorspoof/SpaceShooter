@@ -5,7 +5,7 @@ using System.Collections;
 public class IAttack
 {
 
-    public virtual void Attack(EnemyScript ship, GameObject target)
+    public virtual void Attack(ShipEnemy ship, GameObject target)
     {
 
     }

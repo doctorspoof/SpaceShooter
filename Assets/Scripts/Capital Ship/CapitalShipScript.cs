@@ -155,11 +155,10 @@ public sealed class CapitalShipScript : Ship
         RefreshTurretCache();
     }
 
-
     /// <summary>
     /// Start performs the setup for external references and resets the attached turrets.
     /// </summary>
-    void Start()
+    protected override void Start()
     {
         // Set up the external reference to the target point
         GameObject temp = GameObject.FindGameObjectWithTag ("CSTarget");

@@ -458,47 +458,47 @@ public class EventScript : MonoBehaviour
                 //spawnPoint.m_shouldStartSpawning = true;
 				break;
 			}
-			case OutcomeType.ImmediatelySpawnsEnemies:
-			{
-				if(outcome.outcomeFocusPoint != null)
-				{
-					//Immediately spawn the enemies at the focus point
-					List<GameObject> enemiesToSpawn = new List<GameObject>();
-					foreach(WaveInfo wave in outcome.enemiesAssociated)
-					{
-						foreach(GameObject enemy in wave.GetRawWave())
-						{
-							enemiesToSpawn.Add (enemy);
-						}
-					}
+            //case OutcomeType.ImmediatelySpawnsEnemies:
+            //{
+            //    if(outcome.outcomeFocusPoint != null)
+            //    {
+            //        //Immediately spawn the enemies at the focus point
+            //        List<GameObject> enemiesToSpawn = new List<GameObject>();
+            //        foreach(WaveInfo wave in outcome.enemiesAssociated)
+            //        {
+            //            foreach(GameObject enemy in wave.GetRawWave())
+            //            {
+            //                enemiesToSpawn.Add (enemy);
+            //            }
+            //        }
 
-					foreach(GameObject enemy in enemiesToSpawn)
-					{
-						Network.Instantiate(enemy, outcome.outcomeFocusPoint.position, outcome.outcomeFocusPoint.rotation, 0);
-					}
+            //        foreach(GameObject enemy in enemiesToSpawn)
+            //        {
+            //            Network.Instantiate(enemy, outcome.outcomeFocusPoint.position, outcome.outcomeFocusPoint.rotation, 0);
+            //        }
 					
-					break;
-				}
-				else
-				{
-					//Otherwise spawn it where the event object is
-					List<GameObject> enemiesToSpawn = new List<GameObject>();
-					foreach(WaveInfo wave in outcome.enemiesAssociated)
-					{
-						foreach(GameObject enemy in wave.GetRawWave())
-						{
-							enemiesToSpawn.Add (enemy);
-						}
-					}
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        //Otherwise spawn it where the event object is
+            //        List<GameObject> enemiesToSpawn = new List<GameObject>();
+            //        foreach(WaveInfo wave in outcome.enemiesAssociated)
+            //        {
+            //            foreach(GameObject enemy in wave.GetRawWave())
+            //            {
+            //                enemiesToSpawn.Add (enemy);
+            //            }
+            //        }
 					
-					foreach(GameObject enemy in enemiesToSpawn)
-					{
-						Network.Instantiate(enemy, this.transform.position, this.transform.rotation, 0);
-					}
+            //        foreach(GameObject enemy in enemiesToSpawn)
+            //        {
+            //            Network.Instantiate(enemy, this.transform.position, this.transform.rotation, 0);
+            //        }
 					
-					break;
-				}
-			}
+            //        break;
+            //    }
+            //}
 			case OutcomeType.CausesCShipDamage:
 			{
 				GameObject.FindGameObjectWithTag("Capital").GetComponent<HealthScript>().DamageMobHullDirectly(outcome.outcomeMagnitude);

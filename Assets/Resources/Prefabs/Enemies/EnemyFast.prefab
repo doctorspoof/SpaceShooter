@@ -28,14 +28,15 @@ GameObject:
   - 4: {fileID: 400002}
   - 33: {fileID: 3300002}
   - 23: {fileID: 2300002}
-  - 54: {fileID: 5400000}
   - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
-  - 148: {fileID: 14800000}
   - 114: {fileID: 11400004}
+  - 54: {fileID: 5400000}
+  - 148: {fileID: 14800000}
   - 114: {fileID: 11400008}
+  - 114: {fileID: 11400012}
   m_Layer: 11
-  m_Name: Enemy Fast
+  m_Name: EnemyFast
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -479,7 +480,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ownerSt: 
-  m_isPlayerControlScript: 0
   m_maxShipSpeed: 480
   m_currentShipSpeed: 0
   m_afterburnerIncreaseOfSpeed: 0
@@ -495,7 +495,6 @@ MonoBehaviour:
   m_pathToShieldObject: Composite Collider/Shield
   shipID: -1
   m_bountyAmount: 15
-  m_currentOrder: 0
   m_allowedAttacksForShip:
   - AttackFromBehind
   m_shipSize: 0
@@ -562,6 +561,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_firesWithTurn: 0
+--- !u!114 &11400012
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f74cb1b1c6b86b14696d5b74647af106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1
