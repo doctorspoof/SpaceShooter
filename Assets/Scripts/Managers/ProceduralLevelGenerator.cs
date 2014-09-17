@@ -532,6 +532,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         Debug.Log ("Found " + numDestroyed + " objects in a planet's orbital path. Destroying...");
         for(int i = 0; i < toDestroy.Count; i++)
         {
+            Debug.Log ("Destroyed: " + toDestroy[i].name);
             Destroy(toDestroy[i]);
         }
         
@@ -742,7 +743,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         Debug.Log ("Destroying CShip start/end points...");
         Destroy (GameObject.FindGameObjectWithTag("CSStart"));
-         Destroy (GameObject.FindGameObjectWithTag("CSTarget"));
+        Destroy (GameObject.FindGameObjectWithTag("CSTarget"));
         
         Debug.Log ("Done. Scene should now be empty!");
         

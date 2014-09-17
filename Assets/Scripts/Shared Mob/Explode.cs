@@ -118,6 +118,7 @@ public class Explode : MonoBehaviour
                 fade.SetTimes(4, 5);
             }
 
+            Debug.Log ("Explode destroyed: " + fragmentOriginal.name);
             Destroy(fragmentOriginal);
 
         }
@@ -143,6 +144,7 @@ public class Explode : MonoBehaviour
     private void DestroyEntity()
     {
         MoveFragments();
+        Debug.Log ("Explode Script called destroy on " + gameObject.name);
         Destroy(gameObject);
     }
 

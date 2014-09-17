@@ -1087,7 +1087,9 @@ public class GameStateController : MonoBehaviour
 
         if (GetPlayerFromNetworkPlayer(np) != null)
         {
-            Destroy(GetPlayerFromNetworkPlayer(np));
+            GameObject player = GetPlayerFromNetworkPlayer(np);
+            Debug.Log ("GSC destroyed " + player.name);
+            Destroy(player);
         }
     }
 

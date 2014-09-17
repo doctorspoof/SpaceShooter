@@ -209,7 +209,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400022}
   m_Layer: 0
-  m_Name: RCS
+  m_Name: Thrusters
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -317,7 +317,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: .00109656586, w: .999999464}
-  m_LocalPosition: {x: 53.2372131, y: 143.581345, z: 10}
+  m_LocalPosition: {x: -974.080994, y: -10.7127972, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400004}
@@ -968,12 +968,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ownerSt: 
   m_isPlayerControlScript: 0
-  m_maxShipSpeed: 0
+  m_maxShipSpeed: 500
   m_currentShipSpeed: 0
   m_afterburnerIncreaseOfSpeed: 0
   m_afterburnerLength: 0
   m_afterburnerRechargeTime: 0
-  m_rotateSpeed: 5
+  m_rotateSpeed: 55
   m_ramDamageMultiplier: 5
   maunuallySetWidthAndHeight: 0
   m_minWeaponRange: 0
@@ -1331,6 +1331,28 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_augmentItemSlots: []
+  m_baseStats:
+    m_baseMaxShield: 100
+    m_baseRechargeRate: 1
+    m_baseRechargeDelay: 1
+    m_shouldFireBurst: 0
+    m_fireBurstRange: 0
+    m_fireBurstDamage: 0
+    m_fireBurstFalloff: 0
+    m_debuffModifier: 1
+    m_canStaticShock: 0
+    m_staticChance: 0
+    m_staticRange: 0
+    m_staticDamage: 0
+    m_staticCooldown: 0
+    m_shouldFlashbang: 0
+    m_flashChance: 0
+    m_flashRange: 0
+    m_flashStunDuration: 0
+    m_absorbChance: 0
+    m_invisChance: 0
+    m_invisDuration: 0
+    m_deflectChance: 0
 --- !u!114 &11400038
 MonoBehaviour:
   m_ObjectHideFlags: 1

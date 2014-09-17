@@ -533,6 +533,10 @@ public class HealthScript : MonoBehaviour
 			//Tell the bullet to explode if it has AoE
 			this.GetComponent<BasicBulletScript>().DetonateBullet();
 		}
+        else if(this.tag == "Shop")
+        {
+            Debug.Log ("What the hell happened here?!");
+        }
 	}
 	[RPC]
 	void PropagatePlayerHasJustDied()

@@ -166,7 +166,10 @@ public class EquipmentWeapon : MonoBehaviour
         m_isBeaming = false;
         //Network.Destroy(currentBeam);
         for (int i = 0; i < m_currentBeams.Length; i++)
+        {
+            Debug.Log ("New weapon destroyed: " + m_currentBeams[i].name);
             Network.Destroy(m_currentBeams[i]);
+        }
 
         m_currentBeams = new GameObject[m_shotsPerFire];
         m_currentRechargeDelay = 0.0f;

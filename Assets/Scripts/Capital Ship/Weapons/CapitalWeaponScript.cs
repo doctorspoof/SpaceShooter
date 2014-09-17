@@ -362,6 +362,7 @@ public class CapitalWeaponScript : MonoBehaviour
 			{
 				if(m_currentBeams[i] != null)
 				{
+                    Debug.Log ("Capital ship destroyed beam: " + m_currentBeams[i].name);
 					Network.Destroy(m_currentBeams[i]);
 				}
 			}

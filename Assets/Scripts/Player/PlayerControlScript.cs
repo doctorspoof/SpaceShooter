@@ -118,6 +118,7 @@ public class PlayerControlScript : Ship
         m_volumeHolder = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
 
         m_gscCache = GameStateController.Instance();
+        ResetShipSpeed();
         //StartCoroutine(EnsureEquipmentValidity());
     }
 
@@ -297,11 +298,14 @@ public class PlayerControlScript : Ship
         GameObject shortestShop = null;
         foreach (GameObject shop in m_shops)
         {
-            float distance = Vector3.Distance(shop.transform.position, this.transform.position);
-            if (shortestShop == null || distance < shortestDistance)
+            if(shop != null)
             {
-                shortestDistance = distance;
-                shortestShop = shop;
+                float distance = Vector3.Distance(shop.transform.position, this.transform.position);
+                if (shortestShop == null || distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    shortestShop = shop;
+                }
             }
         }
         return shortestShop;
@@ -439,7 +443,8 @@ public class PlayerControlScript : Ship
             case DockingState.Exiting:
             {
                 //Accelerate forwards
-                this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+                Vector3 force = this.transform.up * GetCurrentMomentum() * Time.deltaTime;
+                this.rigidbody.AddForce(force);
                 
                 //If we're far enough away, stop animating
                 Vector3 dir = m_cShipCache.transform.position - transform.position;
@@ -472,6 +477,8 @@ public class PlayerControlScript : Ship
         
         //Alert animation it needs to leave
         m_currentDockingState = DockingState.Exiting;
+        
+        Debug.Log ("Player told to stop docking.");
     }
     
     [RPC] void PropagateInvincibility(bool state)
@@ -1049,6 +1056,7 @@ public class PlayerControlScript : Ship
 		//this.gameObject.AddComponent<RemotePlayerInterp>();
 		//this.GetComponent<RemotePlayerInterp>().localPlayer = this.gameObject;
 		m_owner = player;
+        ResetShipSpeed();
 	}
     #endregion
 

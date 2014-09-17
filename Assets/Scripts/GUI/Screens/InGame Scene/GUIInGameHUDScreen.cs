@@ -163,8 +163,8 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTexture(new Rect(0, 0, 150, 150), m_iconBorder);
             GUI.DrawTexture(new Rect(0, 0, 150, 150), m_playerIcon);
             
-            GUI.DrawTexture(new Rect(150, 0, 350, 50), m_healthBackground);
-            GUI.DrawTextureWithTexCoords(new Rect(150, 0, 350 * healthPercent, 50), m_healthBar, new Rect(0, 0, healthPercent, 1));
+            GUI.DrawTexture(new Rect(150, 0, 350, 50), m_healthBar);
+            GUI.DrawTextureWithTexCoords(new Rect(150, 0, 350 * healthPercent, 50), m_healthBackground, new Rect(0, 0, healthPercent, 1));
             GUI.DrawTextureWithTexCoords(new Rect(150, 0, 350 * shieldPercent, 50), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
             
             //Show spacebux
@@ -178,7 +178,7 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTexture(new Rect(0, 0, 150, 150), m_iconBorder);
             GUI.DrawTexture(new Rect(0, 0, 150, 150), m_playerIcon);
             
-            GUI.DrawTexture(new Rect(150, 0, 350, 50), m_healthBackground);
+            GUI.DrawTexture(new Rect(150, 0, 350, 50), m_healthBar);
             
             GUI.DrawTexture(new Rect(175, 80, 10, 50), m_barEnd);
             GUI.DrawTexture(new Rect(185, 80, 200, 50), m_barMid);
@@ -208,8 +208,8 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTexture(new Rect(1450, 0, 150, 150), m_iconBorder);
             GUI.DrawTexture(new Rect(1450, 0, 150, 150), m_cShipIcon);
             
-            GUI.DrawTexture(new Rect(1100, 0, 350, 50), m_healthBackground);
-            GUI.DrawTextureWithTexCoords(new Rect(1450, 0, -350 * healthPercent, 50), m_healthBar, new Rect(0, 0, healthPercent, 1));
+            GUI.DrawTexture(new Rect(1100, 0, 350, 50), m_healthBar);
+            GUI.DrawTextureWithTexCoords(new Rect(1450, 0, -350 * healthPercent, 50), m_healthBackground, new Rect(0, 0, healthPercent, 1));
             GUI.DrawTextureWithTexCoords(new Rect(1450, 0, -350 * shieldPercent, 50), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
             
             //Show CShip moolah
@@ -285,14 +285,14 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             
             
             //Now do reload bar
-            float reloadPercent = m_playerWeaponCache.GetReloadPercentage();
-            int reloadBarMaxWidth = 16;
-            int reloadBarMaxHeight = 24;
-            float reloadBarHeight = (reloadBarMaxHeight * reloadPercent);
+            //float reloadPercent = m_playerWeaponCache.GetReloadPercentage();
+            //int reloadBarMaxWidth = 16;
+            //int reloadBarMaxHeight = 24;
+            //float reloadBarHeight = (reloadBarMaxHeight * reloadPercent);
             
-            GUI.DrawTexture(new Rect(mousePos.x + 14, (Screen.height - mousePos.y) + 6, reloadBarMaxWidth, reloadBarMaxHeight), m_reloadBackground);
-            GUI.DrawTextureWithTexCoords(new Rect(mousePos.x + 14, (Screen.height - mousePos.y) + 6 + (reloadBarMaxHeight - reloadBarHeight), reloadBarMaxWidth * reloadPercent, reloadBarHeight), m_reloadBar, 
-                                        new Rect(0, 0, reloadPercent, reloadPercent));
+            //GUI.DrawTexture(new Rect(mousePos.x + 14, (Screen.height - mousePos.y) + 6, reloadBarMaxWidth, reloadBarMaxHeight), m_reloadBackground);
+            //GUI.DrawTextureWithTexCoords(new Rect(mousePos.x + 14, (Screen.height - mousePos.y) + 6 + (reloadBarMaxHeight - reloadBarHeight), reloadBarMaxWidth * reloadPercent, reloadBarHeight), m_reloadBar, 
+            //                           new Rect(0, 0, reloadPercent, reloadPercent));
         }
         
         //Reset the matrix!

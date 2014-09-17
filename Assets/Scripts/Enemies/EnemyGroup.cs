@@ -86,6 +86,7 @@ public class EnemyGroup : MonoBehaviour
     {
         if (m_shipCount <= 0 && !waitForUnitsUntilCheckingToDestroy)
         {
+            Debug.Log ("Group destroyed: " + gameObject.name);
             Destroy(this.gameObject);
             return;
         }
@@ -465,6 +466,7 @@ public class EnemyGroup : MonoBehaviour
             }
         }
 
+        Debug.Log ("Group destroyed: " + gameObject.name);
         Destroy(this.gameObject);
 
         return groups;

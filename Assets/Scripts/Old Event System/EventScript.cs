@@ -189,7 +189,10 @@ public class EventScript : MonoBehaviour
 			}
 
 			if(m_eventShouldSelfDestruct)
+            {
+                Debug.Log ("Event destroyed: " + gameObject.name);
 				Network.Destroy(this.gameObject);
+            }
 		}
 	}
 
