@@ -2,34 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum ShipSize
-{
-    Utility = 0,
-    Large = 1,
-    Medium = 2,
-    Small = 3
-}
-
 public class ShipEnemy : Ship
 {
 
-    [SerializeField]
-    int m_bountyAmount = 1;
+    [SerializeField] int m_bountyAmount = 1;
 
-    [SerializeField]
-    string[] m_allowedAttacksForShip;
+    [SerializeField] string[] m_allowedAttacksForShip;
 
-
+    
 
 
 
 
-    int m_sendCounter = 0;
-
-    [SerializeField]
-    AIShipOrder m_currentOrder = AIShipOrder.Idle;
-    GameObject m_target = null;
-    Vector2 m_targetMove;
+    
+    
+    
 
 
 
@@ -45,43 +32,7 @@ public class ShipEnemy : Ship
         return m_bountyAmount;
     }
 
-    public void SetMoveTarget(Vector2 target_)
-    {
-        if (Vector3.Distance((Vector2)transform.position, target_) < 0.8f)
-        {
-            return;
-        }
-        Debug.Log("Set move target to = " + target_);
-        m_targetMove = target_;
-    }
-
-    /// <summary>
-    /// Sets the target of this ship. Forwards the target onto any turrets this ship has.
-    /// </summary>
-    /// <param name="target"></param>
-    public void SetTarget(GameObject target)
-    {
-        m_target = target;
-
-        GameObject[] turrets = GetAttachedTurrets();
-        foreach (GameObject turret in turrets)
-        {
-            EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
-            turretScript.SetTarget(m_target);
-        }
-
-        m_currentOrder = AIShipOrder.Attack;
-    }
-
-    public GameObject GetTarget()
-    {
-        return m_target;
-    }
-
-    public Vector2 GetTargetMove()
-    {
-        return m_targetMove;
-    }
+    
 
     #endregion getset
 
@@ -96,96 +47,11 @@ public class ShipEnemy : Ship
     protected override void Start()
     {
         base.Start();
-
-        m_shipTransform = transform;
-        ResetThrusters();
-
-        //lastFramePosition = shipTransform.position;
-        //m_currentAttackType = AIAttackCollection.GetAttack(m_allowedAttacksForShip[Random.Range(0, m_allowedAttacksForShip.Length)]);
-        m_randomOffsetFromTarget = Random.Range(-GetMinimumWeaponRange(), GetMinimumWeaponRange());
-        ResetShipSpeed();
     }
 
     protected override void Update()
     {
         base.Update();
-
-        if (Network.isServer)
-        {
-
-            switch (m_currentOrder)
-            {
-                case (AIShipOrder.Attack):
-                    {
-                        if (m_target == null)
-                        {
-                            m_currentOrder = AIShipOrder.Idle;
-                            break;
-                        }
-
-                        MoveTowardTarget(m_target.transform.position);
-
-                        //Vector3 direction = Vector3.Normalize(m_target.transform.position - m_shipTransform.position);
-                        //Ray ray = new Ray(m_shipTransform.position, direction);
-
-                        //float shipDimension = 0;
-                        //Ship targetShip = m_target.GetComponent<Ship>();
-                        //if (targetShip != null)
-                        //{
-                        //    shipDimension = targetShip.GetCalculatedSizeByPosition(m_shipTransform.position);
-                        //}
-
-                        //float minWeaponRange = GetMinimumWeaponRange();
-
-                        //float totalRange = minWeaponRange <= shipDimension ? minWeaponRange + shipDimension : minWeaponRange;
-
-                        //RaycastHit hit;
-                        //if (!m_target.collider.Raycast(ray, out hit, totalRange))
-                        //{
-                        //    Vector2 normalOfDirection = GetNormal(direction);
-
-                        //    RotateTowards((Vector2)m_target.transform.position + (m_randomOffsetFromTarget * normalOfDirection));
-
-                        //    rigidbody.AddForce(m_shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
-                        //}
-                        //else
-                        //{
-                        //    m_currentAttackType.Attack(this, m_target);
-                        //}
-                        break;
-                    }
-                case (AIShipOrder.Move):
-                    {
-                        MoveTowardTarget(m_targetMove);
-
-                        if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_targetMove) < 0.64f)
-                        {
-                            m_currentOrder = AIShipOrder.Idle;
-                        }
-                        break;
-                    }
-                case(AIShipOrder.StayInFormation):
-                    {
-
-                        // if we are out of position, move towards formation position
-                        if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_targetMove) > 0.64f)
-                        {
-                            MoveTowardTarget(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
-                        }
-                        break;
-                    }
-                case(AIShipOrder.Idle):
-                    {
-                        //GetAINode().GetParent().GetEntity().RequestOrder(this);
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
-
-        }
     }
 
     public void AlertLowHP(GameObject lastHit)
@@ -203,59 +69,7 @@ public class ShipEnemy : Ship
     }
 
 
-    void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
-    {
-        m_sendCounter++;
-
-        //Handle positions manually
-        float posX = m_shipTransform.position.x;
-        float posY = m_shipTransform.position.y;
-
-        float rotZ = m_shipTransform.rotation.eulerAngles.z;
-
-        Vector3 velocity = rigidbody.velocity;
-
-        if (stream.isWriting)
-        {
-            if (m_sendCounter >= 2)
-            {
-                m_sendCounter = 0;
-                //We're the owner, send our info to other people
-                stream.Serialize(ref posX);
-                stream.Serialize(ref posY);
-                stream.Serialize(ref rotZ);
-                stream.Serialize(ref velocity);
-            }
-        }
-        else
-        {
-            //We're recieving info for this mob
-            //m_prevZRot = rotZ;
-
-            stream.Serialize(ref posX);
-            stream.Serialize(ref posY);
-            stream.Serialize(ref rotZ);
-            stream.Serialize(ref velocity);
-
-            m_shipTransform.position = new Vector3(posX, posY, 10.0f);
-            m_shipTransform.rotation = Quaternion.Euler(0, 0, rotZ);
-            rigidbody.velocity = velocity;
-
-            StartCoroutine(BeginInterp());
-        }
-    }
-
-    float t = 0;
-    IEnumerator BeginInterp()
-    {
-        t = 0;
-        while (t < 0.4f)
-        {
-            t += Time.deltaTime;
-            rigidbody.MovePosition(rigidbody.position + (rigidbody.velocity * Time.deltaTime * Time.deltaTime));
-            yield return 0;
-        }
-    }
+    
 
     public void OnPlayerWin()
     {
@@ -273,19 +87,7 @@ public class ShipEnemy : Ship
     {
     }
 
-    public GameObject[] GetAttachedTurrets()
-    {
-        List<GameObject> turrets = new List<GameObject>();
-        foreach (Transform child in transform)
-        {
-            if (child.tag == "EnemyTurret")
-            {
-                turrets.Add(child.gameObject);
-            }
-        }
-
-        return turrets.ToArray();
-    }
+    
 
     /// <summary>
     /// Gets the lowest weapon range of all the attached weapons
@@ -339,107 +141,6 @@ public class ShipEnemy : Ship
         return m_maxWeaponRange;
     }
 
-    void MoveTowardTarget(Vector2 moveTarget_)
-    {
-        // TODO: this was reliant on the EnemyGroup. Needs changing so that it can follow its own target, or stay in formation otherwise.
-        //if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position), m_targetMove) > Vector2.Distance(m_shipTransform.position, m_targetMove))
-        //{
-        //    Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
-        //    Vector2 distanceToTargetPosition = (m_targetMove - (Vector2)m_shipTransform.position);
-
-        //    float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
-        //    Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
-
-        //    //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
-        //    //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
-        //    //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
-        //    //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.transform.position));
-
-        //    RotateTowards((Vector2)m_shipTransform.position + directionToMove);
-        //}
-        //else
-        //{
-        //    RotateTowards(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
-        //}
-        RotateTowards(moveTarget_);
-        rigidbody.AddForce(m_shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
-    }
-
-    /// <summary>
-    /// Gets the closest vector distance from the current position to a valid formation position on the line from
-    /// the group to the target.
-    /// </summary>
-    /// <returns></returns>
-    public Vector2 GetVectorDistanceFromClosestFormation()
-    {
-        Vector2 currentGroupFormationPosition = GetWorldCoordinatesOfFormationPosition(m_parentTransform.position);
-        Vector2 directionFromTargetToGroupPosition = currentGroupFormationPosition - m_targetMove;
-
-        Vector2 normalOfGroupPosToTarget = GetNormal(directionFromTargetToGroupPosition).normalized;
-
-        float d = -Vector2.Dot(((Vector2)m_shipTransform.position - currentGroupFormationPosition), normalOfGroupPosToTarget);
-
-        //Debug.DrawLine(transform.position, (Vector2)transform.position + normalOfGroupPosToTarget, Color.red);
-
-        return normalOfGroupPosToTarget * d;
-    }
-
-    /// <summary>
-    /// Gets the closest distance from the current position to a valid formation position on the line from
-    /// the group to the target.
-    /// </summary>
-    /// <returns></returns>
-    public float GetDistanceFromClosestFormation()
-    {
-        return GetVectorDistanceFromClosestFormation().magnitude;
-    }
-
-    public float GetDistanceFromFormation()
-    {
-        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
-    }
-
-    public Vector2 GetNormal(Vector2 direction)
-    {
-        return new Vector2(direction.y, -direction.x);
-    }
-
-    /// <summary>
-    /// Determines whether this ship is within a specified distance to 
-    /// </summary>
-    /// <param name="distance"></param>
-    /// <returns></returns>
-    public bool InFormation(float distance)
-    {
-        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.position)) < distance;
-    }
-
-    /// <summary>
-    /// Gets the local formation position if the parent position were at the targetLocation position
-    /// </summary>
-    /// <param name="targetLocation"></param>
-    /// <returns></returns>
-    public Vector2 GetWorldCoordinatesOfFormationPosition(Vector2 targetLocation)
-    {
-        return (Vector2)(m_parentTransform.rotation * m_formationPosition) + targetLocation;
-    }
-
-    /// <summary>
-    /// Returns the formation position with regards to the rotation of the parent
-    /// </summary>
-    /// <returns></returns>
-    public Vector2 GetLocalFormationPosition()
-    {
-        return m_parentTransform.rotation * m_formationPosition;
-    }
-
-    public bool CancelOrder()
-    {
-        m_target = null;
-        m_currentOrder = AIShipOrder.Idle;
-        return true;
-    }
-
     public override bool ReceiveOrder(int orderID_, object[] listOfParameters)
     {
         switch ((AIShipOrder)orderID_)
@@ -451,13 +152,12 @@ public class ShipEnemy : Ship
                 }
             case (AIShipOrder.Move):
                 {
-                    SetMoveTarget((Vector2)listOfParameters[0]);
+                    SetTargetMove((Vector2)listOfParameters[0]);
                     return true;
                 }
             case(AIShipOrder.StayInFormation):
                 {
-                    m_currentOrder = AIShipOrder.StayInFormation;
-                    m_formationPosition = (Vector2)listOfParameters[0];
+                    SetFormationPosition((Vector2)listOfParameters[0]);
                     return true;
                 }
             default:
@@ -496,6 +196,29 @@ public class ShipEnemy : Ship
 
     public override bool RequestOrder(IEntity entity_)
     {
+        System.Type entityType = entity_.GetType();
+
+        if (entityType.Equals(typeof(ShipEnemy)))
+        {
+            List<AINode> children = GetAINode().GetChildren();
+            List<Ship> ships = new List<Ship>();
+            children.ForEach(
+                    x =>
+                    {
+                        ships.Add((Ship)x.GetEntity());
+                    }
+                );
+
+            List<Vector2> formationPositions = Formations.GenerateCircleFormation(ships);
+
+            for (int i = 0; i < children.Count; ++i)
+            {
+                children[i].ReceiveOrder((int)AIShipOrder.StayInFormation, new object[] { formationPositions[i] });
+            }
+
+            return true;
+        }
+
         return false;
     }
 
@@ -525,27 +248,6 @@ public class ShipEnemy : Ship
 
         switch ((AIShipNotifyInfo)informationID_)
         {
-            case(AIShipNotifyInfo.ChildAdded):
-            case(AIShipNotifyInfo.ChildRemoved):
-                {
-                    List<AINode> children = GetAINode().GetChildren();
-                    List<Ship> ships = new List<Ship>();
-                    children.ForEach(
-                            x =>
-                            {
-                                ships.Add((Ship)x.GetEntity());
-                            }
-                        );
-
-                    List<Vector2> formationPositions = Formations.GenerateCircleFormation(ships);
-
-                    for(int i = 0; i < children.Count; ++i)
-                    {
-                        children[i].ReceiveOrder((int)AIShipOrder.StayInFormation, new object[] { formationPositions[i] });
-                    }
-
-                    return true;
-                }
             default:
                 {
                     return false;

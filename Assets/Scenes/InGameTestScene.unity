@@ -107,7 +107,7 @@ MonoBehaviour:
   m_currentHealthModifier: 1
   m_timeCountInMinutes: 25
   m_multiplierAtTimeRequired: 5
-  m_secondsBetweenWaves: 10
+  m_secondsBetweenWaves: 40
   m_lastTimeModifier: 0
   m_lastTimeSpawn: 0
 --- !u!4 &11740236
@@ -631,12 +631,12 @@ Transform:
   m_Children:
   - {fileID: 747189060}
   - {fileID: 94703548}
-  - {fileID: 1087065111}
-  - {fileID: 539799790}
   - {fileID: 1607990018}
-  - {fileID: 520790229}
-  - {fileID: 474890346}
+  - {fileID: 539799790}
   - {fileID: 936720315}
+  - {fileID: 474890346}
+  - {fileID: 1087065111}
+  - {fileID: 520790229}
   m_Father: {fileID: 0}
 --- !u!1 &249488141
 GameObject:
@@ -7233,7 +7233,7 @@ MonoBehaviour:
   m_currentHealthModifier: 1
   m_timeCountInMinutes: 25
   m_multiplierAtTimeRequired: 5
-  m_secondsBetweenWaves: 10
+  m_secondsBetweenWaves: 40
   m_lastTimeModifier: 0
   m_lastTimeSpawn: 0
 --- !u!4 &1744561043

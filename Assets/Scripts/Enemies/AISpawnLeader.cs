@@ -94,9 +94,7 @@ public class AISpawnLeader : MonoBehaviour, IEntity, ICloneable
                 }
             }
 
-            Debug.Log(((Ship)entity_).shipID + " has requested an order");
-
-            entity_.GiveOrder((int)AIShipOrder.Attack, new object[] { target });
+            entity_.ReceiveOrder((int)AIShipOrder.Attack, new object[] { target });
 
             return true;
         }
@@ -130,8 +128,6 @@ public class AISpawnLeader : MonoBehaviour, IEntity, ICloneable
                             return false;
                         }
                     }
-
-                    Debug.Log(""+listOfParameters_[0].GetType());
 
                     ((AINode)listOfParameters_[0]).GetEntity().ReceiveOrder((int)AIShipOrder.Attack, new object[] { target });
 

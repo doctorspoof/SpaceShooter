@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 public enum AIShipOrder
 {
@@ -11,7 +11,7 @@ public enum AIShipOrder
 
 public enum AIShipRequestInfo
 {
-    Transform = 0,
+    Ship = 0,
     Move = 1,
     Target = 2
 }
@@ -21,7 +21,9 @@ public enum AIShipNotifyInfo
     ParentChanged = 0,
     ChildAdded = 1,
     ChildRemoved = 2,
-    SetFormationPosition = 3
+    SetFormationPosition = 3,
+    Fire = 4,
+    Promoted = 5
 }
 
 [RequireComponent(typeof(MeshFilter))]
@@ -55,6 +57,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     [SerializeField] string m_pathToShieldObject = "Composite Collider/Shield";
 
+    [SerializeField] AIShipOrder m_currentOrder = AIShipOrder.Idle;
+
 
 
 
@@ -67,14 +71,19 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     int shaderCounter = 0;
 
+    GameObject m_target = null;
+    List<Vector2> m_waypoints = new List<Vector2>();
+
 
     //bool coroutineIsRunning = false;
     //bool coroutineForceStopped = false;
 
 
 
-    protected Transform m_parentTransform = null;
-    protected Vector2 m_formationPosition;
+    int m_sendCounter = 0;
+
+    protected Ship m_cacheParent = null;
+     Vector2 m_formationPosition;
 
     Transform m_thrustersHolder = null, m_afterburnersHolder = null;
     Thruster[] m_thrusters = null, m_afterburners = null;
@@ -206,7 +215,72 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public void AddChildShip(Ship child_)
     {
-        m_node.AddChild(child_.GetAINode());
+        m_node.AddChild(child_.GetAINode(), true);
+    }
+
+    public List<Vector2> GetWaypoints()
+    {
+        return m_waypoints;
+    }
+
+    public void SetTargetMove(Vector2 target_)
+    {
+        if (Vector3.Distance((Vector2)transform.position, target_) < 0.8f)
+        {
+            return;
+        }
+
+        OrderMove(target_);
+
+        //Debug.Log("Received move order");
+
+        m_currentOrder = AIShipOrder.Move;
+    }
+
+    public GameObject GetTarget()
+    {
+        return m_target;
+    }
+
+    /// <summary>
+    /// Sets the target of this ship. Forwards the target onto any turrets this ship has.
+    /// </summary>
+    /// <param name="target"></param>
+    public void SetTarget(GameObject target)
+    {
+        bool moveOrderNeeded = false;
+
+        if (Vector2.Distance(transform.position, target.transform.position) > GetMinimumWeaponRange() * 2)
+        {
+            Vector2 closerPosition = Vector2.MoveTowards(target.transform.position, transform.position, GetMinimumWeaponRange() * 2);
+            SetTargetMove(closerPosition);
+            moveOrderNeeded = true;
+        }
+
+        m_target = target;
+
+        GameObject[] turrets = GetAttachedTurrets();
+        foreach (GameObject turret in turrets)
+        {
+            EnemyTurret turretScript = turret.GetComponent<EnemyTurret>();
+            turretScript.SetTarget(m_target);
+        }
+
+        if(!moveOrderNeeded)
+        {
+            m_currentOrder = AIShipOrder.Attack;
+        }
+    }
+
+    public Vector2 GetFormationPosition()
+    {
+        return m_formationPosition;
+    }
+
+    public void SetFormationPosition(Vector2 formationPosition_)
+    {
+        m_formationPosition = formationPosition_;
+        m_currentOrder = AIShipOrder.StayInFormation;
     }
 
 #endregion
@@ -232,17 +306,29 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         {
             this.Notify((int)AIShipNotifyInfo.ChildRemoved, new object[] { x });
         };
+
+        m_node.onPromoted += delegate()
+        {
+            GetAINode().SendNotify(AIHierarchyRelation.Children, (int)AIShipNotifyInfo.ParentChanged, new object[] { this });
+            if (GetAINode().GetParent() != null)
+            {
+                GetAINode().GetParent().GetEntity().RequestOrder(this);
+            }
+        };
     }
 
     protected virtual void Start()
     {
-        object[] info = GetAINode().GetParent().RequestInformation((int)AIShipRequestInfo.Transform);
+        object[] info = GetAINode().GetParent().RequestInformation((int)AIShipRequestInfo.Ship);
         if(info != null)
         {
-            m_parentTransform = (Transform)info[0];
+            m_cacheParent = (Ship)info[0];
         }
 
-        
+        m_shipTransform = transform;
+        ResetThrusters();
+
+        ResetShipSpeed();
     }
 
     protected virtual void Update()
@@ -273,9 +359,10 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                 }
             }
         }
+    }
 
-
-        // TODO: move to fixed update
+    protected virtual void FixedUpdate()
+    {
         UpdateCurrentAngularVelocity();
 
         // we cant calculate the max velocity neatly so we check to see if its larger
@@ -289,10 +376,103 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
             m_maxAngularVelocitySeen = Mathf.Abs(m_currentAngularVelocity);
         }
 
-        //Debug.Log("Ship id = " + shipID + " has " + maxThrusterVelocitySeen + " __ " + maxAngularVelocitySeen + " __ " + currentAngularVelocity);
+        if (Network.isServer)
+        {
+            switch (m_currentOrder)
+            {
+                case (AIShipOrder.Attack):
+                    {
+                        if (m_target == null)
+                        {
+                            m_currentOrder = AIShipOrder.Idle;
+                            break;
+                        }
 
-        //UpdateThrusters();
+                        MoveTowardTarget(m_target.transform.position, GetCurrentMomentum());
 
+                        //tell self to fire
+                        Notify((int)AIShipNotifyInfo.Fire, null);
+                        //tell children to fire
+                        GetAINode().SendNotify(AIHierarchyRelation.Children, (int)AIShipNotifyInfo.Fire, null);
+
+                        //Vector3 direction = Vector3.Normalize(m_target.transform.position - m_shipTransform.position);
+                        //Ray ray = new Ray(m_shipTransform.position, direction);
+
+                        //float shipDimension = 0;
+                        //Ship targetShip = m_target.GetComponent<Ship>();
+                        //if (targetShip != null)
+                        //{
+                        //    shipDimension = targetShip.GetCalculatedSizeByPosition(m_shipTransform.position);
+                        //}
+
+                        //float minWeaponRange = GetMinimumWeaponRange();
+
+                        //float totalRange = minWeaponRange <= shipDimension ? minWeaponRange + shipDimension : minWeaponRange;
+
+                        //RaycastHit hit;
+                        //if (!m_target.collider.Raycast(ray, out hit, totalRange))
+                        //{
+                        //    Vector2 normalOfDirection = GetNormal(direction);
+
+                        //    RotateTowards((Vector2)m_target.transform.position + (m_randomOffsetFromTarget * normalOfDirection));
+
+                        //    rigidbody.AddForce(m_shipTransform.up * GetCurrentMomentum() * Time.deltaTime);
+                        //}
+                        //else
+                        //{
+                        //    m_currentAttackType.Attack(this, m_target);
+                        //}
+                        break;
+                    }
+                case (AIShipOrder.Move):
+                    {
+                        if (m_waypoints.Count > 0)
+                        {
+                            MoveTowardTarget(m_waypoints[0], GetCurrentMomentum());
+
+                            if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_waypoints[0]) < 0.64f)
+                            {
+                                m_waypoints.RemoveAt(0);
+
+                                if(m_waypoints.Count == 0)
+                                {
+                                    // If we are looking at attcking a unit, follow up by setting the current order to attack
+                                    if (m_target != null)
+                                    {
+                                        m_currentOrder = AIShipOrder.Attack;
+                                    }
+                                    else
+                                    {
+                                        m_currentOrder = AIShipOrder.Idle;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    }
+                case (AIShipOrder.StayInFormation):
+                    {
+
+                        // if we are out of position, move towards formation position
+                        MoveTowardFormation();
+                        break;
+                    }
+                case (AIShipOrder.Idle):
+                    {
+                        if(GetAINode().GetParent() != null)
+                        {
+                            GetAINode().GetParent().GetEntity().RequestOrder(this);
+                        }
+                        
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+
+        }
     }
 
     /// <summary>
@@ -301,6 +481,60 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     void OnDestroy()
     {
         m_node.Destroy();
+    }
+
+    void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
+    {
+        m_sendCounter++;
+
+        //Handle positions manually
+        float posX = m_shipTransform.position.x;
+        float posY = m_shipTransform.position.y;
+
+        float rotZ = m_shipTransform.rotation.eulerAngles.z;
+
+        Vector3 velocity = rigidbody.velocity;
+
+        if (stream.isWriting)
+        {
+            if (m_sendCounter >= 2)
+            {
+                m_sendCounter = 0;
+                //We're the owner, send our info to other people
+                stream.Serialize(ref posX);
+                stream.Serialize(ref posY);
+                stream.Serialize(ref rotZ);
+                stream.Serialize(ref velocity);
+            }
+        }
+        else
+        {
+            //We're recieving info for this mob
+            //m_prevZRot = rotZ;
+
+            stream.Serialize(ref posX);
+            stream.Serialize(ref posY);
+            stream.Serialize(ref rotZ);
+            stream.Serialize(ref velocity);
+
+            m_shipTransform.position = new Vector3(posX, posY, 10.0f);
+            m_shipTransform.rotation = Quaternion.Euler(0, 0, rotZ);
+            rigidbody.velocity = velocity;
+
+            StartCoroutine(BeginInterp());
+        }
+    }
+
+    float t = 0;
+    System.Collections.IEnumerator BeginInterp()
+    {
+        t = 0;
+        while (t < 0.4f)
+        {
+            t += Time.deltaTime;
+            rigidbody.MovePosition(rigidbody.position + (rigidbody.velocity * Time.deltaTime * Time.deltaTime));
+            yield return 0;
+        }
     }
 
     public void ResetShipSpeed()
@@ -362,9 +596,104 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     }
 
-    public virtual void RotateTowards(Vector3 targetPosition)
+    void MoveTowardFormation()
     {
-        Vector2 targetDirection = targetPosition - transform.position;
+        Vector2 formationPos = GetWorldCoordinatesOfFormationPosition(m_cacheParent.transform.position);
+
+        Quaternion formationDirection = Quaternion.LookRotation(formationPos - (Vector2)transform.position, Vector3.back);
+        formationDirection.x = 0;
+        formationDirection.y = 0;
+
+        Quaternion parentCurrentDirection = m_cacheParent.transform.rotation;
+        // if we are in position, rotate to face the parents direction and then move at same speed as parent
+        float t = Mathf.Clamp(Vector2.SqrMagnitude((Vector2)transform.position - formationPos), 0f, 1f);
+
+        Quaternion target = Quaternion.Slerp(parentCurrentDirection, formationDirection, t);
+
+        RotateTowards(target);
+        MoveForward(Mathf.Lerp(m_cacheParent.GetCurrentMomentum(), GetCurrentMomentum() * 1.5f, t));
+    }
+
+    void MoveTowardTarget(Vector2 moveTarget_, float momentum_)
+    {
+        // TODO: this was reliant on the EnemyGroup. Needs changing so that it can follow its own target, or stay in formation otherwise.
+        //if (Vector2.Distance(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position), m_targetMove) > Vector2.Distance(m_shipTransform.position, m_targetMove))
+        //{
+        //    Vector2 distanceToClosestFormationPosition = GetVectorDistanceFromClosestFormation();
+        //    Vector2 distanceToTargetPosition = (m_targetMove - (Vector2)m_shipTransform.position);
+
+        //    float t = Mathf.Clamp(distanceToClosestFormationPosition.magnitude, 0, 5) / 5.0f;
+        //    Vector2 directionToMove = (distanceToTargetPosition.normalized * (1 - t)) + (distanceToClosestFormationPosition.normalized * t);
+
+        //    //Debug.DrawRay(transform.position, Vector3.Normalize(directionToMove), Color.cyan);
+        //    //Debug.DrawLine(transform.position, (Vector2)transform.position + distanceToClosestFormationPosition, Color.green);
+        //    //Debug.DrawRay(transform.position, Vector3.Normalize(distanceToTargetPosition), Color.blue);
+        //    //Debug.DrawLine(transform.position, GetWorldCoordinatesOfFormationPosition(m_parentTransform.transform.position));
+
+        //    RotateTowards((Vector2)m_shipTransform.position + directionToMove);
+        //}
+        //else
+        //{
+        //    RotateTowards(GetWorldCoordinatesOfFormationPosition(m_parentTransform.position));
+        //}
+        RotateTowards(moveTarget_);
+        MoveForward(momentum_);
+    }
+
+    public float GetDistanceFromFormation()
+    {
+        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_cacheParent.transform.position));
+    }
+
+    public Vector2 GetNormal(Vector2 direction)
+    {
+        return new Vector2(direction.y, -direction.x);
+    }
+
+    /// <summary>
+    /// Determines whether this ship is within a specified distance to 
+    /// </summary>
+    /// <param name="distance"></param>
+    /// <returns></returns>
+    public bool InFormation(float distance)
+    {
+        return Vector2.Distance(m_shipTransform.position, GetWorldCoordinatesOfFormationPosition(m_cacheParent.transform.position)) < distance;
+    }
+
+    /// <summary>
+    /// Gets the local formation position if the parent position were at the targetLocation position
+    /// </summary>
+    /// <param name="targetLocation"></param>
+    /// <returns></returns>
+    public Vector2 GetWorldCoordinatesOfFormationPosition(Vector2 targetLocation)
+    {
+        return (Vector2)(m_cacheParent.transform.rotation * m_formationPosition) + targetLocation;
+    }
+
+    /// <summary>
+    /// Returns the formation position with regards to the rotation of the parent
+    /// </summary>
+    /// <returns></returns>
+    public Vector2 GetLocalFormationPosition()
+    {
+        return m_cacheParent.transform.rotation * m_formationPosition;
+    }
+
+    public bool CancelOrder()
+    {
+        m_target = null;
+        m_currentOrder = AIShipOrder.Idle;
+        return true;
+    }
+
+    public virtual void MoveForward(float momentum_)
+    {
+        rigidbody.AddForce(m_shipTransform.up * momentum_ * Time.deltaTime);
+    }
+
+    public virtual void RotateTowards(Vector3 targetPosition_)
+    {
+        Vector2 targetDirection = targetPosition_ - transform.position;
         float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
         float currentAngle = transform.rotation.eulerAngles.z;
 
@@ -382,6 +711,11 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
             transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() / 50 * Time.deltaTime);
         }
+    }
+
+    public virtual void RotateTowards(Quaternion target_)
+    {
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, target_, GetRotateSpeed() * Time.deltaTime);
     }
 
     /// <summary>
@@ -611,7 +945,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
             shaderCounter = 0;
     }
     
-    IEnumerator ReduceShieldEffectOverTime(int i)
+    System.Collections.IEnumerator ReduceShieldEffectOverTime(int i)
     {
         float t = 0;
         //coroutineIsRunning = true;
@@ -697,9 +1031,9 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     {
         switch((AIShipRequestInfo)informationID_)
         {
-            case(AIShipRequestInfo.Transform):
+            case(AIShipRequestInfo.Ship):
                 {
-                    return new object[] { m_shipTransform };
+                    return new object[] { this };
                 }
             default:
                 {
@@ -712,9 +1046,30 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     {
         switch ((AIShipNotifyInfo)informationID_)
         {
+            case (AIShipNotifyInfo.ChildAdded):
+            case (AIShipNotifyInfo.ChildRemoved):
+                {
+                    List<AINode> children = GetAINode().GetChildren();
+                    List<Ship> ships = new List<Ship>();
+                    children.ForEach(
+                            x =>
+                            {
+                                ships.Add((Ship)x.GetEntity());
+                            }
+                        );
+
+                    List<Vector2> formationPositions = Formations.GenerateCircleFormation(ships);
+
+                    for (int i = 0; i < children.Count; ++i)
+                    {
+                        children[i].ReceiveOrder((int)AIShipOrder.StayInFormation, new object[] { formationPositions[i] });
+                    }
+
+                    return true;
+                }
             case (AIShipNotifyInfo.ParentChanged):
                 {
-                    m_parentTransform = (Transform)listOfParameters[0];
+                    m_cacheParent = (Ship)listOfParameters[0];
                     return true;
                 }
             case (AIShipNotifyInfo.SetFormationPosition):
@@ -722,11 +1077,116 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                     m_formationPosition = (Vector2)listOfParameters[0];
                     return true;
                 }
+            case(AIShipNotifyInfo.Fire):
+                {
+
+                    EnemyWeaponScript weaponScript;
+                    if((weaponScript = GetComponent<EnemyWeaponScript>()) != null)
+                    {
+                        weaponScript.MobRequestsFire();
+                        return true;
+                    }
+                    
+                    return false;
+                }
             default:
                 {
                     return false;
                 }
         }
+    }
+
+    public GameObject[] GetAttachedTurrets()
+    {
+        List<GameObject> turrets = new List<GameObject>();
+        foreach (Transform child in transform)
+        {
+            if (child.tag == "EnemyTurret")
+            {
+                turrets.Add(child.gameObject);
+            }
+        }
+
+        return turrets.ToArray();
+    }
+
+    /// <summary>
+    /// Orders a move to position
+    /// </summary>
+    /// <param name="position">Position to move to</param>
+    void OrderMove(Vector2 position)
+    {
+        Vector2 fromPosition = transform.position;
+        Collider collidedObject;
+        bool pathFound = CheckCanMoveTo(fromPosition, position, out collidedObject);
+
+        List<Vector2> moveOrderPositions = new List<Vector2>();
+
+        int count = 0;
+
+        while (!pathFound)
+        {
+            fromPosition = GetPositionForAvoidance(collidedObject, position, fromPosition, 20.0f, 10.0f);
+
+            moveOrderPositions.Add(fromPosition);
+            pathFound = CheckCanMoveTo(fromPosition, position, out collidedObject);
+
+            count++;
+            if (count > 20)
+                break;
+        }
+
+        moveOrderPositions.Add(position);
+
+        // uncomment to show movement paths
+        //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
+
+        //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
+        //{
+        //    Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
+        //}
+
+        m_waypoints = moveOrderPositions;
+
+    }
+
+    bool CheckCanMoveTo(Vector2 from, Vector2 target, out Collider collidedObject)
+    {
+        collidedObject = null;
+
+        float distanceToTarget = Vector2.Distance(from, target) + 10;
+        RaycastHit hit;
+
+        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget, 1 << Layers.environmentalDamage);
+
+        if (collidedWithSomething)
+            collidedObject = hit.collider;
+
+        return !collidedWithSomething;
+    }
+
+    Vector2 GetPositionForAvoidance(Collider collidedObject_, Vector2 targetLocation, Vector2 currentLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
+    {
+        //Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
+        float radiusOfObject = Mathf.Sqrt(Mathf.Pow(collidedObject_.transform.localScale.x, 2) + Mathf.Pow(collidedObject_.transform.localScale.y, 2)) * ((SphereCollider)collidedObject_).radius;
+        float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
+
+        Vector2[] returnee = new Vector2[2];
+        returnee[0] = new Vector2(radius, 0);
+        returnee[1] = new Vector2(-radius, 0);
+
+        Vector2 dir = (targetLocation - currentLocation).normalized;
+        Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
+
+        returnee[0] = (rotation * returnee[0]) + collidedObject_.transform.position;
+        returnee[1] = (rotation * returnee[1]) + collidedObject_.transform.position;
+
+        if (Vector2.SqrMagnitude(currentLocation - returnee[0]) < Vector2.SqrMagnitude(currentLocation - returnee[1]))
+        {
+            return returnee[0];
+        }
+        return returnee[1];
+
     }
 
     public virtual GameObject Clone()

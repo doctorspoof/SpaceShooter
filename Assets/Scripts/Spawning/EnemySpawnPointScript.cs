@@ -201,6 +201,7 @@ public class EnemySpawnPointScript : MonoBehaviour
             BindSpawns(ships, locations);
 
             Activate(true);
+
         }
     }
 

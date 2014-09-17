@@ -20,6 +20,9 @@ public class AINode
     public OnChildEvent onChildAdded;
     public OnChildEvent onChildRemoved;
 
+    public delegate void OnPromote();
+    public OnPromote onPromoted;
+
     IEntity m_entity;
 
     #region getset
@@ -29,23 +32,23 @@ public class AINode
         return m_entity;
     }
 
-    public void AddChild(AINode node_)
+    public void AddChild(AINode node_, bool activateEvent_)
     {
         m_children.Add(node_);
         node_.SetParent(this);
 
-        if (onChildAdded != null && onChildAdded.GetInvocationList().Length > 0)
+        if (onChildAdded != null && onChildAdded.GetInvocationList().Length > 0 && activateEvent_)
         {
             onChildAdded(node_);
         }
     }
 
-    public void RemoveChild(AINode node_)
+    public void RemoveChild(AINode node_, bool activateEvent_)
     {
         if (m_children.Remove(node_))
         {
             node_.SetParent(null);
-            if (onChildAdded != null && onChildRemoved.GetInvocationList().Length > 0)
+            if (onChildAdded != null && onChildRemoved.GetInvocationList().Length > 0 && activateEvent_)
             {
                 onChildRemoved(node_);
             }
@@ -228,12 +231,17 @@ public class AINode
             // Check for any children WITHOUT children of their own. If one is found, make it the leader.
             for (int i = 0; i < m_children.Count; ++i)
             {
-                if (m_children[i].GetChildren().Count > 0)
+                AINode currentChild = m_children[i];
+                if (currentChild.GetChildren().Count == 0)
                 {
-                    m_children[i].ReceiveChildren(this);
-                    m_children[i].SetParent(m_parent);
-                    m_parent.RemoveChild(this);
-                    m_parent = null;
+                    currentChild.ReceiveChildren(this);
+                    currentChild.SetParent(m_parent);
+
+                    if (currentChild.onPromoted != null && currentChild.onPromoted.GetInvocationList().Length > 0)
+                    {
+                        currentChild.onPromoted();
+                    }
+
                     return true;
                 }
             }
@@ -247,8 +255,12 @@ public class AINode
             // the child should now have been replaced and removed from the hierarchy, therefor it is safe to replace this node
             childReplacingThisOne.ReceiveChildren(this);
             childReplacingThisOne.SetParent(m_parent);
-            m_parent.RemoveChild(this);
-            m_parent = null;
+
+            if (childReplacingThisOne.onPromoted != null && childReplacingThisOne.onPromoted.GetInvocationList().Length > 0)
+            {
+                childReplacingThisOne.onPromoted();
+            }
+
             return true;
         }
 
@@ -266,7 +278,7 @@ public class AINode
         // run it backwards to make sure we dont start skipping elements when changing parents
         for(int i = node_.GetChildren().Count - 1; i >= 0; --i)
         {
-            AddChild(node_.GetChildren()[i]);
+            AddChild(node_.GetChildren()[i], true);
         }
 
         node_.GetChildren().Clear();
@@ -279,6 +291,9 @@ public class AINode
     {
         // make sure this node is replaced correctly so that the hierarchy is not broken.
         PromoteNewReplacement();
+
+        m_parent.RemoveChild(this, true);
+        m_parent = null;
     }
 
     public void Recurse(System.Action<IEntity> func_)

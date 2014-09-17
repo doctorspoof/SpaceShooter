@@ -55,7 +55,7 @@ public class WaveInfo
             IEntity newChild = GetIEntity(newObj);
 
             // set the hierarchy
-            newParent_.AddChild(newChild.GetAINode());
+            newParent_.AddChild(newChild.GetAINode(), false);
 
             // recurse
             SetHierarchy(child, newChild.GetAINode(), ref objectsInstantiated_);
@@ -218,7 +218,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
         if(parent_ != null)
         {
-            parent_.GetAINode().AddChild(newShip.GetAINode());
+            parent_.GetAINode().AddChild(newShip.GetAINode(), false);
         }
 
         return newShip;
