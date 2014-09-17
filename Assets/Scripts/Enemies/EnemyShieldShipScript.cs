@@ -7,7 +7,7 @@ public class EnemyShieldShipScript : MonoBehaviour
 
     void Start()
     {
-        supportShield = this.GetComponent<EnemyScript>().GetShield().GetComponent<EnemySupportShield>();
+        supportShield = this.GetComponent<ShipEnemy>().GetShield().GetComponent<EnemySupportShield>();
     }
 
 	void OnTriggerEnter(Collider other)
@@ -16,7 +16,7 @@ public class EnemyShieldShipScript : MonoBehaviour
 		{
             if (!supportShield.OnTriggerEnter(other))
 			{
-				//Call trigger enter on enemyScript
+				//Call trigger enter on ShipEnemy
 			}
 		}
 	}

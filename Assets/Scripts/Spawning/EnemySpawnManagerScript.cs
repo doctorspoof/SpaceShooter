@@ -1,90 +1,86 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
-[System.Serializable]
 public class WaveEnemyType
 {
     public GameObject m_enemyRef;
     public int m_numEnemy;
-
-    public WaveEnemyType Clone()
-    {
-        return new WaveEnemyType { m_enemyRef = this.m_enemyRef, m_numEnemy = this.m_numEnemy };
-    }
 }
 
-[System.Serializable]
 public class WaveInfo
 {
-    [SerializeField] string defaultOrderTargetTag = "Capital";
 
+    /// <summary>
+    /// Needs to instantiate from the children upwards. Can only instantiate the ship aft
+    /// </summary>
 
-    public WaveEnemyType[] m_enemiesOnWave;
+    public GameObject leader;
 
     #region getset
 
-    public string GetDefaultOrderTargetTag()
+    public List<GameObject> Instantiate()
     {
-        return defaultOrderTargetTag;
+        List<GameObject> objectsInstatiated = new List<GameObject>();
+
+        GameObject newObject = leader.GetComponent<Cloneable>().Clone(new Vector3(), Quaternion.identity);
+
+        SetHierarchy(GetIEntity(leader).GetAINode(), GetIEntity(newObject).GetAINode(), ref objectsInstatiated);
+
+        return objectsInstatiated;
     }
 
-    public int GetTotalSize()
-    {
-        int size = 0;
-        foreach (WaveEnemyType type in m_enemiesOnWave)
-        {
-            size += type.m_numEnemy;
-        }
-        return size;
-    }
-    public GameObject[] GetRawWave()
-    {
-        int size = 0;
-        foreach (WaveEnemyType type in m_enemiesOnWave)
-        {
-            size += type.m_numEnemy;
-        }
+    int depth = 0;
 
-        GameObject[] output = new GameObject[size];
-        int place = 0;
-        for (int i = 0; i < m_enemiesOnWave.Length; i++)
+    void SetHierarchy(AINode prefabParent_, AINode newParent_, ref List<GameObject> objectsInstantiated_)
+    {
+        depth++;
+        // Setup the parent so that it works in the scene
+        GameObject parent = ((Component)newParent_.GetEntity()).gameObject;
+
+        // add it to object list so that we can manipulate where it starts/spawns
+        objectsInstantiated_.Add(parent);
+
+        // traverse through the prefabs children and instantiate them aswell
+        foreach (AINode child in prefabParent_.GetChildren())
         {
-            for (int j = 0; j < m_enemiesOnWave[i].m_numEnemy; j++)
+            // instantiate the child
+            Component childComp = (Component)child.GetEntity();
+            GameObject newObj = childComp.GetComponent<Cloneable>().Clone(new Vector3(), Quaternion.identity);
+
+            newObj.GetComponent<Ship>().depth = depth;
+
+            // get the new instatiated objects entity
+            IEntity newChild = GetIEntity(newObj);
+
+            // set the hierarchy
+            newParent_.AddChild(newChild.GetAINode(), false);
+
+            // recurse
+            SetHierarchy(child, newChild.GetAINode(), ref objectsInstantiated_);
+        }
+        depth--;
+    }
+
+    public static IEntity GetIEntity(GameObject object_)
+    {
+        foreach (Component comp in object_.GetComponents<Component>())
+        {
+            if (comp is IEntity)
             {
-                output[place] = m_enemiesOnWave[i].m_enemyRef;
-                place++;
+                return comp as IEntity;
             }
         }
 
-        return output;
+        return null;
     }
 
     #endregion
-
-    public WaveInfo Clone()
-    {
-        WaveInfo returnee = new WaveInfo();
-        returnee.defaultOrderTargetTag = this.defaultOrderTargetTag;
-
-        returnee.m_enemiesOnWave = new WaveEnemyType[this.m_enemiesOnWave.Length];
-        for (int i = 0; i < this.m_enemiesOnWave.Length; ++i)
-        {
-            returnee.m_enemiesOnWave[i] = this.m_enemiesOnWave[i].Clone();
-        }
-
-        return returnee;
-    }
 }
 
 public class EnemySpawnManagerScript : MonoBehaviour
 {
-    [SerializeField] WaveInfo[] m_smallMultipleWaves;
-
-    [SerializeField] WaveInfo[] m_singleLargeWave;
-
-    [SerializeField] WaveInfo[] m_specialWaves;
-
     [SerializeField] GameObject[] m_allSpawnPoints;
 
     [SerializeField] float m_healthModifierIncrement;
@@ -100,14 +96,15 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
 
 
+    Dictionary<string, WaveInfo> m_waves;
+    GameObject m_wavesContainer;
+
     bool m_shouldPause = false, m_hasBegan = false;
 
     bool m_shouldStart = false;
     bool m_allDone = true;
 
-
-
-    int waveCount = 0;
+    
 
     #region getset
 
@@ -133,6 +130,14 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     #endregion getset
 
+    void Awake()
+    {
+        m_waves = new Dictionary<string, WaveInfo>();
+
+        m_wavesContainer = new GameObject("WavesPrefabsContainer");
+        m_wavesContainer.SetActive(false);
+    }
+
     void Start()
     {
         //float increaseInPercentRequired = multiplierAtTimeRequired - 1;
@@ -142,6 +147,8 @@ public class EnemySpawnManagerScript : MonoBehaviour
         m_healthModifierIncrement = increaseInPercentRequired / (m_timeCountInMinutes * 60);
 
         InitSpawnPoints();
+
+        LoadWaves("Assets/Resources/Scripts/Waves");
     }
     
     void Update()
@@ -165,6 +172,75 @@ public class EnemySpawnManagerScript : MonoBehaviour
         }
     }
 
+    void LoadWaves(string path_)
+    {
+        // Get files only with .hs extension
+        string[] filePaths = Directory.GetFiles(@path_, "*.hs");
+        foreach(string file in filePaths)
+        {
+            Debug.Log("Loading = " + file);
+            Scripter script = new Scripter(file);
+
+            script.AddFunction2<string, IEntity, IEntity>("CreateShip", CreateShip);
+            script.AddFunction2<string, Component, bool>("SetWave", SetWave);
+
+            script.AddAction1<string>("trace", Debug.Log);
+
+            script.Run();
+        }
+    }
+
+    bool SetWave(string name_, Component leader_)
+    {
+        m_waves.Add(name_, new WaveInfo { leader = leader_.gameObject });
+
+        GameObject container = new GameObject("Wave" + name_);
+        container.SetActive(false);
+        leader_.transform.parent = container.transform;
+
+        container.transform.parent = m_wavesContainer.transform;
+
+        ((IEntity)leader_).GetAINode().Recurse(
+            x => ((Component)x).transform.parent = container.transform
+            );
+
+        return true;
+    }
+
+    IEntity CreateShip(string prefabName_, IEntity parent_)
+    {
+        GameObject prefab = GetPrefab(prefabName_);
+
+        GameObject gObject = (GameObject)Instantiate(prefab);
+        gObject.SetActive(false);
+
+        IEntity newShip = GetIEntity(gObject);
+
+        if(parent_ != null)
+        {
+            parent_.GetAINode().AddChild(newShip.GetAINode(), false);
+        }
+
+        return newShip;
+    }
+
+    IEntity GetIEntity(GameObject object_)
+    {
+        foreach(Component comp in object_.GetComponents<Component>())
+        {
+            if(comp is IEntity)
+            {
+                return (IEntity)comp;
+            }
+        }
+        return null;
+    }
+
+    GameObject GetPrefab(string shipName_)
+    {
+        return UnityEngine.Resources.Load<GameObject>("Prefabs/Enemies/" + shipName_);
+    }
+
     public void BeginSpawning()
     {
         m_shouldStart = true;
@@ -178,78 +254,14 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
     void SendNextWaveToPoints()
     {
-        waveCount++;
-
         List<GameObject> spawnersToBeSpawnedAt = null;
         
-        // decide if this is a large or small wave
-        if ((waveCount % 5 == 0 && waveCount > 0))
-        {
-            List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(m_singleLargeWave[Random.Range(0, m_singleLargeWave.Length)]);
+        spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
 
-            spawnersToBeSpawnedAt = GetRandomSpawnPoints(1, 1);
+        List<WaveInfo> types = new List<WaveInfo>(m_waves.Values);
 
-            EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[0].GetComponent<EnemySpawnPointScript>();
-            spawnPoint.AddToSpawnList(waveToBePassed);
-
-        }
-        else
-        {
-
-            int random = Random.Range(0, m_smallMultipleWaves.Length);
-            WaveInfo newWave = m_smallMultipleWaves[random].Clone();
-            spawnersToBeSpawnedAt = GetRandomSpawnPoints(2, m_allSpawnPoints.Length);
-
-            float[] ratios = new float[newWave.m_enemiesOnWave.Length];
-            for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
-            {
-                ratios[i] = newWave.m_enemiesOnWave[i].m_numEnemy / (float)spawnersToBeSpawnedAt.Count;
-            }
-
-            for (int a = 0; a < spawnersToBeSpawnedAt.Count; ++a)
-            {
-                WaveInfo adjustedWave = newWave.Clone();
-
-                for (int i = 0; i < newWave.m_enemiesOnWave.Length; ++i)
-                {
-                    int shipsCount = newWave.m_enemiesOnWave[i].m_numEnemy;
-                    //                int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count),
-                    //shipsCount - a * Mathf.CeilToInt(shipsCount / (float)spawnersToBeSpawnedAt.Count));
-
-                    int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(ratios[i]), Mathf.CeilToInt(shipsCount / (float)(spawnersToBeSpawnedAt.Count - a)));
-
-                    adjustedWave.m_enemiesOnWave[i].m_numEnemy = shipsPerGroup;
-                    newWave.m_enemiesOnWave[i].m_numEnemy -= shipsPerGroup;
-
-                }
-
-                List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-                waveToBePassed.Add(adjustedWave);
-
-                //Debug.Log("a = " + a + " length = " + spawnersToBeSpawnedAt.Count);
-                EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[a].GetComponent<EnemySpawnPointScript>();
-                spawnPoint.AddToSpawnList(waveToBePassed);
-            }
-
-
-        }
-
-        // will a special wave spawn in addition?
-        if (waveCount % 4 == 0)
-        {
-            List<WaveInfo> waveToBePassed = new List<WaveInfo>();
-            waveToBePassed.Add(m_specialWaves[Random.Range(0, m_specialWaves.Length)]);
-
-            foreach (GameObject obj in spawnersToBeSpawnedAt)
-            {
-                EnemySpawnPointScript spawnPoint = obj.GetComponent<EnemySpawnPointScript>();
-                spawnPoint.AddToSpawnList(waveToBePassed);
-            }
-        }
-
-        //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().AlertAllClientsNextWaveReady();
-
+        EnemySpawnPointScript spawnPoint = spawnersToBeSpawnedAt[0].GetComponent<EnemySpawnPointScript>();
+        spawnPoint.AddToSpawnList(types[Random.Range(0, types.Count)]);
     }
 
     public List<GameObject> GetRandomSpawnPoints(int min_, int max_)

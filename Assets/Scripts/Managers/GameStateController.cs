@@ -680,7 +680,6 @@ public class GameStateController : MonoBehaviour
     {
         GameObject spawnPoint = GameObject.FindGameObjectWithTag("CSStart");
         GameObject capital = (GameObject)Network.Instantiate(m_capitalShip, spawnPoint.transform.position, spawnPoint.transform.rotation, 0);
-        capital.GetComponent<HealthScript>().SetGameStateController(this.gameObject);
         m_ingameCapitalShip = capital;
         //capital.GetComponent<Ship>()
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
@@ -1135,7 +1134,7 @@ public class GameStateController : MonoBehaviour
         /*GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in enemies)
         {
-            enemy.GetComponent<EnemyScript>().OnPlayerWin();
+            enemy.GetComponent<ShipEnemy>().OnPlayerWin();
         }
 
         //Stop CShip from moving
@@ -1232,7 +1231,7 @@ public class GameStateController : MonoBehaviour
             GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
             foreach(GameObject enemy in enemies)
             {
-                enemy.GetComponent<EnemyScript>().OnPlayerLoss();
+                enemy.GetComponent<ShipEnemy>().OnPlayerLoss();
             }
         }*/
 

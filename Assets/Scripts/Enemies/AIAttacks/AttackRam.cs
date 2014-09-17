@@ -9,7 +9,7 @@ public class AttackRam : IAttack
 
     bool hitTarget = false;
 
-    public override void Attack(EnemyScript ship, GameObject target)
+    public override void Attack(ShipEnemy ship, GameObject target)
     {
         //Debug.Log("momentum = " + ship.GetCurrentMomentum());
 

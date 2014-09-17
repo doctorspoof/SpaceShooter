@@ -113,7 +113,7 @@ public class PlayerControlScript : Ship
         base.Awake();
     }
 
-    void Start()
+    protected override void Start()
     {
         m_volumeHolder = PlayerPrefs.GetFloat("EffectVolume", 1.0f);
 

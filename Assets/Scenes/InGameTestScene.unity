@@ -102,13 +102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves:
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 48
-  m_singleLargeWave: []
-  m_specialWaves: []
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1
@@ -473,7 +466,7 @@ Transform:
   m_PrefabInternal: {fileID: 1142302129}
   m_GameObject: {fileID: 94703543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 293.243011, y: 2.68340302, z: 10}
+  m_LocalPosition: {x: 293.243011, y: 2.68340302, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 407446193}
@@ -1318,7 +1311,7 @@ Transform:
   m_PrefabInternal: {fileID: 1357474853}
   m_GameObject: {fileID: 474890345}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -206.830139, y: -194.884262, z: 10}
+  m_LocalPosition: {x: -206.830139, y: -194.884262, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 461562165}
@@ -1494,7 +1487,7 @@ Transform:
   m_PrefabInternal: {fileID: 2016122136}
   m_GameObject: {fileID: 520790224}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -292.470612, y: 4.60062408, z: 10}
+  m_LocalPosition: {x: -292.470612, y: 4.60062408, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 70375432}
@@ -1783,7 +1776,7 @@ Transform:
   m_PrefabInternal: {fileID: 1226655365}
   m_GameObject: {fileID: 539799785}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 196.274597, y: 205.108597, z: 10}
+  m_LocalPosition: {x: 196.274597, y: 205.108597, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2047468119}
@@ -1999,7 +1992,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x
@@ -2448,7 +2441,7 @@ Transform:
   m_PrefabInternal: {fileID: 618841095}
   m_GameObject: {fileID: 747189055}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.19339752, y: 285.466125, z: 10}
+  m_LocalPosition: {x: -3.19339752, y: 285.466125, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1266702295}
@@ -3705,7 +3698,7 @@ Transform:
   m_PrefabInternal: {fileID: 1301054559}
   m_GameObject: {fileID: 936720310}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -22.2700043, y: -268.406677, z: 10}
+  m_LocalPosition: {x: -22.2700043, y: -268.406677, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1660154983}
@@ -3785,6 +3778,10 @@ Prefab:
       propertyPath: m_asteroidRef.Array.data[3]
       value: 
       objectReference: {fileID: 100000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
+    - target: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_TagString
+      value: AsteroidManager
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
   m_RootGameObject: {fileID: 1142287605}
@@ -4317,7 +4314,7 @@ Transform:
   m_PrefabInternal: {fileID: 1738304216}
   m_GameObject: {fileID: 1087065106}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 227.825653, y: -169.861954, z: 10}
+  m_LocalPosition: {x: 227.825653, y: -169.861954, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1745418720}
@@ -4393,6 +4390,10 @@ Prefab:
       propertyPath: m_asteroidRef.Array.data[3]
       value: 
       objectReference: {fileID: 100000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
+    - target: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
+      propertyPath: m_TagString
+      value: AsteroidManager
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
   m_RootGameObject: {fileID: 317678361}
@@ -4499,7 +4500,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x
@@ -4623,7 +4624,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x
@@ -4701,7 +4702,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x
@@ -5033,7 +5034,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x
@@ -5697,7 +5698,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x
@@ -6542,7 +6543,7 @@ Transform:
   m_PrefabInternal: {fileID: 1199115137}
   m_GameObject: {fileID: 1607990017}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -180, y: 207, z: 10}
+  m_LocalPosition: {x: -180, y: 207, z: 11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1778959986}
@@ -7168,7 +7169,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x
@@ -7231,13 +7232,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves:
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 48
-  m_singleLargeWave: []
-  m_specialWaves: []
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1
@@ -8052,7 +8046,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 3673779886a3e6945ae0e81112a29faf, type: 2}
       propertyPath: m_LocalRotation.x

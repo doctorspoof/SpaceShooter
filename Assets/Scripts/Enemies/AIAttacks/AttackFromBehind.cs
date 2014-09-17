@@ -7,7 +7,7 @@ public class AttackFromBehind : IAttack
     //[SerializeField]
     //bool clockwise;
 
-    public override void Attack(EnemyScript ship, GameObject target)
+    public override void Attack(ShipEnemy ship, GameObject target)
     {
 
         float weaponRange = ship.GetMinimumWeaponRange();
@@ -52,7 +52,7 @@ public class AttackFromBehind : IAttack
 
     }
 
-    Vector2 GetPositionForAvoidance(EnemyScript ship, GameObject objectToAvoid, Vector2 targetLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
+    Vector2 GetPositionForAvoidance(ShipEnemy ship, GameObject objectToAvoid, Vector2 targetLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
     {
         //Vector2 directionFromObjectToThis = ship.shipTransform.position - objectToAvoid.transform.position;
         float radiusOfObject = Mathf.Sqrt(Mathf.Pow(objectToAvoid.transform.localScale.x, 2) + Mathf.Pow(objectToAvoid.transform.localScale.y, 2));
