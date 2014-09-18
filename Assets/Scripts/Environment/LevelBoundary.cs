@@ -33,7 +33,7 @@ public sealed class LevelBoundary : MonoBehaviour
     public void SetBoundaryScale (Vector3 boundaryScale)
     {
         m_boundaryScale = boundaryScale;
-        transform.localScale = m_boundaryScale;
+        transform.localScale = m_boundaryScale * 2.0f;
     }
 
     #endregion
@@ -108,6 +108,7 @@ public sealed class LevelBoundary : MonoBehaviour
 	{
 		if (destroy != null)
 		{
+            Debug.Log ("Boundary destroyed: " + destroy.name);
 			Network.Destroy (destroy);
 		}
 	}

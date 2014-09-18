@@ -114,6 +114,7 @@ public sealed class SpriteSheet : MonoBehaviour
 
                 if (m_shouldDieAfterFirstRun)
                 {
+                    Debug.Log ("Spritesheet destroyed: " + gameObject.name);
                     Destroy (gameObject);
                 }
             }
@@ -124,6 +125,7 @@ public sealed class SpriteSheet : MonoBehaviour
 
                 if (m_shouldDieAfterFirstRun)
                 {
+                    Debug.Log ("Spritesheet destroyed: " + gameObject.name);
                     Destroy (gameObject);
                 }
             }

@@ -29,7 +29,7 @@ public class LootTableScript : MonoBehaviour
             {
                 if(m_itemList[i].itemObject != null)
                 {
-                    switch(m_itemList[i].itemObject.GetComponent<ItemWrapper>().GetItemTierID())
+                    /*switch(m_itemList[i].itemObject.GetComponent<ItemWrapper>().GetItemTierID())
                     {
                         case 1:
                         {
@@ -46,7 +46,7 @@ public class LootTableScript : MonoBehaviour
                             m_tier3Items.Add(m_itemList[i]);
                             break;
                         }   
-                    }
+                    }*/
                 }
             }
             
@@ -174,7 +174,7 @@ public class LootTableScript : MonoBehaviour
 		switch (type)
 		{
 			// Weapons run from 0->29
-    		case ItemType.Weapon:
+    		/*case ItemType.Weapon:
     			range[0] = 0;
     			range[1] = 29;
     			break;
@@ -200,7 +200,7 @@ public class LootTableScript : MonoBehaviour
     		case ItemType.CapitalWeapon:
     			range[0] = 120;
     			range[1] = 129;
-    			break;
+    			break;*/
 		}
 		return range;
 	}

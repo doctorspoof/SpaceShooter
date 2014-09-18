@@ -927,6 +927,8 @@ MonoBehaviour:
   m_ringThickness: 8
   m_numAsteroids: 200
   m_shouldBeRingBelt: 1
+  m_testAsteroidSpawn: 0
+  m_asteroidManagerBlip: {fileID: 0}
 --- !u!4 &317678363
 Transform:
   m_ObjectHideFlags: 0
@@ -2474,7 +2476,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &757348484
 Transform:
   m_ObjectHideFlags: 0
@@ -3159,7 +3161,7 @@ GameObject:
   - 114: {fileID: 846995418}
   m_Layer: 20
   m_Name: LevelBoundary
-  m_TagString: Untagged
+  m_TagString: LevelBoundary
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3176,7 +3178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12cb11e053eb7460689e20b7d43a249f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_boundaryScale: {x: 650, y: 650, z: 650}
+  m_boundaryScale: {x: 1, y: 1, z: 1}
   m_destroyAsteroids: 1
   m_destroyPlayers: 0
   m_destroyEnemies: 0
@@ -4468,6 +4470,8 @@ MonoBehaviour:
   m_ringThickness: 10
   m_numAsteroids: 400
   m_shouldBeRingBelt: 1
+  m_testAsteroidSpawn: 0
+  m_asteroidManagerBlip: {fileID: 0}
 --- !u!4 &1142287607
 Transform:
   m_ObjectHideFlags: 0
@@ -8490,6 +8494,7 @@ GameObject:
   - 4: {fileID: 2099994242}
   - 33: {fileID: 2099994241}
   - 23: {fileID: 2099994240}
+  - 114: {fileID: 2099994243}
   - 114: {fileID: 2099994239}
   - 135: {fileID: 2099994238}
   - 114: {fileID: 2099994237}
@@ -8536,6 +8541,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25d95a5a15dabf04e98f0e0a232bcef7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_starTemperature: 8000
+  m_starAge: 4.5999999
+  m_starMass: 1
   m_damagePerTick: 2
   m_tickTime: .0250000004
 --- !u!23 &2099994240
@@ -8579,6 +8587,23 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
+--- !u!114 &2099994243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 11400000, guid: 630bbf4c5ecfa394c85d78806d29aaa8,
+    type: 2}
+  m_PrefabInternal: {fileID: 417165424}
+  m_GameObject: {fileID: 2099994236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25d95a5a15dabf04e98f0e0a232bcef7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_starTemperature: 26000
+  m_starAge: 4.5999999
+  m_starMass: 1
+  m_damagePerTick: 5
+  m_tickTime: .0500000007
 --- !u!1 &2142978008
 GameObject:
   m_ObjectHideFlags: 0

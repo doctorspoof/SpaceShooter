@@ -118,6 +118,10 @@ public class GUIInGameMaster : GUIBaseMaster
     #endregion
     
     #region Specific Toggles/Calls
+    public void PassThroughNewGUIAlert(string message, float displayTime)
+    {
+        GetComponent<GUIInGameHUDScreen>().AddNewGUIAlert(message, displayTime);
+    }
     public void PassThroughUpdateShopReferences()
     {
         GetComponent<GUIMapOverlayScreen>().UpdateShopList();

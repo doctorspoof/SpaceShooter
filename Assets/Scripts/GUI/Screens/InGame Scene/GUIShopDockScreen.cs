@@ -75,10 +75,10 @@ public class GUIShopDockScreen : BaseGUIScreen
             
             //Player - left
             GUI.Label(new Rect(816, 270, 164, 40), "Player:", "No Box");
-            List<ItemWrapper> playerInv = m_playerCache.GetPlayerInventory();
+            ItemWrapper[] playerInv = m_playerCache.GetComponent<Inventory>().GetFullInventory();
             Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
-            m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Count));
-            for (int i = 0; i < playerInv.Count; i++)
+            m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Length));
+            for (int i = 0; i < playerInv.Length; i++)
             {
                 GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetComponent<ItemWrapper>().GetIcon());
                 Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
@@ -126,7 +126,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                         bool insideFinalRect = finalRect.Contains(mousePos);
                         if (!m_shopConfirmBuy && insideFinalRect && !m_isRequestingItem)
                         {
-                            if(m_playerCache.CheckCanAffordAmount(m_shopCache.GetItemCost(i)))
+                            if(m_playerCache.GetComponent<Inventory>().CanAffordAmount(m_shopCache.GetItemCost(i)))
                             {
                                 //Since we're a shop, on mouseDown, open the item confirmation box
                                 shopInv.RequestServerCancel(m_currentTicket);
@@ -164,7 +164,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                 if (iconLeftX >= 324.0f)
                 {
                     
-                    m_drawnItemsSecondary.Add(weaponTemp, m_playerCache.GetEquipedWeaponItem().GetComponent<ItemWrapper>());
+                    /*m_drawnItemsSecondary.Add(weaponTemp, m_playerCache.GetEquipedWeaponItem().GetComponent<ItemWrapper>());
                     m_drawnItemsSecondary.Add(shieldTemp, m_playerCache.GetEquipedShieldItem().GetComponent<ItemWrapper>());
                     m_drawnItemsSecondary.Add(platingTemp, m_playerCache.GetEquipedPlatingItem().GetComponent<ItemWrapper>());
                     m_drawnItemsSecondary.Add(engineTemp, m_playerCache.GetEquipedEngineItem().GetComponent<ItemWrapper>());
@@ -172,7 +172,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                     GUI.DrawTexture(weaponTemp, m_playerCache.GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetIcon());
                     GUI.DrawTexture(shieldTemp, m_playerCache.GetEquipedShieldItem().GetComponent<ItemWrapper>().GetIcon());
                     GUI.DrawTexture(platingTemp, m_playerCache.GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetIcon());
-                    GUI.DrawTexture(engineTemp, m_playerCache.GetEquipedEngineItem().GetComponent<ItemWrapper>().GetIcon());
+                    GUI.DrawTexture(engineTemp, m_playerCache.GetEquipedEngineItem().GetComponent<ItemWrapper>().GetIcon());*/
                 }
             }
             
@@ -208,9 +208,9 @@ public class GUIShopDockScreen : BaseGUIScreen
                     //Drop item whereever you are
                     if(weaponTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetItemType() == ItemType.Weapon)
+                        /*if(m_currentDraggedItem.GetItemType() == ItemType.Weapon)
                         {
-                            m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
+                            //m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;
@@ -220,13 +220,13 @@ public class GUIShopDockScreen : BaseGUIScreen
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;  
-                        }
+                        }*/
                     }
                     else if(shieldTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetItemType() == ItemType.Shield)
+                        /*if(m_currentDraggedItem.GetItemType() == ItemType.Shield)
                         {
-                            m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
+                            //m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;
@@ -236,13 +236,13 @@ public class GUIShopDockScreen : BaseGUIScreen
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;  
-                        }
+                        }*/
                     }
                     else if(platingTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetItemType() == ItemType.Plating)
+                        /*if(m_currentDraggedItem.GetItemType() == ItemType.Plating)
                         {
-                            m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
+                            //m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;
@@ -252,13 +252,13 @@ public class GUIShopDockScreen : BaseGUIScreen
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;  
-                        }
+                        }*/
                     }
                     else if(engineTemp.Contains(mousePos))
                     {
-                        if(m_currentDraggedItem.GetItemType() == ItemType.Engine)
+                        /*if(m_currentDraggedItem.GetItemType() == ItemType.Engine)
                         {
-                            m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
+                            //m_playerCache.EquipItemInSlot(m_currentDraggedItemInventoryId);
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;
@@ -268,7 +268,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                             m_currentDraggedItem = null;
                             m_currentDraggedItemInventoryId = -1;
                             m_currentDraggedItemIsFromPlayerInv = false;  
-                        }
+                        }*/
                     }
                     else
                     {
@@ -348,7 +348,7 @@ public class GUIShopDockScreen : BaseGUIScreen
             {    
                 if (from == ItemOwner.PlayerInventory)
                 {
-                    m_playerCache.RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
+                    //m_playerCache.RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
                 }
             }
             else
@@ -391,13 +391,14 @@ public class GUIShopDockScreen : BaseGUIScreen
                         
                         if (inventory.RemoveItemFromServer (m_currentTicket))
                         {
-                            m_playerCache.AddItemToInventory (item);
+                            //m_playerCache.AddItemToInventory (item);
                             
                             if(fromShop)
                             {
                                 m_shopConfirmBuy = false;
                                 m_confirmBuyItem = null;
-                                m_playerCache.RemoveCash(costIfShop);
+                                Inventory playerInv = m_playerCache.GetComponent<Inventory>();
+                                playerInv.SetCash(playerInv.GetCurrentCash() - costIfShop);
                             }
                         }
                         
@@ -410,32 +411,32 @@ public class GUIShopDockScreen : BaseGUIScreen
                     }
                     case ItemOwner.PlayerEquipment:
                     {   
-                        if (item.GetItemType() != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
+                        /*if (item.GetItemType() != ItemType.CapitalWeapon && inventory.RemoveItemFromServer (m_currentTicket))
                         {
-                            ItemWrapper oldEquipment = m_playerCache.GetEquipmentFromSlot (equipmentSlot);
+                            //ItemWrapper oldEquipment = m_playerCache.GetEquipmentFromSlot (equipmentSlot);
                             
-                            if (m_playerCache.IsInventoryFull())
+                            if (m_playerCache.GetComponent<Inventory>().IsInventoryFull())
                             {
-                                ItemWrapper lastItem = m_playerCache.GetPlayerInventory()[m_playerCache.GetPlayerInventory().Count - 1];
+                                //ItemWrapper lastItem = m_playerCache.GetPlayerInventory()[m_playerCache.GetPlayerInventory().Count - 1];
                                 
                                 // This little wonder makes me want to vomit and should only be used until the demo night
                                 // Remove the last item from the players inventory then equip the new item from that
-                                m_playerCache.RemoveItemFromInventory (lastItem);
-                                m_playerCache.AddItemToInventory (item);
-                                m_playerCache.EquipItemInSlot (m_playerCache.GetPlayerInventory().Count - 1);
-                                m_playerCache.RemoveItemFromInventory (oldEquipment);
-                                m_playerCache.AddItemToInventory (lastItem);
+                                //m_playerCache.RemoveItemFromInventory (lastItem);
+                                //m_playerCache.AddItemToInventory (item);
+                                //m_playerCache.EquipItemInSlot (m_playerCache.GetPlayerInventory().Count - 1);
+                                //m_playerCache.RemoveItemFromInventory (oldEquipment);
+                                //m_playerCache.AddItemToInventory (lastItem);
                                 
                                 // Move the item to the CShip inventory since the players inventory is full
-                                inventory.RequestServerAdd (oldEquipment);
+                                //inventory.RequestServerAdd (oldEquipment);
                                 StartCoroutine (AwaitTicketRequestResponse (inventory, RequestType.ItemAdd, to, from));
                             }
                             else
                             {
-                                m_playerCache.AddItemToInventory (item);
-                                m_playerCache.EquipItemInSlot (m_playerCache.GetPlayerInventory().Count - 1);
+                                //m_playerCache.AddItemToInventory (item);
+                                //m_playerCache.EquipItemInSlot (m_playerCache.GetPlayerInventory().Count - 1);
                             }
-                        }
+                        }*/
                         break;
                     }
                         

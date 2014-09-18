@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 
 
@@ -7,11 +7,8 @@
 /// </summary>
 [System.Serializable] public enum ItemType
 {
-    Weapon = 0,
-    Shield = 1,
-    Engine = 2,
-    Plating = 3,
-    CapitalWeapon = 4
+    Augment = 0,
+    Utilty = 1
 }
 
 
@@ -25,11 +22,10 @@ public class ItemWrapper : MonoBehaviour
 {
     #region Unity modifiable variables
 
-    [SerializeField]                    ItemType m_itemType = ItemType.Weapon;  //!< Indicates which ItemType the wrapper represents.
+    [SerializeField]                    ItemType m_itemType = ItemType.Augment;  //!< Indicates which ItemType the wrapper represents.
     
     [SerializeField, Range (0, 129)]    int m_itemID = 0;                       //!< The ID which can be used to reconstruct the ItemWrapper. Allows for sending ItemWrapper
                                                                                 //!< information over the network.
-    [SerializeField, Range (1, 3)]      int m_itemTierID = 1;                   //!< The actual tier of the item, useful in shop inventory algorithms.
     [SerializeField, Range (0, 10000)]  int m_baseCost = 0;                     //!< The base cost which is used to calculate pricing in shops.
     
     [SerializeField]                    string m_itemName = null;               //!< The name of the item.
@@ -60,9 +56,17 @@ public class ItemWrapper : MonoBehaviour
     }
 
 
-    public int GetItemTierID()
+    public int GetAugmentTierID()
     {
-        return m_itemTierID;
+        if(m_itemType == ItemType.Augment)
+        {
+            return m_itemPrefab.GetComponent<Augment>().GetTier();
+        }
+        else
+        {
+            Debug.Log ("Requested tier of item when item was not an augment!");
+            return -1;
+        }
     }
 
 
