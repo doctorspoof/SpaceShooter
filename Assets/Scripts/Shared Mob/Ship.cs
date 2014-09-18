@@ -688,6 +688,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public virtual void MoveForward(float momentum_)
     {
+        Debug.Log ("AI is attempting to move with momentum of: " + momentum_);
         rigidbody.AddForce(m_shipTransform.up * momentum_ * Time.deltaTime);
     }
 
@@ -1160,7 +1161,10 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget, 1 << Layers.environmentalDamage);
 
         if (collidedWithSomething)
+        {
+            Debug.Log ("Move order hit object: " + hit.collider.name);
             collidedObject = hit.collider;
+        }
 
         return !collidedWithSomething;
     }

@@ -144,7 +144,6 @@ public class Explode : MonoBehaviour
     private void DestroyEntity()
     {
         MoveFragments();
-        Debug.Log ("Explode Script called destroy on " + gameObject.name);
         Destroy(gameObject);
     }
 

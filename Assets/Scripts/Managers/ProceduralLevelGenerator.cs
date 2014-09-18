@@ -475,7 +475,12 @@ public class ProceduralLevelGenerator : MonoBehaviour
         GameObject end = new GameObject("Capital End Point");
         end.transform.position = new Vector3((furthestExtent + 50.0f), 0, 10.5f);
         end.transform.rotation = Quaternion.Euler(0, 0, 90);
+        end.AddComponent<SphereCollider>();
+        end.GetComponent<SphereCollider>().radius = 5.0f;
+        end.GetComponent<SphereCollider>().isTrigger = true;
+        end.AddComponent<CapitalShipTarget>();
         end.tag = "CSTarget";
+        end.layer = Layers.objective;
         
         #endregion
     }

@@ -184,6 +184,8 @@ public sealed class CapitalShipScript : Ship
         {
             ResetAttachedTurretsFromWrappers();
         }
+        
+        ResetShipSpeed();
     }
 
 
@@ -192,7 +194,9 @@ public sealed class CapitalShipScript : Ship
     /// </summary>
     void FixedUpdate()
     {
-        if (m_shouldMoveToTarget && m_targetPoint != null)
+        base.FixedUpdate();
+    
+        /*if (m_shouldMoveToTarget && m_targetPoint != null)
         {
             // Rotate to the correct direction
             Vector3 dir = m_targetPoint.position - transform.position;
@@ -211,7 +215,7 @@ public sealed class CapitalShipScript : Ship
                 this.audio.volume = PlayerPrefs.GetFloat ("EffectVolume", 1.0f);
                 this.audio.Play();
             }
-        }
+        }*/
 
         // Since enemies will only move in Update() we might as well only allow the target list to be updated every FixedUpdate()
         m_updatedTargetListThisFrame = false;

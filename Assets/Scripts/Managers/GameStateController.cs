@@ -683,6 +683,10 @@ public class GameStateController : MonoBehaviour
         m_ingameCapitalShip = capital;
         
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
+        
+        GameObject target = GameObject.FindGameObjectWithTag("CSTarget");
+        capital.GetComponent<CapitalShipScript>().SetTargetMove(new Vector2(target.transform.position.x, target.transform.position.y));
+        Debug.Log ("Told CShip to move to: " + target.transform.position);
     }
 
     [RPC] void SendCShipRefToClients()
@@ -1156,16 +1160,16 @@ public class GameStateController : MonoBehaviour
     
     public void CapitalShipHasTakenDamage()
     {
-        //Debug.Log ("Capital ship taking damage");
-        if (m_capitalDamageTimer >= 5.0f)
+        if (m_capitalDamageTimer >= 3.0f)
         {
             networkView.RPC("PropagateCapitalShipUnderFire", RPCMode.All);
+            m_capitalDamageTimer = 0.0f;
         }
     }
 
     [RPC] void PropagateCapitalShipUnderFire()
     {
-        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship is under attack!", 1.5f);
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship is under attack!", 3.0f);
     }
 
     void ResendLossState()

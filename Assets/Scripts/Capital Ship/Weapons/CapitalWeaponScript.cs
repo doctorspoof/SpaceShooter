@@ -532,8 +532,11 @@ public class CapitalWeaponScript : MonoBehaviour
 	{
 		m_inTurretSlotNum = location;
 		GameObject cship = GameObject.FindGameObjectWithTag("Capital");
-		this.transform.parent = cship.GetComponent<CapitalShipScript>().GetCTurretHolderWithID(location).transform;
-		this.transform.localPosition = m_posOffset;
+        if(cship != null)
+        {
+    		this.transform.parent = cship.GetComponent<CapitalShipScript>().GetCTurretHolderWithID(location).transform;
+    		this.transform.localPosition = m_posOffset;
+        }
 	}
 
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
