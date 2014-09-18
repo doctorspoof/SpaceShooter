@@ -190,7 +190,7 @@ public sealed class CapitalShipScript : Ship
     /// <summary>
     /// Moves the ship if necessary
     /// </summary>
-    void FixedUpdate()
+    protected override void FixedUpdate()
     {
         if (m_shouldMoveToTarget && m_targetPoint != null)
         {

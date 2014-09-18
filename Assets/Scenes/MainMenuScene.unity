@@ -657,6 +657,7 @@ MonoBehaviour:
   m_numAsteroids: 200
   m_shouldBeRingBelt: 1
   m_testAsteroidSpawn: 0
+  m_asteroidManagerBlip: {fileID: 0}
 --- !u!4 &317678363
 Transform:
   m_ObjectHideFlags: 0
@@ -3371,6 +3372,7 @@ MonoBehaviour:
   m_numAsteroids: 400
   m_shouldBeRingBelt: 1
   m_testAsteroidSpawn: 0
+  m_asteroidManagerBlip: {fileID: 0}
 --- !u!4 &1142287607
 Transform:
   m_ObjectHideFlags: 0
@@ -6498,7 +6500,6 @@ GameObject:
   - 4: {fileID: 2099994242}
   - 33: {fileID: 2099994241}
   - 23: {fileID: 2099994240}
-  - 114: {fileID: 2099994243}
   - 114: {fileID: 2099994239}
   - 135: {fileID: 2099994238}
   - 114: {fileID: 2099994237}
@@ -6546,6 +6547,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_starTemperature: 22000
+  m_starAge: 4.5999999
+  m_starMass: 1
   m_damagePerTick: 2
   m_tickTime: .0250000004
 --- !u!23 &2099994240
@@ -6589,21 +6592,6 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
---- !u!114 &2099994243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11400000, guid: 630bbf4c5ecfa394c85d78806d29aaa8,
-    type: 2}
-  m_PrefabInternal: {fileID: 417165424}
-  m_GameObject: {fileID: 2099994236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 25d95a5a15dabf04e98f0e0a232bcef7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_starTemperature: 22000
-  m_damagePerTick: 5
-  m_tickTime: .0500000007
 --- !u!1 &2142978008
 GameObject:
   m_ObjectHideFlags: 0

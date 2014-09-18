@@ -152,7 +152,7 @@ public class ShipEnemy : Ship
                 }
             case (AIShipOrder.Move):
                 {
-                    SetTargetMove((Vector2)listOfParameters[0]);
+                    AddMoveWaypoint((Vector2)listOfParameters[0]);
                     return true;
                 }
             case(AIShipOrder.StayInFormation):
