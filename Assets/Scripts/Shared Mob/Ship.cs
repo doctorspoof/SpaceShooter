@@ -369,11 +369,11 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         if (m_showMovementWaypoints)
         {
-            Debug.DrawLine(transform.position, m_waypoints[0], Color.red, 999);
+            Debug.DrawLine(transform.position, m_waypoints[0], Color.red);
 
             for (int i = 0; i < m_waypoints.Count - 1; ++i)
             {
-                Debug.DrawLine(m_waypoints[i], m_waypoints[i + 1], Color.red, 999);
+                Debug.DrawLine(m_waypoints[i], m_waypoints[i + 1], Color.red);
             }
         }
     }
@@ -705,7 +705,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public virtual void MoveForward(float momentum_)
     {
-        Debug.Log ("AI is attempting to move with momentum of: " + momentum_);
+        //Debug.Log ("AI is attempting to move with momentum of: " + momentum_);
         rigidbody.AddForce(m_shipTransform.up * momentum_ * Time.deltaTime);
     }
 
@@ -717,18 +717,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
 
-        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
-        {
-            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
-        }
-        else
-        {
-            Quaternion rotate = Quaternion.LookRotation(targetDirection, Vector3.back);
-            rotate.x = 0;
-            rotate.y = 0;
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() / 50 * Time.deltaTime);
-        }
+        transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
     }
 
     public virtual void RotateTowards(Quaternion target_)

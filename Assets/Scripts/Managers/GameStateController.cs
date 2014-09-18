@@ -685,7 +685,7 @@ public class GameStateController : MonoBehaviour
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
         
         GameObject target = GameObject.FindGameObjectWithTag("CSTarget");
-        capital.GetComponent<CapitalShipScript>().SetTargetMove(new Vector2(target.transform.position.x, target.transform.position.y));
+        capital.GetComponent<CapitalShipScript>().AddMoveWaypoint(new Vector2(target.transform.position.x, target.transform.position.y));
         Debug.Log ("Told CShip to move to: " + target.transform.position);
     }
 

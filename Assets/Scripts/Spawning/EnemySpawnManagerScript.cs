@@ -148,7 +148,8 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
         InitSpawnPoints();
 
-        LoadWaves("Assets/Resources/Scripts/Waves");
+        LoadHardCodedWaves();
+        //LoadWaves("Assets/Resources/Scripts/Waves");
     }
     
     void Update()
@@ -182,10 +183,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             Scripter script = new Scripter();
             script.LoadFromFile(file);
 
-            script.AddFunction2<string, IEntity, IEntity>("CreateShip", CreateShip);
-            script.AddFunction2<string, Component, bool>("SetWave", SetWave);
-
-            script.AddAction1<string>("trace", Debug.Log);
+            AddFunctionsToWaveScripter(script);
 
             script.Run();
         }
@@ -291,5 +289,85 @@ public class EnemySpawnManagerScript : MonoBehaviour
         {
             spawner.GetComponent<EnemySpawnPointScript>().SetShouldPause(pauseStatus);
         }
+    }
+
+    void LoadHardCodedWaves()
+    {
+
+        string[] scripts = {
+                               // Light enemy wave 3x5
+
+                                // leader of wave
+                                "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                                "waveLeader.AddTargetTag(\"Capital\");" +
+                                "waveLeader.AddTargetTag(\"Player\");" +
+
+                                // group 1
+                                "var subLeader1 = CreateShip(\"EnemyFast\", waveLeader);" +
+                                "var child11 = CreateShip(\"EnemyFast\", subLeader1);" +
+                                "var child12 = CreateShip(\"EnemyFast\", subLeader1);" +
+                                "var child13 = CreateShip(\"EnemyFast\", subLeader1);" +
+                                "var child14 = CreateShip(\"EnemyFast\", subLeader1);" +
+
+                                // group 2
+                                "var subLeader2 = CreateShip(\"EnemyFast\", waveLeader);" +
+                                "var child21 = CreateShip(\"EnemyFast\", subLeader2);" +
+                                "var child22 = CreateShip(\"EnemyFast\", subLeader2);" +
+                                "var child23 = CreateShip(\"EnemyFast\", subLeader2);" +
+                                "var child24 = CreateShip(\"EnemyFast\", subLeader2);" +
+
+                                // group 3
+                                "var subLeader3 = CreateShip(\"EnemyFast\", waveLeader);" +
+                                "var child31 = CreateShip(\"EnemyFast\", subLeader3);" +
+                                "var child32 = CreateShip(\"EnemyFast\", subLeader3);" +
+                                "var child33 = CreateShip(\"EnemyFast\", subLeader3);" +
+                                "var child34 = CreateShip(\"EnemyFast\", subLeader3);" +
+
+                                "SetWave(\"EnemyFast\", waveLeader);",
+
+                                //Normal enemy wave 3x3
+
+                                // leader of wave
+                                "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                                "waveLeader.AddTargetTag(\"Capital\");" +
+                                "waveLeader.AddTargetTag(\"Player\");" +
+
+                                // group 1
+                                "var subLeader1 = CreateShip(\"EnemyNormal\", waveLeader);" +
+                                "var child11 = CreateShip(\"EnemyNormal\", subLeader1);" +
+                                "var child12 = CreateShip(\"EnemyNormal\", subLeader1);" +
+
+                                // group 2
+                                "var subLeader2 = CreateShip(\"EnemyNormal\", waveLeader);" +
+                                "var child21 = CreateShip(\"EnemyNormal\", subLeader2);" +
+                                "var child22 = CreateShip(\"EnemyNormal\", subLeader2);" +
+
+                                // group 3
+                                "var subLeader3 = CreateShip(\"EnemyNormal\", waveLeader);" +
+                                "var child31 = CreateShip(\"EnemyNormal\", subLeader3);" +
+                                "var child32 = CreateShip(\"EnemyNormal\", subLeader3);" +
+
+                                "SetWave(\"EnemyNormal\", waveLeader);"
+                           };
+
+        foreach (string haxescript in scripts)
+        {
+            Debug.Log("Loading = " + haxescript);
+            Scripter script = new Scripter();
+            script.LoadFromString(haxescript);
+
+            AddFunctionsToWaveScripter(script);
+
+            script.Run();
+        }
+
+    }
+
+    void AddFunctionsToWaveScripter(Scripter scripter_)
+    {
+        scripter_.AddFunction2<string, IEntity, IEntity>("CreateShip", CreateShip);
+        scripter_.AddFunction2<string, Component, bool>("SetWave", SetWave);
+
+        scripter_.AddAction1<string>("trace", Debug.Log);
     }
 }
