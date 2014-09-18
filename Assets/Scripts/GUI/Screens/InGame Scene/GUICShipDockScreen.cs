@@ -15,6 +15,7 @@ public class GUICShipDockScreen : BaseGUIScreen
     [SerializeField]        Texture m_dockCShipImage;
 
     /* Internal Members */
+    bool        m_cshipCanSectorJump                    = false;
     bool        m_isRequestingItem                      = false;
     bool        m_transferFailed                        = false;
     bool        m_previousMouseZero                     = false;
@@ -67,6 +68,10 @@ public class GUICShipDockScreen : BaseGUIScreen
     List<Rect> m_augmentEngineSlotRects;
     
     #region Setters
+    public void SetCShipCanSectorJump(bool state)
+    {
+        m_cshipCanSectorJump = state;
+    }
     public void SetCShipReference(GameObject cship)
     {
         m_cshipCache = cship.GetComponent<CapitalShipScript>();
@@ -481,6 +486,14 @@ public class GUICShipDockScreen : BaseGUIScreen
                     }
                 }
                 
+                if(m_cshipCanSectorJump)
+                {
+                    if(GUI.Button (new Rect(300, 200, 400, 300), "Jump"))
+                    {
+                        
+                    }
+                }
+                
                 /*if (GUI.Button(new Rect(394, 250, 408, 400), "", "label"))
                 {
                     //Change back to dual panel
@@ -593,8 +606,7 @@ public class GUICShipDockScreen : BaseGUIScreen
         //Leave button
         if (shouldRecieveInput && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
         {
-            //This shouldn't be used anymore, instead GSC should be told when the player is docked or not docked, and that info passed back to the GUI
-            m_gscCache.SwitchToInGame();
+            m_gscCache.LeaveCShip();
             
             Screen.showCursor = false;
             m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellPlayerStopDocking();

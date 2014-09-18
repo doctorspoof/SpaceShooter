@@ -94,6 +94,8 @@ public class GameStateController : MonoBehaviour
 
 
     int m_numDeadPCs = 0;
+    int m_numDockedPlayers = 0;
+    bool m_cshipAtJumpzone = false;
 
     string m_ownName;
 
@@ -272,6 +274,15 @@ public class GameStateController : MonoBehaviour
         {
             Debug.Log("GUI reference is null, finding new GUIMaster in scene...");
             m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
+        }
+    
+        if(m_cshipAtJumpzone && m_numDockedPlayers >= m_connectedPlayers.Count)
+        {
+            m_GUIManager.GetComponent<GUIInGameMaster>().ToggleShowSectorJump(true);
+        }
+        else
+        {
+            m_GUIManager.GetComponent<GUIInGameMaster>().ToggleShowSectorJump(false);
         }
     
         if (m_volumeHolder != PlayerPrefs.GetFloat("MusicVolume"))
@@ -646,6 +657,8 @@ public class GameStateController : MonoBehaviour
         SpawnAShip(Network.player);
         ChangeToInGame();
         
+        m_numDockedPlayers = m_connectedPlayers.Count;
+        
         //Begin the game!
         m_gameStopped = false;
         networkView.RPC("TellLocalGSCGameHasBegun", RPCMode.Others);
@@ -685,7 +698,7 @@ public class GameStateController : MonoBehaviour
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
         
         GameObject target = GameObject.FindGameObjectWithTag("CSTarget");
-        capital.GetComponent<CapitalShipScript>().SetTargetMove(new Vector2(target.transform.position.x, target.transform.position.y));
+        capital.GetComponent<CapitalShipScript>().AddMoveWaypoint(new Vector2(target.transform.position.x, target.transform.position.y));
         Debug.Log ("Told CShip to move to: " + target.transform.position);
     }
 
@@ -968,6 +981,12 @@ public class GameStateController : MonoBehaviour
     }
     
     //In-Game Screens
+    public void LeaveCShip()
+    {
+        //Special form of SwitchToInGame used to count docked players
+        --m_numDockedPlayers;
+        SwitchToInGame();
+    }
     public void SwitchToInGame()
     {
         ChangeGameState(GameState.InGame);
@@ -1128,6 +1147,7 @@ public class GameStateController : MonoBehaviour
 
     public void TellEveryoneCapitalShipArrivesAtVictoryPoint()
     {
+        m_cshipAtJumpzone = true;
         networkView.RPC("CapitalShipArrivesAtVictoryPoint", RPCMode.All);
     }
 
