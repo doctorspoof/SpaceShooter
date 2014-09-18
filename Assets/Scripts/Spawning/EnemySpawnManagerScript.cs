@@ -179,7 +179,8 @@ public class EnemySpawnManagerScript : MonoBehaviour
         foreach(string file in filePaths)
         {
             Debug.Log("Loading = " + file);
-            Scripter script = new Scripter(file);
+            Scripter script = new Scripter();
+            script.LoadFromFile(file);
 
             script.AddFunction2<string, IEntity, IEntity>("CreateShip", CreateShip);
             script.AddFunction2<string, Component, bool>("SetWave", SetWave);
