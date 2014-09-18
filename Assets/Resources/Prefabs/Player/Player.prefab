@@ -966,8 +966,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 832418e1ee81c394c8c38e481743f320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  depth: 0
   m_ownerSt: 
-  m_isPlayerControlScript: 0
   m_maxShipSpeed: 500
   m_currentShipSpeed: 0
   m_afterburnerIncreaseOfSpeed: 0
@@ -980,7 +980,9 @@ MonoBehaviour:
   m_maxWeaponRange: 0
   m_shipWidth: 0
   m_shipHeight: 0
+  m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
+  m_currentOrder: 0
   shipID: -1
   m_shouldRecieveInput: 1
   m_baseEngineSpeed: 5
@@ -1002,7 +1004,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0640b6b76d0ec6d4dbd7bfb57c87b620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
   m_maximumShield: 100
   m_currentShield: 0
@@ -1026,11 +1027,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_augmentItemSlots: []
+  m_bulletRef: {fileID: 100000, guid: 39578d176d49f2e45b90bf2ec2d9eaad, type: 2}
+  m_bulletOffset: {x: 0, y: 0, z: 0}
   m_baseBulletStats:
-    isBeam: 0
     damage: 20
     reach: 10
     lifetime: 2
+    isBeam: 0
+    beamRechargeDelay: .150000006
     aoe:
       isAOE: 0
       aoeRange: 5
@@ -1057,10 +1061,11 @@ MonoBehaviour:
     appliedElements: 
   m_baseWeaponReloadTime: .699999988
   m_currentBulletStats:
-    isBeam: 0
     damage: 0
     reach: 0
     lifetime: 1
+    isBeam: 0
+    beamRechargeDelay: .150000006
     aoe:
       isAOE: 0
       aoeRange: 0
@@ -1332,27 +1337,28 @@ MonoBehaviour:
   - {fileID: 0}
   m_augmentItemSlots: []
   m_baseStats:
-    m_baseMaxShield: 100
-    m_baseRechargeRate: 1
-    m_baseRechargeDelay: 1
-    m_shouldFireBurst: 0
-    m_fireBurstRange: 0
-    m_fireBurstDamage: 0
-    m_fireBurstFalloff: 0
-    m_debuffModifier: 1
-    m_canStaticShock: 0
-    m_staticChance: 0
-    m_staticRange: 0
-    m_staticDamage: 0
-    m_staticCooldown: 0
-    m_shouldFlashbang: 0
-    m_flashChance: 0
-    m_flashRange: 0
-    m_flashStunDuration: 0
-    m_absorbChance: 0
-    m_invisChance: 0
-    m_invisDuration: 0
-    m_deflectChance: 0
+    baseMaxShield: 100
+    baseRechargeRate: 1
+    baseRechargeDelay: 1
+    shouldFireBurst: 0
+    burstDamage: 0
+    burstRange: 10
+    burstMaxDamageRange: .100000001
+    burstMaxFalloff: .00100000005
+    debuffModifier: 0
+    canStaticShock: 0
+    staticChance: 0
+    staticDamage: 100
+    staticRange: 10
+    staticCooldown: 2
+    canFlashbang: 0
+    flashChance: 0
+    flashRange: 10
+    flashStunDuration: 2
+    absorbChance: 0
+    invisChance: 0
+    invisDuration: 1
+    deflectChance: 0
 --- !u!114 &11400038
 MonoBehaviour:
   m_ObjectHideFlags: 1

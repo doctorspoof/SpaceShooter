@@ -164,11 +164,13 @@ using System.Collections.Generic;
     #region Member variables
 
     // Base mechanics
-                            public bool                 isBeam = false;                         //!< Indicates whether the bullet should act as a beam or not.
     [Range (0, 1000)]       public int                  damage = 0;                             //!< The damage that a bullet should deal with no modifiers.
     [Range (0f, 100f)]      public float                reach = 0f;                             //!< The desired length the bullet should reach/travel.
     [Range (0.001f, 100f)]  public float                lifetime = 1f;                          //!< How long it should take for the bullet to reach its destination.
-        
+    
+                            public bool                 isBeam = false;                         //!< Indicates whether the bullet should act as a beam or not.
+    [Range (0f, 2.0f)]      public float                beamRechargeDelay = 0.15f;              //!< How long the beam waits after having stopped firing before beginning recharge
+                
     // Attribute collections
                             public AOEAttributes        aoe = null;                             //!< Contains each AoE attribute.
                             public HomingAttributes     homing = null;                          //!< Contains each homing attribute.

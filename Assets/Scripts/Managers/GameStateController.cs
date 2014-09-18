@@ -681,7 +681,7 @@ public class GameStateController : MonoBehaviour
         GameObject spawnPoint = GameObject.FindGameObjectWithTag("CSStart");
         GameObject capital = (GameObject)Network.Instantiate(m_capitalShip, spawnPoint.transform.position, spawnPoint.transform.rotation, 0);
         m_ingameCapitalShip = capital;
-        //capital.GetComponent<Ship>()
+        
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
     }
 

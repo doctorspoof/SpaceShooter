@@ -537,12 +537,12 @@ public class PlayerControlScript : Ship
         
         if (Input.GetMouseButton(0))
         {
-            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+            this.GetComponent<EquipmentTypeWeapon>().PlayerRequestsFire();
         }
         
         if (Input.GetMouseButtonUp(0))
         {
-            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+            this.GetComponent<EquipmentTypeWeapon>().PlayerReleaseFire();
         }
     }
     
@@ -561,9 +561,9 @@ public class PlayerControlScript : Ship
         transform.rotation = Quaternion.Slerp(transform.rotation, m_targetAngle, GetRotateSpeed() * Time.deltaTime);
         
         if (Input.GetAxis("X360Triggers") < 0)
-            this.GetComponent<PlayerWeaponScript>().PlayerRequestsFire();
+            this.GetComponent<EquipmentTypeWeapon>().PlayerRequestsFire();
         else if (Input.GetAxis("X360Triggers") == 0)
-            this.GetComponent<PlayerWeaponScript>().PlayerReleaseFire();
+            this.GetComponent<EquipmentTypeWeapon>().PlayerReleaseFire();
     }
     
     public void TellShipStartRecievingInput()

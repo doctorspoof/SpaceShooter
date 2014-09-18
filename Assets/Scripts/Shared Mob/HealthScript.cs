@@ -486,12 +486,8 @@ public class HealthScript : MonoBehaviour
 			if(killer != null && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
                 PlayerControlScript playerShip = killer.transform.root.GetComponent<PlayerControlScript>();
-<<<<<<< HEAD
                 Inventory playerInv = playerShip.GetComponent<Inventory>();
-                playerInv.SetCash(this.GetComponent<EnemyScript>().GetBounty() + playerInv.GetCurrentCash());
-=======
-                playerShip.AddCash(this.GetComponent<ShipEnemy>().GetBountyAmount());
->>>>>>> f89c623a7f4be4acc9ad08b6e556fad3060a98e1
+                playerInv.SetCash(this.GetComponent<ShipEnemy>().GetBountyAmount() + playerInv.GetCurrentCash());
 			}
 
             if(Network.isServer)
@@ -523,6 +519,8 @@ public class HealthScript : MonoBehaviour
 			{
 				GetComponent<AsteroidScript>().SplitAsteroid (transform);
 			}
+            
+            Destroy (gameObject);
 		}
 		else if(this.tag == "Bullet")
 		{

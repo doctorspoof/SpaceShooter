@@ -6,20 +6,249 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
 {
     #region Serializable Properties
 
+    [SerializeField]                        GameObject          m_bulletRef;
+    [SerializeField]                        Vector3             m_bulletOffset;
+
     // Base stats to reset to and start from
     [SerializeField]                        BulletProperties    m_baseBulletStats = null;
     [SerializeField, Range (0.001f, 10f)]   float               m_baseWeaponReloadTime = 0.7f;
     
     // Current stats (base + augment effects)
-    public                                        BulletProperties    m_currentBulletStats = new BulletProperties();
-    public                                        float               m_currentWeaponReloadTime = 0.0f;
+    public                                  BulletProperties    m_currentBulletStats = new BulletProperties();
+    public                                  float               m_currentWeaponReloadTime = 0.0f;
 
     #endregion
 
 
     // Internal usage members
+    GameObject m_currentHomingTarget = null;
+    GameObject m_currentBeam = null;
     float m_currentReloadCounter = 0.0f;
+    float m_currentRechargeDelay = 0.0f;
+    bool m_isBeaming = false;
+    
+    // Cached vars
+    GameStateController gscCache;
+    
+    #region Unity Functions
+    void Start()
+    {
+        gscCache = GameStateController.Instance();
+    }
+    
+    void Update()
+    {
+        if(m_isBeaming)
+        {
+            m_currentReloadCounter -= Time.deltaTime;
+            if(m_currentReloadCounter < 0.0f)
+            {
+                //Stop beaming
+                networkView.RPC ("StopFiringBeamAcrossNetwork", RPCMode.All);
+            }
+        }
+        
+        if(!m_isBeaming)
+        {
+            if(m_currentRechargeDelay < m_currentBulletStats.beamRechargeDelay)
+            {
+                m_currentRechargeDelay += Time.deltaTime;
+            }
+            else if(m_currentReloadCounter < m_currentWeaponReloadTime)
+            {
+                m_currentReloadCounter += Time.deltaTime;
+            }
+        }
+    }
+    #endregion
 
+    #region Weapon Interaction functions
+    public void SetTarget(GameObject target)
+    {
+        if(target != null)
+        {
+            m_currentHomingTarget = target;
+            networkView.RPC ("PropagateTarget", RPCMode.Others, target.networkView.viewID, false);
+        }
+        else
+        {
+            UnsetTarget();
+        }
+    }
+    
+    public void UnsetTarget()
+    {
+        m_currentHomingTarget = null;
+        networkView.RPC ("PropagateTarget", RPCMode.Others, networkView.viewID, true);
+    }
+    
+    public bool CheckCanFire()
+    {
+        if(m_currentBulletStats.isBeam)
+        {
+            return m_currentReloadCounter > 1.0f;
+        }
+        else
+        {
+            return m_currentReloadCounter >= m_currentWeaponReloadTime;
+        }
+    }
+    
+    public void ActAsFired()
+    {
+        if(m_currentBulletStats.isBeam)
+        {
+            m_isBeaming = true;
+        }
+        else
+        {
+            m_currentReloadCounter = 0f;
+        }
+    }
+    
+    [RPC] void StopFiringBeamAcrossNetwork()
+    {
+        AlertBeamWeaponNotFiring();   
+    }
+    
+    public void AlertBeamWeaponNotFiring()
+    {
+        m_isBeaming = false;
+        
+        Network.Destroy(m_currentBeam);
+        m_currentBeam = null;
+        
+        m_currentRechargeDelay = 0.0f;
+    }
+    
+    public void PlayerRequestsFire()
+    {
+        if(Network.isServer)
+        {
+            PlayerFireLocal();
+        }
+        else
+        {
+            if(CheckCanFire())
+            {
+                networkView.RPC ("RequestFireOverNetwork", RPCMode.Server);
+                ActAsFired();
+            }
+        }
+    }
+    public void PlayerReleaseFire()
+    {
+        if(Network.isServer)
+        {
+            if(m_currentBulletStats.isBeam)
+                AlertBeamWeaponNotFiring();
+        }
+        else
+        {
+            if (m_currentBulletStats.isBeam)
+            {
+                AlertBeamWeaponNotFiring();
+                networkView.RPC ("StopFireOverNetwork", RPCMode.Server);
+            }
+        }
+    }
+    
+    void PlayerFireLocal()
+    {
+        if(m_currentBulletStats.isBeam)
+        {
+            if(m_currentReloadCounter > 1.0f)
+            {
+                ShootBeam();
+            }
+        }
+        else
+        {
+            if(m_currentReloadCounter >= m_currentWeaponReloadTime)
+            {
+                ShootBullet();
+            }
+        }
+    }
+    public void PlayerRequestsFireNoRecoilCheck()
+    {
+        if(m_currentBulletStats.isBeam)
+        {
+            ShootBeam();
+        }
+        else
+        {
+            ShootBullet();
+        }
+    }
+    
+    [RPC] void StopFireOverNetwork()
+    {
+        AlertBeamWeaponNotFiring();
+    }
+    
+    [RPC] void RequestFireOverNetwork()
+    {
+        PlayerRequestsFireNoRecoilCheck();
+    }   
+    
+    void ShootBeam()
+    {
+        if(!m_isBeaming && m_currentBeam == null)
+        {
+            GameObject bullet = Network.Instantiate(m_bulletRef, this.transform.position, this.transform.rotation, 0) as GameObject;
+            bullet.transform.parent = this.transform;
+            bullet.transform.localScale = new Vector3(bullet.transform.localScale.x, 0f, bullet.transform.localScale.z);
+            bullet.GetComponent<BeamBulletScript>().SetOffset(m_bulletOffset);
+            bullet.GetComponent<BeamBulletScript>().SetFirer(gameObject);
+            
+            bullet.GetComponent<BeamBulletScript>().ParentBeamToFirer(gscCache.GetNameFromNetworkPlayer(gameObject.GetComponent<PlayerControlScript>().GetOwner()));
+            m_currentBeam = bullet;
+            m_isBeaming = true;
+        }
+    }
+    
+    void ShootBullet()
+    {
+        //Re-implement multiple fire points / coroutine firing later if augments can give those effects
+    
+        NetworkViewID id = Network.AllocateViewID();
+        networkView.RPC("SpawnBasicBullet", RPCMode.All, id);
+        
+        m_currentReloadCounter = 0.0f;
+    }
+    
+    [RPC] void SpawnBasicBullet(NetworkViewID id)
+    {
+        GameObject bullet = Instantiate(m_bulletRef, transform.position + m_bulletOffset, transform.rotation) as GameObject;
+        bullet.GetComponent<BasicBulletScript>().SetHomingTarget(m_currentHomingTarget);
+        
+        bullet.networkView.viewID = id;
+        
+        BasicBulletScript bbs = bullet.GetComponent<BasicBulletScript>();
+        bbs.SetFirer(gameObject);
+        
+        if(transform.rigidbody)
+        {
+            bbs.SetBulletSpeedModifier(Vector3.Dot(transform.up, transform.rigidbody.velocity));
+        }
+    }
+    
+    [RPC] void PropagateTarget(NetworkViewID id, bool unset)
+    {
+        if (!unset)
+        {
+            // Search for the target based on NetworkViewIDs
+            NetworkView found = NetworkView.Find(id);
+            m_currentHomingTarget = found ? found.gameObject : null;
+        }
+        
+        else
+        {
+            m_currentHomingTarget = null;
+        }
+    }
+    #endregion
 
     #region BaseEquipment overrides
     

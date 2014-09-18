@@ -343,8 +343,7 @@ public class EnemyGroup : MonoBehaviour
     //    ship.CancelOrder();
     //}
 
-<<<<<<< HEAD
-    [SerializeField]
+    /*[SerializeField]
     float rangeToMoveIntoBeforeAttackCommand;
 
     void Awake()
@@ -858,16 +857,14 @@ public class EnemyGroup : MonoBehaviour
             }
         }
         return ship;
-    }
+    }*/
 
     //public void UpdateGroupCentre()
-=======
     ///// <summary>
     ///// Checks to see if any members are still completing the order
     ///// </summary>
     ///// <returns>Returns true if members are still completing orders</returns>
     //public bool GroupStillHasMembersWithOrder()
->>>>>>> f89c623a7f4be4acc9ad08b6e556fad3060a98e1
     //{
     //    foreach (List<ShipEnemy> tier in m_children)
     //    {
