@@ -102,13 +102,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves:
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 48
-  m_singleLargeWave: []
-  m_specialWaves: []
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1
@@ -157,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_starPrefabs:
   - {fileID: 100000, guid: 9d7700a474017894ea5d41a44f2995eb, type: 2}
-  - {fileID: 100000, guid: 630bbf4c5ecfa394c85d78806d29aaa8, type: 2}
+  - {fileID: 100000, guid: 0b83ce09fa5018742a032fcf700cd724, type: 2}
   - {fileID: 100000, guid: c77d2e14241ab5841b0e37bbae91d4c2, type: 2}
   - {fileID: 100000, guid: 9b99b52e14b1e2d4b95a97923779ba96, type: 2}
   m_planetsPrefabs:
@@ -173,7 +166,7 @@ MonoBehaviour:
   m_shop: {fileID: 100000, guid: ce373fba91905954f861555449eb39fa, type: 2}
   m_shipyard: {fileID: 100002, guid: 5ad5ed5ada98d9b4eba4b6eaa32e0679, type: 2}
   m_levelBoundary: {fileID: 100000, guid: 568a554ab59114d75b7022f051c4d2d9, type: 2}
-  m_seed: 9964
+  m_seed: 0
   m_tempDestroyScene: 0
   m_tempGenerateScene: 0
 --- !u!4 &775522648
@@ -288,25 +281,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_itemList:
-  - itemObject: {fileID: 11400000, guid: d8e1271c27ab7ae4793d51be5149f688, type: 2}
+  - itemObject: {fileID: 11400000, guid: bd5aaaf09c63e664bad1bdd39fa54065, type: 2}
     itemID: 0
-  - itemObject: {fileID: 11400000, guid: 4a2edc6e9d340c248a2c2bfde990a7d0, type: 2}
+  - itemObject: {fileID: 11400000, guid: 72198a4f204a16449bd9560f645683e3, type: 2}
     itemID: 1
-  - itemObject: {fileID: 11400000, guid: aa2ed2b9777c2d746b74405771f540b9, type: 2}
+  - itemObject: {fileID: 11400000, guid: f2c1b780115051f4cb440ad569bd5db2, type: 2}
     itemID: 2
-  - itemObject: {fileID: 11400000, guid: b1f8050ff449e544d9037e93ec6c8c93, type: 2}
+  - itemObject: {fileID: 11400000, guid: 73aeeb21d7e8e4c449654128e98689f3, type: 2}
     itemID: 3
-  - itemObject: {fileID: 11400000, guid: 82f980bdd0a13054ea56997209974e4e, type: 2}
+  - itemObject: {fileID: 11400000, guid: 7a125b9c203ec694abbf60c00e62c162, type: 2}
     itemID: 4
-  - itemObject: {fileID: 11400000, guid: 7daee860fab03b84b80841d0d1f8bdd6, type: 2}
+  - itemObject: {fileID: 11400000, guid: 838f4bbcafe4d714484334ad3b094b4f, type: 2}
     itemID: 5
-  - itemObject: {fileID: 11400000, guid: ff79a71609e3a3546ba21bb666fc4ef6, type: 2}
+  - itemObject: {fileID: 11400000, guid: 0b38f48b455dc63468a39bb55fd1ce45, type: 2}
     itemID: 6
-  - itemObject: {fileID: 0}
+  - itemObject: {fileID: 11400000, guid: a53f04ec8001b074e9e98a1ddab9c2e0, type: 2}
     itemID: 7
-  - itemObject: {fileID: 0}
+  - itemObject: {fileID: 11400000, guid: cdaa67abd4b4fed48a4971fc11ead7d5, type: 2}
     itemID: 8
-  - itemObject: {fileID: 0}
+  - itemObject: {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
     itemID: 9
   - itemObject: {fileID: 11400000, guid: 6973a9d9e84505e46acb24d3cc785559, type: 2}
     itemID: 10
@@ -322,166 +315,6 @@ MonoBehaviour:
     itemID: 15
   - itemObject: {fileID: 11400000, guid: 3b5417d152a7ad949814290586a00ef8, type: 2}
     itemID: 16
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
-  - itemObject: {fileID: 0}
-    itemID: 0
   - itemObject: {fileID: 0}
     itemID: 0
   - itemObject: {fileID: 0}
@@ -1136,7 +969,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1558293152
 Transform:
   m_ObjectHideFlags: 0
@@ -1386,13 +1219,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcf3d76eb0dae74ca1f0dabe1fc0f2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_smallMultipleWaves:
-  - defaultOrderTargetTag: Capital
-    m_enemiesOnWave:
-    - m_enemyRef: {fileID: 100002, guid: a6d0cdd09f68d63459ff3717e0c3573d, type: 2}
-      m_numEnemy: 48
-  m_singleLargeWave: []
-  m_specialWaves: []
   m_allSpawnPoints: []
   m_healthModifierIncrement: 0
   m_currentHealthModifier: 1

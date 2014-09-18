@@ -13,6 +13,10 @@ GameObject:
   - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
   - 114: {fileID: 11400004}
+  - 114: {fileID: 11400036}
+  - 114: {fileID: 11400034}
+  - 114: {fileID: 11400032}
+  - 114: {fileID: 11400038}
   - 148: {fileID: 14800000}
   - 54: {fileID: 5400000}
   - 82: {fileID: 8200000}
@@ -205,7 +209,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400022}
   m_Layer: 0
-  m_Name: RCS
+  m_Name: Thrusters
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -313,7 +317,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: .00109656586, w: .999999464}
-  m_LocalPosition: {x: 53.2372131, y: 143.581345, z: 10}
+  m_LocalPosition: {x: -974.080994, y: -10.7127972, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400004}
@@ -962,21 +966,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 832418e1ee81c394c8c38e481743f320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  depth: 0
   m_ownerSt: 
-  m_isPlayerControlScript: 0
-  m_maxShipSpeed: 0
+  m_maxShipSpeed: 500
   m_currentShipSpeed: 0
   m_afterburnerIncreaseOfSpeed: 0
   m_afterburnerLength: 0
   m_afterburnerRechargeTime: 0
-  m_rotateSpeed: 5
+  m_rotateSpeed: 55
   m_ramDamageMultiplier: 5
   maunuallySetWidthAndHeight: 0
   m_minWeaponRange: 0
   m_maxWeaponRange: 0
   m_shipWidth: 0
   m_shipHeight: 0
+  m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
+  m_currentOrder: 0
   shipID: -1
   m_shouldRecieveInput: 1
   m_baseEngineSpeed: 5
@@ -987,16 +993,6 @@ MonoBehaviour:
   m_dockRotateSpeed: 3
   m_playerStrafeMod: .600000024
   m_currentCash: 0
-  m_equippedWeaponItem: {fileID: 11400000, guid: d8e1271c27ab7ae4793d51be5149f688,
-    type: 2}
-  m_equippedShieldItem: {fileID: 11400000, guid: e96c02fd8453d5748b59e3ae33533f8d,
-    type: 2}
-  m_equippedEngineItem: {fileID: 11400000, guid: eeb014f2b35b98342b24a2917a1eb246,
-    type: 2}
-  m_equippedPlatingItem: {fileID: 11400000, guid: e93047d7d99d4cb48b3d4451e8ac2f69,
-    type: 2}
-  m_playerInventory:
-  - {fileID: 0}
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1008,7 +1004,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0640b6b76d0ec6d4dbd7bfb57c87b620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
   m_maximumShield: 100
   m_currentShield: 0
@@ -1024,10 +1019,78 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bbcdb4f8ceaa77498771ff5c77b5e4e, type: 3}
+  m_Script: {fileID: 11500000, guid: 82ca482cb06ddf747a26439e47b56da0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_currentWeapon: {fileID: 0}
+  m_numAugments: 2
+  m_augmentSlots:
+  - {fileID: 0}
+  - {fileID: 0}
+  m_augmentItemSlots: []
+  m_bulletRef: {fileID: 100000, guid: 39578d176d49f2e45b90bf2ec2d9eaad, type: 2}
+  m_bulletOffset: {x: 0, y: 0, z: 0}
+  m_baseBulletStats:
+    damage: 20
+    reach: 10
+    lifetime: 2
+    isBeam: 0
+    beamRechargeDelay: .150000006
+    aoe:
+      isAOE: 0
+      aoeRange: 5
+      aoeMaxDamageRange: .25
+      aoeExplosiveForce: 5
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 10
+      homingTurnRate: 25
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 5
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
+  m_baseWeaponReloadTime: .699999988
+  m_currentBulletStats:
+    damage: 0
+    reach: 0
+    lifetime: 1
+    isBeam: 0
+    beamRechargeDelay: .150000006
+    aoe:
+      isAOE: 0
+      aoeRange: 0
+      aoeMaxDamageRange: 0
+      aoeExplosiveForce: 0
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 0
+      homingTurnRate: 0
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 0
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
+  m_currentWeaponReloadTime: 0
 --- !u!114 &11400006
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1223,6 +1286,107 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_firesWithTurn: 0
+--- !u!114 &11400032
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 961d0c291bd411a41928a4831cbf5784, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 2
+  m_augmentSlots:
+  - {fileID: 0}
+  - {fileID: 0}
+  m_augmentItemSlots: []
+--- !u!114 &11400034
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b12c091bf20d14d8c226574162d1e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 3
+  m_augmentSlots:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_augmentItemSlots: []
+--- !u!114 &11400036
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aa99fc765b228548b6399e2f554f5a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 3
+  m_augmentSlots:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  m_augmentItemSlots: []
+  m_baseStats:
+    baseMaxShield: 100
+    baseRechargeRate: 1
+    baseRechargeDelay: 1
+    shouldFireBurst: 0
+    burstDamage: 0
+    burstRange: 10
+    burstMaxDamageRange: .100000001
+    burstMaxFalloff: .00100000005
+    debuffModifier: 0
+    canStaticShock: 0
+    staticChance: 0
+    staticDamage: 100
+    staticRange: 10
+    staticCooldown: 2
+    canFlashbang: 0
+    flashChance: 0
+    flashRange: 10
+    flashStunDuration: 2
+    absorbChance: 0
+    invisChance: 0
+    invisDuration: 1
+    deflectChance: 0
+--- !u!114 &11400038
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67e2a18c60a43504fad28082d81b903a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_maxInventorySize: 10
+  m_maxHeldMass: 100
+  m_maxHeldFuel: 100
+  m_maxHeldWater: 100
+  m_maxHeldPopulation: 100
+  m_cash: 100
+  m_inventory:
+  - {fileID: 11400000, guid: bd5aaaf09c63e664bad1bdd39fa54065, type: 2}
+  - {fileID: 11400000, guid: 72198a4f204a16449bd9560f645683e3, type: 2}
+  - {fileID: 11400000, guid: f2c1b780115051f4cb440ad569bd5db2, type: 2}
+  - {fileID: 11400000, guid: 73aeeb21d7e8e4c449654128e98689f3, type: 2}
+  - {fileID: 11400000, guid: 7a125b9c203ec694abbf60c00e62c162, type: 2}
+  - {fileID: 11400000, guid: 838f4bbcafe4d714484334ad3b094b4f, type: 2}
+  - {fileID: 11400000, guid: 0b38f48b455dc63468a39bb55fd1ce45, type: 2}
+  - {fileID: 11400000, guid: a53f04ec8001b074e9e98a1ddab9c2e0, type: 2}
+  - {fileID: 11400000, guid: cdaa67abd4b4fed48a4971fc11ead7d5, type: 2}
+  - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

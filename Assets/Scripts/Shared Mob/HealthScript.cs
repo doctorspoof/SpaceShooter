@@ -486,7 +486,8 @@ public class HealthScript : MonoBehaviour
 			if(killer != null && killer.transform.root.GetComponent<PlayerControlScript>() != null)
 			{
                 PlayerControlScript playerShip = killer.transform.root.GetComponent<PlayerControlScript>();
-                playerShip.AddCash(this.GetComponent<ShipEnemy>().GetBountyAmount());
+                Inventory playerInv = playerShip.GetComponent<Inventory>();
+                playerInv.SetCash(this.GetComponent<ShipEnemy>().GetBountyAmount() + playerInv.GetCurrentCash());
 			}
 
             if(Network.isServer)
@@ -518,12 +519,18 @@ public class HealthScript : MonoBehaviour
 			{
 				GetComponent<AsteroidScript>().SplitAsteroid (transform);
 			}
+            
+            Destroy (gameObject);
 		}
 		else if(this.tag == "Bullet")
 		{
 			//Tell the bullet to explode if it has AoE
 			this.GetComponent<BasicBulletScript>().DetonateBullet();
 		}
+        else if(this.tag == "Shop")
+        {
+            Debug.Log ("What the hell happened here?!");
+        }
 	}
 	[RPC]
 	void PropagatePlayerHasJustDied()

@@ -300,7 +300,7 @@ public sealed class BeamBulletScript : MonoBehaviour
 		GameObject playerGO = gsc.GetPlayerFromNetworkPlayer(gsc.GetNetworkPlayerFromID(gsc.GetIDFromName(playerName)));
 		Debug.Log ("Attaching beam: " + this.name + " to gameObject: " + playerGO.name + ".");
 
-		this.transform.parent = playerGO.GetComponent<PlayerControlScript>().GetWeaponObject().transform;
+		this.transform.parent = playerGO.GetComponent<PlayerControlScript>().transform;
 		m_firer = playerGO;
     }
     

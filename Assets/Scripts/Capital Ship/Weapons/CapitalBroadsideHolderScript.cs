@@ -17,6 +17,7 @@ public class CapitalBroadsideHolderScript : MonoBehaviour
     void OnDestroy()
     {
         //Destroy the attached turret
+        Debug.Log("CShip destroyed: " + m_attachedTurret);
         Network.Destroy (m_attachedTurret);
         
         if(m_cShip == null)

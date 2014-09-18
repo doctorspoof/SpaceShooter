@@ -475,7 +475,12 @@ public class ProceduralLevelGenerator : MonoBehaviour
         GameObject end = new GameObject("Capital End Point");
         end.transform.position = new Vector3((furthestExtent + 50.0f), 0, 10.5f);
         end.transform.rotation = Quaternion.Euler(0, 0, 90);
+        end.AddComponent<SphereCollider>();
+        end.GetComponent<SphereCollider>().radius = 5.0f;
+        end.GetComponent<SphereCollider>().isTrigger = true;
+        end.AddComponent<CapitalShipTarget>();
         end.tag = "CSTarget";
+        end.layer = Layers.objective;
         
         #endregion
     }
@@ -532,6 +537,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         Debug.Log ("Found " + numDestroyed + " objects in a planet's orbital path. Destroying...");
         for(int i = 0; i < toDestroy.Count; i++)
         {
+            Debug.Log ("Destroyed: " + toDestroy[i].name);
             Destroy(toDestroy[i]);
         }
         
@@ -731,11 +737,18 @@ public class ProceduralLevelGenerator : MonoBehaviour
         GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
         for(int i = 0; i < stars.Length; i++)
         {
-            Destroy (stars[i]);
+            if(stars[i] != null)
+            {
+                Destroy(stars[i].transform.root.gameObject);
+            }
         }
         
         Debug.Log ("Destroying level boundary...");
         Destroy (GameObject.FindGameObjectWithTag("LevelBoundary"));
+        
+        Debug.Log ("Destroying CShip start/end points...");
+        Destroy (GameObject.FindGameObjectWithTag("CSStart"));
+        Destroy (GameObject.FindGameObjectWithTag("CSTarget"));
         
         Debug.Log ("Done. Scene should now be empty!");
         

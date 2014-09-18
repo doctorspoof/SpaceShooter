@@ -270,6 +270,8 @@ public class EnemySpawnPointScript : MonoBehaviour
 
         RunFinalSpawnEffect script = spawnedEffect.GetComponent<RunFinalSpawnEffect>();
         script.Run(timeTillDestroy_ - 1.3f);
+        
+        Debug.Log ("SpawnPoint destroyed: " + spawnedEffect.name);
         Destroy(spawnedEffect, timeTillDestroy_ - 0.2f);
     }
 

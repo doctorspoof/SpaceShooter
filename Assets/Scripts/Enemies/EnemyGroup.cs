@@ -343,6 +343,523 @@ public class EnemyGroup : MonoBehaviour
     //    ship.CancelOrder();
     //}
 
+    /*[SerializeField]
+    float rangeToMoveIntoBeforeAttackCommand;
+
+    void Awake()
+    {
+        m_children = new List<EnemyScript>[4];
+        for (int i = 0; i < m_children.Length; ++i)
+        {
+            m_children[i] = new List<EnemyScript>();
+        }
+
+        m_behaviour = GroupBehaviour.StayWithSlowest;
+        m_formation = (Formation)Random.Range(1, 5);
+
+    }
+
+    // Use this for initialization
+    void Start()
+    {
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (m_shipCount <= 0 && !waitForUnitsUntilCheckingToDestroy)
+        {
+            Debug.Log ("Group destroyed: " + gameObject.name);
+            Destroy(this.gameObject);
+            return;
+        }
+
+        //if (m_bountyTotal > 300)
+        //{
+        //    int splitTimes = Mathf.CeilToInt(m_bountyTotal / 300.0f);
+        //    SplitGroup(splitTimes);
+        //    return;
+        //}
+
+        Debug.DrawRay(transform.position, transform.up, Color.red);
+
+        //EnemyScript script;
+        //groupReforming = !InFormation(out script);
+
+        CheckAndAttackPlayersInRange(50);
+
+        SetShipSpeeds();
+
+        //if (orderQueue.Count > 0)
+        //{
+        //    Debug.DrawLine(transform.position, orderQueue[0].PositionOfInterest);
+
+        //    if(orderQueue[0].ObjectOfInterest != null)
+        //    {
+        //        Debug.Log("objectOfInterest = " + orderQueue[0].ObjectOfInterest.name);
+        //    }
+        //}
+
+        if (orderQueue.Count == 0 && defaultOrders.Count > 0 && !GroupStillHasMembersWithOrder())
+        {
+            orderQueue.Add(defaultOrders[Random.Range(0, defaultOrders.Count)]);
+        }
+
+        if (!GroupStillHasMembersWithOrder() || (orderQueue.Count > 0 && orderQueue[0].Completed()))
+        {
+            NextOrder();
+        }
+    }
+
+    private void NextOrder()
+    {
+        if (orderQueue[0].Completed())
+        {
+            orderQueue.RemoveAt(0);
+        }
+
+        if (orderQueue.Count > 0)
+        {
+            orderQueue[0].Activate();
+        }
+    }
+
+    void LateUpdate()
+    {
+        transform.position = GetGroupAverageCentre();
+        //UpdateLastPositions();
+
+        if (orderQueue.Count > 0)
+        {
+            RotateTowards(orderQueue[0].PositionOfInterest);
+        }
+    }
+
+    public void AddOrder(AIOrder<EnemyGroup> order)
+    {
+        orderQueue.Add(order);
+    }
+
+    public void AddDefaultOrder(AIOrder<EnemyGroup> order)
+    {
+        defaultOrders.Add(order);
+    }
+
+    /// <summary>
+    /// Orders a move to position
+    /// </summary>
+    /// <param name="position">Position to move to</param>
+    public void OrderMove(Vector2 position)
+    {
+        float radiusOfFormation = GetRadius();
+
+        Vector2 fromPosition = transform.position;
+        GameObject collidedObject;
+        bool pathFound = CheckCanMoveTo(fromPosition, position, out collidedObject);
+
+        List<Vector2> moveOrderPositions = new List<Vector2>();
+
+        int count = 0;
+
+        while (!pathFound)
+        {
+            fromPosition = GetPositionForAvoidance(collidedObject, position, fromPosition, 10.0f, radiusOfFormation);
+
+            moveOrderPositions.Add(fromPosition);
+            pathFound = CheckCanMoveTo(fromPosition, position, out collidedObject);
+
+            count++;
+            if (count > 20)
+                break;
+        }
+
+        moveOrderPositions.Add(position);
+
+        // uncomment to show movement paths
+            //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
+
+            //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
+            //{
+            //    Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
+            //}
+
+        foreach (Vector2 orderPositions in moveOrderPositions)
+        {
+            AIOrder<EnemyGroup> order = new AIOrder<EnemyGroup> { Orderee = this, PositionOfInterest = orderPositions };
+            order.AttachAction(delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
+                               {
+
+                                   group.RotateTowards(pointOfInterest);
+
+                                   group.SetBehaviour(GroupBehaviour.StayWithSlowest);
+                                   foreach (List<EnemyScript> tier in group.Children)
+                                   {
+                                       foreach (EnemyScript ship in tier)
+                                       {
+                                           //int indexOfShip = group.Children[(int)ship.GetShipSize()].IndexOf(ship);
+
+                                           ship.SetMoveTarget((Vector2)pointOfInterest + ship.GetLocalFormationPosition());
+
+                                       }
+                                   }
+                               });
+
+            order.AttachCondition(delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
+                                  {
+                                      return Vector2.Distance((Vector2)group.transform.position, (Vector2)pointOfInterest) < 0.8f;
+                                  });
+
+            AddOrder(order);
+        }
+    }
+
+    public bool CheckCanMoveTo(Vector2 from, Vector2 target, out GameObject collidedObject)
+    {
+        collidedObject = null;
+
+        float distanceToTarget = Vector2.Distance(from, target) + 10;
+        RaycastHit hit;
+
+        bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget);
+
+        if (collidedWithSomething)
+            collidedObject = hit.collider.gameObject;
+
+        return !collidedWithSomething;
+    }
+
+    public Vector2 GetPositionForAvoidance(GameObject objectToAvoid, Vector2 targetLocation, Vector2 currentLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
+    {
+
+        //Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
+        float radiusOfObject = Mathf.Sqrt(Mathf.Pow(objectToAvoid.transform.localScale.x, 2) + Mathf.Pow(objectToAvoid.transform.localScale.y, 2)) * objectToAvoid.GetComponent<SphereCollider>().radius;
+        float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
+
+        Vector2[] returnee = new Vector2[2];
+        returnee[0] = new Vector2(radius, 0);
+        returnee[1] = new Vector2(-radius, 0);
+
+        Vector2 dir = (targetLocation - currentLocation).normalized;
+        Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
+
+        returnee[0] = (rotation * returnee[0]) + objectToAvoid.transform.position;
+        returnee[1] = (rotation * returnee[1]) + objectToAvoid.transform.position;
+
+        if (Vector2.SqrMagnitude(currentLocation - returnee[0]) < Vector2.SqrMagnitude(currentLocation - returnee[1]))
+        {
+            return returnee[0];
+        }
+        return returnee[1];
+
+    }
+
+    /// <summary>
+    /// Orders an attack on the specified object
+    /// </summary>
+    /// <param name="attackableObject">Object to be attacked</param>
+    public void OrderAttack(GameObject attackableObject)
+    {
+        if (Vector2.Distance(this.transform.position, attackableObject.rigidbody.transform.position) > GetMinimumRangeOfGroup() * 2)
+        {
+            Vector2 closerPosition = Vector2.MoveTowards(attackableObject.rigidbody.transform.position, this.transform.position, GetMinimumRangeOfGroup() * 2);
+            OrderMove(closerPosition);
+        }
+
+        AIOrder<EnemyGroup> order = new AIOrder<EnemyGroup> { Orderee = this, ObjectOfInterest = attackableObject };
+        order.AttachAction(delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
+                           {
+                               group.RotateTowards(pointOfInterest);
+
+                               group.SetBehaviour(GroupBehaviour.Attack);
+                               foreach (List<EnemyScript> tier in group.Children)
+                               {
+                                   foreach (EnemyScript ship in tier)
+                                   {
+
+                                       ship.SetTarget(attackableObject);
+                                       ship.ResetShipSpeed();
+                                   }
+                               }
+
+                           });
+
+        order.AttachCondition(delegate(EnemyGroup group, GameObject objectOfInterest, Vector3 pointOfInterest)
+                              {
+                                  return (objectOfInterest == null) || (Vector2.Distance(objectOfInterest.transform.position, group.transform.position) > 50);
+                              });
+
+        AddOrder(order);
+    }
+
+    /// <summary>
+    /// Cancels all orders given to the group
+    /// </summary>
+    public void CancelAllOrders()
+    {
+        CancelCurrentOrder();
+        orderQueue.Clear();
+    }
+
+    /// <summary>
+    /// Cancels the current order of the group
+    /// </summary>
+    public void CancelCurrentOrder()
+    {
+        if (orderQueue.Count > 0)
+        {
+            orderQueue.RemoveAt(0);
+            foreach (List<EnemyScript> tier in m_children)
+            {
+                foreach (EnemyScript ship in tier)
+                {
+                    CancelShipCurrentOrder(ship);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Cancels the order of a specific ship
+    /// </summary>
+    /// <param name="ship"></param>
+    public void CancelShipCurrentOrder(EnemyScript ship)
+    {
+        ship.CancelOrder();
+    }
+
+    /// <summary>
+    /// Checks to see if any members are still completing the order
+    /// </summary>
+    /// <returns>Returns true if members are still completing orders</returns>
+    public bool GroupStillHasMembersWithOrder()
+    {
+        foreach (List<EnemyScript> tier in m_children)
+        {
+            foreach (EnemyScript ship in tier)
+            {
+                if (ship.GetCurrentOrder() != Order.Idle)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Adds an enemy to the groups entity list
+    /// </summary>
+    /// <param name="enemyShip">Enemy ship to be added</param>
+    /// <returns>Returns true if successful (if object is not null)</returns>
+    public bool AddEnemyToGroup(EnemyScript enemyShip)
+    {
+        if (null == enemyShip)
+        {
+            return false;
+        }
+
+        waitForUnitsUntilCheckingToDestroy = false;
+
+        m_children[(int)enemyShip.GetShipSize()].Add(enemyShip);
+        enemyShip.SetFormationPosition(new Vector2());
+        enemyShip.SetParentGroup(this);
+        //enemyShip.transform.parent = transform;
+        m_shipCount++;
+        m_bountyTotal += enemyShip.GetBountyAmount();
+
+        if (slowestShip == null || enemyShip.GetMaxShipSpeed() < slowestShip.GetMaxShipSpeed())
+        {
+            slowestShip = enemyShip;
+        }
+
+        if (orderQueue.Count > 0)
+            orderQueue[0].Activate();
+
+        transform.position = GetGroupAverageCentre();
+        ResetAllFormationsPositions();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Removes the enemy ship from the group
+    /// </summary>
+    /// <param name="enemyShip">Ship to be removed</param>
+    /// <returns>Returns true if successfully removed</returns>
+    public bool RemoveEnemyFromGroup(EnemyScript enemyShip)
+    {
+        if (null == enemyShip)
+        {
+            return false;
+        }
+
+        bool succeeded = m_children[(int)enemyShip.GetShipSize()].Remove(enemyShip);
+
+        enemyShip.transform.parent = null;
+        m_shipCount--;
+        m_bountyTotal -= enemyShip.GetBountyAmount();
+
+        if (enemyShip == slowestShip)
+        {
+            slowestShip = CalculateSlowestShip();
+        }
+
+        if (orderQueue.Count > 0)
+            orderQueue[0].Activate();
+
+        if (m_shipCount > 0)
+        {
+            transform.position = GetGroupAverageCentre();
+            ResetAllFormationsPositions();
+        }
+
+        return succeeded;
+    }
+
+    /// <summary>
+    /// Splits the groups *evenly* and returns how many you asked for.
+    /// May not return fully evenly if the amount of ships cannot be spread evenly. The last group will always have the lowest amount of ships.
+    /// 
+    /// TODO change it so it alternates back and forth so that the last group does not have the least amount of ships for each GetShipSize().
+    /// </summary>
+    /// <param name="groupCount">Amount of groups to be created</param>
+    /// <returns>All groups asked for.</returns>
+    public EnemyGroup[] SplitGroup(int groupCount)
+    {
+        EnemyGroup[] groups = new EnemyGroup[groupCount];
+
+        for (int i = 0; i < groupCount; ++i)
+        {
+            groups[i] = new GameObject("EnemyGroup").AddComponent<EnemyGroup>();
+        }
+
+        // loop through each ships type list and add to groups
+        for (int i = 0; i < m_children.Length; ++i)
+        {
+            int shipsCount = m_children[i].Count;
+
+            //loop and add ships from this type to group
+            for (int a = 0; a < groupCount; ++a)
+            {
+                //make sure we dont try to assign too many ships to the groups eg. if there are 8 ships being split between 3 groups, the last group should only receive 2 ships.
+                int shipsPerGroup = Mathf.Min(Mathf.CeilToInt(shipsCount / (float)groupCount), shipsCount - a * Mathf.CeilToInt(shipsCount / (float)groupCount));
+                for (int b = 0; b < shipsPerGroup; ++b)
+                {
+                    groups[a].AddEnemyToGroup(m_children[i][0]);
+                    m_children[i].RemoveAt(0);
+                }
+            }
+        }
+
+        Debug.Log ("Group destroyed: " + gameObject.name);
+        Destroy(this.gameObject);
+
+        return groups;
+    }
+
+    /// <summary>
+    /// Use to merge groups with the group its being called on.
+    /// </summary>
+    /// <param name="groups">The groups to be merged into this one</param>
+    /// <returns>Returns false if groups is empty</returns>
+    public bool MergeWith(EnemyGroup[] groups)
+    {
+        if (0 == groups.Length)
+            return false;
+
+        //foreach group to be merged with this one add all ships to their respective groups
+        foreach (EnemyGroup group in groups)
+        {
+
+            foreach (List<EnemyScript> listTier in group.Children)
+            {
+                foreach (EnemyScript script in listTier)
+                {
+                    m_children[(int)script.GetShipSize()].Add(script);
+                }
+            }
+
+        }
+
+        return true;
+
+    }
+
+    public void SetBehaviour(GroupBehaviour behaviour)
+    {
+        m_behaviour = behaviour;
+    }
+
+    public void SetFormation(Formation formation)
+    {
+        m_formation = formation;
+        ResetAllFormationsPositions();
+    }
+
+    EnemyScript slowestShip = null;
+
+    /// <summary>
+    /// Returns the slowest ship in the group
+    /// </summary>
+    /// <returns>Speed of the slowest ship</returns>
+    public float GetSlowestShipSpeed()
+    {
+        return slowestShip.GetMaxShipSpeed();
+
+        //float slowestSpeed = -1;
+        //foreach (List<EnemyScript> shipTier in m_children)
+        //{
+        //    foreach (EnemyScript enemy in shipTier)
+        //    {
+        //        if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
+        //        {
+        //            slowestSpeed = enemy.ShipSpeed;
+        //        }
+        //    }
+        //}
+        //return slowestSpeed;
+    }
+
+    /// <summary>
+    /// Returns the slowest ship of the group
+    /// </summary>
+    /// <returns></returns>
+    public EnemyScript GetSlowestShip()
+    {
+        return slowestShip;
+        //float slowestSpeed = -1;
+        //EnemyScript ship = null;
+        //foreach (List<EnemyScript> shipTier in m_children)
+        //{
+        //    foreach (EnemyScript enemy in shipTier)
+        //    {
+        //        if (-1 == slowestSpeed || enemy.ShipSpeed < slowestSpeed)
+        //        {
+        //            slowestSpeed = enemy.ShipSpeed;
+        //            ship = enemy;
+        //        }
+        //    }
+        //}
+        //return ship;
+    }
+
+    public EnemyScript CalculateSlowestShip()
+    {
+        float slowestSpeed = -1;
+        EnemyScript ship = null;
+        foreach (List<EnemyScript> shipTier in m_children)
+        {
+            foreach (EnemyScript enemy in shipTier)
+            {
+                if (-1 == slowestSpeed || enemy.GetMaxShipSpeed() < slowestSpeed)
+                {
+                    slowestSpeed = enemy.GetMaxShipSpeed();
+                    ship = enemy;
+                }
+            }
+        }
+        return ship;
+    }*/
+
+    //public void UpdateGroupCentre()
     ///// <summary>
     ///// Checks to see if any members are still completing the order
     ///// </summary>

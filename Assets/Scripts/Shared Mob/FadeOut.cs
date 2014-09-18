@@ -52,6 +52,7 @@ public class FadeOut : MonoBehaviour
 
             if (m_currentTime >= m_timeBeforeFadeOutStarts + m_fadeOutTime)
             {
+                Debug.Log ("FadeOut destroyed: " + gameObject.name);
                 Destroy(gameObject);
             }
 

@@ -681,10 +681,12 @@ public class GameStateController : MonoBehaviour
         GameObject spawnPoint = GameObject.FindGameObjectWithTag("CSStart");
         GameObject capital = (GameObject)Network.Instantiate(m_capitalShip, spawnPoint.transform.position, spawnPoint.transform.rotation, 0);
         m_ingameCapitalShip = capital;
-        //Debug.Log("Spawned a capital ship");
-        //GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<EnemySpawnManagerScript>().RecieveInGameCapitalShip(capital);
+        
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
-        //capital.GetComponent<CapitalShipScript>().shouldStart = true;
+        
+        GameObject target = GameObject.FindGameObjectWithTag("CSTarget");
+        capital.GetComponent<CapitalShipScript>().SetTargetMove(new Vector2(target.transform.position.x, target.transform.position.y));
+        Debug.Log ("Told CShip to move to: " + target.transform.position);
     }
 
     [RPC] void SendCShipRefToClients()
@@ -1031,9 +1033,9 @@ public class GameStateController : MonoBehaviour
 
         //Use this to force start new wave when one has completed
         //Whenever we call respawn order, reset count to 0
-        m_numDeadPCs = 0;
-        networkView.RPC("TellAllDeadPlayersRespawn", RPCMode.All);
-        PlayerRequestsRoundStart();
+        //m_numDeadPCs = 0;
+        //networkView.RPC("TellAllDeadPlayersRespawn", RPCMode.All);
+        //PlayerRequestsRoundStart();
     }
 
     
@@ -1088,7 +1090,9 @@ public class GameStateController : MonoBehaviour
 
         if (GetPlayerFromNetworkPlayer(np) != null)
         {
-            Destroy(GetPlayerFromNetworkPlayer(np));
+            GameObject player = GetPlayerFromNetworkPlayer(np);
+            Debug.Log ("GSC destroyed " + player.name);
+            Destroy(player);
         }
     }
 
@@ -1129,8 +1133,9 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void CapitalShipArrivesAtVictoryPoint()
     {
+        //Old way
         //Stop all enemies
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        /*GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in enemies)
         {
             enemy.GetComponent<ShipEnemy>().OnPlayerWin();
@@ -1147,21 +1152,24 @@ public class GameStateController : MonoBehaviour
 
         //Tell GUI to display victory splash
         //m_GUIManager.GetComponent<GUIManager>().ShowVictorySplash();
-        m_gameStopped = true;
+        m_gameStopped = true;*/
+        
+        //New way
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship ready to jump!", 999999.0f);
     }
     
     public void CapitalShipHasTakenDamage()
     {
-        //Debug.Log ("Capital ship taking damage");
-        if (m_capitalDamageTimer >= 5.0f)
+        if (m_capitalDamageTimer >= 3.0f)
         {
             networkView.RPC("PropagateCapitalShipUnderFire", RPCMode.All);
+            m_capitalDamageTimer = 0.0f;
         }
     }
 
     [RPC] void PropagateCapitalShipUnderFire()
     {
-        m_GUIManager.GetComponent<GUIInGameMaster>().StartPopupCShipTakenDamage();
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship is under attack!", 3.0f);
     }
 
     void ResendLossState()

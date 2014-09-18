@@ -26,11 +26,11 @@ public enum Element
 /// these values it can dramatically change what it is attached to.
 /// </summary>
 [System.Serializable]
-public sealed class Augment
+public sealed class Augment : MonoBehaviour
 {
     #region Unity modifiable variables
 
-    [SerializeField, Range (1, 3)]  int m_tier = 1;                     // The tier of the augment, this effects how strong of an effect it will have
+    [SerializeField, Range (1, 5)]  int m_tier = 1;                     // The tier of the augment, this effects how strong of an effect it will have
     [SerializeField]                Element m_element = Element.Fire;   // The elemental affinity of the augment, changes what effects should be applied
     
     #endregion
@@ -39,13 +39,13 @@ public sealed class Augment
     #region Getters & setters
     
     // Getters
-    int GetTier()
+    public int GetTier()
     {
         return m_tier;
     }
     
     
-    Element GetElement()
+    public Element GetElement()
     {
         return m_element;
     }

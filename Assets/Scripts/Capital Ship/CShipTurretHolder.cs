@@ -46,7 +46,10 @@ public class CShipTurretHolder : MonoBehaviour
 	public void ReplaceAttachedTurret(GameObject turretRef)
 	{
 		if(this.transform.childCount > 0)
+        {
+            Debug.Log ("CShip destroyed: " + this.transform.GetChild(0).gameObject);
 			Network.Destroy(this.transform.GetChild(0).gameObject);
+        }
 		GameObject newTurr = (GameObject)Network.Instantiate(turretRef, this.transform.position, this.transform.rotation, 0);
 		if(newTurr.GetComponent<CapitalWeaponScript>() != null)
 			newTurr.GetComponent<CapitalWeaponScript>().ParentThisWeaponToCShip(m_cShipTurretID);

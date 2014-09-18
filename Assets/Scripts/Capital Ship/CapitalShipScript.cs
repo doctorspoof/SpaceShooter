@@ -184,15 +184,19 @@ public sealed class CapitalShipScript : Ship
         {
             ResetAttachedTurretsFromWrappers();
         }
+        
+        ResetShipSpeed();
     }
 
 
     /// <summary>
     /// Moves the ship if necessary
     /// </summary>
-    void FixedUpdate()
+    protected override void FixedUpdate()
     {
-        if (m_shouldMoveToTarget && m_targetPoint != null)
+        base.FixedUpdate();
+    
+        /*if (m_shouldMoveToTarget && m_targetPoint != null)
         {
             // Rotate to the correct direction
             Vector3 dir = m_targetPoint.position - transform.position;
@@ -211,7 +215,7 @@ public sealed class CapitalShipScript : Ship
                 this.audio.volume = PlayerPrefs.GetFloat ("EffectVolume", 1.0f);
                 this.audio.Play();
             }
-        }
+        }*/
 
         // Since enemies will only move in Update() we might as well only allow the target list to be updated every FixedUpdate()
         m_updatedTargetListThisFrame = false;
@@ -272,7 +276,7 @@ public sealed class CapitalShipScript : Ship
     public void TellServerEquipTurret (int turretSlot, ItemWrapper turret)
     {
         // Ensure the item is correct
-        int itemID = turret ? turret.GetItemID() : -1;
+        /*int itemID = turret ? turret.GetItemID() : -1;
         
         if (turretSlot >= 0 && turretSlot < m_attachedTurretsItemWrappers.Length &&
             itemID >= 0 && turret.GetItemType() == ItemType.CapitalWeapon)
@@ -287,7 +291,7 @@ public sealed class CapitalShipScript : Ship
             {
                 networkView.RPC ("ReplaceTurretAtPosition", RPCMode.Server, turretSlot, itemID);
             }
-        }
+        }*/
     }
 
 
