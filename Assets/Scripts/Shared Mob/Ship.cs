@@ -59,6 +59,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     [SerializeField] AIShipOrder m_currentOrder = AIShipOrder.Idle;
 
+    [SerializeField] bool m_showMovementWaypoints;
+
 
 
 
@@ -223,7 +225,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         return m_waypoints;
     }
 
-    public void SetTargetMove(Vector2 target_)
+    public void AddMoveWaypoint(Vector2 target_)
     {
         if (Vector3.Distance((Vector2)transform.position, target_) < 0.8f)
         {
@@ -232,9 +234,13 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         OrderMove(target_);
 
-        //Debug.Log("Received move order");
-
         m_currentOrder = AIShipOrder.Move;
+    }
+
+    public void ClearMoveWaypoints()
+    {
+        m_waypoints.Clear();
+        m_currentOrder = AIShipOrder.Idle;
     }
 
     public GameObject GetTarget()
@@ -253,7 +259,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         if (Vector2.Distance(transform.position, target.transform.position) > GetMinimumWeaponRange() * 2)
         {
             Vector2 closerPosition = Vector2.MoveTowards(target.transform.position, transform.position, GetMinimumWeaponRange() * 2);
-            SetTargetMove(closerPosition);
+            AddMoveWaypoint(closerPosition);
             moveOrderNeeded = true;
         }
 
@@ -357,6 +363,17 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                     m_afterburnersRecharged = true;
                     m_currentAfterburnerRechargeTime = 0;
                 }
+            }
+        }
+
+
+        if (m_showMovementWaypoints)
+        {
+            Debug.DrawLine(transform.position, m_waypoints[0], Color.red, 999);
+
+            for (int i = 0; i < m_waypoints.Count - 1; ++i)
+            {
+                Debug.DrawLine(m_waypoints[i], m_waypoints[i + 1], Color.red, 999);
             }
         }
     }
@@ -1117,6 +1134,13 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     void OrderMove(Vector2 position)
     {
         Vector2 fromPosition = transform.position;
+
+        // if we already have waypoint, determine where to start calculating from as the last current waypoint.
+        if(m_waypoints.Count > 0)
+        {
+            fromPosition = m_waypoints[m_waypoints.Count - 1];
+        }
+
         Collider collidedObject;
         bool pathFound = CheckCanMoveTo(fromPosition, position, out collidedObject);
 
@@ -1138,15 +1162,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         moveOrderPositions.Add(position);
 
-        // uncomment to show movement paths
-        //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
 
-        //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
-        //{
-        //    Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
-        //}
-
-        m_waypoints = moveOrderPositions;
+        m_waypoints.AddRange(moveOrderPositions);
 
     }
 
