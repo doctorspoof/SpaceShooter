@@ -813,6 +813,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public void ResetThrusters()
     {
+        Debug.Log("ResetThrusters() is currently empty. If the thrusters are spazzing out, this is the problem");
         //networkView.RPC("PropagateResetThrusters", RPCMode.All);
     }
 
@@ -861,6 +862,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     /// <returns></returns>
     public void ResetThrusterObjects()
     {
+        // update the cache
         m_thrustersHolder = GetThrusterHolder();
         m_afterburnersHolder = m_thrustersHolder.FindChild("Afterburners");
         Transform rcsholder = transform.FindChild("RCS");
@@ -1157,6 +1159,13 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     }
 
+    /// <summary>
+    /// Does a raycast to see whether an object is in the way.
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="target"></param>
+    /// <param name="collidedObject"></param>
+    /// <returns></returns>
     bool CheckCanMoveTo(Vector2 from, Vector2 target, out Collider collidedObject)
     {
         collidedObject = null;
@@ -1175,23 +1184,32 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         return !collidedWithSomething;
     }
 
-    Vector2 GetPositionForAvoidance(Collider collidedObject_, Vector2 targetLocation, Vector2 currentLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
+    /// <summary>
+    /// This takes an object that is in the way, such as a sun, and provides the closest evasion point.
+    /// </summary>
+    /// <param name="collidedObject_">Object to be avoided</param>
+    /// <param name="targetLocation_">Location we want to get to</param>
+    /// <param name="currentLocation_"></param>
+    /// <param name="closestDistanceFromGroupToObject_">This was generally used for when we had groups. Pretty much just a number that pushes the returned point outwards so nothing collides with the sun.</param>
+    /// <param name="radiusOfFormation_">Same as above.</param>
+    /// <returns></returns>
+    Vector2 GetPositionForAvoidance(Collider collidedObject_, Vector2 targetLocation_, Vector2 currentLocation_, float closestDistanceFromGroupToObject_, float radiusOfFormation_)
     {
         //Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
         float radiusOfObject = Mathf.Sqrt(Mathf.Pow(collidedObject_.transform.localScale.x, 2) + Mathf.Pow(collidedObject_.transform.localScale.y, 2)) * ((SphereCollider)collidedObject_).radius;
-        float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
+        float radius = radiusOfObject + closestDistanceFromGroupToObject_ + radiusOfFormation_;
 
         Vector2[] returnee = new Vector2[2];
         returnee[0] = new Vector2(radius, 0);
         returnee[1] = new Vector2(-radius, 0);
 
-        Vector2 dir = (targetLocation - currentLocation).normalized;
+        Vector2 dir = (targetLocation_ - currentLocation_).normalized;
         Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
 
         returnee[0] = (rotation * returnee[0]) + collidedObject_.transform.position;
         returnee[1] = (rotation * returnee[1]) + collidedObject_.transform.position;
 
-        if (Vector2.SqrMagnitude(currentLocation - returnee[0]) < Vector2.SqrMagnitude(currentLocation - returnee[1]))
+        if (Vector2.SqrMagnitude(currentLocation_ - returnee[0]) < Vector2.SqrMagnitude(currentLocation_ - returnee[1]))
         {
             return returnee[0];
         }
