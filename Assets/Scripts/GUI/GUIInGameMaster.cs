@@ -118,6 +118,10 @@ public class GUIInGameMaster : GUIBaseMaster
     #endregion
     
     #region Specific Toggles/Calls
+    public void ToggleShowSectorJump(bool show)
+    {
+        GetComponent<GUICShipDockScreen>().SetCShipCanSectorJump(show);
+    }
     public void PassThroughNewGUIAlert(string message, float displayTime)
     {
         GetComponent<GUIInGameHUDScreen>().AddNewGUIAlert(message, displayTime);
