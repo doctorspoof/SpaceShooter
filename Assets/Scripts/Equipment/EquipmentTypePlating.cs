@@ -13,77 +13,191 @@
     [Range (0f, 1f)]    public float    regen               = 0f;       //!< How much HP to regenerate a second (percentage).
     [Range (0f, 1f)]    public float    returnDamage        = 0f;       //!< How much damage should be returned to aggressors (percentage).
     [Range (0f, 10f)]   public float    slowDuration        = 0f;       //!< How long to slow targets which physically touch the plating.
+    [Range (0f, 1f)]    public float    lifesteal           = 0f;       //!< How much of a lifesteal effect the plating should have (percentage).
     [Range (0f, 1f)]    public float    chanceToJump        = 0f;       //!< The chance of debuffs passing onto nearby enemies (percentage).
     [Range (0f, 1f)]    public float    chanceToCleanse     = 0f;       //!< The chance of cleansing the plating of debuffs (percentage).
-    [Range (0f, 1f)]    public float    lifesteal           = 0f;       //!< How much of a lifesteal effect the plating should have (percentage).
     [Range (0f, 1f)]    public float    chanceToEthereal    = 0f;       //!< The chance of turning ethereal on hit (percentage).
     [Range (0f, 10f)]   public float    etherealDuration    = 2f;       //!< How long stay ethereal once triggered.
 
                         public bool     slowsIncoming       = false;    //!< Whether to slow incoming projectiles or not.
     [Range (0f, 1f)]    public float    speedReduction      = 0f;       //!< How much to reduce the projectiles speed by (percentage).
+
+
+    public void CloneProperties (PlatingProperties stats)
+    {
+        if (stats != null)
+        {            
+            hp = stats.hp;
+            mass = stats.mass;
+            
+            regen = stats.regen;
+            returnDamage = stats.returnDamage;
+            slowDuration = stats.slowDuration;
+            lifesteal = stats.lifesteal;
+            chanceToJump = stats.chanceToJump;
+            chanceToCleanse = stats.chanceToCleanse;
+            chanceToEthereal = stats.chanceToEthereal;
+            etherealDuration = stats.etherealDuration;
+            
+            slowsIncoming = stats.slowsIncoming;
+            speedReduction = stats.speedReduction;
+        }
+    }
 }
 
 
 
+[RequireComponent (typeof (Rigidbody))]
 public sealed class EquipmentTypePlating : BaseEquipment 
-{
+{    
+    [SerializeField]    PlatingProperties   m_baseStats     = null;                     //!< The base stats of the plating.
+                        PlatingProperties   m_currentStats  = new PlatingProperties();  //!< The current stats of the plating.
+
+
+    #region BaseEquipment Overrides
+
+    protected override void ResetToBaseStats ()
+    {
+        m_currentStats.CloneProperties (m_baseStats);
+    }
+
+
     protected override void CalculateCurrentStats ()
     {
-        //throw new System.NotImplementedException ();
+        for (int i = 0; i < m_augmentSlots.Length; i++)
+        {
+            if (m_augmentSlots[i] != null)
+            {
+                float scalar = ElementalValuesPlating.TierScalar.GetScalar (m_augmentSlots[i].GetTier());
+                Element element = m_augmentSlots[i].GetElement();
+                
+                switch (element)
+                {
+                    case Element.Fire:
+                    {
+                        ElementResponseFire (scalar);
+                        break;
+                    }
+                        
+                    case Element.Ice:
+                    {
+                        ElementResponseIce (scalar);
+                        break;
+                    }
+                        
+                    case Element.Earth:
+                    {
+                        ElementResponseEarth (scalar);
+                        break;
+                    }
+                        
+                    case Element.Lightning:
+                    {
+                        ElementResponseLightning (scalar);
+                        break;
+                    }
+                        
+                    case Element.Light:
+                    {
+                        ElementResponseLight (scalar);
+                        break;
+                    }
+                        
+                    case Element.Dark:
+                    {
+                        ElementResponseDark (scalar);
+                        break;
+                    }
+                        
+                    case Element.Spirit:
+                    {
+                        ElementResponseSpirit (scalar);
+                        break;
+                    }
+                        
+                    case Element.Gravity:
+                    {
+                        ElementResponseGravity (scalar);
+                        break;
+                    }
+                        
+                    case Element.Air:
+                    {
+                        ElementResponseAir (scalar);
+                        break;
+                    }
+                        
+                    case Element.Organic:
+                    {
+                        ElementResponseOrganic (scalar);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        rigidbody.mass = m_currentStats.mass;
     }
-    
-    protected override void ElementResponseAir (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
-    
+
+
     protected override void ElementResponseFire (float scalar)
     {
         throw new System.NotImplementedException ();
     }
-    
-    protected override void ElementResponseDark (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
-    
-    protected override void ElementResponseEarth (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
-    
-    protected override void ElementResponseGravity (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
-    
+
+
     protected override void ElementResponseIce (float scalar)
     {
         throw new System.NotImplementedException ();
     }
-    
-    protected override void ElementResponseLight (float scalar)
+       
+
+    protected override void ElementResponseEarth (float scalar)
     {
         throw new System.NotImplementedException ();
     }
-    
+
+
     protected override void ElementResponseLightning (float scalar)
     {
         throw new System.NotImplementedException ();
     }
-    
-    protected override void ElementResponseOrganic (float scalar)
+
+
+    protected override void ElementResponseLight (float scalar)
     {
         throw new System.NotImplementedException ();
     }
-    
+
+
+    protected override void ElementResponseDark (float scalar)
+    {
+        throw new System.NotImplementedException ();
+    }
+
+
     protected override void ElementResponseSpirit (float scalar)
     {
         throw new System.NotImplementedException ();
     }
-    
-    protected override void ResetToBaseStats ()
+
+
+    protected override void ElementResponseGravity (float scalar)
     {
-        //throw new System.NotImplementedException ();
+        throw new System.NotImplementedException ();
     }
+
+
+    protected override void ElementResponseAir (float scalar)
+    {
+        throw new System.NotImplementedException ();
+    }
+
+
+    protected override void ElementResponseOrganic (float scalar)
+    {
+        throw new System.NotImplementedException ();
+    }
+
+    #endregion
 }
