@@ -94,7 +94,7 @@ namespace ElementalValuesPlating
 	/// </summary>
 	public static class Organic
 	{
-		public const float  regenMulti          	= 0.05f;    //!< How much HP to regenerate a second.
+		public const float  regenInc                = 0.05f;    //!< How much HP to regenerate a second.
 	}
 	
 	

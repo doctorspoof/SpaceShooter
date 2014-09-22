@@ -53,6 +53,8 @@ public sealed class EquipmentTypePlating : BaseEquipment
     [SerializeField]    PlatingProperties   m_baseStats     = null;                     //!< The base stats of the plating.
                         PlatingProperties   m_currentStats  = new PlatingProperties();  //!< The current stats of the plating.
 
+                        int                 m_currentHP     = 0;                        //!< The current amount of HP in the plating.
+
 
     #region BaseEquipment Overrides
 
@@ -142,61 +144,65 @@ public sealed class EquipmentTypePlating : BaseEquipment
 
     protected override void ElementResponseFire (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.returnDamage += ElementalValuesPlating.Fire.returnDamageInc * scalar;
     }
 
 
     protected override void ElementResponseIce (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.slowDuration += ElementalValuesPlating.Ice.slowDurationInc * scalar;
     }
        
 
     protected override void ElementResponseEarth (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.hp += (int) (m_baseStats.hp * ElementalValuesPlating.Earth.hpMulti * scalar);
+        m_currentStats.mass += m_baseStats.mass * ElementalValuesPlating.Earth.massMulti * scalar;
     }
 
 
     protected override void ElementResponseLightning (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.chanceToJump += ElementalValuesPlating.Lightning.chanceToJumpInc * scalar;
     }
 
 
     protected override void ElementResponseLight (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.chanceToCleanse += ElementalValuesPlating.Light.chanceToCleanseInc * scalar;
     }
 
 
     protected override void ElementResponseDark (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.lifesteal += ElementalValuesPlating.Dark.lifestealInc * scalar;
     }
 
 
     protected override void ElementResponseSpirit (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.chanceToEthereal += ElementalValuesPlating.Spirit.chanceToEtherealInc * scalar;
+        m_currentStats.etherealDuration += m_baseStats.etherealDuration * ElementalValuesPlating.Spirit.etherealDurationMulti * scalar;
     }
 
 
     protected override void ElementResponseGravity (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.slowsIncoming = ElementalValuesPlating.Gravity.slowsIncoming;
+
+        m_currentStats.speedReduction += ElementalValuesPlating.Gravity.speedReductionInc * scalar;
     }
 
 
     protected override void ElementResponseAir (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.mass += m_baseStats.mass * ElementalValuesPlating.Air.massMulti * scalar;
     }
 
 
     protected override void ElementResponseOrganic (float scalar)
     {
-        throw new System.NotImplementedException ();
+        m_currentStats.regen += ElementalValuesPlating.Organic.regenInc * scalar;
     }
 
     #endregion
