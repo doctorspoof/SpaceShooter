@@ -296,6 +296,10 @@ public class AINode
         m_parent = null;
     }
 
+    /// <summary>
+    /// Does what it says. Recursive call down the hierarchy starting on the node it is called upon.
+    /// </summary>
+    /// <param name="func_"></param>
     public void Recurse(System.Action<IEntity> func_)
     {
         func_(m_entity);
