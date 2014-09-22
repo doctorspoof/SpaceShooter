@@ -2462,7 +2462,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   depth: 0
   m_ownerSt: 
-  m_maxShipSpeed: 50
+  m_maxShipSpeed: 10
   m_currentShipSpeed: 0
   m_afterburnerIncreaseOfSpeed: 10
   m_afterburnerLength: 0
@@ -2477,6 +2477,7 @@ MonoBehaviour:
   m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
   m_currentOrder: 0
+  m_showMovementWaypoints: 0
   shipID: -1
   m_shouldAnchor: 0
   m_bankedCash: 1500

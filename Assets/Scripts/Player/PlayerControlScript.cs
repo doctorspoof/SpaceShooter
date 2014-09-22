@@ -276,6 +276,7 @@ public class PlayerControlScript : Ship
             m_cShipCache = GameObject.FindGameObjectWithTag("Capital");
             m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.right * 7.0f) + (m_cShipCache.transform.up * 1.5f);
             m_currentDockingState = DockingState.OnApproach;
+            m_gscCache.EnterCShip();
             //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
             m_isAnimating = true;
         }

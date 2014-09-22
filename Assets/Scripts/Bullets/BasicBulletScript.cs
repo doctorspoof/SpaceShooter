@@ -281,7 +281,6 @@ public class BasicBulletScript : MonoBehaviour
         else if (Network.isServer && !m_bulletBeenDestroyed)
         {
             m_bulletBeenDestroyed = true;
-            Debug.Log ("Bullet destroyed: " + gameObject.name);
             Network.Destroy(gameObject);
         }
     }

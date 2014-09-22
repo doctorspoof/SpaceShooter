@@ -488,9 +488,10 @@ public class GUICShipDockScreen : BaseGUIScreen
                 
                 if(m_cshipCanSectorJump)
                 {
-                    if(GUI.Button (new Rect(300, 200, 400, 300), "Jump"))
+                    if(GUI.Button (new Rect(700, 170, 200, 65), "Jump", "Shared"))
                     {
-                        
+                        m_gscCache.BuildUpToTransition();
+                        m_cshipCanSectorJump = false;
                     }
                 }
                 

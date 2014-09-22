@@ -64,6 +64,8 @@ public sealed class AsteroidManager : MonoBehaviour
         {
             m_asteroids = new GameObject ("Asteroids");
             m_asteroids.tag = "AsteroidParent";
+            m_asteroids.AddComponent<NetworkView>();
+            m_asteroids.networkView.stateSynchronization = NetworkStateSynchronization.Off;
         }
 
         // Ensure we have a clean array of asteroids

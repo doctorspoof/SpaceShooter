@@ -362,6 +362,28 @@ public sealed class CapitalShipScript : Ship
             }
         }
     }
+    
+    public void OrderRotateTo(Quaternion rotation)
+    {
+        ClearMoveWaypoints();
+        CancelOrder();
+        StartCoroutine(RotateToCoroutine(rotation));
+    }
+    IEnumerator RotateToCoroutine(Quaternion rotation)
+    {
+        float initialZ = transform.rotation.eulerAngles.z;
+        float diff = initialZ - rotation.eulerAngles.z;
+        
+        while(Mathf.Abs(diff) > 1.5f)
+        {
+            RotateTowards(rotation);
+            yield return 0;
+            
+            diff = transform.rotation.eulerAngles.z - rotation.eulerAngles.z;
+        }
+        
+        GameStateController.Instance().SetCShipFinishedRotating(true);
+    }
 
 
     /// <summary>
