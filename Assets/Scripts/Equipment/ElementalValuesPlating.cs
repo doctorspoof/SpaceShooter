@@ -65,7 +65,7 @@ namespace ElementalValuesPlating
 	public static class Spirit
 	{
 		public const float  chanceToEtherealInc		= 0.1f,     //!< Increase the chance to turn ethereal.
-							etherealDurationInc		= 0.1f;		//!< Increase the duration of the ethereal effect.                                            
+							etherealDurationMulti   = 0.1f;		//!< Increase the duration of the ethereal effect.                                            
 	}
 	
 	
