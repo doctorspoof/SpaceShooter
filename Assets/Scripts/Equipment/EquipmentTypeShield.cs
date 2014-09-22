@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 
+#region ShieldProperties
 
 [System.Serializable] public sealed class ShieldProperties
 {
@@ -93,6 +94,10 @@
         }
     }
 }
+
+#endregion ShieldProperties
+
+
 
 public sealed class EquipmentTypeShield : BaseEquipment 
 {
