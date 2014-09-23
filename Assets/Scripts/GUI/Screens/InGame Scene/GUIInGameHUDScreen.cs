@@ -51,6 +51,10 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     GameObject m_targetGO = null;
     
     #region Setters
+    public void ClearGUIAlerts()
+    {
+        m_currentGUIAlerts.Clear();
+    }
     public void AddNewGUIAlert(string message, float displayTime)
     {
         m_currentGUIAlerts.Add(new GUIAlert(message, displayTime));

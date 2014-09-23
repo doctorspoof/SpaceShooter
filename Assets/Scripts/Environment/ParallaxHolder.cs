@@ -53,6 +53,7 @@ public class ParallaxHolder : MonoBehaviour
         }
         
         this.renderer.material.mainTexture = m_transitionTexture;
+        GetComponent<SpriteSheet>().enabled = true;
     }
     
     public void SwitchToNormalState()
@@ -62,7 +63,9 @@ public class ParallaxHolder : MonoBehaviour
             layers[i].gameObject.SetActive(true);
         }
         
-        this.renderer.material.mainTexture = m_standardTexture;;
+        this.renderer.material.mainTexture = m_standardTexture;
+        this.renderer.material.SetTextureOffset("_MainTex", Vector2.zero);
+        GetComponent<SpriteSheet>().enabled = false;
     }
     #endregion
 }

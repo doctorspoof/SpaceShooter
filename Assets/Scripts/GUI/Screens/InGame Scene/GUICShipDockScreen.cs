@@ -15,7 +15,9 @@ public class GUICShipDockScreen : BaseGUIScreen
     [SerializeField]        Texture m_dockCShipImage;
 
     /* Internal Members */
+    bool        m_cshipIsTransitionJumping              = false;
     bool        m_cshipCanSectorJump                    = false;
+    bool        m_awaitTransitionConfirm                = false;
     bool        m_isRequestingItem                      = false;
     bool        m_transferFailed                        = false;
     bool        m_previousMouseZero                     = false;
@@ -68,6 +70,14 @@ public class GUICShipDockScreen : BaseGUIScreen
     List<Rect> m_augmentEngineSlotRects;
     
     #region Setters
+    public void SetTransitionConfirm(bool state)
+    {
+        m_awaitTransitionConfirm = state;
+    }
+    public void SetCShipJumpIsDone()
+    {
+        m_cshipIsTransitionJumping = false;
+    }
     public void SetCShipCanSectorJump(bool state)
     {
         m_cshipCanSectorJump = state;
@@ -492,9 +502,18 @@ public class GUICShipDockScreen : BaseGUIScreen
                     {
                         m_gscCache.BuildUpToTransition();
                         m_cshipCanSectorJump = false;
+                        m_gscCache.SetCShipJumpBegan();
                     }
                 }
-                
+                else if(m_awaitTransitionConfirm)
+                {
+                    if(GUI.Button (new Rect(700, 170, 200, 65), "Done", "Shared"))
+                    {
+                        m_gscCache.RequestTransitionEnd();
+                        m_awaitTransitionConfirm = false;
+                    }
+                }
+                        
                 /*if (GUI.Button(new Rect(394, 250, 408, 400), "", "label"))
                 {
                     //Change back to dual panel
@@ -605,7 +624,7 @@ public class GUICShipDockScreen : BaseGUIScreen
         }
         
         //Leave button
-        if (shouldRecieveInput && GUI.Button(new Rect(512, 687, 176, 110), "", "label"))
+        if (shouldRecieveInput && GUI.Button(new Rect(512, 687, 176, 110), "", "label") && !m_cshipIsTransitionJumping)
         {
             m_gscCache.LeaveCShip();
             
@@ -620,6 +639,8 @@ public class GUICShipDockScreen : BaseGUIScreen
             m_currentDraggedItemInventoryId = -1;
             m_currentDraggedItemIsFromPlayerInv = false;
             m_cshipCache.GetComponent<NetworkInventory>().RequestServerCancel(m_currentTicket);
+            
+            m_cshipIsTransitionJumping = true;
         }
     }
     

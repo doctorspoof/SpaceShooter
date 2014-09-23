@@ -24,6 +24,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
     [SerializeField]        GameObject          m_levelBoundary;
     [SerializeField]        GameObject          m_startMarker;
     [SerializeField]        GameObject          m_endMarker;
+    [SerializeField]        GameObject          m_spawnManager;
+    [SerializeField]        GameObject          m_spawnPoint;
     [SerializeField]        int                 m_seed =            0;
     [SerializeField]        bool                m_tempDestroyScene = false;
     [SerializeField]        bool                m_tempGenerateScene = false;
@@ -298,7 +300,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             asManSc.SetThickness(thickness);
             
             //Number
-            int numAster = (int)(range * 0.85f); 
+            int numAster = (int)(range * 0.5f); 
             asManSc.SetAsteroidNum(numAster);
             
             //Ensure ring
@@ -327,7 +329,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             //Set field vars
             asManSc.SetRange(range);
             asteroidMan.transform.position = fieldPos;
-            float asteroidDensity = Random.Range (2.0f, 3.0f);
+            float asteroidDensity = Random.Range (1.25f, 2.0f);
             int numAster = (int)(range * asteroidDensity);
             asManSc.SetAsteroidNum(numAster);
             
@@ -461,6 +463,17 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         float boundaryDist = (furthestExtent + 50.0f);
         lbSc.SetBoundaryScale(new Vector3(boundaryDist, boundaryDist, boundaryDist));
+        
+        // Enemy spawn points + manager
+        Network.Instantiate(m_spawnPoint, new Vector3(0, -furthestExtent, 10.5f), Quaternion.identity, 0);
+        Network.Instantiate(m_spawnPoint, new Vector3(0, furthestExtent, 10.5f), Quaternion.Euler(0, 0, 180), 0);
+        Network.Instantiate(m_spawnPoint, new Vector3(-furthestExtent, 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
+        Network.Instantiate(m_spawnPoint, new Vector3(furthestExtent, 0, 10.5f), Quaternion.Euler(0, 0, 90), 0);
+        
+        GameObject spawnMan = Network.Instantiate(m_spawnManager, Vector3.zero, Quaternion.identity, 0) as GameObject;
+        spawnMan.GetComponent<EnemySpawnManagerScript>().InitSpawnPoints();
+        
+        GameStateController.Instance().UpdateAttachedSpawnManager(spawnMan);
         
         //Spawn + Exit points
         Network.Instantiate(m_startMarker, new Vector3(-(furthestExtent + 50.0f), 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
@@ -943,7 +956,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             asManSc.SetThickness(thickness);
             
             //Number
-            int numAster = (int)(range * 0.85f); 
+            int numAster = (int)(range * 0.5f); 
             asManSc.SetAsteroidNum(numAster);
             
             //Ensure ring
@@ -972,7 +985,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             //Set field vars
             asManSc.SetRange(range);
             asteroidMan.transform.position = fieldPos;
-            float asteroidDensity = Random.Range (2.0f, 3.0f);
+            float asteroidDensity = Random.Range (1.25f, 2.0f);
             int numAster = (int)(range * asteroidDensity);
             asManSc.SetAsteroidNum(numAster);
             
@@ -1119,7 +1132,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         #endregion
         
-        GameStateController.Instance().EndCShipJumpTransition();
+        // Alert GUI it needs to await input
+        GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().AlertTransitionNeedsInput(true);
+        //GameStateController.Instance().EndCShipJumpTransition();
     }
     public void StartDestroyCoroutine()
     {

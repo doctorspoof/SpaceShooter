@@ -813,7 +813,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public void ResetThrusters()
     {
-        Debug.Log("ResetThrusters() is currently empty. If the thrusters are spazzing out, this is the problem");
+        //Debug.Log("ResetThrusters() is currently empty. If the thrusters are spazzing out, this is the problem");
         //networkView.RPC("PropagateResetThrusters", RPCMode.All);
     }
 
