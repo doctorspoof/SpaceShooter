@@ -5,7 +5,7 @@
 namespace ElementalValuesEngine
 {
     /// <summary>
-    /// The Fire elemental should increase baes speed at the cost of turning and strafing ability, this is act as a drag-like enhancement.
+    /// The Fire elemental should increase base speed at the cost of turning and strafing ability, this is act as a drag-like enhancement.
     /// </summary>
     public static class Fire
     {
