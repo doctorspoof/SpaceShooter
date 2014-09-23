@@ -9,7 +9,7 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Fire
 	{
-		public const float  speedMulti             	= 0.2f,    	//!< Increase the engines base speed.
+        public const float  speedMulti             	= 0.2f,    	//!< Increase the engines base speed.
                             turnMulti               = -0.1f,    //!< Decrease ability to turn.
                             strafeMulti           	= -0.1f;    //!< Decrease ability to strafe.
 	}
@@ -38,8 +38,8 @@ namespace ElementalValuesEngine
 	/// Lightning should concentrate on increasing the afterburner speed at the cost of capacity.
 	/// </summary>
 	public static class Lightning
-	{		
-		public const float  burnerSpeedMulti       	= 0.2f,    	//!< Make the engine go zoom zoom.
+	{
+        public const float  burnerSpeedMulti       	= 0.2f,    	//!< Make the engine go zoom zoom.
                             burnerLengthMulti       = -0.1f;    //!< Decrease the capacity to balance the effect.
 	}
 	
@@ -49,7 +49,7 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Light
 	{
-		public const float  speedMulti           	= 0.1f,     //!< Increase the engines core speed.
+        public const float  speedMulti           	= 0.1f,     //!< Increase the engines core speed.
                             turnMulti 	        	= 0.1f,     //!< Make the engine allow for faster turning.
                             strafeMulti				= 0.1f,		//!< Increase the agility of the engine.
                             burnerSpeedMulti		= -0.1f;	//!< Decrease the speed of the afterburner.
@@ -61,9 +61,9 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Dark
 	{
-		public const bool   longTeleport			= true;		//!< Allow for the usage of the long-range teleport.
-        
-		public const float  longRangeMulti          = 0.1f,     //!< Increase the distance of the long-range teleport.
+        public const bool   longTeleport			= true;		//!< Allow for the usage of the long-range teleport.
+
+        public const float  longRangeMulti          = 0.1f,     //!< Increase the distance of the long-range teleport.
                             longCooldownMulti 	    = -0.1f;   	//!< Decrease the cooldown of the long-range teleport.
 	}
 	
@@ -73,9 +73,9 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Spirit
 	{
-		public const bool   shortTeleport        	= true;     //!< Enable the short-range teleport ability.
-		
-		public const float  shortRangeMulti         = 0.1f,     //!< Increase the range of the teleport.
+        public const bool   shortTeleport        	= true;     //!< Enable the short-range teleport ability.
+
+        public const float  shortRangeMulti         = 0.1f,     //!< Increase the range of the teleport.
                             shortCooldownMulti      = -0.1f;    //!< Reduce the cooldown of the teleport.                                                     
 	}
 	
@@ -85,9 +85,9 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Gravity
 	{
-		public const bool   gravityControl         	= true;     //!< Enable gravity control.
-		
-		public const float  maxGravityChangeInc   	= 0.1f ;    //!< Increase the extra gravity that can be applied to the engines.
+        public const bool   gravityControl         	= true;     //!< Enable gravity control.
+
+        public const float  maxGravityChangeInc   	= 0.1f ;    //!< Increase the extra gravity that can be applied to the engines.
 	}
 	
 	
@@ -96,7 +96,7 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Air
 	{
-		public const float  turnMulti         		= 0.1f,    	//!< Increase the turn rate of the engines.
+        public const float  turnMulti         		= 0.1f,    	//!< Increase the turn rate of the engines.
                             strafeMulti             = 0.1f;     //!< Increase the agility of the engines.
 	}
 	
@@ -106,13 +106,13 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Organic
 	{
-		public const float  burnerRechargeMulti   	= 0.1f;   	//!< Increase the recharge rate of the afterburners.
+        public const float  burnerRechargeMulti   	= 0.1f;   	//!< Increase the recharge rate of the afterburners.
 	}
 	
 	
 	public static class TierScalar
 	{
-		public const float  tierOne                 = 1f,       //!< The scalar for tier one effects.
+        public const float  tierOne                 = 1f,       //!< The scalar for tier one effects.
                             tierTwo                 = 2f,       //!< The scalar for tier two effects.
                             tierThree               = 3f,       //!< The scalar for tier three effects.
                             tierFour                = 4f,       //!< The scalar for tier four effects.
