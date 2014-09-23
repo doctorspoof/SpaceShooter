@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 
+#region Engine Properties
 
 /// <summary>
 /// Contains all statistics for the engines.
@@ -19,7 +20,7 @@
 
     // Gravity control
                             public bool             gravityControl      = false;    //!< Unlocks the usage of gravity control.
-    [Range (0f, 1f)]        public float            maxGravityChance    = 0f;       //!< How much the gravity effect can be increased or reduced (-100% to 100%).
+    [Range (0f, 1f)]        public float            maxGravityChange    = 0f;       //!< How much the gravity effect can be increased or reduced (-100% to 100%).
 
     // Teleports
                             public bool             shortTeleport       = false;    //!< Unlocks the short-range teleport.
@@ -29,22 +30,129 @@
                             public bool             longTeleport        = false;    //!< Unlocks the long-range teleport.
     [Range (0f, 100f)]      public float            longTeleRange       = 50f;      //!< How far the long-range teleport reaches.
     [Range (0f, 120f)]      public float            longTeleCooldown    = 60f;      //!< How long to wait before using the teleport again.
+    
+    
+    public void CloneProperties (EngineProperties clone)
+    {
+        if (clone != null)
+        {
+            // Base movement
+            forwardSpeed = clone.forwardSpeed;
+            turnSpeed = clone.turnSpeed;
+            strafeSpeed = clone.strafeSpeed;
+            
+            // Afterburners
+            burnerSpeed = clone.burnerSpeed;
+            burnerLength = clone.burnerLength;
+            burnerRechargeRate = clone.burnerRechargeRate;
+            
+            // Gravity control
+            gravityControl = clone.gravityControl;
+            maxGravityChange = clone.maxGravityChange;
+            
+            // Teleports
+            shortTeleport = clone.shortTeleport;
+            shortTeleRange = clone.shortTeleRange;
+            shortTeleCooldown = clone.shortTeleCooldown;
+            
+            longTeleport = clone.longTeleport;
+            longTeleRange = clone.longTeleRange;
+            longTeleCooldown = clone.longTeleCooldown;
+        }
+    }
 }
 
+#endregion
 
 
 [RequireComponent (typeof (Ship))]
 public sealed class EquipmentTypeEngine : BaseEquipment 
 {
+    [SerializeField]    EngineProperties    m_baseStats = null;                         //!< Contains the base stats of the engine.
+                        EngineProperties    m_currentStats = new EngineProperties();    //!< Contains the current calculated stats of the engine.
+
+
+    #region Elemental responses
+
     protected override void ResetToBaseStats()
     {
-        //throw new System.NotImplementedException ();
+        m_currentStats.CloneProperties (m_baseStats);
     }
 
 
     protected override void CalculateCurrentStats()
     {
-        //throw new System.NotImplementedException ();
+        for (int i = 0; i < m_augmentSlots.Length; i++)
+        {
+            if (m_augmentSlots[i] != null)
+            {
+                float scalar = ElementalValuesEngine.TierScalar.GetScalar (m_augmentSlots[i].GetTier());
+                Element element = m_augmentSlots[i].GetElement();
+                
+                switch (element)
+                {
+                    case Element.Fire:
+                    {
+                        ElementResponseFire (scalar);
+                        break;
+                    }
+                        
+                    case Element.Ice:
+                    {
+                        ElementResponseIce (scalar);
+                        break;
+                    }
+                        
+                    case Element.Earth:
+                    {
+                        ElementResponseEarth (scalar);
+                        break;
+                    }
+                        
+                    case Element.Lightning:
+                    {
+                        ElementResponseLightning (scalar);
+                        break;
+                    }
+                        
+                    case Element.Light:
+                    {
+                        ElementResponseLight (scalar);
+                        break;
+                    }
+                        
+                    case Element.Dark:
+                    {
+                        ElementResponseDark (scalar);
+                        break;
+                    }
+                        
+                    case Element.Spirit:
+                    {
+                        ElementResponseSpirit (scalar);
+                        break;
+                    }
+                        
+                    case Element.Gravity:
+                    {
+                        ElementResponseGravity (scalar);
+                        break;
+                    }
+                        
+                    case Element.Air:
+                    {
+                        ElementResponseAir (scalar);
+                        break;
+                    }
+                        
+                    case Element.Organic:
+                    {
+                        ElementResponseOrganic (scalar);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -106,4 +214,6 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     {
         throw new System.NotImplementedException ();
     }
+    
+    #endregion Elemental responses
 }
