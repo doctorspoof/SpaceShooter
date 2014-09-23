@@ -20,7 +20,7 @@ namespace ElementalValuesEngine
     /// </summary>
     public static class Ice
     {
-		public const float  burnerLengthMulti       = 0.1f;     //!< Increase the available capacity.
+        public const float  burnerLengthMulti       = 0.1f;     //!< Increase the available capacity.
     }
 	
 	
@@ -119,20 +119,20 @@ namespace ElementalValuesEngine
                             tierFive                = 5f;       //!< The scalar for tier five effects.
 		
 		
-		public static float GetScalar (int tier)
-		{
-			switch (tier)
-			{
+        public static float GetScalar (int tier)
+        {
+            switch (tier)
+            {
                 case 1: return tierOne;
                 case 2: return tierTwo;
                 case 3: return tierThree;
                 case 4: return tierFour;
                 case 5: return tierFive;
     				
-    			default:
+                default:
                     Debug.LogError ("Couldn't find the corresponding scalar value.");
                     return 0f;
-			}
-		}
-	}
+            }
+        }
+    }
 }
