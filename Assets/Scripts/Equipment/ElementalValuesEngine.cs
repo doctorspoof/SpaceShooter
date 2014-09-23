@@ -10,8 +10,8 @@ namespace ElementalValuesEngine
 	public static class Fire
 	{
 		public const float  speedMulti             	= 0.2f,    	//!< Increase the engines base speed.
-      						turnMulti 		        = -0.1f,    //!< Decrease ability to turn.
-      						strafeMulti           	= -0.1f;    //!< Decrease ability to strafe.
+                            turnMulti               = -0.1f,    //!< Decrease ability to turn.
+                            strafeMulti           	= -0.1f;    //!< Decrease ability to strafe.
 	}
 	
 	
@@ -20,7 +20,7 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Ice
 	{
-		public const float  burnerCapacityMulti		= 0.1f;		//!< Increase the available capacity.
+		public const float  burnerLengthMulti       = 0.1f;		//!< Increase the available capacity.
 	}
 	
 	
@@ -29,8 +29,8 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Earth
 	{
-		public const float  burnerCapacityMulti   	= 0.2f,     //!< Significantly increase afterburner capacity.
-							burnerSpeedMulti        = -0.1f;	//!< Decrease the afterburners max speed.
+        public const float  burnerSpeedMulti        = -0.1f;    //!< Decrease the afterburners max speed.
+                            burnerLengthMulti       = 0.2f,     //!< Significantly increase afterburner capacity.
 	}
 	
 	
@@ -40,7 +40,7 @@ namespace ElementalValuesEngine
 	public static class Lightning
 	{		
 		public const float  burnerSpeedMulti       	= 0.2f,    	//!< Make the engine go zoom zoom.
-							burnerCapacityMulti     = -0.1f;    //!< Decrease the capacity to balance the effect.
+                            burnerLengthMulti       = -0.1f;    //!< Decrease the capacity to balance the effect.
 	}
 	
 	
@@ -50,9 +50,9 @@ namespace ElementalValuesEngine
 	public static class Light
 	{
 		public const float  speedMulti           	= 0.1f,     //!< Increase the engines core speed.
-							turnMulti 	        	= 0.1f,     //!< Make the engine allow for faster turning.
-							strafeMulti				= 0.1f,		//!< Increase the agility of the engine.
-							burnerSpeedMulti		= -0.1f;	//!< Decrease the speed of the afterburner.
+                            turnMulti 	        	= 0.1f,     //!< Make the engine allow for faster turning.
+                            strafeMulti				= 0.1f,		//!< Increase the agility of the engine.
+                            burnerSpeedMulti		= -0.1f;	//!< Decrease the speed of the afterburner.
 	}
 	
 	
@@ -61,10 +61,10 @@ namespace ElementalValuesEngine
 	/// </summary>
 	public static class Dark
 	{
-		public const bool	longTeleport			= true;		//!< Allow for the usage of the long-range teleport.
-
+		public const bool   longTeleport			= true;		//!< Allow for the usage of the long-range teleport.
+        
 		public const float  longRangeMulti          = 0.1f,     //!< Increase the distance of the long-range teleport.
-							longCooldownMulti 	    = -0.1f;   	//!< Decrease the cooldown of the long-range teleport.
+                            longCooldownMulti 	    = -0.1f;   	//!< Decrease the cooldown of the long-range teleport.
 	}
 	
 	
@@ -76,7 +76,7 @@ namespace ElementalValuesEngine
 		public const bool   shortTeleport        	= true;     //!< Enable the short-range teleport ability.
 		
 		public const float  shortRangeMulti         = 0.1f,     //!< Increase the range of the teleport.
-							shortCooldownMulti      = -0.1f;    //!< Reduce the cooldown of the teleport.                                                     
+                            shortCooldownMulti      = -0.1f;    //!< Reduce the cooldown of the teleport.                                                     
 	}
 	
 	
@@ -97,7 +97,7 @@ namespace ElementalValuesEngine
 	public static class Air
 	{
 		public const float  turnMulti         		= 0.1f,    	//!< Increase the turn rate of the engines.
-							strafeMulti             = 0.1f;     //!< Increase the agility of the engines.
+                            strafeMulti             = 0.1f;     //!< Increase the agility of the engines.
 	}
 	
 	
@@ -113,25 +113,25 @@ namespace ElementalValuesEngine
 	public static class TierScalar
 	{
 		public const float  tierOne                 = 1f,       //!< The scalar for tier one effects.
-                    		tierTwo                 = 2f,       //!< The scalar for tier two effects.
-                    		tierThree               = 3f,       //!< The scalar for tier three effects.
-                    		tierFour                = 4f,       //!< The scalar for tier four effects.
-                    		tierFive                = 5f;       //!< The scalar for tier five effects.
+                            tierTwo                 = 2f,       //!< The scalar for tier two effects.
+                            tierThree               = 3f,       //!< The scalar for tier three effects.
+                            tierFour                = 4f,       //!< The scalar for tier four effects.
+                            tierFive                = 5f;       //!< The scalar for tier five effects.
 		
 		
 		public static float GetScalar (int tier)
 		{
 			switch (tier)
 			{
-    			case 1: return tierOne;
-    			case 2: return tierTwo;                
-    			case 3: return tierThree;                
-    			case 4: return tierFour;
-    			case 5: return tierFive;
+                case 1: return tierOne;
+                case 2: return tierTwo;
+                case 3: return tierThree;
+                case 4: return tierFour;
+                case 5: return tierFive;
     				
-    			default: 
-    				Debug.LogError ("Couldn't find the corresponding scalar value.");
-    				return 0f;
+    			default:
+                    Debug.LogError ("Couldn't find the corresponding scalar value.");
+                    return 0f;
 			}
 		}
 	}
