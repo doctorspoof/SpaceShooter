@@ -160,6 +160,8 @@ public sealed class CapitalShipScript : Ship
     /// </summary>
     protected override void Start()
     {
+        base.Start();
+
         // Set up the external reference to the target point
         GameObject temp = GameObject.FindGameObjectWithTag ("CSTarget");
         if (temp != null)
@@ -190,8 +192,10 @@ public sealed class CapitalShipScript : Ship
     /// <summary>
     /// Moves the ship if necessary
     /// </summary>
-    void FixedUpdate()
+    protected override void FixedUpdate()
     {
+        base.FixedUpdate();
+
         if (m_shouldMoveToTarget && m_targetPoint != null)
         {
             // Rotate to the correct direction
