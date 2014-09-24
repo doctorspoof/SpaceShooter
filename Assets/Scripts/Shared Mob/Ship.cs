@@ -30,44 +30,44 @@ public enum AIShipNotifyInfo
 public class Ship : MonoBehaviour, IEntity, ICloneable
 {
 
-    public int depth;
+                        public      int         depth = 0;
 
-    [SerializeField] protected string m_ownerSt;
+    [SerializeField]    protected   string      m_ownerSt = "";
+    
+    [SerializeField]                float       m_shipWidth = 0f;
+    [SerializeField]                float       m_shipHeight = 0f;
 
-    [SerializeField] float m_maxShipSpeed;
-    [SerializeField] float m_currentShipSpeed = 0.0f;
+    [SerializeField]                float       m_maxShipSpeed = 0f;
+    [SerializeField]                float       m_rotateSpeed = 0f;
+    [SerializeField]                float       m_strafeSpeed = 0f;
 
-    [SerializeField] float m_afterburnerIncreaseOfSpeed;
-    [SerializeField] float m_afterburnerLength;
-    [SerializeField] float m_afterburnerRechargeTime;
+    [SerializeField]                float       m_ramDamageMultiplier = 2.5f;
+    
+    [SerializeField]                bool        m_manuallySetWidthAndHeight = false;
+    [SerializeField]                bool        m_special = false;
 
-    [SerializeField] float m_rotateSpeed = 5.0f;
+    [SerializeField]                string      m_pathToShieldObject = "Composite Collider/Shield";
 
-    [SerializeField] float m_ramDamageMultiplier = 2.5f;
-
-    [SerializeField] bool maunuallySetWidthAndHeight = false;
-
-    [SerializeField] protected float m_minWeaponRange = 0.0f;
-    [SerializeField] protected float m_maxWeaponRange = 0.0f;
-
-    [SerializeField] float m_shipWidth;
-    [SerializeField] float m_shipHeight;
-
-    [SerializeField] bool m_special;
-
-    [SerializeField] string m_pathToShieldObject = "Composite Collider/Shield";
-
-    [SerializeField] AIShipOrder m_currentOrder = AIShipOrder.Idle;
+    [SerializeField]                AIShipOrder m_currentOrder = AIShipOrder.Idle;
 
 
 
 
     bool m_afterburnersFiring = false, m_afterburnersRecharged = true;
     float m_currentAfterburnerTime = 0.0f, m_currentAfterburnerRechargeTime = 0.0f;
+    
+    float m_currentShipSpeed = 0f;
 
-    float m_currentAngularVelocity = 0;
-    float m_currentRotation = 0, m_lastRotation = 0;
-    float m_maxThrusterVelocitySeen = 0, m_maxAngularVelocitySeen = 0;
+    float m_afterburnerIncreaseOfSpeed = 0f;
+    float m_afterburnerLength = 0f;
+    float m_afterburnerRechargeTime = 0f;
+
+    float m_currentAngularVelocity = 0f;
+    float m_currentRotation = 0f, m_lastRotation = 0f;
+    float m_maxThrusterVelocitySeen = 0f, m_maxAngularVelocitySeen = 0f;
+    
+    protected float m_minWeaponRange = 0.0f;
+    protected float m_maxWeaponRange = 0.0f;
 
     int shaderCounter = 0;
 
@@ -98,10 +98,12 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     AINode m_node;
 
     //this was mainly for testing, may be deleted eventually
-#pragma warning disable 0414
+    #pragma warning disable 0414
+
     [SerializeField] public int shipID = -1;
     static int ids = 0;
-#pragma warning restore 0414
+
+    #pragma warning restore 0414
 
     #region getset
 
@@ -129,6 +131,56 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     {
         m_currentShipSpeed = Mathf.Clamp(currentSpeed, 0, m_maxShipSpeed);
     }
+    
+    public float GetRotateSpeed()
+    {
+        return m_rotateSpeed;
+    }
+    
+    public void SetRotateSpeed(float rotateSpeed_)
+    {
+        m_rotateSpeed = rotateSpeed_;
+    }
+    
+    public float GetStrafeSpeed()
+    {
+        return m_strafeSpeed;
+    }
+    
+    public void SetStrafeSpeed(float strafeSpeed_)
+    {
+        m_strafeSpeed = strafeSpeed_;
+    }
+
+    public float GetAfterburnerSpeed()
+    {
+        return m_afterburnerIncreaseOfSpeed;
+    }
+
+    public void SetAfterburnerSpeed(float speed_)
+    {
+        m_afterburnerIncreaseOfSpeed = speed_;
+    }
+
+    public float GetAfterburnerLength()
+    {
+        return m_afterburnerLength;
+    }
+
+    public void SetAfterburnerLength(float speed_)
+    {
+        m_afterburnerLength = speed_;
+    }
+
+    public float GetAfterburnerRechargeTime()
+    {
+        return m_afterburnerRechargeTime;
+    }
+
+    public void SetAfterburnerRechargeTime(float time_)
+    {
+        m_afterburnerRechargeTime = time_;
+    }
 
     /// <summary>
     /// Sets the currentShipSpeed based off a momentum value
@@ -152,16 +204,6 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     public float GetRamDam()
     {
         return m_ramDamageMultiplier;
-    }
-
-    public float GetRotateSpeed()
-    {
-        return m_rotateSpeed;
-    }
-
-    public void SetRotateSpeed(float rotateSpeed_)
-    {
-        m_rotateSpeed = rotateSpeed_;
     }
 
     public float GetShipWidth()
@@ -558,7 +600,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     private void SetShipSizes()
     {
-        if (!maunuallySetWidthAndHeight)
+        if (!m_manuallySetWidthAndHeight)
         {
             MeshFilter filter = GetComponent<MeshFilter>();
             Mesh mesh = filter.mesh;
