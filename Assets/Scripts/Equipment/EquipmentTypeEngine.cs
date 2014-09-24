@@ -9,12 +9,12 @@
 [System.Serializable] public sealed class EngineProperties
 {
     // Base movement
-    [Range (0f, 100f)]      public float            forwardSpeed        = 25f;      //!< The maximum speed the ship can move.
-    [Range (0f, 100f)]      public float            turnSpeed           = 25f;      //!< The maximum rotation speed of the ship.
-    [Range (0f, 100f)]      public float            strafeSpeed         = 25f;      //!< The maximum strafing speed of the ship.
+    [Range (0f, 1000f)]     public float            forwardSpeed        = 250f;     //!< The maximum speed the ship can move.
+    [Range (0f, 1000f)]     public float            turnSpeed           = 250f;     //!< The maximum rotation speed of the ship.
+    [Range (0f, 1000f)]     public float            strafeSpeed         = 250f;     //!< The maximum strafing speed of the ship.
 
     // Afterburners
-    [Range (0f, 100f)]      public float            burnerSpeed         = 25;       //!< The extra speed given by the afterburners.
+    [Range (0f, 1000f)]     public float            burnerSpeed         = 250f;     //!< The extra speed given by the afterburners.
     [Range (0f, 10f)]       public float            burnerLength        = 2.5f;     //!< How long the afterburner can last.
     [Range (0f, 10f)]       public float            burnerRechargeRate  = 5f;       //!< How quickly the afterburners recharge.
 
