@@ -168,7 +168,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_tilesX: 10
-  m_tilesY: 6
+  m_tilesY: 10
   m_fps: 15
   m_startingIndex: 0
   m_isForwards: 1
@@ -526,6 +526,10 @@ Prefab:
     - target: {fileID: 400008, guid: b72db0eaec746f14c9563be6201d881e, type: 2}
       propertyPath: m_LocalRotation.w
       value: -5.490201e-08
+      objectReference: {fileID: 0}
+    - target: {fileID: 11400008, guid: b72db0eaec746f14c9563be6201d881e, type: 2}
+      propertyPath: m_tilesY
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b72db0eaec746f14c9563be6201d881e, type: 2}
@@ -1381,8 +1385,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f00cf08330c5d564dab5932a0bc68eea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_standardTexture: {fileID: 2800000, guid: 70497a3f15959e34d95ae954e67f3515, type: 3}
-  m_transitionTexture: {fileID: 2800000, guid: ebfe5c83efab66e45b8538e9e5ad6345, type: 3}
+  m_standardTexture: {fileID: 2100000, guid: 6a43fa1d0ee181944bb037d987d317bc, type: 2}
+  m_transitionTexture: {fileID: 2100000, guid: 808c307e91ba5384e8664a347071ff33, type: 2}
 --- !u!33 &1974935425
 MeshFilter:
   m_ObjectHideFlags: 0

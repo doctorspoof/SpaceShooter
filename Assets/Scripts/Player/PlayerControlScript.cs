@@ -1004,7 +1004,7 @@ public class PlayerControlScript : Ship
 		this.m_cShipCache = CShip;
 		m_targetPoint = CShip.transform.position;
 
-		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+		networkView.RPC ("PropagateInvincibility", RPCMode.All, true);
 		rigidbody.isKinematic = true;
 
 		m_isAnimating = true;

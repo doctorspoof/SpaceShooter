@@ -19,7 +19,14 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     bool m_isBigMap = false;
     bool m_isFollowMap = false;
     
+    // Map size info
+    float m_furthestExtent = 0.0f;
+    
     #region Setters
+    public void SetFurthestExtent(float extent)
+    {
+        m_furthestExtent = extent;
+    }
     public void ToggleBigMap()
     {
         m_isBigMap = !m_isBigMap;
@@ -456,10 +463,12 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         //Y:        (pixelGapPercent * Screen.height) -> (Screen.height - (pixelGapPercent * Screen.height))
         
         //x
-        output.x = (Screen.width * 0.5f) + ((worldPos.x / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        //output.x = (Screen.width * 0.5f) + ((worldPos.x / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        output.x = (Screen.width * 0.5f) + ((worldPos.x / m_furthestExtent) * (Screen.height * (0.5f - pixelGapPercent)));
         
         //y
-        output.y = (Screen.height * 0.5f) - ((worldPos.y / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        //output.y = (Screen.height * 0.5f) - ((worldPos.y / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        output.y = (Screen.height * 0.5f) - ((worldPos.y / m_furthestExtent) * (Screen.height * (0.5f - pixelGapPercent)));
         return output;
     }
     Vector2 WorldToSmallMapPos(Vector3 worldPos)
@@ -473,11 +482,13 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         
         //X:
         //output.x = (worldPos.x / 275.0f) * (Screen.height * 0.25f);
-        output.x = (Screen.height * 0.125f) + ((worldPos.x / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        //output.x = (Screen.height * 0.125f) + ((worldPos.x / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        output.x = (Screen.height * 0.125f) + ((worldPos.x / m_furthestExtent) * (Screen.height * (0.125f - pixelGapPercent)));
         
         //Y:
         //output.y = ((Screen.height * 0.25f) * 3.0f) + ((worldPos.y / 275.0f) * Screen.height);
-        output.y = ((Screen.height * 0.125f) * 7.0f) - ((worldPos.y / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        //output.y = ((Screen.height * 0.125f) * 7.0f) - ((worldPos.y / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        output.y = ((Screen.height * 0.125f) * 7.0f) - ((worldPos.y / m_furthestExtent) * (Screen.height * (0.125f - pixelGapPercent)));
         
         return output;
     }

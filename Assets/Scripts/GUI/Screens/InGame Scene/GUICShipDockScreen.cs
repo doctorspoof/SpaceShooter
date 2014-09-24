@@ -295,54 +295,58 @@ public class GUICShipDockScreen : BaseGUIScreen
                 GUI.Label(new Rect(396, 450, 350, 100), "", "Shared");
                 GUI.Label(new Rect(396, 550, 350, 100), "", "Shared");
                 
-                /* Weapons */
-                GUI.Label(new Rect(405, 260, 125, 40), "Weapon Slots:", "No Box");
-                EquipmentTypeWeapon weaponEquip = m_playerCache.GetComponent<EquipmentTypeWeapon>();
-                int numSlotsW = weaponEquip.GetMaxAugmentNum();
-                
-                for(int i = 0; i < numSlotsW; i++)
+                if(m_playerCache != null)
                 {
-                    Rect rect = new Rect(540 + (70 * i), 290, 50, 50);
-                    ItemWrapper slotAug = weaponEquip.GetItemWrapperInSlot(i);
-                    DrawAugmentSlot(rect, m_augmentWeaponSlotRects, i, slotAug, weaponEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                
+                    /* Weapons */
+                    GUI.Label(new Rect(405, 260, 125, 40), "Weapon Slots:", "No Box");
+                    EquipmentTypeWeapon weaponEquip = m_playerCache.GetComponent<EquipmentTypeWeapon>();
+                    int numSlotsW = weaponEquip.GetMaxAugmentNum();
+                    
+                    for(int i = 0; i < numSlotsW; i++)
+                    {
+                        Rect rect = new Rect(540 + (70 * i), 290, 50, 50);
+                        ItemWrapper slotAug = weaponEquip.GetItemWrapperInSlot(i);
+                        DrawAugmentSlot(rect, m_augmentWeaponSlotRects, i, slotAug, weaponEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                    }
+                    
+                    /* Shields */
+                    GUI.Label (new Rect(405, 360, 125, 40), "Shield slots:", "No Box");
+                    EquipmentTypeShield shieldEquip = m_playerCache.GetComponent<EquipmentTypeShield>();
+                    int numSlotsS = shieldEquip.GetMaxAugmentNum();
+                    
+                    for(int i = 0; i < numSlotsS; i++)
+                    {
+                        Rect rect = new Rect(540 + (70 * i), 390, 50, 50);
+                        ItemWrapper slotAug = shieldEquip.GetItemWrapperInSlot(i);
+                        DrawAugmentSlot(rect, m_augmentShieldSlotRects, i, slotAug, shieldEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                    }
+                    
+                    /* Plating */
+                    GUI.Label (new Rect(405, 460, 125, 40), "Plating slots:", "No Box");
+                    EquipmentTypePlating platingEquip = m_playerCache.GetComponent<EquipmentTypePlating>();
+                    int numSlotsP = platingEquip.GetMaxAugmentNum();
+                    
+                    for(int i = 0; i < numSlotsP; i++)
+                    {
+                        Rect rect = new Rect(540 + (70 * i), 490, 50, 50);
+                        ItemWrapper slotAug = platingEquip.GetItemWrapperInSlot(i);
+                        DrawAugmentSlot(rect, m_augmentPlatingSlotRects, i, slotAug, platingEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                    }
+                    
+                    /* Engines */
+                    GUI.Label(new Rect(405, 560, 125, 40), "Engine slots:", "No Box");
+                    EquipmentTypeEngine engineEquip = m_playerCache.GetComponent<EquipmentTypeEngine>();
+                    int numSlotsE = engineEquip.GetMaxAugmentNum();
+                    
+                    for(int i = 0; i < numSlotsE; i++)
+                    {
+                        Rect rect = new Rect(540 + (70 * i), 590, 50, 50);
+                        ItemWrapper slotAug = engineEquip.GetItemWrapperInSlot(i);
+                        DrawAugmentSlot(rect, m_augmentEngineSlotRects, i, slotAug, engineEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                    }
+                
                 }
-                
-                /* Shields */
-                GUI.Label (new Rect(405, 360, 125, 40), "Shield slots:", "No Box");
-                EquipmentTypeShield shieldEquip = m_playerCache.GetComponent<EquipmentTypeShield>();
-                int numSlotsS = shieldEquip.GetMaxAugmentNum();
-                
-                for(int i = 0; i < numSlotsS; i++)
-                {
-                    Rect rect = new Rect(540 + (70 * i), 390, 50, 50);
-                    ItemWrapper slotAug = shieldEquip.GetItemWrapperInSlot(i);
-                    DrawAugmentSlot(rect, m_augmentShieldSlotRects, i, slotAug, shieldEquip, shouldRecieveInput, mousePos, currentEvent.type);
-                }
-                
-                /* Plating */
-                GUI.Label (new Rect(405, 460, 125, 40), "Plating slots:", "No Box");
-                EquipmentTypePlating platingEquip = m_playerCache.GetComponent<EquipmentTypePlating>();
-                int numSlotsP = platingEquip.GetMaxAugmentNum();
-                
-                for(int i = 0; i < numSlotsP; i++)
-                {
-                    Rect rect = new Rect(540 + (70 * i), 490, 50, 50);
-                    ItemWrapper slotAug = platingEquip.GetItemWrapperInSlot(i);
-                    DrawAugmentSlot(rect, m_augmentPlatingSlotRects, i, slotAug, platingEquip, shouldRecieveInput, mousePos, currentEvent.type);
-                }
-                
-                /* Engines */
-                GUI.Label(new Rect(405, 560, 125, 40), "Engine slots:", "No Box");
-                EquipmentTypeEngine engineEquip = m_playerCache.GetComponent<EquipmentTypeEngine>();
-                int numSlotsE = engineEquip.GetMaxAugmentNum();
-                
-                for(int i = 0; i < numSlotsE; i++)
-                {
-                    Rect rect = new Rect(540 + (70 * i), 590, 50, 50);
-                    ItemWrapper slotAug = engineEquip.GetItemWrapperInSlot(i);
-                    DrawAugmentSlot(rect, m_augmentEngineSlotRects, i, slotAug, engineEquip, shouldRecieveInput, mousePos, currentEvent.type);
-                }
-                
                 #endregion
                 
                 GUI.Label(new Rect(816, 270, 164, 40), "Player:", "No Box");

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class ParallaxHolder : MonoBehaviour
 {
-    [SerializeField]        Texture         m_standardTexture;
-    [SerializeField]        Texture         m_transitionTexture;
+    [SerializeField]        Material         m_standardTexture;
+    [SerializeField]        Material         m_transitionTexture;
 
     List<ParallaxLayer> layers = new List<ParallaxLayer>();
 
@@ -52,7 +52,7 @@ public class ParallaxHolder : MonoBehaviour
             layers[i].gameObject.SetActive(false);
         }
         
-        this.renderer.material.mainTexture = m_transitionTexture;
+        this.renderer.material = m_transitionTexture;
         GetComponent<SpriteSheet>().enabled = true;
     }
     
@@ -63,7 +63,7 @@ public class ParallaxHolder : MonoBehaviour
             layers[i].gameObject.SetActive(true);
         }
         
-        this.renderer.material.mainTexture = m_standardTexture;
+        this.renderer.material = m_standardTexture;
         this.renderer.material.SetTextureOffset("_MainTex", Vector2.zero);
         GetComponent<SpriteSheet>().enabled = false;
     }

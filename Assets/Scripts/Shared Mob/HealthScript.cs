@@ -15,6 +15,7 @@ public class HealthScript : MonoBehaviour
     [SerializeField] int m_shieldRechargeRate = 6;
     [SerializeField] float m_timeToRechargeShield = 4.0f;
 
+    
 	
 	// Stops the script from repeating searching for the shield GameObject
 	GameObject m_shieldCache;
@@ -26,10 +27,8 @@ public class HealthScript : MonoBehaviour
     float regenFloatCatch = 0;
 
     bool m_shouldStop = false;
+
     bool m_isInvincible = false;
-
-
-
     bool hasBeenHitAlready = false;
 
     #region getset

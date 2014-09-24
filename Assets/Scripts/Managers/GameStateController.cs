@@ -585,12 +585,6 @@ public class GameStateController : MonoBehaviour
         }
     }
 
-    public void AlertGameControllerBeginSpawning()
-    {
-        m_SpawnManager.GetComponent<EnemySpawnManagerScript>().BeginSpawning();
-        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldMove(true);
-    }
-
     public void StartGameFromMenu(bool isSpecMode)
     {
         //TODO: Change this to begin the level load sequence
@@ -798,6 +792,7 @@ public class GameStateController : MonoBehaviour
         
         //Begin the game!
         m_gameStopped = false;
+        m_SpawnManager.GetComponent<EnemySpawnManagerScript>().BeginSpawning();
         networkView.RPC("TellLocalGSCGameHasBegun", RPCMode.Others);
         
         networkView.RPC ("ForceRemoteStateChange", RPCMode.All, (int)GameState.InGameCShipDock);
@@ -1179,6 +1174,7 @@ public class GameStateController : MonoBehaviour
     
     public void SwitchToDockedAtCShip()
     {
+        m_localPlayer.GetComponent<HealthScript>().SetInvincible(true);
         ChangeGameState(GameState.InGameCShipDock);
     }
     

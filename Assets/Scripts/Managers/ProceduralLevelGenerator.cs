@@ -115,7 +115,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
 
         //Set caches
         overallScale = totalScale / stars.Length;
-        starRelativeSizeScale = totalScale / 75.0f;
+        starRelativeSizeScale = totalScale / 110.0f;
         effectStarpowerCache /= overallScale;
         
         orbitObjectNum = 4 + Mathf.RoundToInt((13.0f - oldestAge) * 0.6f);
@@ -470,10 +470,28 @@ public class ProceduralLevelGenerator : MonoBehaviour
         Network.Instantiate(m_spawnPoint, new Vector3(-furthestExtent, 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
         Network.Instantiate(m_spawnPoint, new Vector3(furthestExtent, 0, 10.5f), Quaternion.Euler(0, 0, 90), 0);
         
+        //Diagonals
+        float testX1 = furthestExtent * Mathf.Cos(45.0f * Mathf.PI / 180f);
+        float testY1 = furthestExtent * Mathf.Sin(45.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX1, testY1, 10.5f), Quaternion.Euler(0, 0, 135), 0);
+        
+        float testX2 = furthestExtent * Mathf.Cos(135.0f * Mathf.PI / 180f);
+        float testY2 = furthestExtent * Mathf.Sin(135.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX2, testY2, 10.5f), Quaternion.Euler(0, 0, 225), 0);
+        
+        float testX3 = furthestExtent * Mathf.Cos(225.0f * Mathf.PI / 180f);
+        float testY3 = furthestExtent * Mathf.Sin(225.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX3, testY3, 10.5f), Quaternion.Euler(0, 0, 315), 0);
+        
+        float testX4 = furthestExtent * Mathf.Cos(315.0f * Mathf.PI / 180f);
+        float testY4 = furthestExtent * Mathf.Sin(315.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX4, testY4, 10.5f), Quaternion.Euler(0, 0, 45), 0);
+        
         GameObject spawnMan = Network.Instantiate(m_spawnManager, Vector3.zero, Quaternion.identity, 0) as GameObject;
         spawnMan.GetComponent<EnemySpawnManagerScript>().InitSpawnPoints();
         
         GameStateController.Instance().UpdateAttachedSpawnManager(spawnMan);
+        GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().SetFurthestExtent(furthestExtent);
         
         //Spawn + Exit points
         Network.Instantiate(m_startMarker, new Vector3(-(furthestExtent + 50.0f), 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
@@ -766,7 +784,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         //Set caches
         overallScale = totalScale / stars.Length;
-        starRelativeSizeScale = totalScale / 75.0f;
+        starRelativeSizeScale = totalScale / 110.0f;
         effectStarpowerCache /= overallScale;
         
         orbitObjectNum = 4 + Mathf.RoundToInt((13.0f - oldestAge) * 0.6f);
@@ -1125,6 +1143,29 @@ public class ProceduralLevelGenerator : MonoBehaviour
         float boundaryDist = (furthestExtent + 50.0f);
         lbSc.SetBoundaryScale(new Vector3(boundaryDist, boundaryDist, boundaryDist));
         
+        // Enemy spawn points + manager
+        Network.Instantiate(m_spawnPoint, new Vector3(0, -furthestExtent, 10.5f), Quaternion.identity, 0);
+        Network.Instantiate(m_spawnPoint, new Vector3(0, furthestExtent, 10.5f), Quaternion.Euler(0, 0, 180), 0);
+        Network.Instantiate(m_spawnPoint, new Vector3(-furthestExtent, 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
+        Network.Instantiate(m_spawnPoint, new Vector3(furthestExtent, 0, 10.5f), Quaternion.Euler(0, 0, 90), 0);
+        
+        //Diagonals
+        float testX1 = furthestExtent * Mathf.Cos(45.0f * Mathf.PI / 180f);
+        float testY1 = furthestExtent * Mathf.Sin(45.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX1, testY1, 10.5f), Quaternion.Euler(0, 0, 135), 0);
+        
+        float testX2 = furthestExtent * Mathf.Cos(135.0f * Mathf.PI / 180f);
+        float testY2 = furthestExtent * Mathf.Sin(135.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX2, testY2, 10.5f), Quaternion.Euler(0, 0, 225), 0);
+        
+        float testX3 = furthestExtent * Mathf.Cos(225.0f * Mathf.PI / 180f);
+        float testY3 = furthestExtent * Mathf.Sin(225.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX3, testY3, 10.5f), Quaternion.Euler(0, 0, 315), 0);
+        
+        float testX4 = furthestExtent * Mathf.Cos(315.0f * Mathf.PI / 180f);
+        float testY4 = furthestExtent * Mathf.Sin(315.0f * Mathf.PI / 180f);
+        Network.Instantiate(m_spawnPoint, new Vector3(testX4, testY4, 10.5f), Quaternion.Euler(0, 0, 45), 0);
+        
         //Spawn + Exit points
         Network.Instantiate(m_startMarker, new Vector3(-(furthestExtent + 50.0f), 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
         
@@ -1134,6 +1175,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         // Alert GUI it needs to await input
         GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().AlertTransitionNeedsInput(true);
+        GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().SetFurthestExtent(furthestExtent);
         //GameStateController.Instance().EndCShipJumpTransition();
     }
     public void StartDestroyCoroutine()
@@ -1191,6 +1233,14 @@ public class ProceduralLevelGenerator : MonoBehaviour
         Network.Destroy (GameObject.FindGameObjectWithTag("CSStart"));
         Network.Destroy (GameObject.FindGameObjectWithTag("CSTarget"));
         
+        Debug.Log ("Destroying spawn points and spawnmanager...");
+        Network.Destroy (GameObject.FindGameObjectWithTag("SpawnManager"));
+        GameObject[] points = GameObject.FindGameObjectsWithTag("SpawnPoint");
+        for(int i = 0; i < points.Length; i++)
+        {
+            Destroy(points[i]);
+        }
+        
         Debug.Log ("Done. Scene should now be empty!");
         
         Debug.Log ("Resetting holders and seed...");
@@ -1247,6 +1297,13 @@ public class ProceduralLevelGenerator : MonoBehaviour
         Debug.Log ("Destroying CShip start/end points...");
         Network.Destroy (GameObject.FindGameObjectWithTag("CSStart"));
         Network.Destroy (GameObject.FindGameObjectWithTag("CSTarget"));
+        
+        Network.Destroy (GameObject.FindGameObjectWithTag("SpawnManager"));
+        GameObject[] points = GameObject.FindGameObjectsWithTag("SpawnPoint");
+        for(int i = 0; i < points.Length; i++)
+        {
+            Destroy(points[i]);
+        }
         
         Debug.Log ("Done. Scene should now be empty!");
         

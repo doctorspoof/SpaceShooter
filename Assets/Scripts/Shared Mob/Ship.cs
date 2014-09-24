@@ -80,6 +80,12 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     //bool coroutineIsRunning = false;
     //bool coroutineForceStopped = false;
 
+    bool m_isMovingToCShip = true;
+    float m_timeSinceLastCShipUpdate = 0.0f;
+
+    #region Caches
+    GameObject m_cshipRef = null;
+    #endregion
 
 
     int m_sendCounter = 0;
@@ -293,6 +299,10 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     protected virtual void Awake()
     {
+        //TODO: Change this later
+        if(this.tag == "Capital")
+            m_isMovingToCShip = false;
+    
         shipID = ids++;
 
         m_shipTransform = transform;
@@ -369,7 +379,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         if (m_showMovementWaypoints)
         {
-            Debug.DrawLine(transform.position, m_waypoints[0], Color.red);
+            if(m_waypoints[0] != null)
+                Debug.DrawLine(transform.position, m_waypoints[0], Color.red);
 
             for (int i = 0; i < m_waypoints.Count - 1; ++i)
             {
@@ -445,6 +456,23 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                     {
                         if (m_waypoints.Count > 0)
                         {
+                            if(m_isMovingToCShip)
+                            {
+                                if(m_timeSinceLastCShipUpdate > 5.0f)
+                                {
+                                    //Reset the target point to the cship's current position
+                                    if(m_cshipRef == null)
+                                        m_cshipRef = GameObject.FindGameObjectWithTag("Capital");
+                                        
+                                    ClearMoveWaypoints();
+                                    AddMoveWaypoint(new Vector2(m_cshipRef.transform.position.x, m_cshipRef.transform.position.y));
+                                    
+                                    m_timeSinceLastCShipUpdate = 0.0f;
+                                }
+                                else
+                                    m_timeSinceLastCShipUpdate += Time.deltaTime;
+                                }
+                                
                             MoveTowardTarget(m_waypoints[0], GetCurrentMomentum());
 
                             if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_waypoints[0]) < 0.64f)
@@ -705,7 +733,6 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public virtual void MoveForward(float momentum_)
     {
-        //Debug.Log ("AI is attempting to move with momentum of: " + momentum_);
         rigidbody.AddForce(m_shipTransform.up * momentum_ * Time.deltaTime);
     }
 
@@ -1001,6 +1028,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public virtual bool ReceiveOrder(int orderID_, object[] listOfParameters)
     {
+
         switch((AIShipOrder)orderID_)
         {
             case(AIShipOrder.Move):
@@ -1009,6 +1037,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                 }
             default:
                 {
+                    m_isMovingToCShip = false;
                     return false;
                 }
         }

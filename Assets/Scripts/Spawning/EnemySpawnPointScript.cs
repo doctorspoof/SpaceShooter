@@ -112,7 +112,6 @@ public class EnemySpawnPointScript : MonoBehaviour
         }
         else if (!m_spawnPointActive && m_wormholeActive)
         {
-
             m_currentScalingTime += Time.deltaTime;
             if (m_currentScalingTime >= m_timeBeforeScalingWormhole)
             {

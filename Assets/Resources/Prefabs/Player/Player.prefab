@@ -983,6 +983,7 @@ MonoBehaviour:
   m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
   m_currentOrder: 0
+  m_showMovementWaypoints: 0
   shipID: -1
   m_shouldRecieveInput: 1
   m_baseEngineSpeed: 5
@@ -1011,6 +1012,7 @@ MonoBehaviour:
   m_currentHealth: 0
   m_shieldRechargeRate: 20
   m_timeToRechargeShield: 3
+  m_isInvincible: 1
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -166,7 +166,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             }
         }
 
-        if (Network.isServer && m_allSpawnPoints.Length != 0 && !m_shouldPause && /*shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1)// && hasBegan)
+        if (Network.isServer && m_allSpawnPoints.Length != 0 && !m_shouldPause && /*shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1 && m_hasBegan)
         {
             m_lastTimeSpawn = (int)Time.timeSinceLevelLoad;
             SendNextWaveToPoints();
