@@ -5,7 +5,7 @@
 /// <summary>
 /// The GravityControl ability allows ships to change the intensity of the gravity effect being applied to them.
 /// </summary>
-public sealed class GravityControl : Ability 
+public sealed class AbilityGravityControl : Ability 
 {
     public bool enabled = false;    //!< Used to indicate whether the ability is currently enabled or not.
 
