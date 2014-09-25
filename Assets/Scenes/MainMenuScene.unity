@@ -772,7 +772,10 @@ MonoBehaviour:
   m_numAsteroids: 200
   m_shouldBeRingBelt: 1
   m_testAsteroidSpawn: 0
-  m_asteroidManagerBlip: {fileID: 0}
+  m_asteroidManagerRingBlip: {fileID: 2800000, guid: ba9d3c6421c86034c9b8cf346abd1888,
+    type: 3}
+  m_asteroidManagerFieldBlip: {fileID: 2800000, guid: e79a55e70cdec154e93d66ea40bdf739,
+    type: 3}
 --- !u!4 &317678363
 Transform:
   m_ObjectHideFlags: 0
@@ -2855,7 +2858,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 14800000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
       propertyPath: m_ViewID.m_ID
-      value: 41
+      value: 42
       objectReference: {fileID: 0}
     - target: {fileID: 14800000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
       propertyPath: m_ViewID.m_Type
@@ -3396,7 +3399,10 @@ MonoBehaviour:
   m_numAsteroids: 400
   m_shouldBeRingBelt: 1
   m_testAsteroidSpawn: 0
-  m_asteroidManagerBlip: {fileID: 0}
+  m_asteroidManagerRingBlip: {fileID: 2800000, guid: ba9d3c6421c86034c9b8cf346abd1888,
+    type: 3}
+  m_asteroidManagerFieldBlip: {fileID: 2800000, guid: e79a55e70cdec154e93d66ea40bdf739,
+    type: 3}
 --- !u!4 &1142287607
 Transform:
   m_ObjectHideFlags: 0
@@ -6712,6 +6718,7 @@ MonoBehaviour:
   m_starMass: 1
   m_damagePerTick: 2
   m_tickTime: .0250000004
+  m_minimapBlip: {fileID: 0}
 --- !u!23 &2099994240
 Renderer:
   m_ObjectHideFlags: 0

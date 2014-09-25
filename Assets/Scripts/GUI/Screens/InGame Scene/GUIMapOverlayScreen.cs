@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GUIMapOverlayScreen : BaseGUIScreen 
 {
@@ -12,6 +13,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     [SerializeField]    Texture     m_specEnemyBlob;
     
     /* Internal Members */
+    List<GameObject> m_drawables = null;
     GameObject[] m_playerShips = null;
     GameObject[] m_pingedEnemies = null;
     GameObject[] m_pingedMissiles = null;
@@ -23,6 +25,25 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     float m_furthestExtent = 0.0f;
     
     #region Setters
+    public void AlertUpdatePlanetReferences()
+    {
+        //Find all planets, belts, stars and fields
+        GameObject[] planets = GameObject.FindGameObjectsWithTag("Planet");
+        GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+        GameObject[] asteroids = GameObject.FindGameObjectsWithTag("AsteroidManager");
+        
+        m_drawables = new List<GameObject>();
+        for(int i = 0; i < planets.Length; i++)
+        {
+            m_drawables.Add(planets[i]);
+            
+            if(i < stars.Length)
+                m_drawables.Add(stars[i]);
+                
+            if(i < asteroids.Length)
+                m_drawables.Add(asteroids[i]);
+        }
+    }
     public void SetFurthestExtent(float extent)
     {
         m_furthestExtent = extent;
@@ -89,6 +110,8 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     {
         m_priorityValue = 2;
         m_blobSize = Screen.height * 0.015f;
+        
+        m_drawables = new List<GameObject>();
     }
     
     /* Custom Functions */
@@ -117,7 +140,39 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         //Map should be screen.height * screen.height, center on 1/2 screen.width
         GUI.DrawTexture(new Rect((Screen.width * 0.5f) - Screen.height * 0.5f, 0, Screen.height, Screen.height), m_mapOverlay);
         
-        //Now draw shizz
+        //Draw the 'drawables'
+        for(int i = 0; i < m_drawables.Count; i++)
+        {
+            Vector2 drawableSpotPos = WorldToMapPos(m_drawables[i].transform.position);
+            
+            Texture drawableBlob = null;
+            float blobSize = 0;
+            if(m_drawables[i].GetComponent<OrbitingObject>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<OrbitingObject>().GetPlanetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 15;
+            }
+            else if(m_drawables[i].GetComponent<StarScript>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<StarScript>().GetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 0.25f;
+            }
+            else
+            {
+                AsteroidManager asmansc = m_drawables[i].GetComponent<AsteroidManager>();
+                drawableBlob = asmansc.GetMinimapBlip();
+                
+                if(asmansc.GetIsRing())
+                    blobSize = asmansc.GetRange() * 0.65f;
+                else
+                    blobSize = asmansc.GetRange() * 0.45f;
+            }
+            
+            
+            GUI.DrawTexture(new Rect(drawableSpotPos.x - (blobSize * 0.5f), drawableSpotPos.y - (blobSize * 0.5f), blobSize, blobSize), drawableBlob);
+        }
+        
+        //Now draw blobs
         
         //Player - self
         if (m_playerCache != null)

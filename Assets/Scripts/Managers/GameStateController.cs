@@ -449,6 +449,13 @@ public class GameStateController : MonoBehaviour
     {
         //Do a 'build-up' to jump (animation-y stuff)
         
+        
+        //Kill all the enemies / mobs
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        for(int i = 0; i < enemies.Length; i++)
+        {
+            Network.Destroy(enemies[i]);
+        }
     
         //Open transition background image, keep CShip on top
         networkView.RPC ("PropagateBackgroundChangeToTransition", RPCMode.All);

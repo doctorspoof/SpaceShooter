@@ -17,10 +17,22 @@ public sealed class AsteroidManager : MonoBehaviour
 	[SerializeField]                    bool m_shouldBeRingBelt = true;     // Determines whether to spawn a ring of asteroids or a circular field
     [SerializeField]                    bool m_testAsteroidSpawn = false;   // Test function to spawn asteroids + see where they lie
     
-    [SerializeField]                    Texture m_asteroidManagerBlip;      // GUI will access this at runtime
+    [SerializeField]                    Texture m_asteroidManagerRingBlip;      // GUI will access this at runtime
+    [SerializeField]                    Texture m_asteroidManagerFieldBlip;      // GUI will access this at runtime
 	
     //Setters here, because procgen will need to alter these, and is too dumb to use the editor
     #region Setters
+    public Texture GetMinimapBlip()
+    {
+        if(m_shouldBeRingBelt)
+            return m_asteroidManagerRingBlip;
+        else
+            return m_asteroidManagerFieldBlip;
+    }
+    public float GetRange()
+    {
+        return m_range;
+    }
     public void SetRange(float range_)
     {
         m_range = range_;
@@ -32,6 +44,10 @@ public sealed class AsteroidManager : MonoBehaviour
     public void SetAsteroidNum(int asteroids_)
     {
         m_numAsteroids = asteroids_;
+    }
+    public bool GetIsRing()
+    {
+        return m_shouldBeRingBelt;
     }
     public void SetIsRing(bool isRing_)
     {

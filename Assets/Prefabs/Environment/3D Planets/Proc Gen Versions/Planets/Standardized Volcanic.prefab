@@ -12,7 +12,7 @@ GameObject:
   - 114: {fileID: 11400002}
   m_Layer: 0
   m_Name: Standardized Volcanic
-  m_TagString: Untagged
+  m_TagString: Planet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47f24a830ed3cd341ba0c37f72e3ca54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_miniMapBlip: {fileID: 0}
+  m_miniMapBlip: {fileID: 2800000, guid: aabed4cd7265f2c43827eee030222846, type: 3}
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

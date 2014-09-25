@@ -75,6 +75,7 @@ MonoBehaviour:
   m_starMass: .850000024
   m_damagePerTick: 5
   m_tickTime: .0500000007
+  m_minimapBlip: {fileID: 2800000, guid: 2a3a192f154b192459a9b8e26f9c6d32, type: 3}
 --- !u!135 &13500000
 SphereCollider:
   m_ObjectHideFlags: 1

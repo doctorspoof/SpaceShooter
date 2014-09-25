@@ -511,6 +511,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
         end.tag = "CSTarget";
         end.layer = Layers.objective;*/
         
+        networkView.RPC ("AlertGUIGenerateComplete", RPCMode.All);
+        
         #endregion
     }
     
@@ -696,26 +698,45 @@ public class ProceduralLevelGenerator : MonoBehaviour
         Vector3 testPos = Vector3.zero;
         while(!completed)
         {
-            Vector2 dir2 = Random.insideUnitCircle;
-            Vector3 dir = new Vector3(dir2.x, dir2.y, 0.0f);
-            dir.Normalize();
-            float range = Random.Range(0, furthestExtent);
-            testPos = Vector3.zero + (dir * range);
-            testPos.z = 15.0f;
-            
-            Collider[] colliders = Physics.OverlapSphere(testPos, requiredRange);
-            Debug.Log ("Found " + colliders.Length + " colliders at tested position: " + testPos);
-            
-            if(colliders.Length == 0)
+            int counter = 0;
+            while(counter < 25)
             {
-                Debug.Log ("Returning position " + testPos);
-                completed = true;
+            
+                Vector2 dir2 = Random.insideUnitCircle;
+                Vector3 dir = new Vector3(dir2.x, dir2.y, 0.0f);
+                dir.Normalize();
+                float range = Random.Range(0, furthestExtent);
+                testPos = Vector3.zero + (dir * range);
+                testPos.z = 15.0f;
+                
+                Collider[] colliders = Physics.OverlapSphere(testPos, requiredRange);
+                Debug.Log ("Found " + colliders.Length + " colliders at tested position: " + testPos);
+                
+                if(colliders.Length == 0)
+                {
+                    Debug.Log ("Returning position " + testPos);
+                    completed = true;
+                    counter = 25;
+                }
+                
+                counter++;
+            }
+            
+            if(!completed)
+            {
+                Debug.Log ("Couldn't find space after 25 attempsts. Shrinking required size...");
+                requiredRange *= 0.75f;
             }
         }
         
         return testPos;
     }
     #endregion
+    
+    [RPC] void AlertGUIGenerateComplete()
+    {
+        GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().AlertMapGenerationFinished();
+    }
     
     #region ExternalCalls
     public void RequestGenerateLevel(bool resetSeed)
@@ -1177,6 +1198,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
         GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().AlertTransitionNeedsInput(true);
         GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().SetFurthestExtent(furthestExtent);
         //GameStateController.Instance().EndCShipJumpTransition();
+        
+        networkView.RPC ("AlertGUIGenerateComplete", RPCMode.All);
     }
     public void StartDestroyCoroutine()
     {

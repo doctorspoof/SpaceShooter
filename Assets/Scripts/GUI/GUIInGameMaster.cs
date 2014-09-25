@@ -125,6 +125,10 @@ public class GUIInGameMaster : GUIBaseMaster
     #endregion
     
     #region Specific Toggles/Calls
+    public void AlertMapGenerationFinished()
+    {
+        GetComponent<GUIMapOverlayScreen>().AlertUpdatePlanetReferences();
+    }
     public void SetFurthestExtent(float extent)
     {
         GetComponent<GUIMapOverlayScreen>().SetFurthestExtent(extent);
