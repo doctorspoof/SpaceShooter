@@ -7,8 +7,8 @@
 /// </summary>
 public abstract class Ability
 {
-    float m_maxCooldown = 0.5f;     //!< How long the ability requires to cool down.
-    float m_currentCooldown = 0f;   //!< The cooldown for the ability.
+    protected float m_maxCooldown = 0.5f;     //!< How long the ability requires to cool down.
+    protected float m_currentCooldown = 0f;   //!< The cooldown for the ability.
     
     
     public bool HasCooled()
