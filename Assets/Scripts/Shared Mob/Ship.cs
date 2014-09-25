@@ -26,10 +26,9 @@ public enum AIShipNotifyInfo
     Promoted = 5
 }
 
-[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(Abilities)), RequireComponent(typeof(MeshFilter))]
 public class Ship : MonoBehaviour, IEntity, ICloneable
 {
-
                         public      int         depth = 0;
 
     [SerializeField]    protected   string      m_ownerSt = "";
@@ -73,6 +72,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     GameObject m_target = null;
     List<Vector2> m_waypoints = new List<Vector2>();
+
+    Abilities m_abilities = null;
 
 
     //bool coroutineIsRunning = false;
@@ -324,6 +325,11 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         m_formationPosition = formationPosition_;
         m_currentOrder = AIShipOrder.StayInFormation;
     }
+   
+    public Abilities GetAbilities()
+    {
+        return m_abilities;
+    }
 
 #endregion
 
@@ -357,6 +363,13 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                 GetAINode().GetParent().GetEntity().RequestOrder(this);
             }
         };
+
+        m_abilities = GetComponent<Abilities>();
+
+        if (m_abilities == null)
+        {
+            m_abilities = gameObject.AddComponent<Abilities>();
+        }
     }
 
     protected virtual void Start()

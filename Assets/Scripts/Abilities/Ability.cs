@@ -7,8 +7,24 @@
 /// </summary>
 public abstract class Ability
 {
+    protected bool m_locked = false;
+    protected bool m_cooling = false;
+
     protected float m_maxCooldown = 0.5f;     //!< How long the ability requires to cool down.
     protected float m_currentCooldown = 0f;   //!< The cooldown for the ability.
+    
+
+
+    public bool IsLocked()
+    {
+        return m_locked;
+    }
+
+
+    public bool IsCooling()
+    {
+        return m_cooling;
+    }
     
     
     public bool HasCooled()
@@ -17,9 +33,15 @@ public abstract class Ability
     }
     
     
-    public float GetCurrentCooldown()
+    public void SetLockState (bool isLocked)
     {
-        return m_currentCooldown;
+        m_locked = isLocked;
+    }
+
+
+    public void SetCoolingState (bool isCooling)
+    {
+        m_cooling = isCooling;
     }
     
     
@@ -29,14 +51,17 @@ public abstract class Ability
     }
     
     
-    public void SetMaxCooldown (float cooldown, bool startCooldown = false)
+    public float GetCurrentCooldown()
+    {
+        return m_currentCooldown;
+    }
+    
+    
+    public void SetMaxCooldown (float cooldown)
     {
         m_maxCooldown = Mathf.Max (0f, cooldown);
-        
-        if (startCooldown)
-        {
-            ResetCooldown();
-        }
+
+        m_currentCooldown = Mathf.Min (m_currentCooldown, m_maxCooldown);
     }
     
     
@@ -47,7 +72,10 @@ public abstract class Ability
     public void AlterCooldown (float alterBy)
     {
         m_currentCooldown = Mathf.Clamp (m_currentCooldown + alterBy, 0f, m_maxCooldown);
+        
+        m_cooling = m_currentCooldown != 0f;
     }
+    
     
     /// <summary>
     /// Sets the current cooldown to the maximum specified.
@@ -55,13 +83,18 @@ public abstract class Ability
     public void ResetCooldown()
     {
         m_currentCooldown = m_maxCooldown;
+        
+        m_cooling = false;
     }
+    
     
     /// <summary>
     /// Causes the cooldown to become zero.
     /// </summary>
-    public void ImmediateCooldown()
+    public void ImmediatelyCool()
     {
         m_currentCooldown = 0f;
+        
+        m_cooling = false;
     }
 }
