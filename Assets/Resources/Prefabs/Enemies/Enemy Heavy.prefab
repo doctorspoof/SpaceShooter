@@ -29,8 +29,8 @@ GameObject:
   - 33: {fileID: 3300002}
   - 23: {fileID: 2300002}
   - 54: {fileID: 5400000}
-  - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
+  - 114: {fileID: 11400000}
   - 148: {fileID: 14800000}
   - 114: {fileID: 11400022}
   - 114: {fileID: 11400036}
@@ -1282,7 +1282,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0640b6b76d0ec6d4dbd7bfb57c87b620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 100000, guid: 01af7ba42b275f346baf8f22959f0616, type: 2}
   m_maximumShield: 250
   m_currentShield: 0
@@ -1301,26 +1300,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61226d5b1d62304d909df1c10b142f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  depth: 0
   m_ownerSt: 
-  m_isPlayerControlScript: 0
-  m_maxShipSpeed: 240
-  m_currentShipSpeed: 0
-  m_afterburnerIncreaseOfSpeed: 0
-  m_afterburnerLength: 0
-  m_afterburnerRechargeTime: 0
-  m_rotateSpeed: 60
-  m_ramDamageMultiplier: 3
-  maunuallySetWidthAndHeight: 0
-  m_minWeaponRange: 0
-  m_maxWeaponRange: 0
   m_shipWidth: 6
   m_shipHeight: 6
+  m_maxShipSpeed: 240
+  m_rotateSpeed: 60
+  m_strafeSpeed: 0
+  m_ramDamageMultiplier: 3
+  m_manuallySetWidthAndHeight: 0
+  m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
+  m_currentOrder: 0
   shipID: -1
   m_bountyAmount: 40
-  m_currentOrder: 0
   m_allowedAttacksForShip: []
-  m_shipSize: 0
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
