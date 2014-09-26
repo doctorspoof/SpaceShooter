@@ -2851,7 +2851,8 @@ Prefab:
     - target: {fileID: 11400000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
       propertyPath: m_asteroidRef.Array.data[3]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 11400000, guid: b3beb8efd6969334cb169ac025eaabd6,
+        type: 2}
     - target: {fileID: 100000, guid: ca88c7a8dfff71e47b312afa5336e696, type: 2}
       propertyPath: m_TagString
       value: AsteroidManager
@@ -3386,7 +3387,7 @@ MonoBehaviour:
   - {fileID: 11400002, guid: 0c35fc6f7f7e2c64b820d8c92ebd5a2b, type: 2}
   - {fileID: 11400000, guid: 6a01e0409e2e14d40942c8393eb33efc, type: 2}
   - {fileID: 11400002, guid: 8dbfe283cbaf1d647a62e96a9679bfee, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: b3beb8efd6969334cb169ac025eaabd6, type: 2}
   - {fileID: 11400000, guid: f8929da04eebe45e391b2e0aef0d04ef, type: 2}
   - {fileID: 11400000, guid: 04139a9891d6746678a5357abafb13a4, type: 2}
   - {fileID: 11400000, guid: 0836eafaaca2d4376ba9637033c6aaa8, type: 2}
