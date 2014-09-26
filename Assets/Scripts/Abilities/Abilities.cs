@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 
 
@@ -85,6 +86,55 @@ public sealed class Abilities : MonoBehaviour
         
         return null;
     }
+
+
+    /// <summary>
+    /// Maintains the order of the list when adding abilities. Abilities will be ordered by active to passive then alphabetically.
+    /// </summary>
+    void AddToList (Ability ability)
+    {
+        if (ability != null)
+        {
+            // Create cache
+            Ability current = null;
+            int i = 0;
+
+            // Obtain the correct index
+            for (i = 0; i < m_abilities.Count; ++i)
+            {
+                current = m_abilities[i];
+
+                // Actives go before passives and should be ordered alphabetically.
+                if (ability.IsActive())
+                {
+                    if (current.IsActive())
+                    {
+                        if (string.Compare (ability.GetGUIName(), current.GetGUIName(), false) < 1)
+                        {
+                            break;
+                        }
+                    }
+
+                    else if (!current.IsActive())
+                    {
+                        break;
+                    }
+                }
+
+                // If passive then simply wait until we reach the passive abilities and check if the name is earlier.
+                else
+                {
+                    if (!current.IsActive() && string.Compare (ability.GetGUIName(), current.GetGUIName(), false) < 1)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            // Finally insert the ability
+            m_abilities.Insert (i, ability);
+        }
+    }
     
     
     /// <summary>
@@ -129,7 +179,10 @@ public sealed class Abilities : MonoBehaviour
         {
             ability = new T();
 
-            m_abilities.Add (ability);
+            // Maintain the ordering of the list when adding
+            AddToList (ability);
+
+            StartCoroutine (OutputList());
         }
 
         // Unlock it and return it
@@ -194,32 +247,27 @@ public sealed class Abilities : MonoBehaviour
     #endregion Cooldown management
 
 
-    void Awake()
-    {
-        //StartCoroutine (OutputList());
-    }
-
+    #region Debugging crap
 
     IEnumerator OutputList()
     {
-        while (true)
+        while (m_abilities.Count > 0)
         {
-            if (m_abilities.Count > 0)
+            string output = "";
+
+            for (int i = 0; i < m_abilities.Count; ++i)
             {
-                string output = "";
-
-                for (int i = 0; i < m_abilities.Count; ++i)
+                if (m_abilities[i] != null)
                 {
-                    if (m_abilities[i] != null)
-                    {
-                        output += m_abilities[i].GetType() + " ";
-                    }
+                    output += m_abilities[i].GetType() + " ";
                 }
-
-                Debug.Log (name + ".m_abilities: " + output);
             }
 
-            yield return new WaitForSeconds (1f);
+            Debug.Log (name + ".m_abilities: " + output);
+
+            yield return new WaitForSeconds (5f);
         }
     }
+
+    #endregion
 }
