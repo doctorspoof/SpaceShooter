@@ -5,7 +5,7 @@
 /// <summary>
 /// An abstract for each ability, allows for a generic cooldown method in Ship to clean up code.
 /// </summary>
-public abstract class Ability
+[System.Serializable] public abstract class Ability
 {
     protected bool m_locked = false;
     protected bool m_cooling = false;

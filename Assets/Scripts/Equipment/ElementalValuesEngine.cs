@@ -61,7 +61,7 @@ namespace ElementalValuesEngine
     /// </summary>
     public static class Dark
     {
-        public const bool   longTeleport            = true;     //!< Allow for the usage of the long-range teleport.
+        public const bool   hasLongTeleport         = true;     //!< Allow for the usage of the long-range teleport.
 
         public const float  longRangeMulti          = 0.1f,     //!< Increase the distance of the long-range teleport.
                             longCooldownMulti       = -0.1f;    //!< Decrease the cooldown of the long-range teleport.
@@ -73,7 +73,7 @@ namespace ElementalValuesEngine
     /// </summary>
     public static class Spirit
     {
-        public const bool   shortTeleport           = true;     //!< Enable the short-range teleport ability.
+        public const bool   hasShortTeleport        = true;     //!< Enable the short-range teleport ability.
 
         public const float  shortRangeMulti         = 0.1f,     //!< Increase the range of the teleport.
                             shortCooldownMulti      = -0.1f;    //!< Reduce the cooldown of the teleport.                                                     
@@ -85,7 +85,7 @@ namespace ElementalValuesEngine
     /// </summary>
     public static class Gravity
     {
-        public const bool   gravityControl          = true;     //!< Enable gravity control.
+        public const bool   hasGravityControl       = true;     //!< Enable gravity control.
 
         public const float  maxGravityChangeInc     = 0.1f;     //!< Increase the extra gravity that can be applied to the engines.
     }
@@ -106,7 +106,7 @@ namespace ElementalValuesEngine
     /// </summary>
     public static class Organic
     {
-        public const float  burnerRechargeMulti     = 0.1f;     //!< Increase the recharge rate of the afterburners.
+        public const float  burnerRechargeMulti     = -0.1f;    //!< Reduce the recharge time of the afterburners.
     }
 	
 	

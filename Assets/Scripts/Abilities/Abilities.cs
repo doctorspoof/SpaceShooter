@@ -9,7 +9,7 @@ using System.Collections.Generic;
 /// </summary>
 public sealed class Abilities : MonoBehaviour 
 {
-    List<Ability> m_abilities = new List<Ability>(0); //!< The list of unlocked abilities available to the ship.
+    public List<Ability> m_abilities = new List<Ability>(0); //!< The list of unlocked abilities available to the ship.
 
 
     #region Getters & setters

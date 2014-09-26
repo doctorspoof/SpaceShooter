@@ -16,18 +16,18 @@
     // Afterburners
     [Range (0f, 1000f)]     public float            burnerSpeed         = 250f;     //!< The extra speed given by the afterburners.
     [Range (0f, 10f)]       public float            burnerLength        = 2.5f;     //!< How long the afterburner can last.
-    [Range (0f, 10f)]       public float            burnerRechargeRate  = 5f;       //!< How quickly the afterburners recharge.
+    [Range (0f, 10f)]       public float            burnerRechargeTime  = 5f;       //!< How quickly the afterburners recharge.
 
     // Gravity control
-                            public bool             gravityControl      = false;    //!< Unlocks the usage of gravity control.
+                            public bool             hasGravityControl   = false;    //!< Unlocks the usage of gravity control.
     [Range (0f, 1f)]        public float            maxGravityChange    = 0f;       //!< How much the gravity effect can be increased or reduced (-100% to 100%).
 
     // Teleports
-                            public bool             shortTeleport       = false;    //!< Unlocks the short-range teleport.
+                            public bool             hasShortTeleport    = false;    //!< Unlocks the short-range teleport.
     [Range (0f, 10f)]       public float            shortTeleRange      = 5f;       //!< How far the short-range teleport reaches.
     [Range (0f, 120f)]      public float            shortTeleCooldown   = 60f;      //!< How long to wait before using the teleport again.
 
-                            public bool             longTeleport        = false;    //!< Unlocks the long-range teleport.
+                            public bool             hasLongTeleport     = false;    //!< Unlocks the long-range teleport.
     [Range (0f, 100f)]      public float            longTeleRange       = 50f;      //!< How far the long-range teleport reaches.
     [Range (0f, 120f)]      public float            longTeleCooldown    = 60f;      //!< How long to wait before using the teleport again.
     
@@ -44,18 +44,18 @@
             // Afterburners
             burnerSpeed = clone.burnerSpeed;
             burnerLength = clone.burnerLength;
-            burnerRechargeRate = clone.burnerRechargeRate;
+            burnerRechargeTime = clone.burnerRechargeTime;
             
             // Gravity control
-            gravityControl = clone.gravityControl;
+            hasGravityControl = clone.hasGravityControl;
             maxGravityChange = clone.maxGravityChange;
             
             // Teleports
-            shortTeleport = clone.shortTeleport;
+            hasShortTeleport = clone.hasShortTeleport;
             shortTeleRange = clone.shortTeleRange;
             shortTeleCooldown = clone.shortTeleCooldown;
             
-            longTeleport = clone.longTeleport;
+            hasLongTeleport = clone.hasLongTeleport;
             longTeleRange = clone.longTeleRange;
             longTeleCooldown = clone.longTeleCooldown;
         }
@@ -65,14 +65,15 @@
 #endregion
 
 
-[RequireComponent (typeof (Ship))]
+[RequireComponent (typeof (Abilities)), RequireComponent (typeof (Ship))]
 public sealed class EquipmentTypeEngine : BaseEquipment 
 {
     #region Data members
 
     [SerializeField]    EngineProperties    m_baseStats = null;                         //!< Contains the base stats of the engine.
                         EngineProperties    m_currentStats = new EngineProperties();    //!< Contains the current calculated stats of the engine.
-
+    
+                        Abilities           m_abilities = null;                         //!< A reference to the abilities component of the ship.
                         Ship                m_ship = null;                              //!< A reference to the ship used in updating the speeds available.
 
     #endregion
@@ -84,6 +85,9 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     {
         base.Awake();
 
+        // Abilities is guaranteed by the RequireComponent() attribute.
+        m_abilities = GetComponent<Abilities>();
+
         // Ship is guaranteed by the RequireComponent() attribute.
         m_ship = GetComponent<Ship>();
     }
@@ -91,7 +95,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     #endregion
 
 
-    #region Elemental responses
+    #region Stats & ability configuration
 
     protected override void ResetToBaseStats()
     {
@@ -173,14 +177,96 @@ public sealed class EquipmentTypeEngine : BaseEquipment
             }
         }
 
-        // Update the ships values
+        UpdateShipValues();
+        UpdateAbilities();
+    }
+
+
+    void UpdateShipValues()
+    {
         if (m_ship != null)
         {
             m_ship.SetMaxShipSpeed (m_currentStats.forwardSpeed);
             m_ship.SetRotateSpeed (m_currentStats.turnSpeed);
-            //m_ship.Set
+            m_ship.SetStrafeSpeed (m_currentStats.strafeSpeed);
+
+            m_ship.SetAfterburnerSpeed (m_currentStats.burnerSpeed);
+            m_ship.SetAfterburnerLength (m_currentStats.burnerLength);
+            m_ship.SetAfterburnerRechargeTime (m_currentStats.burnerRechargeTime);
         }
     }
+
+
+    void UpdateAbilities()
+    {
+        if (m_abilities != null)
+        {
+            UpdateAbilityGravityControl();
+            UpdateAbilityTeleportRandom();
+            UpdateAbilityTeleportTargetted();
+        }
+    }
+
+
+    void UpdateAbilityGravityControl()
+    {
+        if (m_currentStats.hasGravityControl)
+        {
+            // Unlock the ability
+            AbilityGravityControl gravity = m_abilities.Unlock<AbilityGravityControl>();
+            
+            // Set the maximum change attribute
+            gravity.SetMaxChange (m_currentStats.maxGravityChange);
+        }
+
+        else
+        {
+            m_abilities.Lock<AbilityGravityControl> (true);
+        }
+    }
+
+
+    void UpdateAbilityTeleportRandom()
+    {
+        if (m_currentStats.hasLongTeleport)
+        {
+            // Unlock the ability
+            AbilityTeleportRandom teleport = m_abilities.Unlock<AbilityTeleportRandom>();
+
+            // Update the range and cooldown
+            teleport.SetRange (m_currentStats.longTeleRange);
+            teleport.SetMaxCooldown (m_currentStats.longTeleCooldown);
+        }
+
+        else
+        {
+            m_abilities.Lock<AbilityTeleportRandom> (true);
+        }
+    }
+
+
+    void UpdateAbilityTeleportTargetted()
+    {
+        if (m_currentStats.hasShortTeleport)
+        {
+            // Unlock the ability
+            AbilityTeleportTargetted teleport = m_abilities.Unlock<AbilityTeleportTargetted>();
+            
+            // Update the range and cooldown
+            teleport.SetRange (m_currentStats.shortTeleRange);
+            teleport.SetMaxCooldown (m_currentStats.shortTeleCooldown);
+        }
+
+        else
+        {
+            m_abilities.Lock<AbilityTeleportTargetted> (true);
+        }
+    }
+
+    #endregion Stats & ability configuration
+
+      
+    #region Elemental responses
 
 
     protected override void ElementResponseFire (float scalar)
@@ -230,7 +316,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     protected override void ElementResponseDark (float scalar)
     {
         // Teleports
-        m_currentStats.longTeleport = ElementalValuesEngine.Dark.longTeleport;
+        m_currentStats.hasLongTeleport = ElementalValuesEngine.Dark.hasLongTeleport;
         
         m_currentStats.longTeleRange += m_baseStats.longTeleRange * ElementalValuesEngine.Dark.longRangeMulti * scalar;
         m_currentStats.longTeleCooldown += m_baseStats.longTeleCooldown * ElementalValuesEngine.Dark.longCooldownMulti * scalar;
@@ -240,7 +326,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     protected override void ElementResponseSpirit (float scalar)
     {
         // Teleports
-        m_currentStats.shortTeleport = ElementalValuesEngine.Spirit.shortTeleport;
+        m_currentStats.hasShortTeleport = ElementalValuesEngine.Spirit.hasShortTeleport;
         
         m_currentStats.shortTeleRange += m_baseStats.shortTeleRange * ElementalValuesEngine.Spirit.shortRangeMulti * scalar;
         m_currentStats.shortTeleCooldown += m_baseStats.shortTeleCooldown * ElementalValuesEngine.Spirit.shortCooldownMulti * scalar;
@@ -250,7 +336,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     protected override void ElementResponseGravity (float scalar)
     {
         // Gravity control
-        m_currentStats.gravityControl = ElementalValuesEngine.Gravity.gravityControl;
+        m_currentStats.hasGravityControl = ElementalValuesEngine.Gravity.hasGravityControl;
         
         m_currentStats.maxGravityChange += ElementalValuesEngine.Gravity.maxGravityChangeInc * scalar;
     }
@@ -267,7 +353,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     protected override void ElementResponseOrganic (float scalar)
     {
         // Afterburners
-        m_currentStats.burnerRechargeRate += m_baseStats.burnerRechargeRate * ElementalValuesEngine.Organic.burnerRechargeMulti * scalar;
+        m_currentStats.burnerRechargeTime += m_baseStats.burnerRechargeTime * ElementalValuesEngine.Organic.burnerRechargeMulti * scalar;
     }
     
     #endregion Elemental responses

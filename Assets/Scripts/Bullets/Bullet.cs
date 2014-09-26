@@ -106,6 +106,8 @@ public sealed class Bullet : MonoBehaviour
 
         else
         {
+            // TODO: Add elemental visual changes
+
             rigidbody.isKinematic = true;
 
             // Ensure layer masks are valid
