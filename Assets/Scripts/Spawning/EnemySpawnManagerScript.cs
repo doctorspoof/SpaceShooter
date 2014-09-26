@@ -148,7 +148,8 @@ public class EnemySpawnManagerScript : MonoBehaviour
 
         InitSpawnPoints();
 
-        LoadWaves("Assets/Resources/Scripts/Waves");
+        LoadHardCodedWaves();
+        //LoadWaves("Assets/Resources/Scripts/Waves");
     }
     
     void Update()
@@ -165,7 +166,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
             }
         }
 
-        if (Network.isServer && m_allSpawnPoints.Length != 0 && !m_shouldPause && /*shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1)// && hasBegan)
+        if (Network.isServer && m_allSpawnPoints.Length != 0 && !m_shouldPause && /*shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1 && m_hasBegan)
         {
             m_lastTimeSpawn = (int)Time.timeSinceLevelLoad;
             SendNextWaveToPoints();
@@ -179,12 +180,10 @@ public class EnemySpawnManagerScript : MonoBehaviour
         foreach(string file in filePaths)
         {
             Debug.Log("Loading = " + file);
-            Scripter script = new Scripter(file);
+            Scripter script = new Scripter();
+            script.LoadFromFile(file);
 
-            script.AddFunction2<string, IEntity, IEntity>("CreateShip", CreateShip);
-            script.AddFunction2<string, Component, bool>("SetWave", SetWave);
-
-            script.AddAction1<string>("trace", Debug.Log);
+            AddFunctionsToWaveScripter(script);
 
             script.Run();
         }
@@ -290,5 +289,163 @@ public class EnemySpawnManagerScript : MonoBehaviour
         {
             spawner.GetComponent<EnemySpawnPointScript>().SetShouldPause(pauseStatus);
         }
+    }
+
+    void LoadHardCodedWaves()
+    {
+        int numPlayers = GameStateController.Instance().GetConnectedPlayers().Count;
+        string[] scripts = new string[4];
+                   
+        // Light enemies = (3*P)groups of 5
+        scripts[0] =    "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                        "waveLeader.AddTargetTag(\"Capital\");" +
+                        "waveLeader.AddTargetTag(\"Player\");";
+        
+        for(int i =0; i < numPlayers * 3; i++)
+        {
+            scripts[0] += "var subLeader" + i + " = CreateShip(\"EnemyFast\", waveLeader);";
+            scripts[0] += "var child" + i + "1 = CreateShip(\"EnemyFast\", subLeader" + i + ");";
+            scripts[0] += "var child" + i + "2 = CreateShip(\"EnemyFast\", subLeader" + i + ");";
+            scripts[0] += "var child" + i + "3 = CreateShip(\"EnemyFast\", subLeader" + i + ");";
+            scripts[0] += "var child" + i + "4 = CreateShip(\"EnemyFast\", subLeader" + i + ");";
+        }
+        
+        scripts[0] += "SetWave(\"EnemyFast\", waveLeader);";  
+        
+        // Medium enemies = (3*P)groups of 3
+        scripts[1] =    "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                        "waveLeader.AddTargetTag(\"Capital\");" +
+                        "waveLeader.AddTargetTag(\"Player\");";
+                
+        for(int i = 0; i < numPlayers * 3; i++)
+        {
+            scripts[1] += "var subLeader" + i + " = CreateShip(\"EnemyNormal\", waveLeader);";
+            scripts[1] += "var child" + i + "1 = CreateShip(\"EnemyNormal\", subLeader" + i + ");";
+            scripts[1] += "var child" + i + "2 = CreateShip(\"EnemyNormal\", subLeader" + i + ");";
+        }
+        
+        scripts[1] += "SetWave(\"EnemyNormal\", waveLeader);";
+        
+        // Large enemies = (P)groups of 3
+        scripts[2] =    "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                        "waveLeader.AddTargetTag(\"Capital\");" +
+                        "waveLeader.AddTargetTag(\"Player\");";
+                        
+        for(int i = 0; i < numPlayers; i++)
+        {
+            scripts[2] += "var subLeader" + i + " = CreateShip(\"EnemyHeavy\", waveLeader);";
+            scripts[2] += "var child" + i + "1 = CreateShip(\"EnemyHeavy\", subLeader" + i + ");";
+            scripts[2] += "var child" + i + "2 = CreateShip(\"EnemyHeavy\", subLeader" + i + ");";
+        }
+        
+        scripts[2] += "SetWave(\"EnemyHeavy\", waveLeader);";
+        
+        // Mixed
+        scripts[3] =    "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                        "waveLeader.AddTargetTag(\"Capital\");" +
+                        "waveLeader.AddTargetTag(\"Player\");";
+                        
+        for(int i = 0; i < numPlayers; i++)
+        {
+            scripts[3] += "var subLeader" + i + " = CreateShip(\"EnemyHeavy\", waveLeader);";
+            scripts[3] += "var child" + i + "1 = CreateShip(\"EnemyNormal\", subLeader);";
+            scripts[3] += "var child" + i + "2 = CreateShip(\"EnemyNormal\", subLeader);";
+            scripts[3] += "var child" + i + "3 = CreateShip(\"EnemyFast\", subLeader" + i + ");";
+            scripts[3] += "var child" + i + "4 = CreateShip(\"EnemyFast\", subLeader" + i + ");";
+            scripts[3] += "var child" + i + "5 = CreateShip(\"EnemyFast\", subLeader" + i + ");";
+        }
+        
+        scripts[3] += "SetWave(\"EnemyMixed\", waveLeader);";
+        
+        
+                /*string[] scripts = {
+                               // Light enemy wave 3x5
+
+                                // leader of wave
+                                "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                                "waveLeader.AddTargetTag(\"Capital\");" +
+                                "waveLeader.AddTargetTag(\"Player\");" +
+
+                                // group 1
+                                "var subLeader1 = CreateShip(\"EnemyFast\", waveLeader);" +
+                                "var child11 = CreateShip(\"EnemyFast\", subLeader1);" +
+                                "var child12 = CreateShip(\"EnemyFast\", subLeader1);" +
+                                "var child13 = CreateShip(\"EnemyFast\", subLeader1);" +
+                                "var child14 = CreateShip(\"EnemyFast\", subLeader1);" +
+
+                                // group 2
+                                "var subLeader2 = CreateShip(\"EnemyFast\", waveLeader);" +
+                                "var child21 = CreateShip(\"EnemyFast\", subLeader2);" +
+                                "var child22 = CreateShip(\"EnemyFast\", subLeader2);" +
+                                "var child23 = CreateShip(\"EnemyFast\", subLeader2);" +
+                                "var child24 = CreateShip(\"EnemyFast\", subLeader2);" +
+
+                                // group 3
+                                "var subLeader3 = CreateShip(\"EnemyFast\", waveLeader);" +
+                                "var child31 = CreateShip(\"EnemyFast\", subLeader3);" +
+                                "var child32 = CreateShip(\"EnemyFast\", subLeader3);" +
+                                "var child33 = CreateShip(\"EnemyFast\", subLeader3);" +
+                                "var child34 = CreateShip(\"EnemyFast\", subLeader3);" +
+
+                                "SetWave(\"EnemyFast\", waveLeader);",
+
+                                //Normal enemy wave 3x3
+
+                                // leader of wave
+                                "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                                "waveLeader.AddTargetTag(\"Capital\");" +
+                                "waveLeader.AddTargetTag(\"Player\");" +
+
+                                // group 1
+                                "var subLeader1 = CreateShip(\"EnemyNormal\", waveLeader);" +
+                                "var child11 = CreateShip(\"EnemyNormal\", subLeader1);" +
+                                "var child12 = CreateShip(\"EnemyNormal\", subLeader1);" +
+
+                                // group 2
+                                "var subLeader2 = CreateShip(\"EnemyNormal\", waveLeader);" +
+                                "var child21 = CreateShip(\"EnemyNormal\", subLeader2);" +
+                                "var child22 = CreateShip(\"EnemyNormal\", subLeader2);" +
+
+                                // group 3
+                                "var subLeader3 = CreateShip(\"EnemyNormal\", waveLeader);" +
+                                "var child31 = CreateShip(\"EnemyNormal\", subLeader3);" +
+                                "var child32 = CreateShip(\"EnemyNormal\", subLeader3);" +
+
+                                "SetWave(\"EnemyNormal\", waveLeader);",
+                                
+                                //Heavy enemy wave 1x3
+                                
+                                //leader
+                                "var waveLeader = CreateShip(\"AISpawnLeader\", null);" +
+                                "waveLeader.AddTargetTag(\"Capital\");" +
+                                "waveLeader.AddTargetTag(\"Player\");" +
+                                
+                                // group 1
+                                "var subLeader1 = CreateShip(\"EnemyHeavy\", waveLeader);" +
+                                "var child11 = CreateShip(\"EnemyHeavy\", subLeader1);" +
+                                "var child12 = CreateShip(\"EnemyHeavy\", subLeader1);" +
+                                
+                                "SetWave(\"EnemyHeavy\", waveLeader);"
+                           };*/
+
+        foreach (string haxescript in scripts)
+        {
+            Debug.Log("Loading = " + haxescript);
+            Scripter script = new Scripter();
+            script.LoadFromString(haxescript);
+
+            AddFunctionsToWaveScripter(script);
+
+            script.Run();
+        }
+
+    }
+
+    void AddFunctionsToWaveScripter(Scripter scripter_)
+    {
+        scripter_.AddFunction2<string, IEntity, IEntity>("CreateShip", CreateShip);
+        scripter_.AddFunction2<string, Component, bool>("SetWave", SetWave);
+
+        scripter_.AddAction1<string>("trace", Debug.Log);
     }
 }

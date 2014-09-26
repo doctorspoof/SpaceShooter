@@ -92,6 +92,13 @@ public class GUIInGameMaster : GUIBaseMaster
                 AlertPlayerHomingReady(false);
                 break;
             }
+            case GameState.LoadingScreen:
+            {
+                m_listOfScreensToDraw.Clear();
+                m_listOfScreensToDraw.Add (GetComponent<GUILoadingScreen>());
+                m_highestPriority = 3;
+                break;
+            }
             default:
             {
                 Debug.Log ("Passed game state is not handled by this GUIMaster!");
@@ -118,6 +125,34 @@ public class GUIInGameMaster : GUIBaseMaster
     #endregion
     
     #region Specific Toggles/Calls
+    public void AlertMapGenerationFinished()
+    {
+        GetComponent<GUIMapOverlayScreen>().AlertUpdatePlanetReferences();
+    }
+    public void SetFurthestExtent(float extent)
+    {
+        GetComponent<GUIMapOverlayScreen>().SetFurthestExtent(extent);
+    }
+    public void ClearAlerts()
+    {
+        GetComponent<GUIInGameHUDScreen>().ClearGUIAlerts();
+    }
+    public void AlertTransitionNeedsInput(bool state)
+    {
+        networkView.RPC ("PassThroughTransitionInputState", RPCMode.All, state);
+    }
+    [RPC] void PassThroughTransitionInputState(bool state)
+    {
+        GetComponent<GUICShipDockScreen>().SetTransitionConfirm(state);
+    }
+    public void AlertCShipDockJumpDone()
+    {
+        GetComponent<GUICShipDockScreen>().SetCShipJumpIsDone();
+    }
+    public void ToggleShowSectorJump(bool show)
+    {
+        GetComponent<GUICShipDockScreen>().SetCShipCanSectorJump(show);
+    }
     public void PassThroughNewGUIAlert(string message, float displayTime)
     {
         GetComponent<GUIInGameHUDScreen>().AddNewGUIAlert(message, displayTime);

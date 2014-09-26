@@ -375,7 +375,6 @@ public sealed class AsteroidScript : MonoBehaviour
 				}
 			}
 			
-            Debug.Log("Asteroid destroyed: " + gameObject.name);
 			Network.Destroy (gameObject);
 		}
 	}

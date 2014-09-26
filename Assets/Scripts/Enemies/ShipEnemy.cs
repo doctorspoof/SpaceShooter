@@ -9,16 +9,6 @@ public class ShipEnemy : Ship
 
     [SerializeField] string[] m_allowedAttacksForShip;
 
-    
-
-
-
-
-    
-    
-    
-
-
 
     IAttack m_currentAttackType = null;
     float m_randomOffsetFromTarget = 0;
@@ -68,9 +58,6 @@ public class ShipEnemy : Ship
         GetAINode().RequestConsiderationOfOrder(AIHierarchyRelation.Parent, (int)AIShipOrder.Attack, new object[] { attacker });
     }
 
-
-    
-
     public void OnPlayerWin()
     {
     }
@@ -86,8 +73,6 @@ public class ShipEnemy : Ship
     public void AlertEnemyUnFreeze()
     {
     }
-
-    
 
     /// <summary>
     /// Gets the lowest weapon range of all the attached weapons
@@ -152,7 +137,7 @@ public class ShipEnemy : Ship
                 }
             case (AIShipOrder.Move):
                 {
-                    SetTargetMove((Vector2)listOfParameters[0]);
+                    AddMoveWaypoint((Vector2)listOfParameters[0]);
                     return true;
                 }
             case(AIShipOrder.StayInFormation):

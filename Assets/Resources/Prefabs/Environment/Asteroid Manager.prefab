@@ -9,6 +9,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 400000}
   - 114: {fileID: 11400000}
+  - 148: {fileID: 14800000}
   m_Layer: 0
   m_Name: Asteroid Manager
   m_TagString: AsteroidManager
@@ -55,6 +56,22 @@ MonoBehaviour:
   m_numAsteroids: 400
   m_shouldBeRingBelt: 1
   m_testAsteroidSpawn: 0
+  m_asteroidManagerRingBlip: {fileID: 2800000, guid: ba9d3c6421c86034c9b8cf346abd1888,
+    type: 3}
+  m_asteroidManagerFieldBlip: {fileID: 2800000, guid: e79a55e70cdec154e93d66ea40bdf739,
+    type: 3}
+--- !u!148 &14800000
+NetworkView:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 400000}
+  m_ViewID:
+    m_ID: 0
+    m_Type: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

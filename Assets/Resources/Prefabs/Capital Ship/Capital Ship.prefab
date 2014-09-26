@@ -2161,7 +2161,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100012}
   serializedVersion: 2
-  m_Mass: 5
+  m_Mass: 3
   m_Drag: .100000001
   m_AngularDrag: .0500000007
   m_UseGravity: 0
@@ -2442,7 +2442,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0640b6b76d0ec6d4dbd7bfb57c87b620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
   m_maximumShield: 750
   m_currentShield: 0
@@ -2461,23 +2460,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a3a714b5514eba47a21353932d301ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  depth: 0
   m_ownerSt: 
-  m_isPlayerControlScript: 0
-  m_maxShipSpeed: 300
+  m_maxShipSpeed: 10
   m_currentShipSpeed: 0
   m_afterburnerIncreaseOfSpeed: 10
   m_afterburnerLength: 0
   m_afterburnerRechargeTime: 0
-  m_rotateSpeed: 5
+  m_rotateSpeed: 25
   m_ramDamageMultiplier: 2.5
   maunuallySetWidthAndHeight: 1
   m_minWeaponRange: 0
   m_maxWeaponRange: 0
   m_shipWidth: 6
   m_shipHeight: 24
+  m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
+  m_currentOrder: 0
+  m_showMovementWaypoints: 0
   shipID: -1
-  m_shouldAnchor: 1
+  m_shouldAnchor: 0
   m_bankedCash: 1500
   m_currentResources:
     mass: 500

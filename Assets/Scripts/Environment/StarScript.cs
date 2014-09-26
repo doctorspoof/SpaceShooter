@@ -19,7 +19,7 @@ public sealed class StarScript : MonoBehaviour
 	[SerializeField, Range (0, 100)]            int     m_damagePerTick = 1;        // How much damage to apply per tick
 	[SerializeField, Range (0f, 100f)]          float   m_tickTime = 0.05f;         // The time in seconds in which to apply damage
 	
-
+    [SerializeField]                            Texture m_minimapBlip;
 
     /////////////////////
     /// Internal data ///
@@ -30,6 +30,10 @@ public sealed class StarScript : MonoBehaviour
 	float m_damageDelay = 0.0f; // The current time
 	
     #region Getters/Setters
+    public Texture GetMinimapBlip()
+    {
+        return m_minimapBlip;
+    }
     public float GetStarTemperature()
     {
         return m_starTemperature;

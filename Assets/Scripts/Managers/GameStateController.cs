@@ -94,6 +94,9 @@ public class GameStateController : MonoBehaviour
 
 
     int m_numDeadPCs = 0;
+    [SerializeField] int m_numDockedPlayers = 0;
+    bool m_lastSentJumpState = false;
+    bool m_cshipAtJumpzone = false;
 
     string m_ownName;
 
@@ -113,6 +116,9 @@ public class GameStateController : MonoBehaviour
     float m_lossTimer = 0.0f;
     bool m_cshipIsDying = false;
     bool m_isLoadingLevel = false;
+    bool m_clientGSCToldLoadFinished = false;
+    
+    bool m_cShipFinishedRotating = false;
 
     static GameStateController instance;
     
@@ -122,7 +128,10 @@ public class GameStateController : MonoBehaviour
 
 
     #region getset
-
+    public void SetCShipFinishedRotating(bool finished)
+    {
+        m_cShipFinishedRotating = finished;
+    }
     public float GetGameTimer()
     {
         return m_gameTimer;
@@ -274,6 +283,23 @@ public class GameStateController : MonoBehaviour
             m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
         }
     
+        if(m_GUIManager != null && m_GUIManager.GetComponent<GUIInGameMaster>() != null)
+        {
+            if(m_cshipAtJumpzone && m_numDockedPlayers >= m_connectedPlayers.Count)
+            {
+                if(!m_lastSentJumpState)
+                {
+                    networkView.RPC ("AlertCShipCanJump", RPCMode.All, true);
+                    m_lastSentJumpState = true;
+                }
+            }
+            else if(m_lastSentJumpState)
+            {
+                networkView.RPC ("AlertCShipCanJump", RPCMode.All, false);
+                m_lastSentJumpState = false;
+            }
+        }
+    
         if (m_volumeHolder != PlayerPrefs.GetFloat("MusicVolume"))
         {
             m_volumeHolder = PlayerPrefs.GetFloat("MusicVolume");
@@ -372,7 +398,127 @@ public class GameStateController : MonoBehaviour
         }
     }
     
+    void OnDisconnectedFromServer(NetworkDisconnection info)
+    {
+        //Debug.Log ("Disconnected from server has fired");
+        if (Network.isClient)
+        {
+            Debug.Log("Lost connection to host...");
+            SwitchToInGameConnLost();
+            //m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
+            
+        }
+    }
+    
     /* Custom Functions */
+    
+    #region Transition Functions
+    public void SetCShipJumpBegan()
+    {
+        networkView.RPC("AlertCShipCanJump", RPCMode.All, false);
+    }
+    [RPC] void AlertCShipCanJump(bool state)
+    {
+        m_GUIManager.GetComponent<GUIInGameMaster>().ToggleShowSectorJump(state);
+        m_GUIManager.GetComponent<GUIInGameMaster>().ClearAlerts();
+    }
+    
+    public void BuildUpToTransition()
+    {
+        if(Network.isServer)
+            PropagateTransition();
+        else
+            networkView.RPC ("PropagateTransition", RPCMode.Server);
+    }
+    [RPC] void PropagateTransition()
+    {
+        m_cShipFinishedRotating = false;
+        StartCoroutine(AwaitRotationCompleted());
+        m_ingameCapitalShip.GetComponent<CapitalShipScript>().OrderRotateTo(Quaternion.Euler(0, 0, -90));
+    }
+    IEnumerator AwaitRotationCompleted()
+    {
+        while(!m_cShipFinishedRotating)
+        {
+            yield return 0;
+        }
+        
+        BeginCShipJumpTransition();
+    }
+    public void BeginCShipJumpTransition()
+    {
+        //Do a 'build-up' to jump (animation-y stuff)
+        
+        
+        //Kill all the enemies / mobs
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        for(int i = 0; i < enemies.Length; i++)
+        {
+            Network.Destroy(enemies[i]);
+        }
+    
+        //Open transition background image, keep CShip on top
+        networkView.RPC ("PropagateBackgroundChangeToTransition", RPCMode.All);
+        
+        //Reset CShip orders + destroy enemies/neutrals
+        m_ingameCapitalShip.GetComponent<CapitalShipScript>().ClearMoveWaypoints();
+        m_ingameCapitalShip.GetComponent<CapitalShipScript>().CancelOrder();
+        m_ingameCapitalShip.rigidbody.isKinematic = true;
+        m_ingameCapitalShip.rigidbody.isKinematic = false;
+        
+        //Destroy old sector (coroutine)
+        ProceduralLevelGenerator procGen = GameObject.FindGameObjectWithTag("ProcGen").GetComponent<ProceduralLevelGenerator>();
+        procGen.StartDestroyCoroutine();
+    }
+    [RPC] void PropagateBackgroundChangeToTransition()
+    {
+        ParallaxHolder background = GameObject.FindGameObjectWithTag("Background").GetComponent<ParallaxHolder>();
+        background.SwitchToTransitionState();
+    }
+    [RPC] void PropagateBackgroundChangeToNormal()
+    {
+        ParallaxHolder background = GameObject.FindGameObjectWithTag("Background").GetComponent<ParallaxHolder>();
+        background.SwitchToNormalState();
+    }
+    public void BeginGenerate()
+    {
+        ProceduralLevelGenerator procGen = GameObject.FindGameObjectWithTag("ProcGen").GetComponent<ProceduralLevelGenerator>();
+        int seed = procGen.ResetSeed();
+        //networkView.RPC ("TellClientGenerateLevel", RPCMode.Others, seed);
+        
+        //Generate new sector (coroutine)
+        procGen.StartGenerateCoroutine();
+    }
+    public void RequestTransitionEnd()
+    {
+        if(Network.isServer)
+            EndCShipJumpTransition();
+        else
+            networkView.RPC ("EndCShipJumpTransition", RPCMode.Server);
+    }
+    [RPC] public void EndCShipJumpTransition()
+    {
+        //TODO: Insert pause here to wait for input
+    
+        //Move CShip to new start
+        GameObject start = GameObject.FindGameObjectWithTag("CSStart");
+        m_ingameCapitalShip.transform.position = start.transform.position;
+        
+        //Close transition background + update references
+        UpdateAttachedAsteroidManagers();
+        
+        m_GUIManager.GetComponent<GUIInGameMaster>().AlertTransitionNeedsInput(false);
+        networkView.RPC ("PropagateBackgroundChangeToNormal", RPCMode.All);
+        
+        //Tell the CShip to start moving
+        GameObject target = GameObject.FindGameObjectWithTag("CSTarget");
+        m_ingameCapitalShip.GetComponent<CapitalShipScript>().AddMoveWaypoint(new Vector2(target.transform.position.x, target.transform.position.y));
+        
+        m_cshipAtJumpzone = false;
+        m_GUIManager.GetComponent<GUIInGameMaster>().AlertCShipDockJumpDone();
+        m_SpawnManager.GetComponent<EnemySpawnManagerScript>().BeginSpawning();
+    }
+    #endregion
     
     void TellPlayerNoMoneyToRespawn(NetworkPlayer player)
     {
@@ -446,24 +592,6 @@ public class GameStateController : MonoBehaviour
         }
     }
 
-    void OnDisconnectedFromServer(NetworkDisconnection info)
-    {
-        //Debug.Log ("Disconnected from server has fired");
-        if (Network.isClient)
-        {
-            Debug.Log("Lost connection to host...");
-            SwitchToInGameConnLost();
-            //m_GUIManager.GetComponent<GUIManager>().ShowDisconnectedSplash();
-            
-        }
-    }
-
-    public void AlertGameControllerBeginSpawning()
-    {
-        m_SpawnManager.GetComponent<EnemySpawnManagerScript>().BeginSpawning();
-        m_ingameCapitalShip.GetComponent<CapitalShipScript>().SetShouldMove(true);
-    }
-
     public void StartGameFromMenu(bool isSpecMode)
     {
         //TODO: Change this to begin the level load sequence
@@ -512,22 +640,32 @@ public class GameStateController : MonoBehaviour
     {
         SwitchToLoadingScreen();
         Application.LoadLevel(1);
+        m_clientGSCToldLoadFinished = false;
         
         StartCoroutine(AwaitLoadComplete());
     }
     
     IEnumerator AwaitLoadComplete()
     {
-        while(Application.loadedLevel != 1)
-            yield return 0;
-    
         if(Network.isServer)
+        {
+            while(Application.loadedLevel != 1)
+                yield return 0;
+    
+        
             HostSetUpGame();
+        }
         else
         {
-            m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
-            SwitchToDockedAtCShip();
+            while(!m_clientGSCToldLoadFinished)
+                yield return 0;
         }
+        
+        m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
+        //SwitchToDockedAtCShip();
+        
+        if(Network.isClient)
+            SwitchToLoadingScreen();
     }
     
     /* ASync Method */
@@ -631,9 +769,20 @@ public class GameStateController : MonoBehaviour
     
         //Update our scene references to the new scene
         m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
+        
+        if(!m_GUIManager)
+            Debug.LogWarning ("Couldn't find gui manager in new scene");
+    
+        //Generate the scene and send the seed to other clients
+        ProceduralLevelGenerator script = GameObject.FindGameObjectWithTag("ProcGen").GetComponent<ProceduralLevelGenerator>();
+        int seed = script.ResetSeed();
+        //networkView.RPC ("TellClientGenerateLevel", RPCMode.Others, seed);
+        script.RequestGenerateLevel(false);
+    
         UpdateAttachedAsteroidManagers();
         
         //Do game setup
+        Debug.Log ("Spawning CShip...");
         SpawnCapitalShip();
         
         foreach (NetworkPlayer player in Network.connections)
@@ -646,11 +795,30 @@ public class GameStateController : MonoBehaviour
         SpawnAShip(Network.player);
         ChangeToInGame();
         
+        //m_numDockedPlayers = m_connectedPlayers.Count;
+        
         //Begin the game!
         m_gameStopped = false;
+        m_SpawnManager.GetComponent<EnemySpawnManagerScript>().BeginSpawning();
         networkView.RPC("TellLocalGSCGameHasBegun", RPCMode.Others);
         
         networkView.RPC ("ForceRemoteStateChange", RPCMode.All, (int)GameState.InGameCShipDock);
+    }
+    [RPC] void TellClientGenerateLevel(int seed)
+    {
+        StartCoroutine(AwaitSceneLoadBeforeLevelGen(seed));
+    }
+    IEnumerator AwaitSceneLoadBeforeLevelGen(int seed)
+    {
+        while(Application.loadedLevel != 1)
+            yield return 0;
+            
+        ProceduralLevelGenerator script = GameObject.FindGameObjectWithTag("ProcGen").GetComponent<ProceduralLevelGenerator>();
+        script.SetSeed(seed);
+        script.StartGenerateCoroutine();
+        
+        m_clientGSCToldLoadFinished = true;
+        SwitchToDockedAtCShip();
     }
     
     [RPC] void ForceRemoteStateChange(int state)
@@ -683,20 +851,32 @@ public class GameStateController : MonoBehaviour
         m_ingameCapitalShip = capital;
         
         networkView.RPC("SendCShipRefToClients", RPCMode.All);
+        
+        GameObject target = GameObject.FindGameObjectWithTag("CSTarget");
+        capital.GetComponent<CapitalShipScript>().AddMoveWaypoint(new Vector2(target.transform.position.x, target.transform.position.y));
+        Debug.Log ("Told CShip to move to: " + target.transform.position);
     }
 
     [RPC] void SendCShipRefToClients()
     {
         GameObject cship = GameObject.FindGameObjectWithTag("Capital");
+        if(m_GUIManager == null)
+            m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
         m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughCShipReference(cship);
     }
     
+    public void UpdateAttachedSpawnManager(GameObject manager)
+    {
+        m_SpawnManager = manager;
+    }
     void UpdateAttachedAsteroidManagers()
     {
         m_AsteroidManagers = GameObject.FindGameObjectsWithTag("AsteroidManager");
     }
     public void UpdateShopReferences()
     {
+        if(m_GUIManager == null)
+            m_GUIManager = GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIBaseMaster>();
         m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughUpdateShopReferences();
     }
 
@@ -964,6 +1144,31 @@ public class GameStateController : MonoBehaviour
     }
     
     //In-Game Screens
+    public void EnterCShip()
+    {
+        if(Network.isServer)
+            IncreaseDockedPlayers();
+        else
+            networkView.RPC ("IncreaseDockedPlayers", RPCMode.Server);
+    }
+    public void LeaveCShip()
+    {
+        //Special form of SwitchToInGame used to count docked players
+        if(Network.isServer)
+            ReduceDockedPlayers();
+        else
+            networkView.RPC ("ReduceDockedPlayers", RPCMode.Server);
+            
+        SwitchToInGame();
+    }
+    [RPC] void IncreaseDockedPlayers()
+    {
+        ++m_numDockedPlayers;
+    }
+    [RPC] void ReduceDockedPlayers()
+    {
+        --m_numDockedPlayers;
+    }
     public void SwitchToInGame()
     {
         ChangeGameState(GameState.InGame);
@@ -976,6 +1181,7 @@ public class GameStateController : MonoBehaviour
     
     public void SwitchToDockedAtCShip()
     {
+        m_localPlayer.GetComponent<HealthScript>().SetInvincible(true);
         ChangeGameState(GameState.InGameCShipDock);
     }
     
@@ -1124,7 +1330,11 @@ public class GameStateController : MonoBehaviour
 
     public void TellEveryoneCapitalShipArrivesAtVictoryPoint()
     {
-        networkView.RPC("CapitalShipArrivesAtVictoryPoint", RPCMode.All);
+        if(Network.isServer)
+        {
+            m_cshipAtJumpzone = true;
+            networkView.RPC("CapitalShipArrivesAtVictoryPoint", RPCMode.All);
+        }
     }
 
     [RPC] void CapitalShipArrivesAtVictoryPoint()
@@ -1156,16 +1366,16 @@ public class GameStateController : MonoBehaviour
     
     public void CapitalShipHasTakenDamage()
     {
-        //Debug.Log ("Capital ship taking damage");
-        if (m_capitalDamageTimer >= 5.0f)
+        if (m_capitalDamageTimer >= 3.0f)
         {
             networkView.RPC("PropagateCapitalShipUnderFire", RPCMode.All);
+            m_capitalDamageTimer = 0.0f;
         }
     }
 
     [RPC] void PropagateCapitalShipUnderFire()
     {
-        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship is under attack!", 1.5f);
+        m_GUIManager.GetComponent<GUIInGameMaster>().PassThroughNewGUIAlert("Capital Ship is under attack!", 3.0f);
     }
 
     void ResendLossState()
@@ -1369,6 +1579,11 @@ public class GameStateController : MonoBehaviour
         Screen.showCursor = true;
         ChangeGameState(GameState.InGameCShipDock);
         Camera.main.GetComponent<CameraScript>().TellCameraPlayerIsDocked();
+        
+        if(Network.isServer)
+            IncreaseDockedPlayers();
+        else
+            networkView.RPC ("IncreaseDockedPlayers", RPCMode.All);
     }
 
     public void NotifyLocalPlayerHasDockedAtShop(GameObject shop)
@@ -1388,5 +1603,14 @@ public class GameStateController : MonoBehaviour
     public void RequestSpawnerUnPause()
     {
         m_SpawnManager.GetComponent<EnemySpawnManagerScript>().PauseSpawners(false);
+    }
+    
+    public void DebugToHost(string message)
+    {
+        networkView.RPC("PropagateDebugToHost", RPCMode.Server, message);
+    }
+    [RPC] void PropagateDebugToHost(string message)
+    {
+        Debug.LogWarning ("Host recieved debug: " + message);
     }
 }

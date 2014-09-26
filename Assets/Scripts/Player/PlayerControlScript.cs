@@ -276,6 +276,7 @@ public class PlayerControlScript : Ship
             m_cShipCache = GameObject.FindGameObjectWithTag("Capital");
             m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.right * 7.0f) + (m_cShipCache.transform.up * 1.5f);
             m_currentDockingState = DockingState.OnApproach;
+            //m_gscCache.EnterCShip();
             //GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIManager>().CloseMap();
             m_isAnimating = true;
         }
@@ -1003,7 +1004,7 @@ public class PlayerControlScript : Ship
 		this.m_cShipCache = CShip;
 		m_targetPoint = CShip.transform.position;
 
-		networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
+		networkView.RPC ("PropagateInvincibility", RPCMode.All, true);
 		rigidbody.isKinematic = true;
 
 		m_isAnimating = true;

@@ -112,7 +112,6 @@ public class EnemySpawnPointScript : MonoBehaviour
         }
         else if (!m_spawnPointActive && m_wormholeActive)
         {
-
             m_currentScalingTime += Time.deltaTime;
             if (m_currentScalingTime >= m_timeBeforeScalingWormhole)
             {
@@ -271,7 +270,6 @@ public class EnemySpawnPointScript : MonoBehaviour
         RunFinalSpawnEffect script = spawnedEffect.GetComponent<RunFinalSpawnEffect>();
         script.Run(timeTillDestroy_ - 1.3f);
         
-        Debug.Log ("SpawnPoint destroyed: " + spawnedEffect.name);
         Destroy(spawnedEffect, timeTillDestroy_ - 0.2f);
     }
 

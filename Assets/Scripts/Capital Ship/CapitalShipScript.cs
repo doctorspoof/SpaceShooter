@@ -160,8 +160,6 @@ public sealed class CapitalShipScript : Ship
     /// </summary>
     protected override void Start()
     {
-        base.Start();
-
         // Set up the external reference to the target point
         GameObject temp = GameObject.FindGameObjectWithTag ("CSTarget");
         if (temp != null)
@@ -186,6 +184,8 @@ public sealed class CapitalShipScript : Ship
         {
             ResetAttachedTurretsFromWrappers();
         }
+        
+        ResetShipSpeed();
     }
 
 
@@ -195,8 +195,8 @@ public sealed class CapitalShipScript : Ship
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-
-        if (m_shouldMoveToTarget && m_targetPoint != null)
+    
+        /*if (m_shouldMoveToTarget && m_targetPoint != null)
         {
             // Rotate to the correct direction
             Vector3 dir = m_targetPoint.position - transform.position;
@@ -215,7 +215,7 @@ public sealed class CapitalShipScript : Ship
                 this.audio.volume = PlayerPrefs.GetFloat ("EffectVolume", 1.0f);
                 this.audio.Play();
             }
-        }
+        }*/
 
         // Since enemies will only move in Update() we might as well only allow the target list to be updated every FixedUpdate()
         m_updatedTargetListThisFrame = false;
@@ -361,6 +361,28 @@ public sealed class CapitalShipScript : Ship
                 tHolder.ReplaceAttachedTurret (m_attachedTurretsItemWrappers[i].GetItemPrefab());
             }
         }
+    }
+    
+    public void OrderRotateTo(Quaternion rotation)
+    {
+        ClearMoveWaypoints();
+        CancelOrder();
+        StartCoroutine(RotateToCoroutine(rotation));
+    }
+    IEnumerator RotateToCoroutine(Quaternion rotation)
+    {
+        float initialZ = transform.rotation.eulerAngles.z;
+        float diff = initialZ - rotation.eulerAngles.z;
+        
+        while(Mathf.Abs(diff) > 1.5f)
+        {
+            RotateTowards(rotation);
+            yield return 0;
+            
+            diff = transform.rotation.eulerAngles.z - rotation.eulerAngles.z;
+        }
+        
+        GameStateController.Instance().SetCShipFinishedRotating(true);
     }
 
 

@@ -61,6 +61,12 @@ public class AISpawnLeader : MonoBehaviour, IEntity, ICloneable
         }
     }
 
+    /// <summary>
+    /// MAY WANT TO REMOVE THIS METHOD FROM ALL AS IT IS ONLY CONFUSING AND NOT BEING USED AS I THOUGHT IT MIGHT.
+    /// </summary>
+    /// <param name="orderID_"></param>
+    /// <param name="listOfParameters"></param>
+    /// <returns></returns>
     public virtual bool GiveOrder(int orderID_, object[] listOfParameters)
     {
         GetAINode().OrderChildren(orderID_, listOfParameters);
@@ -140,6 +146,10 @@ public class AISpawnLeader : MonoBehaviour, IEntity, ICloneable
         }
     }
 
+    /// <summary>
+    /// Finds the closest target of the tags in target tags.
+    /// </summary>
+    /// <returns></returns>
     GameObject GetClosestTarget()
     {
         foreach (string tag in targetTags)
@@ -168,6 +178,10 @@ public class AISpawnLeader : MonoBehaviour, IEntity, ICloneable
 
     }
 
+    /// <summary>
+    /// Clones this spawnleader. used for wave spawning.
+    /// </summary>
+    /// <returns></returns>
     public virtual GameObject Clone()
     {
         GameObject obj = (GameObject)Instantiate(gameObject);

@@ -49,6 +49,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     [SerializeField]                AIShipOrder m_currentOrder = AIShipOrder.Idle;
 
+    [SerializeField] bool m_showMovementWaypoints;
+
 
 
 
@@ -79,6 +81,12 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     //bool coroutineIsRunning = false;
     //bool coroutineForceStopped = false;
 
+    bool m_isMovingToCShip = true;
+    float m_timeSinceLastCShipUpdate = 0.0f;
+
+    #region Caches
+    GameObject m_cshipRef = null;
+    #endregion
 
 
     int m_sendCounter = 0;
@@ -266,7 +274,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         return m_waypoints;
     }
 
-    public void SetTargetMove(Vector2 target_)
+    public void AddMoveWaypoint(Vector2 target_)
     {
         if (Vector3.Distance((Vector2)transform.position, target_) < 0.8f)
         {
@@ -275,9 +283,13 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         OrderMove(target_);
 
-        //Debug.Log("Received move order");
-
         m_currentOrder = AIShipOrder.Move;
+    }
+
+    public void ClearMoveWaypoints()
+    {
+        m_waypoints.Clear();
+        m_currentOrder = AIShipOrder.Idle;
     }
 
     public GameObject GetTarget()
@@ -296,7 +308,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         if (Vector2.Distance(transform.position, target.transform.position) > GetMinimumWeaponRange() * 2)
         {
             Vector2 closerPosition = Vector2.MoveTowards(target.transform.position, transform.position, GetMinimumWeaponRange() * 2);
-            SetTargetMove(closerPosition);
+            AddMoveWaypoint(closerPosition);
             moveOrderNeeded = true;
         }
 
@@ -335,6 +347,10 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     protected virtual void Awake()
     {
+        //TODO: Change this later
+        if(this.tag == "Capital")
+            m_isMovingToCShip = false;
+    
         shipID = ids++;
 
         m_shipTransform = transform;
@@ -414,6 +430,18 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                 }
             }
         }
+
+
+        if (m_showMovementWaypoints)
+        {
+            if(m_waypoints[0] != null)
+                Debug.DrawLine(transform.position, m_waypoints[0], Color.red);
+
+            for (int i = 0; i < m_waypoints.Count - 1; ++i)
+            {
+                Debug.DrawLine(m_waypoints[i], m_waypoints[i + 1], Color.red);
+            }
+        }
     }
 
     protected virtual void FixedUpdate()
@@ -483,6 +511,23 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                     {
                         if (m_waypoints.Count > 0)
                         {
+                            if(m_isMovingToCShip)
+                            {
+                                if(m_timeSinceLastCShipUpdate > 5.0f)
+                                {
+                                    //Reset the target point to the cship's current position
+                                    if(m_cshipRef == null)
+                                        m_cshipRef = GameObject.FindGameObjectWithTag("Capital");
+                                        
+                                    ClearMoveWaypoints();
+                                    AddMoveWaypoint(new Vector2(m_cshipRef.transform.position.x, m_cshipRef.transform.position.y));
+                                    
+                                    m_timeSinceLastCShipUpdate = 0.0f;
+                                }
+                                else
+                                    m_timeSinceLastCShipUpdate += Time.deltaTime;
+                                }
+                                
                             MoveTowardTarget(m_waypoints[0], GetCurrentMomentum());
 
                             if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_waypoints[0]) < 0.64f)
@@ -754,18 +799,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
 
-        if (Mathf.Abs(Mathf.DeltaAngle(idealAngle, currentAngle)) > 5f && true) /// turn to false to use old rotation movement
-        {
-            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
-        }
-        else
-        {
-            Quaternion rotate = Quaternion.LookRotation(targetDirection, Vector3.back);
-            rotate.x = 0;
-            rotate.y = 0;
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotate, GetRotateSpeed() / 50 * Time.deltaTime);
-        }
+        transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
     }
 
     public virtual void RotateTowards(Quaternion target_)
@@ -861,6 +895,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public void ResetThrusters()
     {
+        //Debug.Log("ResetThrusters() is currently empty. If the thrusters are spazzing out, this is the problem");
         //networkView.RPC("PropagateResetThrusters", RPCMode.All);
     }
 
@@ -909,6 +944,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     /// <returns></returns>
     public void ResetThrusterObjects()
     {
+        // update the cache
         m_thrustersHolder = GetThrusterHolder();
         m_afterburnersHolder = m_thrustersHolder.FindChild("Afterburners");
         Transform rcsholder = transform.FindChild("RCS");
@@ -1047,6 +1083,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public virtual bool ReceiveOrder(int orderID_, object[] listOfParameters)
     {
+
         switch((AIShipOrder)orderID_)
         {
             case(AIShipOrder.Move):
@@ -1055,6 +1092,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                 }
             default:
                 {
+                    m_isMovingToCShip = false;
                     return false;
                 }
         }
@@ -1172,6 +1210,13 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     void OrderMove(Vector2 position)
     {
         Vector2 fromPosition = transform.position;
+
+        // if we already have waypoint, determine where to start calculating from as the last current waypoint.
+        if(m_waypoints.Count > 0)
+        {
+            fromPosition = m_waypoints[m_waypoints.Count - 1];
+        }
+
         Collider collidedObject;
         bool pathFound = CheckCanMoveTo(fromPosition, position, out collidedObject);
 
@@ -1193,18 +1238,18 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         moveOrderPositions.Add(position);
 
-        // uncomment to show movement paths
-        //Debug.DrawLine(transform.position, moveOrderPositions[0], Color.red, 999);
 
-        //for (int i = 0; i < moveOrderPositions.Count - 1; ++i)
-        //{
-        //    Debug.DrawLine(moveOrderPositions[i], moveOrderPositions[i + 1], Color.red, 999);
-        //}
-
-        m_waypoints = moveOrderPositions;
+        m_waypoints.AddRange(moveOrderPositions);
 
     }
 
+    /// <summary>
+    /// Does a raycast to see whether an object is in the way.
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="target"></param>
+    /// <param name="collidedObject"></param>
+    /// <returns></returns>
     bool CheckCanMoveTo(Vector2 from, Vector2 target, out Collider collidedObject)
     {
         collidedObject = null;
@@ -1215,28 +1260,40 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         bool collidedWithSomething = Physics.Raycast(new Ray(from, (target - from).normalized), out hit, distanceToTarget, 1 << Layers.environmentalDamage);
 
         if (collidedWithSomething)
+        {
+            Debug.Log ("Move order hit object: " + hit.collider.name);
             collidedObject = hit.collider;
+        }
 
         return !collidedWithSomething;
     }
 
-    Vector2 GetPositionForAvoidance(Collider collidedObject_, Vector2 targetLocation, Vector2 currentLocation, float closestDistanceFromGroupToObject, float radiusOfFormation)
+    /// <summary>
+    /// This takes an object that is in the way, such as a sun, and provides the closest evasion point.
+    /// </summary>
+    /// <param name="collidedObject_">Object to be avoided</param>
+    /// <param name="targetLocation_">Location we want to get to</param>
+    /// <param name="currentLocation_"></param>
+    /// <param name="closestDistanceFromGroupToObject_">This was generally used for when we had groups. Pretty much just a number that pushes the returned point outwards so nothing collides with the sun.</param>
+    /// <param name="radiusOfFormation_">Same as above.</param>
+    /// <returns></returns>
+    Vector2 GetPositionForAvoidance(Collider collidedObject_, Vector2 targetLocation_, Vector2 currentLocation_, float closestDistanceFromGroupToObject_, float radiusOfFormation_)
     {
         //Vector2 directionFromObjectToThis = currentLocation - (Vector2)objectToAvoid.transform.position;
         float radiusOfObject = Mathf.Sqrt(Mathf.Pow(collidedObject_.transform.localScale.x, 2) + Mathf.Pow(collidedObject_.transform.localScale.y, 2)) * ((SphereCollider)collidedObject_).radius;
-        float radius = radiusOfObject + closestDistanceFromGroupToObject + radiusOfFormation;
+        float radius = radiusOfObject + closestDistanceFromGroupToObject_ + radiusOfFormation_;
 
         Vector2[] returnee = new Vector2[2];
         returnee[0] = new Vector2(radius, 0);
         returnee[1] = new Vector2(-radius, 0);
 
-        Vector2 dir = (targetLocation - currentLocation).normalized;
+        Vector2 dir = (targetLocation_ - currentLocation_).normalized;
         Quaternion rotation = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
 
         returnee[0] = (rotation * returnee[0]) + collidedObject_.transform.position;
         returnee[1] = (rotation * returnee[1]) + collidedObject_.transform.position;
 
-        if (Vector2.SqrMagnitude(currentLocation - returnee[0]) < Vector2.SqrMagnitude(currentLocation - returnee[1]))
+        if (Vector2.SqrMagnitude(currentLocation_ - returnee[0]) < Vector2.SqrMagnitude(currentLocation_ - returnee[1]))
         {
             return returnee[0];
         }

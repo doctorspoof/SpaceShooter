@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GUIMapOverlayScreen : BaseGUIScreen 
 {
@@ -12,6 +13,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     [SerializeField]    Texture     m_specEnemyBlob;
     
     /* Internal Members */
+    List<GameObject> m_drawables = null;
     GameObject[] m_playerShips = null;
     GameObject[] m_pingedEnemies = null;
     GameObject[] m_pingedMissiles = null;
@@ -19,7 +21,33 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     bool m_isBigMap = false;
     bool m_isFollowMap = false;
     
+    // Map size info
+    float m_furthestExtent = 0.0f;
+    
     #region Setters
+    public void AlertUpdatePlanetReferences()
+    {
+        //Find all planets, belts, stars and fields
+        GameObject[] planets = GameObject.FindGameObjectsWithTag("Planet");
+        GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+        GameObject[] asteroids = GameObject.FindGameObjectsWithTag("AsteroidManager");
+        
+        m_drawables = new List<GameObject>();
+        for(int i = 0; i < planets.Length; i++)
+        {
+            m_drawables.Add(planets[i]);
+            
+            if(i < stars.Length)
+                m_drawables.Add(stars[i]);
+                
+            if(i < asteroids.Length)
+                m_drawables.Add(asteroids[i]);
+        }
+    }
+    public void SetFurthestExtent(float extent)
+    {
+        m_furthestExtent = extent;
+    }
     public void ToggleBigMap()
     {
         m_isBigMap = !m_isBigMap;
@@ -82,6 +110,8 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     {
         m_priorityValue = 2;
         m_blobSize = Screen.height * 0.015f;
+        
+        m_drawables = new List<GameObject>();
     }
     
     /* Custom Functions */
@@ -110,7 +140,39 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         //Map should be screen.height * screen.height, center on 1/2 screen.width
         GUI.DrawTexture(new Rect((Screen.width * 0.5f) - Screen.height * 0.5f, 0, Screen.height, Screen.height), m_mapOverlay);
         
-        //Now draw shizz
+        //Draw the 'drawables'
+        for(int i = 0; i < m_drawables.Count; i++)
+        {
+            Vector2 drawableSpotPos = WorldToMapPos(m_drawables[i].transform.position);
+            
+            Texture drawableBlob = null;
+            float blobSize = 0;
+            if(m_drawables[i].GetComponent<OrbitingObject>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<OrbitingObject>().GetPlanetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 15;
+            }
+            else if(m_drawables[i].GetComponent<StarScript>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<StarScript>().GetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 0.25f;
+            }
+            else
+            {
+                AsteroidManager asmansc = m_drawables[i].GetComponent<AsteroidManager>();
+                drawableBlob = asmansc.GetMinimapBlip();
+                
+                if(asmansc.GetIsRing())
+                    blobSize = asmansc.GetRange() / m_furthestExtent * (Screen.height * 0.8f);
+                else
+                    blobSize = asmansc.GetRange() / m_furthestExtent * (Screen.height * 0.8f);
+            }
+            
+            
+            GUI.DrawTexture(new Rect(drawableSpotPos.x - (blobSize * 0.5f), drawableSpotPos.y - (blobSize * 0.5f), blobSize, blobSize), drawableBlob);
+        }
+        
+        //Now draw blobs
         
         //Player - self
         if (m_playerCache != null)
@@ -203,7 +265,8 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         Matrix4x4 oldGUIMat = GUI.matrix;
         GUI.matrix = Matrix4x4.identity;
         float pixelGapPercent = (53.0f) / (Screen.height * 0.5f);
-        float mapSize = 280.0f;
+        //float mapSize = 280.0f;
+        float mapSize = m_furthestExtent;
         
         //If map is bottom left:
         //Map should be screen.height/5 * screen.height/5, centered on (screen.height/5, (screen.height/5)*4)
@@ -230,6 +293,51 @@ public class GUIMapOverlayScreen : BaseGUIScreen
                                      new Rect((imagePos.x - (texDrawArea / 2)), (imagePos.y - (texDrawArea / 2)), texDrawArea, texDrawArea));
         
         GUI.DrawTexture(new Rect((Screen.height * 0.125f) - (m_blobSize * 0.5f), ((Screen.height * 0.125f) * 7.0f) - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_selfPBlob);
+        
+        //Now draw planets and stuff
+        for(int i = 0; i < m_drawables.Count; i++)
+        {
+            //Vector2 drawableSpotPos = WorldToSmallMapPos(m_drawables[i].transform.position);
+            Vector2 drawableSpotPos = new Vector2(m_drawables[i].transform.position.x / mapSize, m_drawables[i].transform.position.y / mapSize);
+            
+            Texture drawableBlob = null;
+            float blobSize = 0;
+            if(m_drawables[i].GetComponent<OrbitingObject>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<OrbitingObject>().GetPlanetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 15;
+            }
+            else if(m_drawables[i].GetComponent<StarScript>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<StarScript>().GetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 0.25f;
+            }
+            else
+            {
+                AsteroidManager asmansc = m_drawables[i].GetComponent<AsteroidManager>();
+                drawableBlob = asmansc.GetMinimapBlip();
+                
+                if(asmansc.GetIsRing())
+                    blobSize = asmansc.GetRange() * 0.65f * (m_furthestExtent / 280.0f);
+                else
+                    blobSize = asmansc.GetRange() * 0.45f * (m_furthestExtent / 280.0f);
+            }
+            
+            drawableSpotPos.x -= playerPos.x;
+            drawableSpotPos.y -= playerPos.y;
+            
+            Vector2 drawPos = Vector2.zero;
+            drawPos.x = drawableSpotPos.x * (Screen.height * (0.5f - (pixelGapPercent * 0.5f)));
+            drawPos.y = drawableSpotPos.y * (Screen.height * (0.5f - (pixelGapPercent * 0.5f)));
+            
+            Vector2 finalDrawPos = new Vector2((Screen.height * 0.125f) + drawPos.x,
+                                               ((Screen.height * 0.125f) * 7.0f) - drawPos.y);
+            
+            if(drawRect.Contains(finalDrawPos))
+            {
+                GUI.DrawTexture(new Rect(finalDrawPos.x - (blobSize * 0.5f), finalDrawPos.y - (blobSize * 0.5f), blobSize, blobSize), drawableBlob);
+            }
+        }
         
         //Step three: draw CShip blob
         if (m_cshipCache != null)
@@ -362,6 +470,39 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         
         GUI.DrawTexture(new Rect(0, (Screen.height * 0.25f) * 3.0f, Screen.height * 0.25f, Screen.height * 0.25f), m_mapOverlay);
         
+        //Draw map
+        for(int i = 0; i < m_drawables.Count; i++)
+        {
+            Vector2 drawableSpotPos = WorldToSmallMapPos(m_drawables[i].transform.position);
+            
+            Texture drawableBlob = null;
+            float blobSize = 0;
+            if(m_drawables[i].GetComponent<OrbitingObject>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<OrbitingObject>().GetPlanetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 7.5f;
+            }
+            else if(m_drawables[i].GetComponent<StarScript>())
+            {
+                drawableBlob = m_drawables[i].GetComponent<StarScript>().GetMinimapBlip();
+                blobSize = m_drawables[i].transform.localScale.x * 0.125f;
+            }
+            else
+            {
+                AsteroidManager asmansc = m_drawables[i].GetComponent<AsteroidManager>();
+                drawableBlob = asmansc.GetMinimapBlip();
+                
+                if(asmansc.GetIsRing())
+                    //blobSize = asmansc.GetRange() * 0.26f * (m_furthestExtent / 300.0f) * (m_furthestExtent / 300.0f);
+                    blobSize = asmansc.GetRange() / m_furthestExtent * (Screen.height * 0.2f);
+                else
+                    blobSize = asmansc.GetRange() / m_furthestExtent * (Screen.height * 0.2f);
+            }
+            
+            
+            GUI.DrawTexture(new Rect(drawableSpotPos.x - (blobSize * 0.5f), drawableSpotPos.y - (blobSize * 0.5f), blobSize, blobSize), drawableBlob);
+        }
+        
         //Draw Self
         if (m_playerCache != null)
         {
@@ -456,10 +597,12 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         //Y:        (pixelGapPercent * Screen.height) -> (Screen.height - (pixelGapPercent * Screen.height))
         
         //x
-        output.x = (Screen.width * 0.5f) + ((worldPos.x / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        //output.x = (Screen.width * 0.5f) + ((worldPos.x / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        output.x = (Screen.width * 0.5f) + ((worldPos.x / m_furthestExtent) * (Screen.height * (0.5f - pixelGapPercent)));
         
         //y
-        output.y = (Screen.height * 0.5f) - ((worldPos.y / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        //output.y = (Screen.height * 0.5f) - ((worldPos.y / 275.0f) * (Screen.height * (0.5f - pixelGapPercent)));
+        output.y = (Screen.height * 0.5f) - ((worldPos.y / m_furthestExtent) * (Screen.height * (0.5f - pixelGapPercent)));
         return output;
     }
     Vector2 WorldToSmallMapPos(Vector3 worldPos)
@@ -473,11 +616,13 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         
         //X:
         //output.x = (worldPos.x / 275.0f) * (Screen.height * 0.25f);
-        output.x = (Screen.height * 0.125f) + ((worldPos.x / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        //output.x = (Screen.height * 0.125f) + ((worldPos.x / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        output.x = (Screen.height * 0.125f) + ((worldPos.x / m_furthestExtent) * (Screen.height * (0.125f - pixelGapPercent)));
         
         //Y:
         //output.y = ((Screen.height * 0.25f) * 3.0f) + ((worldPos.y / 275.0f) * Screen.height);
-        output.y = ((Screen.height * 0.125f) * 7.0f) - ((worldPos.y / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        //output.y = ((Screen.height * 0.125f) * 7.0f) - ((worldPos.y / 275.0f) * (Screen.height * (0.125f - pixelGapPercent)));
+        output.y = ((Screen.height * 0.125f) * 7.0f) - ((worldPos.y / m_furthestExtent) * (Screen.height * (0.125f - pixelGapPercent)));
         
         return output;
     }

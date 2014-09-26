@@ -70,19 +70,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_tilesX: 8
   m_tilesY: 8
-<<<<<<< HEAD:Assets/Prefabs/Spawning/FinalSpawnEffect.prefab
-  m_fps: 10
-  m_startingIndex: 0
-  m_isForwards: 1
-  m_shouldReverse: 0
-  m_shouldDieAfterFirstRun: 0
-=======
   m_fps: 60
   m_startingIndex: 0
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 1
->>>>>>> ai:Assets/Resources/Prefabs/Spawning/FinalSpawnEffect.prefab
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

@@ -71,11 +71,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_tilesX: 8
   m_tilesY: 8
-<<<<<<< HEAD:Assets/Prefabs/Spawning/SpawnEffect.prefab
   m_fps: 10
-=======
-  m_fps: 60
->>>>>>> ai:Assets/Resources/Prefabs/Spawning/SpawnEffect.prefab
   m_startingIndex: 0
   m_isForwards: 1
   m_shouldReverse: 0

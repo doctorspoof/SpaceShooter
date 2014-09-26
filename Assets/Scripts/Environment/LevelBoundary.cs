@@ -32,6 +32,10 @@ public sealed class LevelBoundary : MonoBehaviour
 
     public void SetBoundaryScale (Vector3 boundaryScale)
     {
+        networkView.RPC ("PropagateBoundaryScale", RPCMode.All, boundaryScale);
+    }
+    [RPC] void PropagateBoundaryScale(Vector3 boundaryScale)
+    {
         m_boundaryScale = boundaryScale;
         transform.localScale = m_boundaryScale * 2.0f;
     }
