@@ -9,7 +9,7 @@ using System.Collections.Generic;
 /// </summary>
 public sealed class Abilities : MonoBehaviour 
 {
-    public List<Ability> m_abilities = new List<Ability>(0); //!< The list of unlocked abilities available to the ship.
+    List<Ability> m_abilities = new List<Ability>(0); //!< The list of unlocked abilities available to the ship.
 
 
     #region Getters & setters
@@ -193,4 +193,33 @@ public sealed class Abilities : MonoBehaviour
 
     #endregion Cooldown management
 
+
+    void Awake()
+    {
+        //StartCoroutine (OutputList());
+    }
+
+
+    IEnumerator OutputList()
+    {
+        while (true)
+        {
+            if (m_abilities.Count > 0)
+            {
+                string output = "";
+
+                for (int i = 0; i < m_abilities.Count; ++i)
+                {
+                    if (m_abilities[i] != null)
+                    {
+                        output += m_abilities[i].GetType() + " ";
+                    }
+                }
+
+                Debug.Log (name + ".m_abilities: " + output);
+            }
+
+            yield return new WaitForSeconds (1f);
+        }
+    }
 }
