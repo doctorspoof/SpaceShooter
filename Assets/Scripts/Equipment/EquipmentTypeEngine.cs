@@ -83,13 +83,13 @@ public sealed class EquipmentTypeEngine : BaseEquipment
 
     protected override void Awake()
     {
-        base.Awake();
-
         // Abilities is guaranteed by the RequireComponent() attribute.
         m_abilities = GetComponent<Abilities>();
-
+        
         // Ship is guaranteed by the RequireComponent() attribute.
         m_ship = GetComponent<Ship>();
+
+        base.Awake();
     }
 
     #endregion
