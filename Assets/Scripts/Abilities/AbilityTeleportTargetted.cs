@@ -7,4 +7,8 @@
 /// </summary>
 public sealed class AbilityTeleportTargetted : AbilityTeleport
 {
+    public override string GetGUIName()
+    {
+        return "Targetted Teleport";
+    }
 }

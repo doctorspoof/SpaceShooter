@@ -5,7 +5,7 @@
 /// <summary>
 /// Teleport allows for the usage of teleport abilities such as TargettedTeleport and RandomTeleport.
 /// </summary>
-public class AbilityTeleport : Ability 
+public abstract class AbilityTeleport : AbilityActive
 {
     protected float m_range = 0f; //!< The range of the teleport.
 

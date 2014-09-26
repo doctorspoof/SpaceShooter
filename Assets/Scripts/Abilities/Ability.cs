@@ -5,15 +5,17 @@
 /// <summary>
 /// An abstract for each ability, allows for a generic cooldown method in Ship to clean up code.
 /// </summary>
-[System.Serializable] public abstract class Ability
+public abstract class Ability
 {
-    protected bool m_locked = false;
-    protected bool m_cooling = false;
+    protected bool m_locked = false;        //!< Used to indicate whether the ability is available for use or not.
+    protected bool m_cooling = false;       //!< Used in avoiding multiple cooling calls from Abilities.
 
-    protected float m_maxCooldown = 0.5f;     //!< How long the ability requires to cool down.
-    protected float m_currentCooldown = 0f;   //!< The cooldown for the ability.
+    protected float m_maxCooldown = 0.5f;   //!< How long the ability requires to cool down.
+    protected float m_currentCooldown = 0f; //!< The cooldown for the ability.
     
-
+    
+    public abstract bool IsActive();        //!< Indicates whether the ability is active or passive.
+    public abstract string GetGUIName();    //!< Retrieves the name which should be displayed in the GUI.
 
     public bool IsLocked()
     {

@@ -7,4 +7,8 @@
 /// </summary>
 public sealed class AbilityTeleportRandom : AbilityTeleport
 {
+    public override string GetGUIName()
+    {
+        return "Random Teleport";
+    }
 }

@@ -5,13 +5,18 @@
 /// <summary>
 /// The GravityControl ability allows ships to change the intensity of the gravity effect being applied to them.
 /// </summary>
-public sealed class AbilityGravityControl : Ability 
+public sealed class AbilityGravityControl : AbilityActive
 {
     public bool enabled = false;    //!< Used to indicate whether the ability is currently enabled or not.
 
     float m_maxChange = 0f;         //!< Represents how much gravity can be increased or reduced (+-100%).
     float m_currentChange = 0f;     //!< The current applied effect of the ability.
 
+
+    public override string GetGUIName()
+    {
+        return "Gravity Control";
+    }
 
     public float GetMaxChange()
     {
