@@ -34,6 +34,30 @@ public sealed class Abilities : MonoBehaviour
         return FindAbilityOfType<T>();
     }
 
+
+    public int GetCount()
+    {
+        return m_abilities.Count;
+    }
+
+
+    public Ability this[int index]
+    {
+        get 
+        {
+            try 
+            {
+                return m_abilities[index];
+            }
+            
+            catch (System.Exception error)
+            {
+                Debug.LogError ("Exception occurred in " + name + ".Abilities: " + error.Message);            
+                return null;
+            }
+        }
+    }
+
     #endregion Getters & setters
 
 
@@ -68,7 +92,7 @@ public sealed class Abilities : MonoBehaviour
     /// </summary>
     /// <param name="deleteObject">If set to <c>true</c> delete the ability from the list.</param>
     /// <typeparam name="T">The ability type to be locked.</typeparam>
-    public T Lock<T> (bool deleteObject) where T : Ability, new()
+    public T Lock<T> (bool deleteObject = false) where T : Ability, new()
     {
         // Find the ability
         T ability = FindAbilityOfType<T>();
