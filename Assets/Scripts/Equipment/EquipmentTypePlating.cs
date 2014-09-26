@@ -144,65 +144,65 @@ public sealed class EquipmentTypePlating : BaseEquipment
 
     protected override void ElementResponseFire (float scalar)
     {
-        m_currentStats.returnDamage += ElementalValuesPlating.Fire.returnDamageInc * scalar;
+        m_currentStats.returnDamage         += ElementalValuesPlating.Fire.returnDamageInc * scalar;
     }
 
 
     protected override void ElementResponseIce (float scalar)
     {
-        m_currentStats.slowDuration += ElementalValuesPlating.Ice.slowDurationInc * scalar;
+        m_currentStats.slowDuration         += ElementalValuesPlating.Ice.slowDurationInc * scalar;
     }
        
 
     protected override void ElementResponseEarth (float scalar)
     {
-        m_currentStats.hp += (int) (m_baseStats.hp * ElementalValuesPlating.Earth.hpMulti * scalar);
-        m_currentStats.mass += m_baseStats.mass * ElementalValuesPlating.Earth.massMulti * scalar;
+        m_currentStats.hp                   += (int) (m_baseStats.hp * ElementalValuesPlating.Earth.hpMulti * scalar);
+        m_currentStats.mass                 += m_baseStats.mass * ElementalValuesPlating.Earth.massMulti * scalar;
     }
 
 
     protected override void ElementResponseLightning (float scalar)
     {
-        m_currentStats.chanceToJump += ElementalValuesPlating.Lightning.chanceToJumpInc * scalar;
+        m_currentStats.chanceToJump         += ElementalValuesPlating.Lightning.chanceToJumpInc * scalar;
     }
 
 
     protected override void ElementResponseLight (float scalar)
     {
-        m_currentStats.chanceToCleanse += ElementalValuesPlating.Light.chanceToCleanseInc * scalar;
+        m_currentStats.chanceToCleanse      += ElementalValuesPlating.Light.chanceToCleanseInc * scalar;
     }
 
 
     protected override void ElementResponseDark (float scalar)
     {
-        m_currentStats.lifesteal += ElementalValuesPlating.Dark.lifestealInc * scalar;
+        m_currentStats.lifesteal            += ElementalValuesPlating.Dark.lifestealInc * scalar;
     }
 
 
     protected override void ElementResponseSpirit (float scalar)
     {
-        m_currentStats.chanceToEthereal += ElementalValuesPlating.Spirit.chanceToEtherealInc * scalar;
-        m_currentStats.etherealDuration += m_baseStats.etherealDuration * ElementalValuesPlating.Spirit.etherealDurationMulti * scalar;
+        m_currentStats.chanceToEthereal     += ElementalValuesPlating.Spirit.chanceToEtherealInc * scalar;
+        m_currentStats.etherealDuration     += m_baseStats.etherealDuration * ElementalValuesPlating.Spirit.etherealDurationMulti * scalar;
     }
 
 
     protected override void ElementResponseGravity (float scalar)
     {
-        m_currentStats.slowsIncoming = ElementalValuesPlating.Gravity.slowsIncoming;
+        m_currentStats.slowsIncoming        = ElementalValuesPlating.Gravity.slowsIncoming;
 
-        m_currentStats.speedReduction += ElementalValuesPlating.Gravity.speedReductionInc * scalar;
+        m_currentStats.speedReduction       += ElementalValuesPlating.Gravity.speedReductionInc * scalar;
     }
 
 
     protected override void ElementResponseAir (float scalar)
     {
-        m_currentStats.mass += m_baseStats.mass * ElementalValuesPlating.Air.massMulti * scalar;
+        m_currentStats.mass                 += m_baseStats.mass * ElementalValuesPlating.Air.massMulti * scalar;
     }
 
 
     protected override void ElementResponseOrganic (float scalar)
     {
-        m_currentStats.regen += ElementalValuesPlating.Organic.regenInc * scalar;
+        m_currentStats.regen                += ElementalValuesPlating.Organic.regenInc * scalar;
     }
 
     #endregion

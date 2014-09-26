@@ -102,8 +102,6 @@
 public sealed class EquipmentTypeShield : BaseEquipment 
 {
     [SerializeField]    ShieldProperties    m_baseStats     = null;
-    
-    
                         ShieldProperties    m_currentStats  = new ShieldProperties();
     
 
@@ -192,104 +190,104 @@ public sealed class EquipmentTypeShield : BaseEquipment
     protected override void ElementResponseFire (float scalar)
     {
         // Base stats
-        m_currentStats.baseRechargeDelay += m_baseStats.baseRechargeDelay * ElementalValuesShield.Fire.baseRechargeDelayMulti * scalar;
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Fire.baseRechargeDelayMulti * scalar;
         
         // Burst effect
-        m_currentStats.shouldFireBurst = ElementalValuesShield.Fire.shouldFireBurst;
+        m_currentStats.shouldFireBurst      = ElementalValuesShield.Fire.shouldFireBurst;
         
-        m_currentStats.burstDamage += (int) (m_baseStats.burstDamage * ElementalValuesShield.Fire.burstDamageMulti * scalar);
-        m_currentStats.burstRange += m_baseStats.burstRange * ElementalValuesShield.Fire.burstRangeMulti * scalar;
-        m_currentStats.burstMaxDamageRange += m_baseStats.burstMaxDamageRange * ElementalValuesShield.Fire.burstMaxDamageRangeMulti * scalar;
-        m_currentStats.burstMaxFalloff += ElementalValuesShield.Fire.burstMaxFalloffInc * scalar;
+        m_currentStats.burstDamage          += (int) (m_baseStats.burstDamage * ElementalValuesShield.Fire.burstDamageMulti * scalar);
+        m_currentStats.burstRange           += m_baseStats.burstRange * ElementalValuesShield.Fire.burstRangeMulti * scalar;
+        m_currentStats.burstMaxDamageRange  += m_baseStats.burstMaxDamageRange * ElementalValuesShield.Fire.burstMaxDamageRangeMulti * scalar;
+        m_currentStats.burstMaxFalloff      += ElementalValuesShield.Fire.burstMaxFalloffInc * scalar;
     }
 
 
     protected override void ElementResponseIce (float scalar)
     {
         // Base stats
-        m_currentStats.baseMaxShield += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Ice.baseShieldMulti * scalar);
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Ice.baseShieldMulti * scalar);
         
         // Debuff modifier
-        m_currentStats.debuffModifier += ElementalValuesShield.Ice.debuffModifierInc * scalar;
+        m_currentStats.debuffModifier       += ElementalValuesShield.Ice.debuffModifierInc * scalar;
     }
     
     
     protected override void ElementResponseEarth (float scalar)
     {
         // Base stats
-        m_currentStats.baseMaxShield += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Earth.baseShieldMulti * scalar);
-        m_currentStats.baseRechargeDelay += m_baseStats.baseRechargeDelay * ElementalValuesShield.Earth.baseRechargeDelayMulti * scalar;
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Earth.baseShieldMulti * scalar);
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Earth.baseRechargeDelayMulti * scalar;
     }
     
     
     protected override void ElementResponseLightning (float scalar)
     {
         // Base stats
-        m_currentStats.baseMaxShield += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Lightning.baseShieldMulti * scalar);
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Lightning.baseShieldMulti * scalar);
 
         // Static shock
-        m_currentStats.canStaticShock = ElementalValuesShield.Lightning.canStaticShock;
+        m_currentStats.canStaticShock       = ElementalValuesShield.Lightning.canStaticShock;
 
-        m_currentStats.staticChance += ElementalValuesShield.Lightning.staticChanceInc * scalar;
-        m_currentStats.staticRange += m_baseStats.staticRange * ElementalValuesShield.Lightning.staticRangeMutli * scalar;
-        m_currentStats.staticDamage += (int) (m_baseStats.staticDamage * ElementalValuesShield.Lightning.staticDamageMulti * scalar);
-        m_currentStats.staticCooldown += m_baseStats.staticCooldown * ElementalValuesShield.Lightning.staticCooldownMulti * scalar;
+        m_currentStats.staticChance         += ElementalValuesShield.Lightning.staticChanceInc * scalar;
+        m_currentStats.staticRange          += m_baseStats.staticRange * ElementalValuesShield.Lightning.staticRangeMutli * scalar;
+        m_currentStats.staticDamage         += (int) (m_baseStats.staticDamage * ElementalValuesShield.Lightning.staticDamageMulti * scalar);
+        m_currentStats.staticCooldown       += m_baseStats.staticCooldown * ElementalValuesShield.Lightning.staticCooldownMulti * scalar;
     }
     
     
     protected override void ElementResponseLight (float scalar)
     {
         // Base stats
-        m_currentStats.baseRechargeDelay += m_baseStats.baseRechargeDelay * ElementalValuesShield.Light.baseRechargeDelayMulti * scalar;
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Light.baseRechargeDelayMulti * scalar;
 
         // Flashbang
-        m_currentStats.canFlashbang = ElementalValuesShield.Light.canFlashbang;
+        m_currentStats.canFlashbang         = ElementalValuesShield.Light.canFlashbang;
 
-        m_currentStats.flashChance += ElementalValuesShield.Light.flashChanceInc * scalar;
-        m_currentStats.flashRange += m_baseStats.flashRange * ElementalValuesShield.Light.flashRangeMutli * scalar;
-        m_currentStats.flashStunDuration += m_baseStats.flashStunDuration * ElementalValuesShield.Light.flashStunDurationMulti * scalar;
+        m_currentStats.flashChance          += ElementalValuesShield.Light.flashChanceInc * scalar;
+        m_currentStats.flashRange           += m_baseStats.flashRange * ElementalValuesShield.Light.flashRangeMutli * scalar;
+        m_currentStats.flashStunDuration    += m_baseStats.flashStunDuration * ElementalValuesShield.Light.flashStunDurationMulti * scalar;
     }
 
 
     protected override void ElementResponseDark (float scalar)
     {
         // Base stats
-        m_currentStats.baseMaxShield += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Dark.baseShieldMulti * scalar);
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Dark.baseShieldMulti * scalar);
 
         // Dark effect
-        m_currentStats.absorbChance += ElementalValuesShield.Dark.absorbChanceInc * scalar;
+        m_currentStats.absorbChance         += ElementalValuesShield.Dark.absorbChanceInc * scalar;
     }
     
     
     protected override void ElementResponseSpirit (float scalar)
     {
         // Base stats
-        m_currentStats.baseRechargeDelay += m_baseStats.baseRechargeDelay * ElementalValuesShield.Spirit.baseRechargeDelayMulti * scalar;
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Spirit.baseRechargeDelayMulti * scalar;
 
         // Invisibility
-        m_currentStats.invisChance += ElementalValuesShield.Spirit.invisChanceInc * scalar;
-        m_currentStats.invisDuration += m_baseStats.invisDuration * ElementalValuesShield.Spirit.invisDurationMulti * scalar;
+        m_currentStats.invisChance          += ElementalValuesShield.Spirit.invisChanceInc * scalar;
+        m_currentStats.invisDuration        += m_baseStats.invisDuration * ElementalValuesShield.Spirit.invisDurationMulti * scalar;
     }
 
     
     protected override void ElementResponseGravity (float scalar)
     {
         // Deflection
-        m_currentStats.deflectChance += ElementalValuesShield.Gravity.deflectChanceInc * scalar;
+        m_currentStats.deflectChance        += ElementalValuesShield.Gravity.deflectChanceInc * scalar;
     }
     
     
     protected override void ElementResponseAir (float scalar)
     {
         // Base stats
-        m_currentStats.baseRechargeDelay += m_baseStats.baseRechargeDelay * ElementalValuesShield.Air.baseRechargeDelayMulti * scalar;
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Air.baseRechargeDelayMulti * scalar;
     }
 
 
     protected override void ElementResponseOrganic (float scalar)
     {
         // Base stats
-        m_currentStats.baseRechargeRate += m_baseStats.baseRechargeRate * ElementalValuesShield.Organic.baseRechargeRateMulti * scalar;
+        m_currentStats.baseRechargeRate     += m_baseStats.baseRechargeRate * ElementalValuesShield.Organic.baseRechargeRateMulti * scalar;
     }
 
     #endregion

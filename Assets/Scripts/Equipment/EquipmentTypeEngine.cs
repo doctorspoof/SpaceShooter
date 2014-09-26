@@ -278,88 +278,88 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     protected override void ElementResponseFire (float scalar)
     {
         // Base movement
-        m_currentStats.forwardSpeed += m_baseStats.forwardSpeed * ElementalValuesEngine.Fire.speedMulti * scalar;
-        m_currentStats.turnSpeed += m_baseStats.turnSpeed * ElementalValuesEngine.Fire.turnMulti * scalar;
-        m_currentStats.strafeSpeed += m_baseStats.strafeSpeed * ElementalValuesEngine.Fire.strafeMulti * scalar;      
+        m_currentStats.forwardSpeed         += m_baseStats.forwardSpeed * ElementalValuesEngine.Fire.speedMulti * scalar;
+        m_currentStats.turnSpeed            += m_baseStats.turnSpeed * ElementalValuesEngine.Fire.turnMulti * scalar;
+        m_currentStats.strafeSpeed          += m_baseStats.strafeSpeed * ElementalValuesEngine.Fire.strafeMulti * scalar;      
     }
 
 
     protected override void ElementResponseIce (float scalar)
     {
         // Afterburners
-        m_currentStats.burnerLength += m_baseStats.burnerLength * ElementalValuesEngine.Ice.burnerLengthMulti * scalar;
+        m_currentStats.burnerLength         += m_baseStats.burnerLength * ElementalValuesEngine.Ice.burnerLengthMulti * scalar;
     }
 
 
     protected override void ElementResponseEarth (float scalar)
     {
         // Afterburners
-        m_currentStats.burnerSpeed += m_baseStats.burnerSpeed * ElementalValuesEngine.Earth.burnerSpeedMulti * scalar;
-        m_currentStats.burnerLength += m_baseStats.burnerLength * ElementalValuesEngine.Earth.burnerLengthMulti * scalar;
+        m_currentStats.burnerSpeed          += m_baseStats.burnerSpeed * ElementalValuesEngine.Earth.burnerSpeedMulti * scalar;
+        m_currentStats.burnerLength         += m_baseStats.burnerLength * ElementalValuesEngine.Earth.burnerLengthMulti * scalar;
     }
 
 
     protected override void ElementResponseLightning (float scalar)
     {
         // Afterburners
-        m_currentStats.burnerSpeed += m_baseStats.burnerSpeed * ElementalValuesEngine.Lightning.burnerSpeedMulti * scalar;
-        m_currentStats.burnerLength += m_baseStats.burnerLength * ElementalValuesEngine.Lightning.burnerLengthMulti * scalar;
+        m_currentStats.burnerSpeed          += m_baseStats.burnerSpeed * ElementalValuesEngine.Lightning.burnerSpeedMulti * scalar;
+        m_currentStats.burnerLength         += m_baseStats.burnerLength * ElementalValuesEngine.Lightning.burnerLengthMulti * scalar;
     }
 
     
     protected override void ElementResponseLight (float scalar)
     {
         // Base movement
-        m_currentStats.forwardSpeed += m_baseStats.forwardSpeed * ElementalValuesEngine.Light.speedMulti * scalar;
-        m_currentStats.turnSpeed += m_baseStats.turnSpeed * ElementalValuesEngine.Light.turnMulti * scalar;
-        m_currentStats.strafeSpeed += m_baseStats.strafeSpeed * ElementalValuesEngine.Light.strafeMulti * scalar;     
+        m_currentStats.forwardSpeed         += m_baseStats.forwardSpeed * ElementalValuesEngine.Light.speedMulti * scalar;
+        m_currentStats.turnSpeed            += m_baseStats.turnSpeed * ElementalValuesEngine.Light.turnMulti * scalar;
+        m_currentStats.strafeSpeed          += m_baseStats.strafeSpeed * ElementalValuesEngine.Light.strafeMulti * scalar;     
     
         // Afterburners
-        m_currentStats.burnerSpeed += m_baseStats.burnerSpeed * ElementalValuesEngine.Light.burnerSpeedMulti * scalar;
+        m_currentStats.burnerSpeed          += m_baseStats.burnerSpeed * ElementalValuesEngine.Light.burnerSpeedMulti * scalar;
     }
 
 
     protected override void ElementResponseDark (float scalar)
     {
         // Teleports
-        m_currentStats.hasLongTeleport = ElementalValuesEngine.Dark.hasLongTeleport;
+        m_currentStats.hasLongTeleport      = ElementalValuesEngine.Dark.hasLongTeleport;
         
-        m_currentStats.longTeleRange += m_baseStats.longTeleRange * ElementalValuesEngine.Dark.longRangeMulti * scalar;
-        m_currentStats.longTeleCooldown += m_baseStats.longTeleCooldown * ElementalValuesEngine.Dark.longCooldownMulti * scalar;
+        m_currentStats.longTeleRange        += m_baseStats.longTeleRange * ElementalValuesEngine.Dark.longRangeMulti * scalar;
+        m_currentStats.longTeleCooldown     += m_baseStats.longTeleCooldown * ElementalValuesEngine.Dark.longCooldownMulti * scalar;
     }
 
 
     protected override void ElementResponseSpirit (float scalar)
     {
         // Teleports
-        m_currentStats.hasShortTeleport = ElementalValuesEngine.Spirit.hasShortTeleport;
+        m_currentStats.hasShortTeleport     = ElementalValuesEngine.Spirit.hasShortTeleport;
         
-        m_currentStats.shortTeleRange += m_baseStats.shortTeleRange * ElementalValuesEngine.Spirit.shortRangeMulti * scalar;
-        m_currentStats.shortTeleCooldown += m_baseStats.shortTeleCooldown * ElementalValuesEngine.Spirit.shortCooldownMulti * scalar;
+        m_currentStats.shortTeleRange       += m_baseStats.shortTeleRange * ElementalValuesEngine.Spirit.shortRangeMulti * scalar;
+        m_currentStats.shortTeleCooldown    += m_baseStats.shortTeleCooldown * ElementalValuesEngine.Spirit.shortCooldownMulti * scalar;
     }
 
 
     protected override void ElementResponseGravity (float scalar)
     {
         // Gravity control
-        m_currentStats.hasGravityControl = ElementalValuesEngine.Gravity.hasGravityControl;
+        m_currentStats.hasGravityControl    = ElementalValuesEngine.Gravity.hasGravityControl;
         
-        m_currentStats.maxGravityChange += ElementalValuesEngine.Gravity.maxGravityChangeInc * scalar;
+        m_currentStats.maxGravityChange     += ElementalValuesEngine.Gravity.maxGravityChangeInc * scalar;
     }
 
 
     protected override void ElementResponseAir (float scalar)
     {
         // Base movement
-        m_currentStats.turnSpeed += m_baseStats.turnSpeed * ElementalValuesEngine.Air.turnMulti * scalar;
-        m_currentStats.strafeSpeed += m_baseStats.strafeSpeed * ElementalValuesEngine.Air.strafeMulti * scalar;
+        m_currentStats.turnSpeed            += m_baseStats.turnSpeed * ElementalValuesEngine.Air.turnMulti * scalar;
+        m_currentStats.strafeSpeed          += m_baseStats.strafeSpeed * ElementalValuesEngine.Air.strafeMulti * scalar;
     }
 
 
     protected override void ElementResponseOrganic (float scalar)
     {
         // Afterburners
-        m_currentStats.burnerRechargeTime += m_baseStats.burnerRechargeTime * ElementalValuesEngine.Organic.burnerRechargeMulti * scalar;
+        m_currentStats.burnerRechargeTime   += m_baseStats.burnerRechargeTime * ElementalValuesEngine.Organic.burnerRechargeMulti * scalar;
     }
     
     #endregion Elemental responses
