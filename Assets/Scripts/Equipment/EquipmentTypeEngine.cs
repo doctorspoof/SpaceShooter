@@ -217,6 +217,8 @@ public sealed class EquipmentTypeEngine : BaseEquipment
             
             // Set the maximum change attribute
             gravity.SetMaxChange (m_currentStats.maxGravityChange);
+            
+            Debug.Log (gravity.GetGUIName() + ": " + gravity.GetMaxChange() + " max change, " + gravity.GetMaxCooldown() + " cooldown.");
         }
 
         else
@@ -236,6 +238,8 @@ public sealed class EquipmentTypeEngine : BaseEquipment
             // Update the range and cooldown
             teleport.SetRange (m_currentStats.longTeleRange);
             teleport.SetMaxCooldown (m_currentStats.longTeleCooldown);
+            
+            Debug.Log (teleport.GetGUIName() + ": " + teleport.GetRange() + " range, " + teleport.GetMaxCooldown() + " cooldown.");
         }
 
         else
@@ -255,6 +259,8 @@ public sealed class EquipmentTypeEngine : BaseEquipment
             // Update the range and cooldown
             teleport.SetRange (m_currentStats.shortTeleRange);
             teleport.SetMaxCooldown (m_currentStats.shortTeleCooldown);
+            
+            Debug.Log (teleport.GetGUIName() + ": " + teleport.GetRange() + " range, " + teleport.GetMaxCooldown() + " cooldown.");
         }
 
         else
