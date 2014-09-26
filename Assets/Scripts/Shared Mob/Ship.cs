@@ -36,10 +36,6 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     [SerializeField]                float       m_shipWidth = 0f;
     [SerializeField]                float       m_shipHeight = 0f;
 
-    [SerializeField]                float       m_maxShipSpeed = 0f;
-    [SerializeField]                float       m_rotateSpeed = 0f;
-    [SerializeField]                float       m_strafeSpeed = 0f;
-
     [SerializeField]                float       m_ramDamageMultiplier = 2.5f;
     
     [SerializeField]                bool        m_manuallySetWidthAndHeight = false;
@@ -52,17 +48,21 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     [SerializeField] bool m_showMovementWaypoints;
 
 
+    // Engine attributes
+    [SerializeField]protected   float   m_maxShipSpeed = 0f;
+    [SerializeField]protected   float   m_rotateSpeed = 0f;
+    [SerializeField]protected   float   m_strafeSpeed = 0f;
+    
+    [SerializeField]protected   float   m_afterburnerIncreaseOfSpeed = 0f;
+    [SerializeField]protected   float   m_afterburnerLength = 0f;
+    [SerializeField]protected   float   m_afterburnerRechargeTime = 0f;
 
 
+    // Cached crap
     bool m_afterburnersFiring = false, m_afterburnersRecharged = true;
     float m_currentAfterburnerTime = 0.0f, m_currentAfterburnerRechargeTime = 0.0f;
     
     float m_currentShipSpeed = 0f;
-
-    float m_afterburnerIncreaseOfSpeed = 0f;
-    float m_afterburnerLength = 0f;
-    float m_afterburnerRechargeTime = 0f;
-
     float m_currentAngularVelocity = 0f;
     float m_currentRotation = 0f, m_lastRotation = 0f;
     float m_maxThrusterVelocitySeen = 0f, m_maxAngularVelocitySeen = 0f;
@@ -208,6 +208,11 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     public float GetCurrentMomentum()
     {
         return GetCurrentShipSpeed() * rigidbody.mass;
+    }
+
+    public float GetStrafeMomentum()
+    {
+        return GetStrafeSpeed() * rigidbody.mass;
     }
 
     public float GetRamDam()
