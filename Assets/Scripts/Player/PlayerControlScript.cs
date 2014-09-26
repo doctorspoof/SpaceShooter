@@ -18,7 +18,6 @@ public class PlayerControlScript : Ship
 	[SerializeField] bool               m_shouldRecieveInput = true;
 	[SerializeField] float              m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
 	[SerializeField] float              m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
-    [SerializeField] float              m_playerStrafeMod = 0.6f;
 	[SerializeField] int                m_currentCash = 0;
 
     #endregion
@@ -793,7 +792,7 @@ public class PlayerControlScript : Ship
         if (Input.GetKey(KeyCode.A))
         {
             //this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-            this.rigidbody.AddForce(this.transform.right * (GetStrafeMomentum() * Time.deltaTime));
+            this.rigidbody.AddForce(this.transform.right * (-GetStrafeMomentum() * Time.deltaTime));
 
             //if (!shouldPlaySound)
             //{
