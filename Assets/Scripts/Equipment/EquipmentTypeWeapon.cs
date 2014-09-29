@@ -121,11 +121,18 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         m_currentRechargeDelay = 0.0f;
     }
     
+    public void MobRequestsFire()
+    {
+        if(Network.isServer)
+        {
+            FireLocalBullet();
+        }
+    }
     public void PlayerRequestsFire()
     {
         if(Network.isServer)
         {
-            PlayerFireLocal();
+            FireLocalBullet();
         }
         else
         {
@@ -153,7 +160,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         }
     }
     
-    void PlayerFireLocal()
+    void FireLocalBullet()
     {
         if(m_currentBulletStats.isBeam)
         {
@@ -220,7 +227,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     
     [RPC] void SpawnBasicBullet(NetworkViewID id)
     {
-        GameObject bullet = Instantiate(m_bulletRef, transform.position + m_bulletOffset, transform.rotation) as GameObject;
+        GameObject bullet = Instantiate(m_bulletRef, transform.position + (transform.rotation * m_bulletOffset), transform.rotation) as GameObject;
         bullet.GetComponent<BasicBulletScript>().SetHomingTarget(m_currentHomingTarget);
         
         bullet.networkView.viewID = id;

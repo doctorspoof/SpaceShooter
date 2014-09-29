@@ -131,6 +131,7 @@ public class BasicBulletScript : MonoBehaviour
     /* Unity Functions */
     void Start()
     {
+    
         // Set up the bullet
         if (m_bulletDamage < m_bulletMinDamage)
         {

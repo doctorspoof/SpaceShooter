@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -196,6 +196,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
                 {
                     Vector2 playPos = WorldToMapPos(player.transform.position);
                     GUI.DrawTexture(new Rect(playPos.x - (m_blobSize * 0.5f), playPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_otherPBlob);
+                    Debug.Log ("Trying to draw player: " + player.name);
                     GUI.Label(new Rect(playPos.x - (m_blobSize * 1.5f), playPos.y + (m_blobSize * 0.5f), 75, 40),
                               m_gscCache.GetNameFromNetworkPlayer(player.GetComponent<PlayerControlScript>().GetOwner()));
                 }

@@ -21,7 +21,7 @@ public class PlayerControlScript : Ship
 	[SerializeField] float              m_baseShipWeight = 0.05f;
 	[SerializeField] float              m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
 	[SerializeField] float              m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
-    [SerializeField] float              m_playerStrafeMod = 0.6f;
+    //[SerializeField] float              m_playerStrafeMod = 0.6f;
 	[SerializeField] int                m_currentCash = 0;
     #endregion
 
@@ -610,7 +610,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
             }
 
             //float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
@@ -654,7 +654,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
             }
 
             Vector3 moveFac = inputVec * speed;
@@ -695,7 +695,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
             }
 
             Vector3 moveFac = inputVec * speed;
@@ -736,7 +736,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_playerStrafeMod;
+                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
             }
 
             Vector3 moveFac = inputVec * speed * Time.deltaTime;
@@ -764,8 +764,8 @@ public class PlayerControlScript : Ship
         if (Input.GetKey(KeyCode.W))
         {
             //this.rigidbody.AddForce(this.transform.up * m_playerMoveSpeed * Time.deltaTime);
-            this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
-
+            //this.rigidbody.AddForce(this.transform.up * GetCurrentMomentum() * Time.deltaTime);
+            MoveForward(GetCurrentMomentum());
             //Play sound + particles
             //if (!shouldPlaySound)
             //{
@@ -780,8 +780,8 @@ public class PlayerControlScript : Ship
         if (Input.GetKey(KeyCode.S))
         {
             //this.rigidbody.AddForce(this.transform.up * -m_playerMoveSpeed * Time.deltaTime);
-            this.rigidbody.AddForce(this.transform.up * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
-
+            //this.rigidbody.AddForce(this.transform.up * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
+            MoveBackward(GetCurrentMomentum());
             //if (!shouldPlaySound)
             //{
             //    shouldPlaySound = true;
@@ -795,8 +795,8 @@ public class PlayerControlScript : Ship
         if (Input.GetKey(KeyCode.A))
         {
             //this.rigidbody.AddForce(this.transform.right * (-m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-            this.rigidbody.AddForce(this.transform.right * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
-
+            //this.rigidbody.AddForce(this.transform.right * (-GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
+            MoveLeft(GetCurrentMomentum());
             //if (!shouldPlaySound)
             //{
             //    shouldPlaySound = true;
@@ -810,8 +810,8 @@ public class PlayerControlScript : Ship
         if (Input.GetKey(KeyCode.D))
         {
             //this.rigidbody.AddForce(this.transform.right * (m_playerMoveSpeed * m_playerStrafeMod) * Time.deltaTime);
-            this.rigidbody.AddForce(this.transform.right * (GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
-
+            //this.rigidbody.AddForce(this.transform.right * (GetCurrentMomentum() * m_playerStrafeMod) * Time.deltaTime);
+            MoveRight(GetCurrentMomentum());
             //if (!shouldPlaySound)
             //{
             //    shouldPlaySound = true;

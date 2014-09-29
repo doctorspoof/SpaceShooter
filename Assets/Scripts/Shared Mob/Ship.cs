@@ -36,6 +36,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     [SerializeField] float m_maxShipSpeed;
     [SerializeField] float m_currentShipSpeed = 0.0f;
+    [SerializeField] protected float m_shipStrafeMod = 0.6f;
 
     [SerializeField] float m_afterburnerIncreaseOfSpeed;
     [SerializeField] float m_afterburnerLength;
@@ -734,6 +735,18 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     public virtual void MoveForward(float momentum_)
     {
         rigidbody.AddForce(m_shipTransform.up * momentum_ * Time.deltaTime);
+    }
+    public virtual void MoveLeft(float momentum_)
+    {
+        rigidbody.AddForce(m_shipTransform.right * -momentum_ * Time.deltaTime);
+    }
+    public virtual void MoveRight(float momentum_)
+    {
+        rigidbody.AddForce(m_shipTransform.right * momentum_ * Time.deltaTime);
+    }
+    public virtual void MoveBackward(float momentum_)
+    {
+        rigidbody.AddForce(m_shipTransform.up * -momentum_ * Time.deltaTime);
     }
 
     public virtual void RotateTowards(Vector3 targetPosition_)
