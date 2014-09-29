@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 
+#region ShieldProperties
 
 [System.Serializable] public sealed class ShieldProperties
 {
@@ -94,11 +95,13 @@
     }
 }
 
+#endregion ShieldProperties
+
+
+
 public sealed class EquipmentTypeShield : BaseEquipment 
 {
     [SerializeField]    ShieldProperties    m_baseStats     = null;
-    
-    
                         ShieldProperties    m_currentStats  = new ShieldProperties();
     
 
@@ -109,58 +112,183 @@ public sealed class EquipmentTypeShield : BaseEquipment
 
     protected override void CalculateCurrentStats()
     {
-        
+        for (int i = 0; i < m_augmentSlots.Length; i++)
+        {
+            if (m_augmentSlots[i] != null)
+            {
+                float scalar = ElementalValuesWeapon.TierScalar.GetScalar (m_augmentSlots[i].GetTier());
+                Element element = m_augmentSlots[i].GetElement();
+                
+                switch (element)
+                {
+                    case Element.Fire:
+                    {
+                        ElementResponseFire (scalar);
+                        break;
+                    }
+                        
+                    case Element.Ice:
+                    {
+                        ElementResponseIce (scalar);
+                        break;
+                    }
+                        
+                    case Element.Earth:
+                    {
+                        ElementResponseEarth (scalar);
+                        break;
+                    }
+                        
+                    case Element.Lightning:
+                    {
+                        ElementResponseLightning (scalar);
+                        break;
+                    }
+                        
+                    case Element.Light:
+                    {
+                        ElementResponseLight (scalar);
+                        break;
+                    }
+                        
+                    case Element.Dark:
+                    {
+                        ElementResponseDark (scalar);
+                        break;
+                    }
+                        
+                    case Element.Spirit:
+                    {
+                        ElementResponseSpirit (scalar);
+                        break;
+                    }
+                        
+                    case Element.Gravity:
+                    {
+                        ElementResponseGravity (scalar);
+                        break;
+                    }
+                        
+                    case Element.Air:
+                    {
+                        ElementResponseAir (scalar);
+                        break;
+                    }
+                        
+                    case Element.Organic:
+                    {
+                        ElementResponseOrganic (scalar);
+                        break;
+                    }
+                }
+            }
+        }
     }
     
-    #region ElementResponses
-    protected override void ElementResponseAir (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
+    #region ElementResponses    
     
     protected override void ElementResponseFire (float scalar)
     {
-        throw new System.NotImplementedException ();
+        // Base stats
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Fire.baseRechargeDelayMulti * scalar;
+        
+        // Burst effect
+        m_currentStats.shouldFireBurst      = ElementalValuesShield.Fire.shouldFireBurst;
+        
+        m_currentStats.burstDamage          += (int) (m_baseStats.burstDamage * ElementalValuesShield.Fire.burstDamageMulti * scalar);
+        m_currentStats.burstRange           += m_baseStats.burstRange * ElementalValuesShield.Fire.burstRangeMulti * scalar;
+        m_currentStats.burstMaxDamageRange  += m_baseStats.burstMaxDamageRange * ElementalValuesShield.Fire.burstMaxDamageRangeMulti * scalar;
+        m_currentStats.burstMaxFalloff      += ElementalValuesShield.Fire.burstMaxFalloffInc * scalar;
+    }
+
+
+    protected override void ElementResponseIce (float scalar)
+    {
+        // Base stats
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Ice.baseShieldMulti * scalar);
+        
+        // Debuff modifier
+        m_currentStats.debuffModifier       += ElementalValuesShield.Ice.debuffModifierInc * scalar;
     }
     
-    protected override void ElementResponseDark (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
     
     protected override void ElementResponseEarth (float scalar)
     {
-        throw new System.NotImplementedException ();
+        // Base stats
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Earth.baseShieldMulti * scalar);
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Earth.baseRechargeDelayMulti * scalar;
     }
     
-    protected override void ElementResponseGravity (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
-    
-    protected override void ElementResponseIce (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
-    
-    protected override void ElementResponseLight (float scalar)
-    {
-        throw new System.NotImplementedException ();
-    }
     
     protected override void ElementResponseLightning (float scalar)
     {
-        throw new System.NotImplementedException ();
+        // Base stats
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Lightning.baseShieldMulti * scalar);
+
+        // Static shock
+        m_currentStats.canStaticShock       = ElementalValuesShield.Lightning.canStaticShock;
+
+        m_currentStats.staticChance         += ElementalValuesShield.Lightning.staticChanceInc * scalar;
+        m_currentStats.staticRange          += m_baseStats.staticRange * ElementalValuesShield.Lightning.staticRangeMutli * scalar;
+        m_currentStats.staticDamage         += (int) (m_baseStats.staticDamage * ElementalValuesShield.Lightning.staticDamageMulti * scalar);
+        m_currentStats.staticCooldown       += m_baseStats.staticCooldown * ElementalValuesShield.Lightning.staticCooldownMulti * scalar;
     }
     
-    protected override void ElementResponseOrganic (float scalar)
+    
+    protected override void ElementResponseLight (float scalar)
     {
-        throw new System.NotImplementedException ();
+        // Base stats
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Light.baseRechargeDelayMulti * scalar;
+
+        // Flashbang
+        m_currentStats.canFlashbang         = ElementalValuesShield.Light.canFlashbang;
+
+        m_currentStats.flashChance          += ElementalValuesShield.Light.flashChanceInc * scalar;
+        m_currentStats.flashRange           += m_baseStats.flashRange * ElementalValuesShield.Light.flashRangeMutli * scalar;
+        m_currentStats.flashStunDuration    += m_baseStats.flashStunDuration * ElementalValuesShield.Light.flashStunDurationMulti * scalar;
     }
+
+
+    protected override void ElementResponseDark (float scalar)
+    {
+        // Base stats
+        m_currentStats.baseMaxShield        += (int) (m_baseStats.baseMaxShield * ElementalValuesShield.Dark.baseShieldMulti * scalar);
+
+        // Dark effect
+        m_currentStats.absorbChance         += ElementalValuesShield.Dark.absorbChanceInc * scalar;
+    }
+    
     
     protected override void ElementResponseSpirit (float scalar)
     {
-        throw new System.NotImplementedException ();
+        // Base stats
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Spirit.baseRechargeDelayMulti * scalar;
+
+        // Invisibility
+        m_currentStats.invisChance          += ElementalValuesShield.Spirit.invisChanceInc * scalar;
+        m_currentStats.invisDuration        += m_baseStats.invisDuration * ElementalValuesShield.Spirit.invisDurationMulti * scalar;
     }
+
+    
+    protected override void ElementResponseGravity (float scalar)
+    {
+        // Deflection
+        m_currentStats.deflectChance        += ElementalValuesShield.Gravity.deflectChanceInc * scalar;
+    }
+    
+    
+    protected override void ElementResponseAir (float scalar)
+    {
+        // Base stats
+        m_currentStats.baseRechargeDelay    += m_baseStats.baseRechargeDelay * ElementalValuesShield.Air.baseRechargeDelayMulti * scalar;
+    }
+
+
+    protected override void ElementResponseOrganic (float scalar)
+    {
+        // Base stats
+        m_currentStats.baseRechargeRate     += m_baseStats.baseRechargeRate * ElementalValuesShield.Organic.baseRechargeRateMulti * scalar;
+    }
+
     #endregion
 }

@@ -65,7 +65,7 @@ namespace ElementalValuesPlating
 	public static class Spirit
 	{
 		public const float  chanceToEtherealInc		= 0.1f,     //!< Increase the chance to turn ethereal.
-							etherealDurationInc		= 0.1f;		//!< Increase the duration of the ethereal effect.                                            
+							etherealDurationMulti   = 0.1f;		//!< Increase the duration of the ethereal effect.                                            
 	}
 	
 	
@@ -94,7 +94,7 @@ namespace ElementalValuesPlating
 	/// </summary>
 	public static class Organic
 	{
-		public const float  regenMulti          	= 0.05f;    //!< How much HP to regenerate a second.
+		public const float  regenInc                = 0.05f;    //!< How much HP to regenerate a second.
 	}
 	
 	

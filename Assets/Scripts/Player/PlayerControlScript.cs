@@ -14,15 +14,12 @@ public enum DockingState
 public class PlayerControlScript : Ship
 {
     #region Serializable Members
+
 	[SerializeField] bool               m_shouldRecieveInput = true;
-	[SerializeField] float              m_baseEngineSpeed = 5.0f;
-	[SerializeField] float              m_baseEngineTurnSpeed = 1.0f;
-	[SerializeField] int                m_baseShipHull = 25;
-	[SerializeField] float              m_baseShipWeight = 0.05f;
 	[SerializeField] float              m_maxDockingSpeed = 225f;		//Maxmium docking speed for players
 	[SerializeField] float              m_dockRotateSpeed = 3f;			//How quickly to rotate the ship towards the dock
-    //[SerializeField] float              m_playerStrafeMod = 0.6f;
 	[SerializeField] int                m_currentCash = 0;
+
     #endregion
 
     #region Internal Members
@@ -610,7 +607,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
+                speed = GetStrafeSpeed();
             }
 
             //float sideSpeedFac = Mathf.Abs(Vector3.Dot(inputVec, this.transform.right));
@@ -654,7 +651,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
+                speed = GetStrafeSpeed();
             }
 
             Vector3 moveFac = inputVec * speed;
@@ -695,7 +692,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
+                speed = GetStrafeSpeed();
             }
 
             Vector3 moveFac = inputVec * speed;
@@ -736,7 +733,7 @@ public class PlayerControlScript : Ship
             else
             {
                 //Apply side speed
-                speed = GetCurrentShipSpeed() * m_shipStrafeMod;
+                speed = GetStrafeSpeed();
             }
 
             Vector3 moveFac = inputVec * speed * Time.deltaTime;

@@ -376,14 +376,13 @@ public class BasicBulletScript : MonoBehaviour
         Rigidbody[] unique = colliders.GetAttachedRigidbodies().GetUniqueOnly();
 
         // Cache values for the sake of efficiency, also avoid Vector3.Distance by squaring ranges
-        float distance = 0f, damage = 0f,
-                aoeMaxDamageRange = m_aoeMaxDamageRange.Squared(),
-                maxDistance = m_aoeRange.Squared() - aoeMaxDamageRange;
+        float   distance = 0f, damage = 0f,
+                maxDistance = m_aoeRange - m_aoeMaxDamageRange;
 
         foreach (Rigidbody mob in unique)
         {
             // Ensure the distance will equate to 0f - 1f for the Lerp function
-            distance = (transform.position - colliders.GetClosestPointFromRigidbody(mob, transform.position)).sqrMagnitude - aoeMaxDamageRange;
+            distance = (transform.position - colliders.GetClosestPointFromRigidbody(mob, transform.position)).magnitude - m_aoeMaxDamageRange;
             distance = Mathf.Clamp(distance, 0f, maxDistance);
             damage = Mathf.Lerp(m_bulletDamage, m_bulletMinDamage, distance / maxDistance);
 
@@ -403,16 +402,15 @@ public class BasicBulletScript : MonoBehaviour
         Rigidbody[] effected = Physics.OverlapSphere(transform.position, m_aoeRange, m_aoeMask).GetAttachedRigidbodies().GetUniqueOnly();
 
         // Attempt to optimise speed by declaring variables outside of the loop
-        float distance = 0f, damage = 0f,
-                aoeMaxDamageRange = m_aoeMaxDamageRange.Squared(),
-                maxDistance = m_aoeRange.Squared() - aoeMaxDamageRange;
+        float   distance = 0f, damage = 0f,
+                maxDistance = m_aoeRange - m_aoeMaxDamageRange;
 
         foreach (Rigidbody mob in effected)
         {
             if (damageByDistance)
             {
                 // Ensure the distance will equate to 0f - 1f for the Lerp function
-                distance = (transform.position - mob.position).sqrMagnitude - aoeMaxDamageRange;
+                distance = (transform.position - mob.position).magnitude - m_aoeMaxDamageRange;
                 distance = Mathf.Clamp(distance, 0f, maxDistance);
                 damage = Mathf.Lerp(m_bulletDamage, m_bulletMinDamage, distance / maxDistance);
             }
