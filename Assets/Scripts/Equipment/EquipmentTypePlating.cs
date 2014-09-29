@@ -54,6 +54,7 @@ public sealed class EquipmentTypePlating : BaseEquipment
                         PlatingProperties   m_currentStats  = new PlatingProperties();  //!< The current stats of the plating.
 
                         int                 m_currentHP     = 0;                        //!< The current amount of HP in the plating.
+                        float               m_regenFloatCatch = 0.0f;
 
 
     #region BaseEquipment Overrides
@@ -138,10 +139,74 @@ public sealed class EquipmentTypePlating : BaseEquipment
             }
         }
         
+        m_currentHP = m_currentStats.hp;
         rigidbody.mass = m_currentStats.mass;
     }
+    #endregion
 
+    #region HP Value Interaction
+    void Start()
+    {
+        m_currentHP = m_baseStats.hp;
+    }
+    
+    void Update()
+    {
+        //Regen
+        if(m_currentStats.regen > 0 && m_currentHP < m_currentStats.hp)
+        {
+            float amount = m_currentStats.regen * m_currentStats.hp * Time.deltaTime;
+            int hpIncr = (int)amount;
+            float flCatch = amount -= hpIncr;
+            
+            m_regenFloatCatch += flCatch;
+            
+            if((int)m_regenFloatCatch > 0)
+            {
+                int incr = (int)m_regenFloatCatch;
+                m_regenFloatCatch -= incr;
+                hpIncr += incr;
+            }
+            
+            m_currentHP += hpIncr;
+            if(m_currentHP > m_currentStats.hp)
+                m_currentHP = m_currentStats.hp;
+        }
+    }
+    
+    /// <summary>
+    /// Damages the plating.
+    /// </summary>
+    /// <returns><c>true</c>, if the ship is still alive, <c>false</c> otherwise.</returns>
+    /// <param name="damage">Damage dealt to plating.</param>
+    public bool DamagePlating(int damage)
+    {
+        m_currentHP -= damage;
+        networkView.RPC ("PropagateHealthValue", RPCMode.Others, m_currentHP);
+        
+        if(m_currentHP <= 0)
+        {
+            m_currentHP = 0;
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    public float GetHealthPercentage()
+    {
+        return m_currentHP / m_currentStats.hp;
+    }
+    
+    [RPC] void PropagateHealthValue(int value)
+    {
+        m_currentHP = value;
+    }
+    #endregion
 
+    #region ElementResponses
     protected override void ElementResponseFire (float scalar)
     {
         m_currentStats.returnDamage         += ElementalValuesPlating.Fire.returnDamageInc * scalar;
@@ -204,6 +269,5 @@ public sealed class EquipmentTypePlating : BaseEquipment
     {
         m_currentStats.regen                += ElementalValuesPlating.Organic.regenInc * scalar;
     }
-
     #endregion
 }

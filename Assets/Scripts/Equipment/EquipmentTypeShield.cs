@@ -103,6 +103,11 @@ public sealed class EquipmentTypeShield : BaseEquipment
 {
     [SerializeField]    ShieldProperties    m_baseStats     = null;
                         ShieldProperties    m_currentStats  = new ShieldProperties();
+                        
+    // Current shield stats
+                        int                 m_currentShieldValue = 100;
+                        float               m_currentRechargeDelay = 0.0f;
+                        float               m_currentRechargeFloatCatch = 0.0f;
     
 
     protected override void ResetToBaseStats ()
@@ -183,7 +188,82 @@ public sealed class EquipmentTypeShield : BaseEquipment
                 }
             }
         }
+        
+        //After all is done, update current stats
+        m_currentShieldValue = m_currentStats.baseMaxShield;
     }
+    
+    #region Shield Value Interaction
+    void Update ()
+    {
+        if(!GetIsShieldUp())
+        {
+            if(m_currentRechargeDelay >= m_currentStats.baseRechargeDelay)
+            {
+                //Recharge
+                int incrAmount = (int)m_currentStats.baseRechargeRate;
+                float catchAmount = m_currentStats.baseRechargeRate - incrAmount;
+                
+                if((int)catchAmount > 0)
+                {
+                    int catchInt = (int)catchAmount;
+                    catchAmount -= catchInt;
+                    
+                    incrAmount += catchInt;
+                }
+                
+                m_currentShieldValue += incrAmount;
+                m_currentRechargeFloatCatch += catchAmount;
+                
+                if(m_currentShieldValue >= m_currentStats.baseMaxShield)
+                {
+                    m_currentShieldValue = m_currentStats.baseMaxShield;
+                }
+            }
+            else
+            {
+                m_currentRechargeDelay += Time.deltaTime;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Damages the shield.
+    /// </summary>
+    /// <returns><c>true</c>, if the shield is still up, <c>false</c> otherwise.</returns>
+    /// <param name="damage">The amount of damage to deal.</param>
+    public bool DamageShield(int damage)
+    {
+        m_currentShieldValue -= damage;
+        networkView.RPC("PropagateShieldValue", RPCMode.Others, m_currentShieldValue);
+        
+        if(m_currentShieldValue <= 0)
+        {
+            m_currentShieldValue = 0;
+            m_currentRechargeDelay = 0.0f;
+            m_currentRechargeFloatCatch = 0.0f;
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    public float GetShieldPercentage()
+    {
+        return (float)m_currentShieldValue / (float)m_currentStats.baseMaxShield;
+    }
+    public bool GetIsShieldUp()
+    {
+        return m_currentShieldValue > 0;
+    }
+    
+    [RPC] void PropagateShieldValue(int value)
+    {
+        m_currentShieldValue = value;
+    }
+    #endregion
     
     #region ElementResponses    
     
