@@ -1584,6 +1584,8 @@ public class GameStateController : MonoBehaviour
             IncreaseDockedPlayers();
         else
             networkView.RPC ("IncreaseDockedPlayers", RPCMode.All);
+            
+        m_localPlayer.GetComponent<Ship>().ResetDebuffs();
     }
 
     public void NotifyLocalPlayerHasDockedAtShop(GameObject shop)

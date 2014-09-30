@@ -22,6 +22,7 @@ GameObject:
   - 82: {fileID: 8200000}
   - 65: {fileID: 6500014}
   - 114: {fileID: 11400006}
+  - 114: {fileID: 11400040}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -1335,6 +1336,19 @@ MonoBehaviour:
     etherealDuration: 2
     slowsIncoming: 0
     speedReduction: 0
+  m_currentStats:
+    hp: 100
+    mass: 1
+    regen: 0
+    returnDamage: 0
+    slowDuration: 0
+    lifesteal: 0
+    chanceToJump: 0
+    chanceToCleanse: 0
+    chanceToEthereal: 0
+    etherealDuration: 2
+    slowsIncoming: 0
+    speedReduction: 0
 --- !u!114 &11400036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1405,6 +1419,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a53f04ec8001b074e9e98a1ddab9c2e0, type: 2}
   - {fileID: 11400000, guid: cdaa67abd4b4fed48a4971fc11ead7d5, type: 2}
   - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
+  - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
+  - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
+--- !u!114 &11400040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86cd7214967092a4084065999f8b1058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

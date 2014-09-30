@@ -33,6 +33,11 @@ public class GUIInGameHUDScreen : BaseGUIScreen
     [SerializeField]        Texture m_reloadBar;
     [SerializeField]        Texture m_lockedTarget;
     
+    // Abilities
+    [SerializeField]        Texture m_abilityGravityTexture;
+    [SerializeField]        Texture m_abilityEmergencyTeleportTexture;
+    [SerializeField]        Texture m_abilityBlinkTexture;
+    
     // Internal members
     bool m_cshipIsDockable = false;
     bool m_shopIsDockable = false;
@@ -221,6 +226,53 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTexture(new Rect(1215, 80, 200, 50), m_barMid);
             GUI.DrawTexture(new Rect(1425, 80, -10, 50), m_barEnd);
             GUI.Label(new Rect(1225, 85, 180, 44), "$ " + m_cShipHPCache.GetComponent<CapitalShipScript>().GetBankedCash(), "No Box");
+        }
+        
+        // Abilities
+        IList<Ability> ability = m_playerHPCache.GetComponent<Abilities>().GetAbilities();
+        if(ability != null)
+        {
+            for(int i = 0; i < ability.Count; i++)
+            {
+                Texture text = null;
+                
+                if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityGravityControl)))
+                {
+                    text = m_abilityGravityTexture;
+                }
+                else if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityTeleportTargetted)))
+                {
+                    text = m_abilityBlinkTexture;
+                }
+                else if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityTeleportRandom)))
+                {
+                    text = m_abilityEmergencyTeleportTexture;
+                }
+                
+                GUI.DrawTexture (new Rect(0 + (80 * i), 820, 80, 80), text);
+                
+                if(ability[i].IsActive())
+                {
+                    switch(i)
+                    {
+                        case 0:
+                        {
+                            GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "C", "No Box");
+                            break;
+                        }
+                        case 1:
+                        {
+                            GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "V", "No Box");
+                            break;
+                        }
+                        case 2:
+                        {
+                            GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "B", "No Box");
+                            break;
+                        }
+                    }
+                }
+            }
         }
         
         for(int i = 0; i < m_currentGUIAlerts.Count; i++)

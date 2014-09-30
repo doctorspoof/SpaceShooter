@@ -818,6 +818,30 @@ public class PlayerControlScript : Ship
             //}
             //receivedInput = true;
         }
+        
+        // Ability input
+        Abilities abilities = GetComponent<Abilities>();
+        if(Input.GetKey(KeyCode.C))
+        {
+            if(abilities[0] != null && abilities[0].IsActive())
+            {
+                
+            }
+        }
+        if(Input.GetKey (KeyCode.V))
+        {
+            if(abilities[1] != null && abilities[1].IsActive())
+            {
+                
+            }
+        }
+        if(Input.GetKey (KeyCode.B))
+        {
+            if(abilities[2] != null && abilities[2].IsActive())
+            {
+                
+            }
+        }
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {

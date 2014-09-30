@@ -75,6 +75,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     List<Vector2> m_waypoints = new List<Vector2>();
 
     Abilities m_abilities = null;
+    List<Debuff> m_debuffs = new List<Debuff>();
+    bool m_isDisabled = false;
 
 
     //bool coroutineIsRunning = false;
@@ -114,7 +116,14 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     #pragma warning restore 0414
 
     #region getset
-
+    public bool GetDisabled()
+    {
+        return m_isDisabled;
+    }
+    public void SetDisabled(bool disabled)
+    {
+        m_isDisabled = disabled;
+    }
     public bool IsSpecial()
     {
         return m_special;
@@ -408,6 +417,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     protected virtual void Update()
     {
+        UpdateDebuffs();
+    
         if(m_thrustersHolder == null)
         {
             ResetThrusters();
@@ -463,7 +474,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
             m_maxAngularVelocitySeen = Mathf.Abs(m_currentAngularVelocity);
         }
 
-        if (Network.isServer)
+        if (Network.isServer && !m_isDisabled)
         {
             switch (m_currentOrder)
             {
@@ -700,6 +711,28 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     }
 
+    #region Debuff Functions
+    public void ResetDebuffs()
+    {
+        m_debuffs = new List<Debuff>();
+    }
+    public void AddDebuff(Debuff debuff)
+    {
+        m_debuffs.Add(debuff);
+    }
+    void UpdateDebuffs()
+    {
+        if(m_debuffs != null)
+        {
+            for(int i = 0; i < m_debuffs.Count; i++)
+            {
+                if(!m_debuffs[i].ReduceCooldown(Time.deltaTime))
+                    m_debuffs.Remove(m_debuffs[i]);
+            }
+        }
+    }
+    #endregion
+
     void MoveTowardFormation()
     {
         Vector2 formationPos = GetWorldCoordinatesOfFormationPosition(m_cacheParent.transform.position);
@@ -792,30 +825,37 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     public virtual void MoveForward(float momentum_)
     {
-        rigidbody.AddForce(m_shipTransform.up * momentum_ * Time.deltaTime);
+        if(!m_isDisabled)
+            rigidbody.AddForce(m_shipTransform.up * momentum_ * Time.deltaTime);
     }
     public virtual void MoveLeft(float momentum_)
     {
-        rigidbody.AddForce(m_shipTransform.right * -momentum_ * Time.deltaTime);
+        if(!m_isDisabled)
+            rigidbody.AddForce(m_shipTransform.right * -momentum_ * Time.deltaTime);
     }
     public virtual void MoveRight(float momentum_)
     {
-        rigidbody.AddForce(m_shipTransform.right * momentum_ * Time.deltaTime);
+        if(!m_isDisabled)
+            rigidbody.AddForce(m_shipTransform.right * momentum_ * Time.deltaTime);
     }
     public virtual void MoveBackward(float momentum_)
     {
-        rigidbody.AddForce(m_shipTransform.up * -momentum_ * Time.deltaTime);
+        if(!m_isDisabled)
+            rigidbody.AddForce(m_shipTransform.up * -momentum_ * Time.deltaTime);
     }
 
     public virtual void RotateTowards(Vector3 targetPosition_)
     {
-        Vector2 targetDirection = targetPosition_ - transform.position;
-        float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
-        float currentAngle = transform.rotation.eulerAngles.z;
-
-        float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
-
-        transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
+        if(!m_isDisabled)
+        {
+            Vector2 targetDirection = targetPosition_ - transform.position;
+            float idealAngle = Mathf.Rad2Deg * (Mathf.Atan2(targetDirection.y, targetDirection.x) - Mathf.PI / 2);
+            float currentAngle = transform.rotation.eulerAngles.z;
+    
+            float nextAngle = Mathf.MoveTowardsAngle(currentAngle, idealAngle, GetRotateSpeed() * Time.deltaTime);
+    
+            transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, nextAngle));
+        }
     }
 
     public virtual void RotateTowards(Quaternion target_)
