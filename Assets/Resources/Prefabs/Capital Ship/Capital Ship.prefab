@@ -123,6 +123,8 @@ GameObject:
   - 82: {fileID: 8200000}
   - 65: {fileID: 6500032}
   - 114: {fileID: 11400060}
+  - 114: {fileID: 11400062}
+  - 114: {fileID: 11400064}
   m_Layer: 13
   m_Name: Capital Ship
   m_TagString: Capital
@@ -2443,12 +2445,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DeathObjectRef: {fileID: 0}
-  m_maximumShield: 750
-  m_currentShield: 0
-  m_maximumHealth: 1600
-  m_currentHealth: 0
-  m_shieldRechargeRate: 6
-  m_timeToRechargeShield: 4
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2462,22 +2458,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   depth: 0
   m_ownerSt: 
-  m_maxShipSpeed: 10
-  m_currentShipSpeed: 0
-  m_afterburnerIncreaseOfSpeed: 10
-  m_afterburnerLength: 0
-  m_afterburnerRechargeTime: 0
-  m_rotateSpeed: 25
-  m_ramDamageMultiplier: 2.5
-  maunuallySetWidthAndHeight: 1
-  m_minWeaponRange: 0
-  m_maxWeaponRange: 0
   m_shipWidth: 6
   m_shipHeight: 24
+  m_ramDamageMultiplier: 2.5
+  m_manuallySetWidthAndHeight: 0
   m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
   m_currentOrder: 0
   m_showMovementWaypoints: 0
+  m_maxShipSpeed: 10
+  m_rotateSpeed: 25
+  m_strafeSpeed: 0
+  m_afterburnerIncreaseOfSpeed: 10
+  m_afterburnerLength: 0
+  m_afterburnerRechargeTime: 0
   shipID: -1
   m_shouldAnchor: 0
   m_bankedCash: 1500
@@ -3004,6 +2998,70 @@ MonoBehaviour:
   m_capacity: 10
   m_requestTimeOutSeconds: 120
   m_nullRemovedItems: 0
+--- !u!114 &11400062
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b12c091bf20d14d8c226574162d1e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 1
+  m_augmentSlots: []
+  m_augmentItemSlots: []
+  m_baseStats:
+    hp: 1600
+    mass: 1
+    regen: 0
+    returnDamage: 0
+    slowDuration: 0
+    lifesteal: 0
+    chanceToJump: 0
+    chanceToCleanse: 0
+    chanceToEthereal: 0
+    etherealDuration: 2
+    slowsIncoming: 0
+    speedReduction: 0
+--- !u!114 &11400064
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aa99fc765b228548b6399e2f554f5a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 1
+  m_augmentSlots: []
+  m_augmentItemSlots: []
+  m_baseStats:
+    baseMaxShield: 750
+    baseRechargeRate: 1
+    baseRechargeDelay: 1
+    shouldFireBurst: 0
+    burstDamage: 0
+    burstRange: 10
+    burstMaxDamageRange: .100000001
+    burstMaxFalloff: .00100000005
+    debuffModifier: 0
+    canStaticShock: 0
+    staticChance: 0
+    staticDamage: 100
+    staticRange: 10
+    staticCooldown: 2
+    canFlashbang: 0
+    flashChance: 0
+    flashRange: 10
+    flashStunDuration: 2
+    absorbChance: 0
+    invisChance: 0
+    invisDuration: 1
+    deflectChance: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

@@ -30,6 +30,7 @@ GameObject:
   - 148: {fileID: 14800000}
   - 114: {fileID: 11400000}
   - 114: {fileID: 11400002}
+  - 114: {fileID: 11400004}
   m_Layer: 17
   m_Name: Asteroid 10b
   m_TagString: Asteroid
@@ -114,6 +115,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a20f22814113c5848ad9a89248b4833b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_rotationSpeedRange:
+  - -2
+  - 2
+  m_asteroidScaleRange:
+  - 1
+  - 2.5
+  m_velocitySyncInterval: 15
   m_asteroidPrefabs:
   - {fileID: 100000, guid: 0c35fc6f7f7e2c64b820d8c92ebd5a2b, type: 2}
   - {fileID: 100000, guid: 6a01e0409e2e14d40942c8393eb33efc, type: 2}
@@ -126,18 +134,11 @@ MonoBehaviour:
   - {fileID: 100000, guid: 28983c26a15ce4e34a04cfa3a691fd77, type: 2}
   - {fileID: 100002, guid: 9ec4b5185335c49a9ba61ab7ec1aaaef, type: 2}
   - {fileID: 100000, guid: 87de505aad3584024a074bd703b43c78, type: 2}
-  m_rotationSpeedRange:
-  - -2
-  - 2
-  m_asteroidScaleRange:
-  - 1
-  - 2.5
   m_splittingFragments: 4
   m_minimumMass: .074000001
   m_fragmentDistance: .300000012
   m_fragmentSplitForce: 3
   m_velocityToMaintain: .75
-  isFirstAsteroid: 1
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -149,18 +150,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0640b6b76d0ec6d4dbd7bfb57c87b620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GameStateController: {fileID: 0}
   m_DeathObjectRef: {fileID: 0}
-  m_maximumHealth: 20
-  m_currentHealth: 0
-  m_pathToShieldObject: Composite Collider/Shield
-  m_maximumShield: 0
-  m_currentShield: 0
-  m_shieldRechargeRate: 0
-  m_timeToRechargeShield: 0
-  m_shouldStop: 0
-  m_isInvincible: 0
-  m_shieldEffect: {fileID: 0}
+--- !u!114 &11400004
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6b12c091bf20d14d8c226574162d1e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 1
+  m_augmentSlots: []
+  m_augmentItemSlots: []
+  m_baseStats:
+    hp: 20
+    mass: 1
+    regen: 0
+    returnDamage: 0
+    slowDuration: 0
+    lifesteal: 0
+    chanceToJump: 0
+    chanceToCleanse: 0
+    chanceToEthereal: 0
+    etherealDuration: 2
+    slowsIncoming: 0
+    speedReduction: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

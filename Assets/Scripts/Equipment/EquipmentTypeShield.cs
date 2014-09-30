@@ -7,7 +7,7 @@
 {
     // Base stats
     [Range (0, 10000)]      public int      baseMaxShield       = 100;
-    [Range (0f, 100f)]      public float    baseRechargeRate    = 1f;
+    [Range (0f, 5f)]        public float    baseRechargeRate    = 1f;
     [Range (0f, 10f)]       public float    baseRechargeDelay   = 1f;
     
     // Fire Burst
@@ -106,8 +106,9 @@ public sealed class EquipmentTypeShield : BaseEquipment
                         
     // Current shield stats
                         int                 m_currentShieldValue = 100;
-                        float               m_currentRechargeDelay = 0.0f;
-                        float               m_currentRechargeFloatCatch = 0.0f;
+    [SerializeField]    float               m_currentRechargeDelay = 0.0f;
+    [SerializeField]    float               m_currentRechargeFloatCatch = 0.0f;
+                        bool                m_shieldStatus = true;
     
 
     protected override void ResetToBaseStats ()
@@ -196,24 +197,31 @@ public sealed class EquipmentTypeShield : BaseEquipment
     #region Shield Value Interaction
     void Update ()
     {
-        if(!GetIsShieldUp())
+        if(GetShieldPercentage() < 1.0f)
         {
             if(m_currentRechargeDelay >= m_currentStats.baseRechargeDelay)
             {
                 //Recharge
-                int incrAmount = (int)m_currentStats.baseRechargeRate;
-                float catchAmount = m_currentStats.baseRechargeRate - incrAmount;
-                
-                if((int)catchAmount > 0)
+                if(!m_shieldStatus)
                 {
-                    int catchInt = (int)catchAmount;
-                    catchAmount -= catchInt;
+                    GetComponent<HealthScript>().ShieldOnOff(true);
+                    m_shieldStatus = true;
+                }
+                
+                float rechargeAmount = m_currentStats.baseRechargeRate * Time.deltaTime; 
+                int incrAmount = (int)rechargeAmount;
+                m_currentRechargeFloatCatch += rechargeAmount - incrAmount;
+                
+                if((int)m_currentRechargeFloatCatch > 0)
+                {
+                    int catchInt = (int)m_currentRechargeFloatCatch;
+                    m_currentRechargeFloatCatch -= catchInt;
                     
                     incrAmount += catchInt;
                 }
                 
                 m_currentShieldValue += incrAmount;
-                m_currentRechargeFloatCatch += catchAmount;
+                m_currentRechargeFloatCatch += m_currentRechargeFloatCatch;
                 
                 if(m_currentShieldValue >= m_currentStats.baseMaxShield)
                 {
@@ -239,6 +247,7 @@ public sealed class EquipmentTypeShield : BaseEquipment
         
         if(m_currentShieldValue <= 0)
         {
+            OnShieldCollapse();
             m_currentShieldValue = 0;
             m_currentRechargeDelay = 0.0f;
             m_currentRechargeFloatCatch = 0.0f;
@@ -246,6 +255,7 @@ public sealed class EquipmentTypeShield : BaseEquipment
         }
         else
         {
+            m_currentRechargeDelay = 0.0f;
             return true;
         }
     }
@@ -254,14 +264,35 @@ public sealed class EquipmentTypeShield : BaseEquipment
     {
         return (float)m_currentShieldValue / (float)m_currentStats.baseMaxShield;
     }
+    public int GetShieldCurrent()
+    {
+        return m_currentShieldValue;
+    }
+    public int GetShieldMax()
+    {
+        return m_currentStats.baseMaxShield;
+    }
     public bool GetIsShieldUp()
     {
         return m_currentShieldValue > 0;
+    }
+    public void ResetRechargeDelay()
+    {
+        m_currentRechargeDelay = 0.0f;
     }
     
     [RPC] void PropagateShieldValue(int value)
     {
         m_currentShieldValue = value;
+    }
+    
+    void OnShieldCollapse()
+    {
+        //TODO: Add all the appropriate effects
+        GetComponent<HealthScript>().ShieldOnOff(false);
+        m_shieldStatus = false;
+        
+        
     }
     #endregion
     

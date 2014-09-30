@@ -51,7 +51,7 @@ public class ShieldScript : MonoBehaviour
 		this.transform.localPosition = m_requiredOffset;
 
 		//Now apply it's affects to the player
-		playerGO.GetComponent<HealthScript>().EquipNewShield(m_shieldMaxCharge, m_shieldRechargeRate, m_shieldRechargeDelay);
+		//playerGO.GetComponent<HealthScript>().EquipNewShield(m_shieldMaxCharge, m_shieldRechargeRate, m_shieldRechargeDelay);
 		//playerGO.GetComponent<PlayerControlScript>();
 	}
 }

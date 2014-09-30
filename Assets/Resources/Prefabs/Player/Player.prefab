@@ -968,29 +968,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   depth: 0
   m_ownerSt: 
-  m_maxShipSpeed: 500
-  m_currentShipSpeed: 0
-  m_shipStrafeMod: .600000024
-  m_afterburnerIncreaseOfSpeed: 0
-  m_afterburnerLength: 0
-  m_afterburnerRechargeTime: 0
-  m_rotateSpeed: 45
-  m_ramDamageMultiplier: 5
-  maunuallySetWidthAndHeight: 0
-  m_minWeaponRange: 0
-  m_maxWeaponRange: 0
   m_shipWidth: 0
   m_shipHeight: 0
+  m_ramDamageMultiplier: 5
+  m_manuallySetWidthAndHeight: 0
   m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
   m_currentOrder: 0
   m_showMovementWaypoints: 0
+  m_maxShipSpeed: 500
+  m_rotateSpeed: 45
+  m_strafeSpeed: 0
+  m_afterburnerIncreaseOfSpeed: 0
+  m_afterburnerLength: 0
+  m_afterburnerRechargeTime: 0
   shipID: -1
   m_shouldRecieveInput: 1
-  m_baseEngineSpeed: 5
-  m_baseEngineTurnSpeed: 1
-  m_baseShipHull: 25
-  m_baseShipWeight: .0500000007
   m_maxDockingSpeed: 225
   m_dockRotateSpeed: 3
   m_currentCash: 0
@@ -1006,12 +999,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_DeathObjectRef: {fileID: 0}
-  m_maximumShield: 100
-  m_currentShield: 0
-  m_maximumHealth: 100
-  m_currentHealth: 0
-  m_shieldRechargeRate: 20
-  m_timeToRechargeShield: 3
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1303,6 +1290,21 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_augmentItemSlots: []
+  m_baseStats:
+    forwardSpeed: 500
+    turnSpeed: 45
+    strafeSpeed: 250
+    burnerSpeed: 250
+    burnerLength: 2.5
+    burnerRechargeTime: 5
+    hasGravityControl: 0
+    maxGravityChange: 0
+    hasShortTeleport: 0
+    shortTeleRange: 5
+    shortTeleCooldown: 60
+    hasLongTeleport: 0
+    longTeleRange: 50
+    longTeleCooldown: 60
 --- !u!114 &11400034
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1320,6 +1322,19 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_augmentItemSlots: []
+  m_baseStats:
+    hp: 100
+    mass: 1
+    regen: 0
+    returnDamage: 0
+    slowDuration: 0
+    lifesteal: 0
+    chanceToJump: 0
+    chanceToCleanse: 0
+    chanceToEthereal: 0
+    etherealDuration: 2
+    slowsIncoming: 0
+    speedReduction: 0
 --- !u!114 &11400036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1339,8 +1354,8 @@ MonoBehaviour:
   m_augmentItemSlots: []
   m_baseStats:
     baseMaxShield: 100
-    baseRechargeRate: 1
-    baseRechargeDelay: 1
+    baseRechargeRate: .75
+    baseRechargeDelay: 1.75
     shouldFireBurst: 0
     burstDamage: 0
     burstRange: 10
@@ -1360,6 +1375,8 @@ MonoBehaviour:
     invisChance: 0
     invisDuration: 1
     deflectChance: 0
+  m_currentRechargeDelay: 0
+  m_currentRechargeFloatCatch: 0
 --- !u!114 &11400038
 MonoBehaviour:
   m_ObjectHideFlags: 1

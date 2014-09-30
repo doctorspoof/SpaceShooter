@@ -644,7 +644,7 @@ public class GUICShipDockScreen : BaseGUIScreen
             m_currentDraggedItemIsFromPlayerInv = false;
             m_cshipCache.GetComponent<NetworkInventory>().RequestServerCancel(m_currentTicket);
             
-            m_cshipIsTransitionJumping = true;
+            //m_cshipIsTransitionJumping = true;
         }
     }
     

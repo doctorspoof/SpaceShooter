@@ -51,10 +51,10 @@
 public sealed class EquipmentTypePlating : BaseEquipment 
 {    
     [SerializeField]    PlatingProperties   m_baseStats     = null;                     //!< The base stats of the plating.
-                        PlatingProperties   m_currentStats  = new PlatingProperties();  //!< The current stats of the plating.
+    [SerializeField]    PlatingProperties   m_currentStats  = new PlatingProperties();  //!< The current stats of the plating.
 
-                        int                 m_currentHP     = 0;                        //!< The current amount of HP in the plating.
-                        float               m_regenFloatCatch = 0.0f;
+    [SerializeField]    int                 m_currentHP     = 0;                        //!< The current amount of HP in the plating.
+    [SerializeField]    float               m_regenFloatCatch = 0.0f;
 
 
     #region BaseEquipment Overrides
@@ -155,7 +155,8 @@ public sealed class EquipmentTypePlating : BaseEquipment
         //Regen
         if(m_currentStats.regen > 0 && m_currentHP < m_currentStats.hp)
         {
-            float amount = m_currentStats.regen * m_currentStats.hp * Time.deltaTime;
+            //float amount = m_currentStats.regen * (float)m_currentStats.hp * Time.deltaTime;
+            float amount = m_currentStats.regen * Time.deltaTime;
             int hpIncr = (int)amount;
             float flCatch = amount -= hpIncr;
             
@@ -179,7 +180,7 @@ public sealed class EquipmentTypePlating : BaseEquipment
     /// </summary>
     /// <returns><c>true</c>, if the ship is still alive, <c>false</c> otherwise.</returns>
     /// <param name="damage">Damage dealt to plating.</param>
-    public bool DamagePlating(int damage)
+    public bool DamagePlating(int damage, GameObject firer, GameObject hitter = null)
     {
         m_currentHP -= damage;
         networkView.RPC ("PropagateHealthValue", RPCMode.Others, m_currentHP);
@@ -187,6 +188,7 @@ public sealed class EquipmentTypePlating : BaseEquipment
         if(m_currentHP <= 0)
         {
             m_currentHP = 0;
+            GetComponent<HealthScript>().OnMobDies(firer, hitter);
             return false;
         }
         else
@@ -194,10 +196,27 @@ public sealed class EquipmentTypePlating : BaseEquipment
             return true;
         }
     }
+    public void RepairPlating(int repair)
+    {
+        m_currentHP += repair;
+        
+        if(m_currentHP > m_currentStats.hp)
+            m_currentHP = m_currentStats.hp;
+        
+        networkView.RPC ("PropagateHealthValue", RPCMode.Others, m_currentHP);
+    }
     
     public float GetHealthPercentage()
     {
-        return m_currentHP / m_currentStats.hp;
+        return (float)m_currentHP / (float)m_currentStats.hp;
+    }
+    public int GetHealthCurrent()
+    {
+        return m_currentHP;
+    }
+    public int GetHealthMax()
+    {
+        return m_currentStats.hp;
     }
     
     [RPC] void PropagateHealthValue(int value)

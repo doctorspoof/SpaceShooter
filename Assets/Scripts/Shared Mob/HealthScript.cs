@@ -6,19 +6,21 @@ public class HealthScript : MonoBehaviour
 	//Only need to use this for the capital ship
 	[SerializeField] GameObject m_DeathObjectRef;
 
-    [SerializeField] int m_maximumShield = 100;
+    /*[SerializeField] int m_maximumShield = 100;
     [SerializeField] int m_currentShield;
 	
 	[SerializeField] int m_maximumHealth = 100;
 	[SerializeField] int m_currentHealth;
 	
     [SerializeField] int m_shieldRechargeRate = 6;
-    [SerializeField] float m_timeToRechargeShield = 4.0f;
+    [SerializeField] float m_timeToRechargeShield = 4.0f;*/
 
     
 	
 	// Stops the script from repeating searching for the shield GameObject
-	GameObject m_shieldCache;
+    
+    EquipmentTypePlating m_platingCache;
+    EquipmentTypeShield m_shieldCache;
 
     bool isDead = false;
     
@@ -55,34 +57,32 @@ public class HealthScript : MonoBehaviour
 
     public float GetHPPercentage()
     {
-        float output = (float)m_currentHealth / (float)m_maximumHealth;
-        return output;
+        return m_platingCache.GetHealthPercentage();
     }
     public int GetMaxHP()
     {
-        return m_maximumHealth;
+        return m_platingCache.GetHealthMax();
     }
     public int GetCurrHP()
     {
-        return m_currentHealth;
+        return m_platingCache.GetHealthCurrent();
     }
     public float GetShieldPercentage()
     {
-        float output = (float)m_currentShield / (float)GetMaxShield();
-        return output;
+        return m_shieldCache.GetShieldPercentage();
     }
     public int GetMaxShield()
     {
-        return m_maximumShield;
+        return m_shieldCache.GetShieldMax();
     }
     public int GetCurrShield()
     {
-        return m_currentShield;
+        return m_shieldCache.GetShieldCurrent();
     }
 
     #endregion
 
-    public void EquipNewPlating(int hullValue)
+    /*public void EquipNewPlating(int hullValue)
 	{
 		float percent = GetHPPercentage();
 		m_maximumHealth = hullValue;
@@ -97,9 +97,9 @@ public class HealthScript : MonoBehaviour
 			//Debug.Log ("Sent health values: " + m_currentHealth + "/" + m_maximumHealth + ".");
 			networkView.RPC ("PropagateDamageAndMaxs", RPCMode.Others, m_currentHealth, m_maximumHealth, m_currentShield, m_maximumShield);
 		}
-	}
+	}*/
 	
-	public void EquipNewShield(int capacity, int rechargeRate, float rechargeDelay)
+	/*public void EquipNewShield(int capacity, int rechargeRate, float rechargeDelay)
 	{
 		m_maximumShield = capacity;
 		m_currentShield = GetMaxShield();
@@ -111,19 +111,25 @@ public class HealthScript : MonoBehaviour
 			networkView.RPC ("PropagateDamageAndMaxs", RPCMode.Others, m_currentHealth, m_maximumHealth, m_currentShield, m_maximumShield);
 			networkView.RPC ("PropagateShieldRechargeStats", RPCMode.Others, rechargeRate, rechargeDelay);
 		}
-	}
+	}*/
 	
 	// Use this for initialization
 	void Start () 
 	{
-		m_currentHealth = m_maximumHealth;
-        m_currentShield = GetMaxShield();
+        m_platingCache = GetComponent<EquipmentTypePlating>();
+        m_shieldCache = GetComponent<EquipmentTypeShield>();
+        
+        if(!m_platingCache)
+            Debug.LogError ("Object with health script '" + gameObject.name + "' has no attached plating!");
+            
+        if(!m_shieldCache)
+            Debug.LogError ("Object with health script '" + gameObject.name + "' has no attached shield!");
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(m_currentShieldDownTime < m_timeToRechargeShield && !m_shouldStop)
+		/*if(m_currentShieldDownTime < m_timeToRechargeShield && !m_shouldStop)
 		{
 			m_currentShieldDownTime += Time.deltaTime;
 			if(m_currentShieldDownTime >= m_timeToRechargeShield)
@@ -131,9 +137,9 @@ public class HealthScript : MonoBehaviour
 				isRegenerating = true;
 				ShieldOnOff (true);
 			}
-		}
+		}*/
 
-        if (isRegenerating && m_currentShield < GetMaxShield() && !m_shouldStop)
+        /*if (isRegenerating && m_currentShield < GetMaxShield() && !m_shouldStop)
 		{
 			regenFloatCatch += Time.deltaTime * m_shieldRechargeRate;
 			if(Mathf.FloorToInt(regenFloatCatch) > 0)
@@ -143,7 +149,7 @@ public class HealthScript : MonoBehaviour
 				regenFloatCatch -= increase;
 				//Debug.Log ("Regenned " + increase + " shield.");
 			}
-		}
+		}*/
 	}
 	void OnCollisionEnter(Collision collision)
 	{
@@ -229,12 +235,14 @@ public class HealthScript : MonoBehaviour
 	
 	public void RepairHP(int amount)
 	{
-		m_currentHealth += amount;
+        m_platingCache.RepairPlating(amount);
+        
+		/*m_currentHealth += amount;
 		if(m_currentHealth > m_maximumHealth)
 			m_currentHealth = m_maximumHealth;
 		
 		networkView.RPC ("PropagateDamage", RPCMode.Server, m_currentHealth, m_currentShield);
-		Debug.Log ("Clienting sending new health value of " + m_currentHealth + " to host.");
+		Debug.Log ("Clienting sending new health value of " + m_currentHealth + " to host.");*/
 	}
 	
 	
@@ -260,27 +268,16 @@ public class HealthScript : MonoBehaviour
 	
 	public void DamageMobHullDirectly(int damage)
 	{
-		//Debug.Log ("Mob: " + this.name + " recieves " + damage + " damage directly to hull");
-		
 		if(Network.isServer && !m_isInvincible)
 		{
-			m_currentHealth -= damage;
-			if(m_currentHealth < 0)
-			{
-				//Mob is dead :(
-				//Debug.Log ("Alerting Mob that it's ran out of HP");
-				OnMobDies(null);
-			}
-			
-			//If we're host, propagate the damage to the rest of the clients
-			networkView.RPC ("PropagateDamage", RPCMode.Others, m_currentHealth, m_currentShield);
+			m_platingCache.DamagePlating(damage, null);
+            m_shieldCache.ResetRechargeDelay();
 			
 			//Tell gamecontroller the capital ship is under attack
 			if(this.tag == "Capital")
             {
                 GameStateController.Instance().CapitalShipHasTakenDamage();
-            }
-				
+            }	
 		}
 	}
 	public void ResetShieldRecharge()
@@ -293,12 +290,48 @@ public class HealthScript : MonoBehaviour
 		m_currentShieldDownTime = 0;
 		isRegenerating = false;
 	}
+    
 	public void DamageMob(int damage, GameObject firer, GameObject hitter = null)
 	{
 		//Debug.Log ("Damaging mob: " + this.name + ".");
 		if(!m_isInvincible)
 		{
-			if(m_currentShield > 0)
+            if(m_shieldCache && m_shieldCache.GetIsShieldUp())
+            {
+                bool shouldAlsoHitHP = false;
+                int overflowAmount = m_shieldCache.GetShieldCurrent() - damage;
+                
+                if(overflowAmount < 0)
+                {
+                    shouldAlsoHitHP = true;
+                }
+                
+                m_shieldCache.DamageShield(damage);
+                
+                if(shouldAlsoHitHP)
+                {
+                    m_platingCache.DamagePlating(overflowAmount, firer, hitter);
+                }
+                else if(hitter != null)
+                {
+                    BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
+                    
+                    Vector3 position = beam ? beam.GetBeamHit().point : hitter.transform.position;
+                    int dType = beam ? (int)beam.GetDamageType() : (int)hitter.GetComponent<BasicBulletScript>().GetDamageType();
+                    float magnitude = beam ? beam.GetDamage() : hitter.GetComponent<BasicBulletScript>().GetDamage();
+                    
+                    networkView.RPC ("PropagateShieldWibble", RPCMode.All, position, dType, magnitude);
+                }
+            }
+            else
+            {
+                m_platingCache.DamagePlating(damage, firer, hitter);
+                
+                if(m_shieldCache)
+                    m_shieldCache.ResetRechargeDelay();
+            }
+        
+			/*if(m_currentShield > 0)
 			{
 				//If shields are up, apply damage to the shield
 				m_currentShield -= damage;
@@ -335,12 +368,12 @@ public class HealthScript : MonoBehaviour
 					//Mob is dead :(
 					OnMobDies(firer, hitter);
 				}
-			}
+			}*/
 			
 			if(Network.isServer)
 			{
 				//If we're host, propagate the damage to the rest of the clients
-				networkView.RPC ("PropagateDamage", RPCMode.Others, m_currentHealth, m_currentShield);
+				//networkView.RPC ("PropagateDamage", RPCMode.Others, m_currentHealth, m_currentShield);
 				
 				//Tell gamecontroller the capital ship is under attack
 				if(this.tag == "Capital")
@@ -373,7 +406,7 @@ public class HealthScript : MonoBehaviour
 			}
 			
 			//Whatever happens, reset the shield cooldown
-			ResetShieldRecharge();
+			//ResetShieldRecharge();
 		}
 	}
 
@@ -390,24 +423,24 @@ public class HealthScript : MonoBehaviour
 	[RPC]
 	void PropagateShieldRechargeStats(int shieldRechargeRate, float shieldRechargeDelay)
 	{
-		Debug.Log ("Recieved shield values: " + shieldRechargeRate + "R, " + shieldRechargeDelay + "D.");
-		m_shieldRechargeRate = shieldRechargeRate;
-		m_timeToRechargeShield = shieldRechargeDelay;
+		//Debug.Log ("Recieved shield values: " + shieldRechargeRate + "R, " + shieldRechargeDelay + "D.");
+		//m_shieldRechargeRate = shieldRechargeRate;
+		//m_timeToRechargeShield = shieldRechargeDelay;
 	}
 	[RPC]
 	void PropagateDamageAndMaxs(int currentHP, int maxHP, int currentShield, int maxShield)
 	{
 		//Debug.Log ("Recieved values: " + currentHP + "/" + maxHP + ".");
-		m_currentHealth = currentHP;
-		m_maximumHealth = maxHP;
-		m_currentShield = currentShield;
-		m_maximumShield = maxShield;
+		//m_currentHealth = currentHP;
+		//m_maximumHealth = maxHP;
+		//m_currentShield = currentShield;
+		//m_maximumShield = maxShield;
 	}
 	[RPC]
 	void PropagateDamage(int currentHP, int currentShield)
 	{
-		m_currentHealth = currentHP;
-		m_currentShield = currentShield;
+		//m_currentHealth = currentHP;
+		//m_currentShield = currentShield;
 	}
 	[RPC]
 	void PropagateShieldStatus(bool isUp)
@@ -415,7 +448,7 @@ public class HealthScript : MonoBehaviour
 		ShieldOnOff (isUp);
 	}
 
-	void ShieldOnOff (bool isUp)
+	public void ShieldOnOff (bool isUp)
 	{
         Ship ship = GetComponent<Ship>();
         GameObject shield = ship.GetShield();
@@ -433,7 +466,7 @@ public class HealthScript : MonoBehaviour
 	}
 	
 
-	void OnMobDies (GameObject killer, GameObject hitter = null)
+	public void OnMobDies (GameObject killer, GameObject hitter = null)
 	{
         if(isDead == true)
         {
@@ -547,20 +580,20 @@ public class HealthScript : MonoBehaviour
 	
 	public void ResetHPOnRespawn()
 	{
-        m_currentShield = GetMaxShield();
-		m_currentHealth = (int)(m_maximumHealth * 0.25f);
+        //m_currentShield = GetMaxShield();
+		//m_currentHealth = (int)(m_maximumHealth * 0.25f);
 	}
 
     public void SetModifier(float modifier_)
     {
-        m_maximumHealth = (int)(m_maximumHealth * modifier_);
+        /*m_maximumHealth = (int)(m_maximumHealth * modifier_);
         m_currentHealth = m_maximumHealth;
         m_maximumShield = (int)(m_maximumShield * modifier_);
         m_currentShield = m_maximumShield;
         if (Network.isServer)
         {
             networkView.RPC("PropagateDamageAndMaxs", RPCMode.Others, m_currentHealth, m_maximumHealth, m_currentShield, m_maximumShield);
-        }
+        }*/
     }
 
 }

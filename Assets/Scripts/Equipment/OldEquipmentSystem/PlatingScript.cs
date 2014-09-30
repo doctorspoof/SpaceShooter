@@ -45,6 +45,6 @@ public class PlatingScript : MonoBehaviour
         Debug.Log("Attaching plating: " + this.name + " to gameObject: " + playerGO.name + ", through name: " + name);
         this.transform.parent = playerGO.transform;
         this.transform.localPosition = m_requiredOffset;
-        playerGO.GetComponent<HealthScript>().EquipNewPlating(m_platingHealth);
+        //playerGO.GetComponent<HealthScript>().EquipNewPlating(m_platingHealth);
     }
 }
