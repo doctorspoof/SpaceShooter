@@ -61,6 +61,13 @@ public sealed class Abilities : MonoBehaviour
 
     #endregion Getters & setters
 
+    void Update()
+    {
+        for(int i = 0; i < m_abilities.Count; i++)
+        {
+            m_abilities[i].AlterCooldown(-Time.deltaTime);
+        }
+    }
 
     #region Locking/ability management
 

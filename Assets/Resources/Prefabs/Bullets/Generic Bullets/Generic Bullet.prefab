@@ -11,9 +11,9 @@ GameObject:
   - 33: {fileID: 3300000}
   - 23: {fileID: 2300000}
   - 65: {fileID: 6500000}
-  - 114: {fileID: 11400000}
   - 54: {fileID: 5400000}
   - 148: {fileID: 14800000}
+  - 114: {fileID: 11400000}
   m_Layer: 14
   m_Name: Generic Bullet
   m_TagString: Bullet
@@ -95,28 +95,41 @@ MonoBehaviour:
   m_GameObject: {fileID: 100000}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c72b8964de465404e898ba8b98d7faca, type: 3}
+  m_Script: {fileID: 11500000, guid: ffc1ac03e4d720549bf58e433e2a8aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_bulletDamage: 18
-  m_bulletMinDamage: 1
-  m_damageType: 1
-  m_bulletSpeed: 10
-  m_bulletMinimumSpeed: 2.5
-  m_bulletMaxLifetime: 3
-  m_isSelfPropelled: 0
-  m_isPiercing: 0
-  m_maxPierceHits: 5
-  m_pierceDamageModifier: .400000006
-  m_pierceSpeedModifier: .699999988
-  m_isHoming: 0
-  m_homingRotateSpeed: .5
-  m_isAOE: 0
-  m_aoeDamageAccuracy: 1
-  m_aoeRange: 0
-  m_aoeMaxDamageRange: .25
-  m_aoeMaxExplosiveForce: 15
-  m_aoeMinExplosiveForce: 5
+  m_currentLifetime: 0
+  m_speed: 0
+  m_properties:
+    damage: 0
+    reach: 0
+    lifetime: 1
+    isBeam: 0
+    beamRechargeDelay: .150000006
+    aoe:
+      isAOE: 0
+      aoeRange: 0
+      aoeMaxDamageRange: 0
+      aoeExplosiveForce: 0
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 0
+      homingTurnRate: 0
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 0
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
 --- !u!148 &14800000
 NetworkView:
   m_ObjectHideFlags: 1

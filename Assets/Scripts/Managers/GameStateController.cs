@@ -836,8 +836,9 @@ public class GameStateController : MonoBehaviour
         Vector3 pos = m_ingameCapitalShip.transform.position;
         pos.z = 10.75f;
         GameObject ship = (GameObject)Network.Instantiate(m_playerShip, pos, m_ingameCapitalShip.transform.rotation, 0);
-        ship.GetComponent<PlayerControlScript>().InitPlayerOnCShip(m_ingameCapitalShip);
         m_localPlayer = ship;
+        ship.GetComponent<PlayerControlScript>().InitPlayerOnCShip(m_ingameCapitalShip);
+        
         ship.GetComponent<PlayerControlScript>().SetInputMethod((PlayerPrefs.GetInt("UseControl") == 1));
 
         //m_GUIManager.GetComponent<GUIManager>().AlertGUIPlayerHasRespawned();

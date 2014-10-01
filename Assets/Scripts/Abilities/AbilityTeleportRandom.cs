@@ -11,4 +11,17 @@ public sealed class AbilityTeleportRandom : AbilityTeleport
     {
         return "Random Teleport";
     }
+    
+    public override void ActivateAbility (GameObject caster)
+    {
+        if(HasCooled())
+        {
+            Vector2 direction = Random.insideUnitCircle.normalized;
+            float range = Random.Range(m_range * 0.25f, m_range);
+            
+            caster.GetComponent<Ship>().TeleportTo(direction, range);
+            
+            ResetCooldown();
+        }
+    }
 }

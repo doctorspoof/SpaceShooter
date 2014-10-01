@@ -732,6 +732,20 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         }
     }
     #endregion
+    
+    #region AbilityFuncs
+    public void TeleportTo(Vector2 direction, float range)
+    {
+        //Do Effect 
+        
+        
+        Vector3 newPos = transform.position + (new Vector3(direction.x, direction.y, 0) * range);
+        transform.position = newPos;
+        
+        //Do Effect 
+        
+    }
+    #endregion
 
     void MoveTowardFormation()
     {

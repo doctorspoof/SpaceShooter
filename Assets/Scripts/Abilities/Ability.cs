@@ -13,9 +13,9 @@ public abstract class Ability
     protected float m_maxCooldown = 0.5f;   //!< How long the ability requires to cool down.
     protected float m_currentCooldown = 0f; //!< The cooldown for the ability.
     
-    
     public abstract bool IsActive();        //!< Indicates whether the ability is active or passive.
     public abstract string GetGUIName();    //!< Retrieves the name which should be displayed in the GUI.
+    public abstract void ActivateAbility(GameObject caster); //!< Activates the ability if it's off cooldown
 
     public bool IsLocked()
     {
@@ -75,7 +75,7 @@ public abstract class Ability
     {
         m_currentCooldown = Mathf.Clamp (m_currentCooldown + alterBy, 0f, m_maxCooldown);
         
-        m_cooling = m_currentCooldown != 0f;
+        m_cooling = m_currentCooldown <= 0f;
     }
     
     

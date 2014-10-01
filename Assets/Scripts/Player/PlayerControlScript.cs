@@ -230,7 +230,7 @@ public class PlayerControlScript : Ship
             GameObject nearestShop = GetClosestShop();
             if(nearestShop != null)
             {
-                float shopDist = Vector3.Distance(nearestShop.transform.position, this.transform.position);
+                float shopDist = Vector3.Distance(nearestShop.GetComponent<Shop>().GetDockPoint(), this.transform.position);
                 if(shopDist < 1.5f)
                 {
                     m_nearbyShop = nearestShop;
@@ -821,25 +821,25 @@ public class PlayerControlScript : Ship
         
         // Ability input
         Abilities abilities = GetComponent<Abilities>();
-        if(Input.GetKey(KeyCode.C))
+        if(Input.GetKeyDown(KeyCode.C))
         {
             if(abilities[0] != null && abilities[0].IsActive())
             {
-                
+                abilities[0].ActivateAbility(gameObject);
             }
         }
-        if(Input.GetKey (KeyCode.V))
+        if(Input.GetKeyDown(KeyCode.V))
         {
             if(abilities[1] != null && abilities[1].IsActive())
             {
-                
+                abilities[1].ActivateAbility(gameObject);
             }
         }
-        if(Input.GetKey (KeyCode.B))
+        if(Input.GetKeyDown(KeyCode.B))
         {
             if(abilities[2] != null && abilities[2].IsActive())
             {
-                
+                abilities[2].ActivateAbility(gameObject);
             }
         }
 

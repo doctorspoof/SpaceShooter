@@ -251,7 +251,7 @@ public class GUIInGameHUDScreen : BaseGUIScreen
                 
                 GUI.DrawTexture (new Rect(0 + (80 * i), 820, 80, 80), text);
                 
-                if(ability[i].IsActive())
+                if(ability[i].IsActive() && ability[i].HasCooled())
                 {
                     switch(i)
                     {

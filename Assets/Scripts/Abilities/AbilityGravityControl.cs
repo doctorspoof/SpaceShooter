@@ -48,4 +48,9 @@ public sealed class AbilityGravityControl : AbilityActive
     {
         m_currentChange = Mathf.Clamp (currentChange, -m_maxChange, m_maxChange);
     }
+    
+    public override void ActivateAbility (GameObject caster)
+    {
+        
+    }
 }

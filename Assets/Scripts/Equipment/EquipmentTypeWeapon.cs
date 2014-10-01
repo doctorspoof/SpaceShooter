@@ -4,7 +4,19 @@ using UnityEngine;
 
 public sealed class EquipmentTypeWeapon : BaseEquipment 
 {
+
     #region Serializable Properties
+    
+    [SerializeField]                        Material            m_fireBulletMat;
+    [SerializeField]                        Material            m_iceBulletMat;
+    [SerializeField]                        Material            m_earthBulletMat;
+    [SerializeField]                        Material            m_lightningBulletMat;
+    [SerializeField]                        Material            m_lightBulletMat;
+    [SerializeField]                        Material            m_darkBulletMat;
+    [SerializeField]                        Material            m_spiritBulletMat;
+    [SerializeField]                        Material            m_gravityBulletMat;
+    [SerializeField]                        Material            m_airBulletMat;
+    [SerializeField]                        Material            m_organicBulletMat;
 
     [SerializeField]                        GameObject          m_bulletRef;
     [SerializeField]                        Vector3             m_bulletOffset;
@@ -21,6 +33,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
 
 
     // Internal usage members
+    Element m_cachedMajorElement = Element.NULL;
     GameObject m_currentHomingTarget = null;
     GameObject m_currentBeam = null;
     float m_currentReloadCounter = 0.0f;
@@ -57,6 +70,144 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             else if(m_currentReloadCounter < m_currentWeaponReloadTime)
             {
                 m_currentReloadCounter += Time.deltaTime;
+            }
+        }
+    }
+    #endregion
+
+    #region Visual Modification functions
+    Element DetermineMajorityElement()
+    {
+        int[] counter = new int[10];
+        
+        for(int i = 0; i < m_augmentSlots.Length; i++)
+        {
+            if(m_augmentSlots[i] != null)
+            {
+                switch(m_augmentSlots[i].GetElement())
+                {
+                    case Element.Fire:
+                    {
+                        counter[0] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Ice:
+                    {
+                        counter[1] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Earth:
+                    {
+                        counter[2] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Lightning:
+                    {
+                        counter[3] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Light:
+                    {
+                        counter[4] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Dark:
+                    {
+                        counter[5] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Spirit:
+                    {
+                        counter[6] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Gravity:
+                    {
+                        counter[7] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Air:
+                    {
+                        counter[8] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                    case Element.Organic:
+                    {
+                        counter[9] += m_augmentSlots[i].GetTier();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        int highestID = -1;
+        int highestVal = 0;
+        
+        for(int i = 0; i < counter.Length; i++)
+        {
+            if(counter[i] > highestVal)
+            {
+                highestVal = counter[i];
+                highestID = i;
+            }
+        }
+        
+        switch(highestID)
+        {
+            case 0:
+            {
+                m_cachedMajorElement = Element.Fire;
+                return Element.Fire;
+            }
+            case 1:
+            {
+                m_cachedMajorElement = Element.Ice;
+                return Element.Ice;
+            }
+            case 2:
+            {
+                m_cachedMajorElement = Element.Earth;
+                return Element.Earth;
+            }
+            case 3:
+            {
+                m_cachedMajorElement = Element.Lightning;
+                return Element.Lightning;
+            }
+            case 4:
+            {
+                m_cachedMajorElement = Element.Light;
+                return Element.Light;
+            }
+            case 5:
+            {
+                m_cachedMajorElement = Element.Dark;
+                return Element.Dark;
+            }
+            case 6:
+            {
+                m_cachedMajorElement = Element.Spirit;
+                return Element.Spirit;
+            }
+            case 7:
+            {
+                m_cachedMajorElement = Element.Gravity;
+                return Element.Gravity;
+            }
+            case 8:
+            {
+                m_cachedMajorElement = Element.Air;
+                return Element.Air;
+            }
+            case 9:
+            {
+                m_cachedMajorElement = Element.Organic;
+                return Element.Organic;
+            }
+            default:
+            {
+                m_cachedMajorElement = Element.NULL;
+                return Element.NULL;
             }
         }
     }
@@ -228,17 +379,77 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     [RPC] void SpawnBasicBullet(NetworkViewID id)
     {
         GameObject bullet = Instantiate(m_bulletRef, transform.position + (transform.rotation * m_bulletOffset), transform.rotation) as GameObject;
-        bullet.GetComponent<BasicBulletScript>().SetHomingTarget(m_currentHomingTarget);
-        
         bullet.networkView.viewID = id;
-        
-        BasicBulletScript bbs = bullet.GetComponent<BasicBulletScript>();
+        Bullet bbs = bullet.GetComponent<Bullet>();
+        bbs.SetHomingTarget(m_currentHomingTarget);
         bbs.SetFirer(gameObject);
+        bbs.CloneProperties(m_currentBulletStats);
         
         if(transform.rigidbody)
         {
-            bbs.SetBulletSpeedModifier(Vector3.Dot(transform.up, transform.rigidbody.velocity));
+            bbs.SetReachModifier(Vector3.Dot(transform.up, transform.rigidbody.velocity));
         }
+        
+        if(m_cachedMajorElement == Element.NULL)
+            DetermineMajorityElement();
+            
+        Material matToSet = null;
+        switch(m_cachedMajorElement)
+        {
+            case Element.Fire:
+            {
+                matToSet = m_fireBulletMat;
+                break;
+            }
+            case Element.Earth:
+            {
+                matToSet = m_earthBulletMat;
+                break;
+            }
+            case Element.Lightning:
+            {
+                matToSet = m_lightningBulletMat;
+                break;
+            }
+            case Element.Light:
+            {
+                matToSet = m_lightBulletMat;
+                break;
+            }
+            case Element.Dark:
+            {
+                matToSet = m_darkBulletMat;
+                break;
+            }
+            case Element.Spirit:
+            {
+                matToSet = m_spiritBulletMat;
+                break;
+            }
+            case Element.Gravity:
+            {
+                matToSet = m_gravityBulletMat;
+                break;
+            }
+            case Element.Air:
+            {
+                matToSet = m_airBulletMat;
+                break;
+            }
+            case Element.Organic:
+            {
+                matToSet = m_organicBulletMat;
+                break;
+            }
+            default:
+            {
+                matToSet = m_iceBulletMat;
+                break;
+            }
+        }
+        
+        Debug.Log ("Applying material: " + matToSet);
+        bullet.renderer.material = matToSet;
     }
     
     [RPC] void PropagateTarget(NetworkViewID id, bool unset)
@@ -266,6 +477,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         m_currentBulletStats.CloneProperties (m_baseBulletStats);
         m_currentWeaponReloadTime = m_baseWeaponReloadTime;
+        m_cachedMajorElement = Element.NULL;
     }
 
 
