@@ -32,11 +32,13 @@ GameObject:
   - 114: {fileID: 11400002}
   - 114: {fileID: 11400004}
   - 54: {fileID: 5400000}
+  - 114: {fileID: 11400026}
+  - 114: {fileID: 11400032}
+  - 114: {fileID: 11400028}
   - 148: {fileID: 14800000}
   - 114: {fileID: 11400014}
   - 114: {fileID: 11400024}
-  - 114: {fileID: 11400026}
-  - 114: {fileID: 11400028}
+  - 114: {fileID: 11400030}
   m_Layer: 11
   m_Name: EnemyNormal
   m_TagString: Enemy
@@ -907,6 +909,10 @@ MonoBehaviour:
   m_afterburnerIncreaseOfSpeed: 0
   m_afterburnerLength: 0
   m_afterburnerRechargeTime: 0
+  m_afterburnerRechargeDelay: 10
+  m_currentAfterburnerTime: 0
+  m_currentAfterburnerRechargeTime: 0
+  m_currentShipSpeed: 0
   shipID: -1
   m_bountyAmount: 15
   m_allowedAttacksForShip: []
@@ -1111,6 +1117,8 @@ MonoBehaviour:
     invisChance: 0
     invisDuration: 1
     deflectChance: 0
+  m_currentRechargeDelay: 0
+  m_currentRechargeFloatCatch: 0
 --- !u!114 &11400028
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1138,6 +1146,59 @@ MonoBehaviour:
     etherealDuration: 2
     slowsIncoming: 0
     speedReduction: 0
+  m_currentStats:
+    hp: 100
+    mass: 1
+    regen: 0
+    returnDamage: 0
+    slowDuration: 0
+    lifesteal: 0
+    chanceToJump: 0
+    chanceToCleanse: 0
+    chanceToEthereal: 0
+    etherealDuration: 2
+    slowsIncoming: 0
+    speedReduction: 0
+--- !u!114 &11400030
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86cd7214967092a4084065999f8b1058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &11400032
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 961d0c291bd411a41928a4831cbf5784, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 1
+  m_augmentSlots: []
+  m_augmentItemSlots: []
+  m_baseStats:
+    forwardSpeed: 360
+    turnSpeed: 100
+    strafeSpeed: 250
+    burnerSpeed: 150
+    burnerLength: 2.5
+    burnerRechargeTime: 5
+    hasGravityControl: 0
+    maxGravityChange: 0
+    hasShortTeleport: 0
+    shortTeleRange: 5
+    shortTeleCooldown: 60
+    hasLongTeleport: 0
+    longTeleRange: 50
+    longTeleCooldown: 60
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

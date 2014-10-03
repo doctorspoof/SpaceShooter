@@ -83,11 +83,11 @@ public class EnemySpawnManagerScript : MonoBehaviour
 {
     [SerializeField] GameObject[] m_allSpawnPoints;
 
-    [SerializeField] float m_healthModifierIncrement;
-    [SerializeField] float m_currentHealthModifier = 1.0f;
+    //[SerializeField] float m_healthModifierIncrement;
+    //[SerializeField] float m_currentHealthModifier = 1.0f;
     [SerializeField] float m_timeCountInMinutes;
 
-    [SerializeField] float m_multiplierAtTimeRequired;
+    //[SerializeField] float m_multiplierAtTimeRequired;
 
     [SerializeField] int m_secondsBetweenWaves = 40;
 
@@ -143,8 +143,8 @@ public class EnemySpawnManagerScript : MonoBehaviour
         //float increaseInPercentRequired = multiplierAtTimeRequired - 1;
         //healthModifierIncrement = Mathf.Exp((Mathf.Log(increaseInPercentRequired) / (timeCountInMinutes * 60)));
 
-        float increaseInPercentRequired = m_multiplierAtTimeRequired - 1;
-        m_healthModifierIncrement = increaseInPercentRequired / (m_timeCountInMinutes * 60);
+        //float increaseInPercentRequired = m_multiplierAtTimeRequired - 1;
+        //m_healthModifierIncrement = increaseInPercentRequired / (m_timeCountInMinutes * 60);
 
         InitSpawnPoints();
 
@@ -155,7 +155,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
     void Update()
     {
         //-60 seconds so updates once per minute
-        if (Time.timeSinceLevelLoad - m_lastTimeModifier >= 1 && m_hasBegan)
+        /*if (Time.timeSinceLevelLoad - m_lastTimeModifier >= 1 && m_hasBegan)
         {
             m_lastTimeModifier = (int)Time.timeSinceLevelLoad;
             m_currentHealthModifier += m_healthModifierIncrement;
@@ -164,7 +164,7 @@ public class EnemySpawnManagerScript : MonoBehaviour
                 EnemySpawnPointScript spawnPoint = spawn.GetComponent<EnemySpawnPointScript>();
                 spawnPoint.SetModifier(m_currentHealthModifier);
             }
-        }
+        }*/
 
         if (Network.isServer && m_allSpawnPoints.Length != 0 && !m_shouldPause && /*shouldStart &&*/ (Time.timeSinceLevelLoad - m_lastTimeSpawn - m_secondsBetweenWaves) >= 1 && m_hasBegan)
         {

@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[System.Serializable]
 public class Debuff 
 {
     protected Texture m_inGameIcon;
 	
     protected float m_duration;
-    protected float m_currentDuration;
+    public float m_currentDuration;
     
     protected GameObject m_targetMob;
     

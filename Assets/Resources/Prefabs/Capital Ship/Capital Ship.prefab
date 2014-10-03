@@ -905,6 +905,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &100106
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400106}
+  m_Layer: 0
+  m_Name: Afterburners
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &400000
 Transform:
   m_ObjectHideFlags: 1
@@ -979,10 +994,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100012}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 79.1200485, y: 164.828857, z: 10.5}
+  m_LocalPosition: {x: 114.753441, y: -168.300995, z: 10.5}
   m_LocalScale: {x: 24, y: 24, z: 1}
   m_Children:
   - {fileID: 400100}
+  - {fileID: 400106}
   - {fileID: 400104}
   - {fileID: 400064}
   - {fileID: 400062}
@@ -1538,6 +1554,17 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: .0416666679, y: .0416666679, z: 1}
+  m_Children: []
+  m_Father: {fileID: 400012}
+--- !u!4 &400106
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100106}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 400012}
 --- !u!23 &2300000
@@ -2472,6 +2499,10 @@ MonoBehaviour:
   m_afterburnerIncreaseOfSpeed: 10
   m_afterburnerLength: 0
   m_afterburnerRechargeTime: 0
+  m_afterburnerRechargeDelay: 2.5
+  m_currentAfterburnerTime: 0
+  m_currentAfterburnerRechargeTime: 0
+  m_currentShipSpeed: 0
   shipID: -1
   m_shouldAnchor: 0
   m_bankedCash: 1500
@@ -3025,6 +3056,19 @@ MonoBehaviour:
     etherealDuration: 2
     slowsIncoming: 0
     speedReduction: 0
+  m_currentStats:
+    hp: 100
+    mass: 1
+    regen: 0
+    returnDamage: 0
+    slowDuration: 0
+    lifesteal: 0
+    chanceToJump: 0
+    chanceToCleanse: 0
+    chanceToEthereal: 0
+    etherealDuration: 2
+    slowsIncoming: 0
+    speedReduction: 0
 --- !u!114 &11400064
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3062,6 +3106,8 @@ MonoBehaviour:
     invisChance: 0
     invisDuration: 1
     deflectChance: 0
+  m_currentRechargeDelay: 0
+  m_currentRechargeFloatCatch: 0
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

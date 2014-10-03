@@ -76,6 +76,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     #endregion
 
     #region Visual Modification functions
+    
     Element DetermineMajorityElement()
     {
         int[] counter = new int[10];
@@ -214,6 +215,13 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     #endregion
 
     #region Weapon Interaction functions
+    public Element GetMajorityElement()
+    {
+        if(m_cachedMajorElement == Element.NULL)
+            DetermineMajorityElement();
+        
+        return m_cachedMajorElement;
+    }
     public void SetTarget(GameObject target)
     {
         if(target != null)

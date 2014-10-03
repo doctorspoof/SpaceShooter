@@ -439,6 +439,7 @@ public sealed class Bullet : MonoBehaviour
             DamageAOE();
             ExplodeBullet();
         }
+        
         // Ensures bullet is completely destroyed
         else if (Network.isServer && !m_bulletHasBeenDestroyed)
         {
@@ -469,7 +470,7 @@ public sealed class Bullet : MonoBehaviour
 
     void DamageMob (GameObject mob, int damage)
     {
-        if (Network.isServer && mob)
+        if (Network.isServer && mob && damage > 0)
         {
             if ((m_properties.piercing != null && !m_properties.piercing.isPiercing) || !m_pastHits.Contains(mob))
             {
@@ -477,6 +478,50 @@ public sealed class Bullet : MonoBehaviour
                 if (health != null)
                 {
                     health.DamageMob(damage, m_firer, gameObject);
+                    
+                    // Check if any of the current special stats will proc
+                    if(m_properties.special != null && mob.GetComponent<Ship>())
+                    {
+                        if(m_properties.special.chanceToJump > 0f)
+                        {
+                            float rand = Random.Range(0.0f, 1.0f);
+                            if(rand <= m_properties.special.chanceToJump)
+                            {
+                                Rigidbody[] enemiesInRange = Physics.OverlapSphere(transform.position, 15.0f, 1 << Layers.enemy).GetAttachedRigidbodies();
+                                
+                                if(enemiesInRange.Length > 1)
+                                {
+                                    int id = Random.Range(0, enemiesInRange.Length);
+                                    while(enemiesInRange[id].gameObject == mob)
+                                    {
+                                        id = Random.Range (0, enemiesInRange.Length);
+                                    }
+                                    DamageMob(enemiesInRange[id].gameObject, (int)(damage * 0.5f));
+                                }
+                                
+                                //TODO: Add visual effect here
+                            }
+                        }
+                        
+                        if(m_properties.special.chanceToDisable > 0f)
+                        {
+                            float rand = Random.Range(0.0f, 1.0f);
+                            if(rand <= m_properties.special.chanceToDisable)
+                            {
+                                mob.GetComponent<Ship>().AddDebuff(new DebuffDisable(m_properties.special.disableDuration, mob));
+                            }
+                        }
+                        
+                        if(m_properties.special.slowDuration > 0f)
+                        {
+                            mob.GetComponent<Ship>().AddDebuff(new DebuffSlow(m_properties.special.slowDuration, 0.6f, mob));
+                        }
+                        
+                        if(m_properties.special.dotEffect > 0f)
+                        {
+                            mob.GetComponent<Ship>().AddDebuff(new DebuffDoT(m_properties.special.dotDuration, m_properties.special.dotEffect, mob));
+                        }
+                    }
                     
                     if(m_properties.piercing != null)
                     {
@@ -544,16 +589,16 @@ public sealed class Bullet : MonoBehaviour
         
         switch (mob.gameObject.layer)
         {
-        case Layers.asteroid:
-            SyncAsteroid(mob);
-            break;
-            
-        case Layers.player:
-            SyncPlayer(mob);
-            break;
-            
-        default:
+            case Layers.asteroid:
+                SyncAsteroid(mob);
                 break;
+                
+            case Layers.player:
+                SyncPlayer(mob);
+                break;
+                
+            default:
+                    break;
         }
     }
     

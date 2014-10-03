@@ -311,6 +311,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &100034
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400034}
+  m_Layer: 0
+  m_Name: Afterburners
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &400000
 Transform:
   m_ObjectHideFlags: 1
@@ -318,10 +333,11 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: .00109656586, w: .999999464}
-  m_LocalPosition: {x: -213.896408, y: 94.1513214, z: 10}
+  m_LocalPosition: {x: 119.684853, y: -171.554718, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400004}
+  - {fileID: 400034}
   - {fileID: 400022}
   m_Father: {fileID: 0}
 --- !u!4 &400002
@@ -514,6 +530,17 @@ Transform:
   m_LocalScale: {x: .400000006, y: .800000012, z: 1}
   m_Children: []
   m_Father: {fileID: 400022}
+--- !u!4 &400034
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100034}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 400000}
 --- !u!23 &2300000
 Renderer:
   m_ObjectHideFlags: 1
@@ -984,6 +1011,9 @@ MonoBehaviour:
   m_afterburnerLength: 5
   m_afterburnerRechargeTime: 0
   m_afterburnerRechargeDelay: 2.5
+  m_currentAfterburnerTime: 0
+  m_currentAfterburnerRechargeTime: 0
+  m_currentShipSpeed: 0
   shipID: -1
   m_shouldRecieveInput: 1
   m_maxDockingSpeed: 225
@@ -1380,8 +1410,8 @@ MonoBehaviour:
   m_augmentItemSlots: []
   m_baseStats:
     baseMaxShield: 100
-    baseRechargeRate: .75
-    baseRechargeDelay: 1.75
+    baseRechargeRate: .330000013
+    baseRechargeDelay: 4.25
     shouldFireBurst: 0
     burstDamage: 0
     burstRange: 10

@@ -296,6 +296,12 @@ public class HealthScript : MonoBehaviour
 		//Debug.Log ("Damaging mob: " + this.name + ".");
 		if(!m_isInvincible)
 		{
+            Element firerElem = Element.NULL;
+            if(hitter)
+                firerElem = hitter.GetComponent<Bullet>().GetMajorElement(); 
+            else if(firer.GetComponent<EquipmentTypeWeapon>())
+                firer.GetComponent<EquipmentTypeWeapon>().GetMajorityElement();
+        
             if(m_shieldCache && m_shieldCache.GetIsShieldUp())
             {
                 bool shouldAlsoHitHP = false;
@@ -306,11 +312,13 @@ public class HealthScript : MonoBehaviour
                     shouldAlsoHitHP = true;
                 }
                 
-                m_shieldCache.DamageShield(damage);
+                float newDam = (float)damage * ElementDamageLookup.GetDamagePercentage(firerElem, GetComponent<EquipmentTypeShield>().GetMajorityElement());
+                m_shieldCache.DamageShield((int)newDam);
                 
                 if(shouldAlsoHitHP)
                 {
-                    m_platingCache.DamagePlating(overflowAmount, firer, hitter);
+                    float newOverflow = (float)overflowAmount * ElementDamageLookup.GetDamagePercentage(firerElem, GetComponent<EquipmentTypePlating>().GetMajorityElement());
+                    m_platingCache.DamagePlating((int)newOverflow, firer, hitter);
                 }
                 else if(hitter != null)
                 {
@@ -322,10 +330,18 @@ public class HealthScript : MonoBehaviour
                     
                     networkView.RPC ("PropagateShieldWibble", RPCMode.All, position, dType, magnitude);
                 }
+                else
+                {
+                    //No bullet, still shield plz
+                    Vector3 position = (transform.position + firer.transform.position) * 0.5f;
+                    networkView.RPC ("PropagateShieldWibblePosOnly", RPCMode.All, position);
+                }
             }
             else
             {
-                m_platingCache.DamagePlating(damage, firer, hitter);
+                //Element otherType = Element.NULL;
+                float newDam = (float)damage * ElementDamageLookup.GetDamagePercentage(firerElem, GetComponent<EquipmentTypePlating>().GetMajorityElement());
+                m_platingCache.DamagePlating((int)newDam, firer, hitter);
                 
                 if(m_shieldCache)
                     m_shieldCache.ResetRechargeDelay();
@@ -419,6 +435,14 @@ public class HealthScript : MonoBehaviour
             ship.BeginShaderCoroutine(position, type, magnitude);
 		}
 	}
+    [RPC] void PropagateShieldWibblePosOnly(Vector3 position)
+    {
+        Ship ship;
+        if((ship = GetComponent<Ship>()) != null)
+        {
+            ship.BeginShaderCoroutine(position);
+        }
+    }
 
 	[RPC]
 	void PropagateShieldRechargeStats(int shieldRechargeRate, float shieldRechargeDelay)

@@ -22,7 +22,6 @@
                         public bool     slowsIncoming       = false;    //!< Whether to slow incoming projectiles or not.
     [Range (0f, 1f)]    public float    speedReduction      = 0f;       //!< How much to reduce the projectiles speed by (percentage).
 
-
     public void CloneProperties (PlatingProperties stats)
     {
         if (stats != null)
@@ -55,6 +54,8 @@ public sealed class EquipmentTypePlating : BaseEquipment
 
                         int                 m_currentHP     = 0;                        //!< The current amount of HP in the plating.
                         float               m_regenFloatCatch = 0.0f;
+                        
+    Element m_cachedMajorElement = Element.NULL;
 
 
     #region BaseEquipment Overrides
@@ -222,6 +223,149 @@ public sealed class EquipmentTypePlating : BaseEquipment
     [RPC] void PropagateHealthValue(int value)
     {
         m_currentHP = value;
+    }
+    
+    public Element GetMajorityElement()
+    {
+        if(m_cachedMajorElement == Element.NULL)
+            DetermineMajorityElement();
+            
+        return m_cachedMajorElement;
+    }
+    Element DetermineMajorityElement()
+    {
+        int[] counter = new int[10];
+        
+        for(int i = 0; i < m_augmentSlots.Length; i++)
+        {
+            if(m_augmentSlots[i] != null)
+            {
+                switch(m_augmentSlots[i].GetElement())
+                {
+                case Element.Fire:
+                {
+                    counter[0] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Ice:
+                {
+                    counter[1] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Earth:
+                {
+                    counter[2] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Lightning:
+                {
+                    counter[3] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Light:
+                {
+                    counter[4] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Dark:
+                {
+                    counter[5] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Spirit:
+                {
+                    counter[6] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Gravity:
+                {
+                    counter[7] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Air:
+                {
+                    counter[8] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                case Element.Organic:
+                {
+                    counter[9] += m_augmentSlots[i].GetTier();
+                    break;
+                }
+                }
+            }
+        }
+        
+        int highestID = -1;
+        int highestVal = 0;
+        
+        for(int i = 0; i < counter.Length; i++)
+        {
+            if(counter[i] > highestVal)
+            {
+                highestVal = counter[i];
+                highestID = i;
+            }
+        }
+        
+        switch(highestID)
+        {
+        case 0:
+        {
+            m_cachedMajorElement = Element.Fire;
+            return Element.Fire;
+        }
+        case 1:
+        {
+            m_cachedMajorElement = Element.Ice;
+            return Element.Ice;
+        }
+        case 2:
+        {
+            m_cachedMajorElement = Element.Earth;
+            return Element.Earth;
+        }
+        case 3:
+        {
+            m_cachedMajorElement = Element.Lightning;
+            return Element.Lightning;
+        }
+        case 4:
+        {
+            m_cachedMajorElement = Element.Light;
+            return Element.Light;
+        }
+        case 5:
+        {
+            m_cachedMajorElement = Element.Dark;
+            return Element.Dark;
+        }
+        case 6:
+        {
+            m_cachedMajorElement = Element.Spirit;
+            return Element.Spirit;
+        }
+        case 7:
+        {
+            m_cachedMajorElement = Element.Gravity;
+            return Element.Gravity;
+        }
+        case 8:
+        {
+            m_cachedMajorElement = Element.Air;
+            return Element.Air;
+        }
+        case 9:
+        {
+            m_cachedMajorElement = Element.Organic;
+            return Element.Organic;
+        }
+        default:
+        {
+            m_cachedMajorElement = Element.NULL;
+            return Element.NULL;
+        }
+        }
     }
     #endregion
 

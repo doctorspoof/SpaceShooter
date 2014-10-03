@@ -20,10 +20,16 @@ public static class ElementDamageLookup
     // Returns a decimal percentage              
     public static float GetDamagePercentage(Element firer, Element victim)
     {
-        return m_percentageTable[(int)firer, (int)victim];
+        if(firer == Element.NULL || victim == Element.NULL)
+            return 1f;
+        else
+            return m_percentageTable[(int)firer, (int)victim];
     }
     public static float GetDamagePercentage(int firer, int victim)
     {
-        return m_percentageTable[firer, victim];
+        if(firer == 0 || victim == 0)
+            return 1f;
+        else
+            return m_percentageTable[firer, victim];
     }
 }

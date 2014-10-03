@@ -192,7 +192,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
             foreach (GameObject player in m_playerShips)
             {
                 //if(player != null && player != thisPlayerHP.gameObject)
-                if (player && (!m_playerCache || player != m_playerCache.gameObject))
+                if (player && (m_playerCache && player != m_playerCache.gameObject))
                 {
                     Vector2 playPos = WorldToMapPos(player.transform.position);
                     GUI.DrawTexture(new Rect(playPos.x - (m_blobSize * 0.5f), playPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_otherPBlob);

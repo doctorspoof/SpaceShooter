@@ -76,7 +76,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     List<Vector2> m_waypoints = new List<Vector2>();
 
     Abilities m_abilities = null;
-    List<Debuff> m_debuffs = new List<Debuff>();
+    public List<Debuff> m_debuffs = new List<Debuff>();
     bool m_isDisabled = false;
 
 
