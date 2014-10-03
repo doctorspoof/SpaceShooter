@@ -55,13 +55,14 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     [SerializeField]protected   float   m_afterburnerIncreaseOfSpeed = 0f;
     [SerializeField]protected   float   m_afterburnerLength = 0f;
     [SerializeField]protected   float   m_afterburnerRechargeTime = 0f;
-
+    [SerializeField]protected   float   m_afterburnerRechargeDelay = 10f;
+                    protected   float   m_afterburnerCurrentDelay = 0.0f;
 
     // Cached crap
     bool m_afterburnersFiring = false, m_afterburnersRecharged = true;
-    float m_currentAfterburnerTime = 0.0f, m_currentAfterburnerRechargeTime = 0.0f;
+    [SerializeField] float m_currentAfterburnerTime = 0.0f, m_currentAfterburnerRechargeTime = 0.0f;
     
-    float m_currentShipSpeed = 0f;
+    [SerializeField] float m_currentShipSpeed = 0f;
     float m_currentAngularVelocity = 0f;
     float m_currentRotation = 0f, m_lastRotation = 0f;
     float m_maxThrusterVelocitySeen = 0f, m_maxAngularVelocitySeen = 0f;
@@ -187,6 +188,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     public void SetAfterburnerLength(float speed_)
     {
         m_afterburnerLength = speed_;
+        m_currentAfterburnerTime = m_afterburnerLength;
     }
 
     public float GetAfterburnerRechargeTime()
@@ -197,6 +199,11 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     public void SetAfterburnerRechargeTime(float time_)
     {
         m_afterburnerRechargeTime = time_;
+    }
+    
+    public float GetAfterburnerPercentage()
+    {
+        return m_currentAfterburnerTime / m_afterburnerLength;
     }
 
     /// <summary>
@@ -399,6 +406,9 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         {
             m_abilities = gameObject.AddComponent<Abilities>();
         }
+        
+        m_currentAfterburnerTime = m_afterburnerLength;
+        m_afterburnersRecharged = true;
     }
 
     protected virtual void Start()
@@ -426,8 +436,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         if (m_afterburnersFiring == true)
         {
-            m_currentAfterburnerTime += Time.deltaTime;
-            if (m_currentAfterburnerTime >= m_afterburnerLength)
+            m_currentAfterburnerTime -= Time.deltaTime;
+            if (m_currentAfterburnerTime <= 0f)
             {
                 AfterburnerFinished();
             }
@@ -437,11 +447,25 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         {
             if (m_afterburnersRecharged == false)
             {
-                m_currentAfterburnerRechargeTime += Time.deltaTime;
-                if (m_currentAfterburnerRechargeTime >= m_afterburnerRechargeTime)
+                if(m_afterburnerCurrentDelay >= m_afterburnerRechargeDelay)
                 {
-                    m_afterburnersRecharged = true;
-                    m_currentAfterburnerRechargeTime = 0;
+                    /*m_currentAfterburnerRechargeTime += Time.deltaTime;
+                    if (m_currentAfterburnerRechargeTime >= m_afterburnerRechargeTime)
+                    {
+                        m_afterburnersRecharged = true;
+                        m_currentAfterburnerRechargeTime = 0;
+                    }*/
+                    
+                    m_currentAfterburnerTime += Time.deltaTime;
+                    if(m_currentAfterburnerTime >= m_afterburnerLength)
+                    {
+                        m_afterburnersRecharged = true;
+                        m_currentAfterburnerTime = m_afterburnerLength;
+                    }
+                }
+                else
+                {
+                    m_afterburnerCurrentDelay += Time.deltaTime;
                 }
             }
         }
@@ -912,7 +936,22 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         {
             m_afterburnersFiring = true;
             m_afterburnersRecharged = false;
-            m_afterburnersHolder.gameObject.SetActive(true);
+            //m_afterburnersHolder.gameObject.SetActive(true);
+        }
+    }
+    public void StopAfterburners()
+    {
+        networkView.RPC("PropagateStopAfterburners", RPCMode.All);
+    }
+    [RPC] void PropagateStopAfterburners()
+    {
+        if(m_afterburnersFiring)
+        {
+            m_afterburnersFiring = false;
+            m_afterburnerCurrentDelay = 0f;
+            m_afterburnersRecharged = false;
+            
+            //m_afterburnersHolder.gameObject.SetActive(false);
         }
     }
 
@@ -923,11 +962,12 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     [RPC]
     void PropagateAfterburnerFinished()
     {
+        m_afterburnerCurrentDelay = 0f;
         m_currentAfterburnerTime = 0;
         m_afterburnersFiring = false;
         m_afterburnersRecharged = false;
 
-        m_afterburnersHolder.gameObject.SetActive(false);
+        //m_afterburnersHolder.gameObject.SetActive(false);
     }
 
     public bool AfterburnersRecharging()

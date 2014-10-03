@@ -843,6 +843,15 @@ public class PlayerControlScript : Ship
             }
         }
 
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            FireAfterburners();
+        }
+        if(Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            StopAfterburners();
+        }
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             m_gscCache.ToggleBigMapState();

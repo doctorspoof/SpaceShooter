@@ -317,8 +317,8 @@ public class HealthScript : MonoBehaviour
                     BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
                     
                     Vector3 position = beam ? beam.GetBeamHit().point : hitter.transform.position;
-                    int dType = beam ? (int)beam.GetDamageType() : (int)hitter.GetComponent<BasicBulletScript>().GetDamageType();
-                    float magnitude = beam ? beam.GetDamage() : hitter.GetComponent<BasicBulletScript>().GetDamage();
+                    int dType = beam ? (int)beam.GetDamageType() : (int)hitter.GetComponent<Bullet>().GetMajorElement();
+                    float magnitude = beam ? beam.GetDamage() : hitter.GetComponent<Bullet>().GetDamage();
                     
                     networkView.RPC ("PropagateShieldWibble", RPCMode.All, position, dType, magnitude);
                 }

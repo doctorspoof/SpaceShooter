@@ -51,7 +51,7 @@ using System.Collections.Generic;
                             public bool         isHoming = false;       //!< Indicates whether the bullet should home in on targets.
     [Range (0f, 100f)]      public float        homingRange = 0f;       //!< If no target is present, this value will be used in an OverlapSphere().
     [Range (0f, 100f)]      public float        homingTurnRate = 0f;    //!< How quickly the bullet can home in on targets.
-    [HideInInspector]       public GameObject   target = null;          //!< Used to provide a homing target for the bullet.
+           public GameObject   target = null;          //!< Used to provide a homing target for the bullet.
     
     
     /// <summary>

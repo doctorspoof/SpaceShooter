@@ -62,7 +62,10 @@ public sealed class Shop : MonoBehaviour
 
     public Vector3 GetDockPoint()
     {
-        return m_dockPoint.position;
+        if(m_dockPoint != null)
+            return m_dockPoint.position;
+        else
+            return Vector3.zero;
     }
 
 

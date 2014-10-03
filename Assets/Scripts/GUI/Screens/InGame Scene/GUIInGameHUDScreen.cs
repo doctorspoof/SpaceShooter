@@ -176,6 +176,11 @@ public class GUIInGameHUDScreen : BaseGUIScreen
             GUI.DrawTextureWithTexCoords(new Rect(150, 0, 350 * healthPercent, 50), m_healthBackground, new Rect(0, 0, healthPercent, 1));
             GUI.DrawTextureWithTexCoords(new Rect(150, 0, 350 * shieldPercent, 50), m_shieldBar, new Rect(0, 0, shieldPercent, 1));
             
+            // Do afterburner
+            float afterburnerPercent = m_playerHPCache.GetComponent<PlayerControlScript>().GetAfterburnerPercentage();
+            afterburnerPercent = Mathf.Max(0, afterburnerPercent);
+            GUI.DrawTextureWithTexCoords(new Rect(150, 50, 350 * afterburnerPercent, 30), m_shieldBar, new Rect(0, 0, afterburnerPercent, 1));
+            
             //Show spacebux
             GUI.DrawTexture(new Rect(175, 80, 10, 50), m_barEnd);
             GUI.DrawTexture(new Rect(185, 80, 200, 50), m_barMid);

@@ -980,9 +980,10 @@ MonoBehaviour:
   m_maxShipSpeed: 500
   m_rotateSpeed: 45
   m_strafeSpeed: 0
-  m_afterburnerIncreaseOfSpeed: 0
-  m_afterburnerLength: 0
+  m_afterburnerIncreaseOfSpeed: 300
+  m_afterburnerLength: 5
   m_afterburnerRechargeTime: 0
+  m_afterburnerRechargeDelay: 2.5
   shipID: -1
   m_shouldRecieveInput: 1
   m_maxDockingSpeed: 225
@@ -1043,8 +1044,8 @@ MonoBehaviour:
       aoeMaxFalloff: .00100000005
     homing:
       isHoming: 0
-      homingRange: 10
-      homingTurnRate: 25
+      homingRange: 7
+      homingTurnRate: 5
       target: {fileID: 0}
     piercing:
       isPiercing: 0

@@ -27,12 +27,12 @@ public sealed class Bullet : MonoBehaviour
     bool                m_bulletHasBeenDestroyed = false;       //!< Uber safeguard against double damage shots
     
     GameObject          m_firer = null;
-    GameObject          m_homingTarget = null;
     
     Vector2             m_hitPoint = Vector2.zero;              //!< Contains the exact point where the bullet hit a target, useful for shader effects.
     public BulletProperties    m_properties = null;                    //!< Contains all bullet specific information which is required for the bullet to operate.
                                                                 //!< This must be passed by the weapon when fired, preferably before the Awake() call.
     List<GameObject>    m_pastHits = new List<GameObject>(0);   //!< Prevents piercing from hitting the same enemy multiple times.
+    Element             m_cachedMajorElement = Element.NULL;
 
     #endregion
 
@@ -47,7 +47,154 @@ public sealed class Bullet : MonoBehaviour
     {
         return m_hitPoint;
     }
-
+    public int GetDamage()
+    {
+        return m_properties.damage;
+    }
+    public Element GetMajorElement()
+    {
+        if(m_cachedMajorElement == Element.NULL)
+            DetermineMajorityElement();
+            
+        return m_cachedMajorElement;
+    }
+    
+    Element DetermineMajorityElement()
+    {
+        int[] counter = new int[10];
+        
+        for(int i = 0; i < m_properties.appliedElements.Count; i++)
+        {
+            if(m_properties.appliedElements[i] != null)
+            {
+                switch(m_properties.appliedElements[i])
+                {
+                case Element.Fire:
+                {
+                    counter[0] += 1;
+                    break;
+                }
+                case Element.Ice:
+                {
+                    counter[1] += 1;
+                    break;
+                }
+                case Element.Earth:
+                {
+                    counter[2] += 1;
+                    break;
+                }
+                case Element.Lightning:
+                {
+                    counter[3] += 1;
+                    break;
+                }
+                case Element.Light:
+                {
+                    counter[4] += 1;
+                    break;
+                }
+                case Element.Dark:
+                {
+                    counter[5] += 1;
+                    break;
+                }
+                case Element.Spirit:
+                {
+                    counter[6] += 1;
+                    break;
+                }
+                case Element.Gravity:
+                {
+                    counter[7] += 1;
+                    break;
+                }
+                case Element.Air:
+                {
+                    counter[8] += 1;
+                    break;
+                }
+                case Element.Organic:
+                {
+                    counter[9] += 1;
+                    break;
+                }
+                }
+            }
+        }
+        
+        int highestID = -1;
+        int highestVal = 0;
+        
+        for(int i = 0; i < counter.Length; i++)
+        {
+            if(counter[i] > highestVal)
+            {
+                highestVal = counter[i];
+                highestID = i;
+            }
+        }
+        
+        switch(highestID)
+        {
+        case 0:
+        {
+            m_cachedMajorElement = Element.Fire;
+            return Element.Fire;
+        }
+        case 1:
+        {
+            m_cachedMajorElement = Element.Ice;
+            return Element.Ice;
+        }
+        case 2:
+        {
+            m_cachedMajorElement = Element.Earth;
+            return Element.Earth;
+        }
+        case 3:
+        {
+            m_cachedMajorElement = Element.Lightning;
+            return Element.Lightning;
+        }
+        case 4:
+        {
+            m_cachedMajorElement = Element.Light;
+            return Element.Light;
+        }
+        case 5:
+        {
+            m_cachedMajorElement = Element.Dark;
+            return Element.Dark;
+        }
+        case 6:
+        {
+            m_cachedMajorElement = Element.Spirit;
+            return Element.Spirit;
+        }
+        case 7:
+        {
+            m_cachedMajorElement = Element.Gravity;
+            return Element.Gravity;
+        }
+        case 8:
+        {
+            m_cachedMajorElement = Element.Air;
+            return Element.Air;
+        }
+        case 9:
+        {
+            m_cachedMajorElement = Element.Organic;
+            return Element.Organic;
+        }
+        default:
+        {
+            m_cachedMajorElement = Element.NULL;
+            return Element.NULL;
+        }
+        }
+    }
+    
 
     /// <summary>
     /// Sets the reach modifier, this will directly increase or decrease the bullet speed.
@@ -61,7 +208,7 @@ public sealed class Bullet : MonoBehaviour
     
     public void SetHomingTarget(GameObject target)
     {
-        m_homingTarget = target;
+        m_properties.homing.target = target;
     }
     
     public void SetFirer(GameObject firer)
@@ -228,7 +375,8 @@ public sealed class Bullet : MonoBehaviour
                 }
 
                 // Start rotating towards the target before we move forward
-                RotateTowardsTarget();
+                if(m_properties.homing.target != null)
+                    RotateTowardsTarget();
             }
 
             // Finally move forward
@@ -266,7 +414,7 @@ public sealed class Bullet : MonoBehaviour
 
     void RotateTowardsTarget()
     {
-        Vector3 dir = m_homingTarget.transform.position - transform.position;
+        Vector3 dir = m_properties.homing.target.transform.position - transform.position;
         
         Quaternion targetR = Quaternion.Euler(new Vector3(0, 0, (Mathf.Atan2(dir.y, dir.x) - Mathf.PI / 2) * Mathf.Rad2Deg));
         
@@ -437,7 +585,28 @@ public sealed class Bullet : MonoBehaviour
     
     GameObject FindClosestTarget()
     {
-        return null;
+        Collider[] enemyCollidersInRange = Physics.OverlapSphere(transform.position, m_properties.homing.homingRange, m_homingMask);
+        Debug.Log ("Found " + enemyCollidersInRange.Length + " objects in range");
+        Rigidbody[] enemiesInRange = enemyCollidersInRange.GetAttachedRigidbodies();
+        
+        GameObject enemy = null;
+        float shortestDistance = 9999f;
+        
+        if(enemiesInRange != null && enemiesInRange.Length > 0)
+        {
+            for(int i = 0; i < enemiesInRange.Length; i++)
+            {
+                Debug.Log ("Trying to access enemy #" + i);
+                float dist = Vector3.Distance(transform.position, enemiesInRange[i].transform.position);
+                if(dist < shortestDistance)
+                {
+                    enemy = enemiesInRange[i].gameObject;
+                    shortestDistance = dist;
+                }
+            }
+        }
+        
+        return enemy;
     }
     
     void SyncAsteroid(Rigidbody asteroid)
