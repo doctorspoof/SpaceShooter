@@ -225,6 +225,30 @@ public sealed class Abilities : MonoBehaviour
 
         return ability;
     }
+    
+    public T CoolImmediately<T> () where T : Ability
+    {
+        T ability = FindAbilityOfType<T>();
+        
+        if(ability != null)
+        {
+            ability.ImmediatelyCool();
+        }
+        
+        return ability;
+    }
+    
+    public T ActivateAbility<T> (GameObject caster) where T : Ability
+    {
+        T ability = FindAbilityOfType<T>();
+        
+        if(ability != null)
+        {
+            ability.ActivateAbility(caster);
+        }
+        
+        return ability;
+    }
 
 
     IEnumerator CoolAbility (Ability toCool)

@@ -19,6 +19,8 @@ public class Debuff
     public bool ReduceCooldown(float reduction)
     {
         m_currentDuration -= reduction;
+        Update(reduction);
+        
         if(m_currentDuration <= 0)
         {
             UnapplyEffect();
@@ -28,8 +30,6 @@ public class Debuff
         {
             return true;
         }
-        
-        Update(reduction);
     }
     
     protected virtual void Update(float deltaTime)

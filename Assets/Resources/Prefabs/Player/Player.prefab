@@ -1004,6 +1004,8 @@ MonoBehaviour:
   m_pathToShieldObject: Composite Collider/Shield
   m_currentOrder: 0
   m_showMovementWaypoints: 0
+  m_genericWorldSpaceAugment: {fileID: 100000, guid: b5ab0e5034097544a93202347ea02001,
+    type: 2}
   m_maxShipSpeed: 500
   m_rotateSpeed: 45
   m_strafeSpeed: 0
@@ -1014,6 +1016,7 @@ MonoBehaviour:
   m_currentAfterburnerTime: 0
   m_currentAfterburnerRechargeTime: 0
   m_currentShipSpeed: 0
+  m_debuffs: []
   shipID: -1
   m_shouldRecieveInput: 1
   m_maxDockingSpeed: 225
@@ -1059,7 +1062,8 @@ MonoBehaviour:
   m_airBulletMat: {fileID: 2100000, guid: fa2cdc06b976c9f4086bb7433d3297d3, type: 2}
   m_organicBulletMat: {fileID: 2100000, guid: 61fcc58a9807b6f42b4362cf845fc8b8, type: 2}
   m_bulletRef: {fileID: 100000, guid: 39578d176d49f2e45b90bf2ec2d9eaad, type: 2}
-  m_bulletOffset: {x: -.100000001, y: .5, z: 0}
+  m_bulletOffsets:
+  - {x: 0, y: 0, z: 0}
   m_baseBulletStats:
     damage: 20
     reach: 25
@@ -1391,6 +1395,7 @@ MonoBehaviour:
     etherealDuration: 2
     slowsIncoming: 0
     speedReduction: 0
+  m_currentHP: 0
 --- !u!114 &11400036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1412,6 +1417,29 @@ MonoBehaviour:
     baseMaxShield: 100
     baseRechargeRate: .330000013
     baseRechargeDelay: 4.25
+    shouldFireBurst: 0
+    burstDamage: 25
+    burstRange: 10
+    burstMaxDamageRange: .100000001
+    burstMaxFalloff: .00100000005
+    debuffModifier: 0
+    canStaticShock: 0
+    staticChance: 0
+    staticDamage: 100
+    staticRange: 10
+    staticCooldown: 2
+    canFlashbang: 0
+    flashChance: 0
+    flashRange: 10
+    flashStunDuration: 2
+    absorbChance: 0
+    invisChance: 0
+    invisDuration: 1
+    deflectChance: 0
+  m_currentStats:
+    baseMaxShield: 100
+    baseRechargeRate: 1
+    baseRechargeDelay: 1
     shouldFireBurst: 0
     burstDamage: 0
     burstRange: 10

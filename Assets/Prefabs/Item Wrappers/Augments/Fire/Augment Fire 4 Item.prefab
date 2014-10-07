@@ -43,6 +43,7 @@ MonoBehaviour:
   m_baseCost: 0
   m_itemName: Fire Gem
   m_itemIcon: {fileID: 2800000, guid: c2a908a66c8b9f0468e12ad2ccaed8a3, type: 3}
+  m_inGameTexture: {fileID: 2100000, guid: 50bbd06df8b221b45a7c3d73f40c18cb, type: 2}
   m_itemPrefab: {fileID: 100000, guid: 9da4513aeb2e3924e933e1d3df9570b3, type: 2}
 --- !u!1001 &100100000
 Prefab:

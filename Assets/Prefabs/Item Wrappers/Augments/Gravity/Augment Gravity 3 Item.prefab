@@ -43,6 +43,7 @@ MonoBehaviour:
   m_baseCost: 0
   m_itemName: Gravity Cluster
   m_itemIcon: {fileID: 2800000, guid: fe409f7fb26d6784fb13b0b933fcd45a, type: 3}
+  m_inGameTexture: {fileID: 2100000, guid: d1277ec354fbc68409e38e8c7c8753d1, type: 2}
   m_itemPrefab: {fileID: 100000, guid: f84987a7495d4d343b4957e2c756cbbb, type: 2}
 --- !u!1001 &100100000
 Prefab:

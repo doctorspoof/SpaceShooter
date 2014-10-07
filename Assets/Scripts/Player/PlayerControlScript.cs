@@ -482,6 +482,11 @@ public class PlayerControlScript : Ship
     [RPC] void PropagateInvincibility(bool state)
     {
         GetComponent<HealthScript>().SetInvincible(state);
+        
+        if(state)
+            gameObject.layer = Layers.ignore;
+        else
+            gameObject.layer = Layers.player;
     }
     
     void MoveToDockPoint (Vector3 moveTo, Vector3 rotateTo)

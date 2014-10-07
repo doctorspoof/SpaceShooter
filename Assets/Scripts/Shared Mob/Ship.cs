@@ -42,10 +42,12 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
     [SerializeField]                string      m_pathToShieldObject = "Composite Collider/Shield";
 
-    [SerializeField]                AIShipOrder m_currentOrder = AIShipOrder.Idle;
+    [SerializeField]   protected    AIShipOrder m_currentOrder = AIShipOrder.Idle;
 
     [SerializeField] bool m_showMovementWaypoints;
 
+    // Augment drop
+    [SerializeField]                GameObject m_genericWorldSpaceAugment;
 
     // Engine attributes
     [SerializeField]protected   float   m_maxShipSpeed = 0f;
@@ -78,6 +80,8 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     Abilities m_abilities = null;
     public List<Debuff> m_debuffs = new List<Debuff>();
     bool m_isDisabled = false;
+    bool m_isInvisible = false;
+    int m_invisCachedLayer = 0;
 
 
     //bool coroutineIsRunning = false;
@@ -125,6 +129,27 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     {
         m_isDisabled = disabled;
     }
+    
+    public bool GetInvisible()
+    {
+        return m_isInvisible;
+    }
+    public void SetInvisible(bool invis)
+    {
+        if(invis)
+        {
+            this.renderer.enabled = false;
+            m_invisCachedLayer = this.gameObject.layer;
+            this.gameObject.layer = Layers.ignore;
+        }
+        else
+        {
+            this.renderer.enabled = true;
+            this.gameObject.layer = m_invisCachedLayer;
+            m_invisCachedLayer = Layers.ignore;
+        }
+    }
+    
     public bool IsSpecial()
     {
         return m_special;
@@ -268,6 +293,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     {
         return m_maxWeaponRange;
     }
+    
 
     public NetworkPlayer GetOwner()
     {
@@ -511,11 +537,16 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                         }
 
                         MoveTowardTarget(m_target.transform.position, GetCurrentMomentum());
-
-                        //tell self to fire
-                        Notify((int)AIShipNotifyInfo.Fire, null);
-                        //tell children to fire
-                        GetAINode().SendNotify(AIHierarchyRelation.Children, (int)AIShipNotifyInfo.Fire, null);
+                        float distanceToTarget = Vector3.Distance(m_target.transform.position, transform.position);
+                        float weaponDistance = GetMinimumWeaponRange();
+                        
+                        if(distanceToTarget < weaponDistance)
+                        {
+                            //tell self to fire 
+                            Notify((int)AIShipNotifyInfo.Fire, null);
+                            //tell children to fire
+                            GetAINode().SendNotify(AIHierarchyRelation.Children, (int)AIShipNotifyInfo.Fire, null);
+                        }
 
                         //Vector3 direction = Vector3.Normalize(m_target.transform.position - m_shipTransform.position);
                         //Ray ray = new Ray(m_shipTransform.position, direction);
@@ -569,7 +600,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                                 
                             MoveTowardTarget(m_waypoints[0], GetCurrentMomentum());
 
-                            if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_waypoints[0]) < 0.64f)
+                            if (Vector3.SqrMagnitude((Vector2)m_shipTransform.position - m_waypoints[0]) < 4.0f)
                             {
                                 m_waypoints.RemoveAt(0);
 
@@ -620,6 +651,9 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     void OnDestroy()
     {
         m_node.Destroy();
+        
+        if(Network.isServer)
+            DropHeldAugments();
     }
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
@@ -734,6 +768,102 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         }
 
     }
+
+    #region AugmentDropFuncs
+    void DropHeldAugments()
+    {
+        ItemWrapper[] allHeldAugs = GetAllHeldAndEquippedAugmentWrappers();
+        
+        for(int i = 0; i < allHeldAugs.Length; i++)
+        {
+            if(allHeldAugs[i] != null)
+            {
+                float rand = Random.Range(0f, 1f);
+                if(rand < 0.33f)
+                {
+                    Vector2 offset = Random.insideUnitCircle * 2.0f;
+                    GameObject item = (GameObject)Network.Instantiate(m_genericWorldSpaceAugment, transform.position + new Vector3(offset.x, offset.y, 0), Quaternion.identity, 0);
+                    item.GetComponent<ItemPickup>().SetItem(allHeldAugs[i]);
+                }
+            }
+        }
+    }
+    
+    ItemWrapper[] GetAllHeldAndEquippedAugmentWrappers()
+    {
+        List<ItemWrapper> augments = new List<ItemWrapper>();
+        
+        // Items held in inventory
+        Inventory inv = GetComponent<Inventory>();
+        if(inv != null)
+        {
+            ItemWrapper[] actualInv = inv.GetFullInventory();
+            for(int i = 0; i < actualInv.Length; i++)
+            {
+                if(actualInv[i] != null)
+                {
+                    augments.Add(actualInv[i]);
+                }
+            }
+        }
+        
+        // Items held in equipment (ie, currently equipped)
+        EquipmentTypeEngine eng = GetComponent<EquipmentTypeEngine>();
+        if(eng != null)
+        {
+            for(int i = 0; i < eng.GetMaxAugmentNum(); i++)
+            {
+                augments.Add(eng.GetItemWrapperInSlot(i));
+            }
+        }
+        
+        EquipmentTypePlating plating = GetComponent<EquipmentTypePlating>();
+        if(plating != null)
+        {
+            for(int i = 0; i < plating.GetMaxAugmentNum(); i++)
+            {
+                augments.Add(plating.GetItemWrapperInSlot(i));
+            }
+        }
+        
+        EquipmentTypeShield shield = GetComponent<EquipmentTypeShield>();
+        if(shield != null)
+        {
+            for(int i = 0; i < shield.GetMaxAugmentNum(); i++)
+            {
+                augments.Add(shield.GetItemWrapperInSlot(i));
+            }
+        }
+        
+        ItemWrapper[] weapAugs = GetAugmentsAttachedToWeapon();
+        if(weapAugs != null)
+        {
+            for(int i = 0; i < weapAugs.Length; i++)
+            {
+                augments.Add(weapAugs[i]);
+            }
+        }
+        
+        return augments.ToArray();
+    }
+    
+    protected virtual ItemWrapper[] GetAugmentsAttachedToWeapon()
+    {
+        EquipmentTypeWeapon weap = GetComponent<EquipmentTypeWeapon>();
+        if(weap != null)
+        {
+            ItemWrapper[] output = new ItemWrapper[weap.GetMaxAugmentNum()];
+            for(int i = 0; i < weap.GetMaxAugmentNum(); i++)
+            {
+                output[i] = weap.GetItemWrapperInSlot(i);
+            }
+            
+            return output;
+        }
+        
+        return null;
+    }
+    #endregion
 
     #region Debuff Functions
     public void ResetDebuffs()
@@ -1218,6 +1348,33 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     {
         switch ((AIShipOrder)orderID_)
         {
+            case AIShipOrder.Attack:
+            {
+                if(m_currentOrder == AIShipOrder.Move)
+                {
+                    float distanceToTarget = Vector3.Distance(transform.position, m_waypoints[0]);
+                    if(distanceToTarget > 50.0f)
+                    {
+                        //If we're far from CShip, attack the player
+                        List<AINode> children = GetAINode().GetChildren();
+                        foreach(AINode child in children)
+                        {
+                            child.ReceiveOrder((int)AIShipOrder.Attack, listOfParameters);
+                        }
+                        ReceiveOrder((int)AIShipOrder.Attack, listOfParameters);
+                        return true;
+                    }
+                    else
+                    {
+                        //If we're near the cship, ignore the player and carry on with the attack
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
             default:
                 {
                     return false;
@@ -1283,11 +1440,22 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
             case(AIShipNotifyInfo.Fire):
                 {
 
-                    EnemyWeaponScript weaponScript;
-                    if((weaponScript = GetComponent<EnemyWeaponScript>()) != null)
+                    EquipmentTypeWeapon weaponScript;
+                    if((weaponScript = GetComponent<EquipmentTypeWeapon>()) != null)
                     {
                         weaponScript.MobRequestsFire();
                         return true;
+                    }
+                    else
+                    {
+                        GameObject[] turrets = GetAttachedTurrets();
+                        if(turrets != null)
+                        {
+                            for(int i = 0; i < turrets.Length; i++)
+                            {
+                                turrets[i].GetComponent<EquipmentTypeWeapon>().MobRequestsFire();
+                            }
+                        }
                     }
                     
                     return false;
@@ -1371,7 +1539,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         if (collidedWithSomething)
         {
-            Debug.Log ("Move order hit object: " + hit.collider.name);
+            //Debug.Log ("Move order hit object: " + hit.collider.name);
             collidedObject = hit.collider;
         }
 

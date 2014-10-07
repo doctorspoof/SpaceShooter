@@ -175,7 +175,6 @@ public class AISpawnLeader : MonoBehaviour, IEntity, ICloneable
 
         //if no targets exist
         return null;
-
     }
 
     /// <summary>
@@ -186,8 +185,10 @@ public class AISpawnLeader : MonoBehaviour, IEntity, ICloneable
     {
         GameObject obj = (GameObject)Instantiate(gameObject);
         obj.SetActive(true);
+        
         AISpawnLeader leadComponent = obj.GetComponent<AISpawnLeader>();
         leadComponent.targetTags = new List<string>(targetTags);
+        
         return obj;
     }
 

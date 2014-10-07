@@ -1141,9 +1141,9 @@ public class ProceduralLevelGenerator : MonoBehaviour
             Debug.Log ("Destroying " + uniqueObjsInSun[i] + "...");
             Destroy(uniqueObjsInSun[i].gameObject);
         }
-        
+        */
         // Now check all planet ring levels, and 'circlecast' to destroy any asteroids that would impede their orbit
-        CirclecastPlanetsToAbsorbAsteroids();*/
+        //CirclecastPlanetsToAbsorbAsteroids();
         #endregion
         
         #region ThirdPass

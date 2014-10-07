@@ -46,7 +46,7 @@ public class AttackFromBehind : IAttack
                 ship.rigidbody.AddForce(new Vector2(Random.Range(-1, 1), Random.Range(-1, 1)) * ship.GetCurrentMomentum() * Time.deltaTime);
             }
             
-            EnemyWeaponScript weaponScript = ship.GetComponent<EnemyWeaponScript>();
+            EquipmentTypeWeapon weaponScript = ship.GetComponent<EquipmentTypeWeapon>();
             weaponScript.MobRequestsFire();
         }
 
@@ -76,4 +76,16 @@ public class AttackFromBehind : IAttack
 
     }
 
+    EquipmentTypeWeapon GetWeaponScript(GameObject ship)
+    {
+        EquipmentTypeWeapon weap = ship.GetComponent<EquipmentTypeWeapon>();
+        
+        if(weap != null)
+            return weap;
+        else
+        {
+            //TODO: Find turrets here
+            return null;
+        }
+    }
 }

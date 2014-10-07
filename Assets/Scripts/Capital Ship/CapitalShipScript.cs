@@ -182,7 +182,7 @@ public sealed class CapitalShipScript : Ship
 
         if (Network.isServer)
         {
-            ResetAttachedTurretsFromWrappers();
+            //ResetAttachedTurretsFromWrappers();
         }
         
         ResetShipSpeed();

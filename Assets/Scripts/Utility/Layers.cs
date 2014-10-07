@@ -57,7 +57,7 @@ public sealed class Layers
             case capital:
                 return GetCapitalMask (type);
                 
-            case playerBullet:
+            case playerBullet: case player:
                 return GetPlayerBulletMask (type);
                 
             case enemyBullet:

@@ -30,6 +30,7 @@ public class ItemWrapper : MonoBehaviour
     
     [SerializeField]                    string m_itemName = null;               //!< The name of the item.
     [SerializeField]                    Texture m_itemIcon = null;              //!< The icon used in the GUI of the item.
+    [SerializeField]                    Material m_inGameTexture = null;        //!< What the object will look like if dropped.
     [SerializeField]                    GameObject m_itemPrefab = null;         //!< A reference to the prefab of the item.
 
     #endregion Unity modifiable variables
@@ -43,6 +44,10 @@ public class ItemWrapper : MonoBehaviour
 
 
     #region getset
+    public Material GetItemMaterial()
+    {
+        return m_inGameTexture;
+    }
 
     public ItemType GetItemType()
     {

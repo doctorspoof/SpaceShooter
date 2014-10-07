@@ -239,43 +239,46 @@ public class GUIInGameHUDScreen : BaseGUIScreen
         {
             for(int i = 0; i < ability.Count; i++)
             {
-                Texture text = null;
-                
-                if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityGravityControl)))
+                if(ability[i].IsActive())
                 {
-                    text = m_abilityGravityTexture;
-                }
-                else if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityTeleportTargetted)))
-                {
-                    text = m_abilityBlinkTexture;
-                }
-                else if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityTeleportRandom)))
-                {
-                    text = m_abilityEmergencyTeleportTexture;
-                }
-                
-                GUI.DrawTexture (new Rect(0 + (80 * i), 820, 80, 80), text);
-                
-                if(ability[i].IsActive() && ability[i].HasCooled())
-                {
-                    switch(i)
+                    Texture text = null;
+                    
+                    if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityGravityControl)))
                     {
-                        case 0:
+                        text = m_abilityGravityTexture;
+                    }
+                    else if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityTeleportTargetted)))
+                    {
+                        text = m_abilityBlinkTexture;
+                    }
+                    else if(Object.ReferenceEquals (ability[i].GetType(), typeof(AbilityTeleportRandom)))
+                    {
+                        text = m_abilityEmergencyTeleportTexture;
+                    }
+                    
+                    GUI.DrawTexture (new Rect(0 + (80 * i), 820, 80, 80), text);
+                    
+                    if(ability[i].IsActive() && ability[i].HasCooled())
+                    {
+                        switch(i)
                         {
-                            GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "C", "No Box");
-                            break;
-                        }
-                        case 1:
-                        {
-                            GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "V", "No Box");
-                            break;
-                        }
-                        case 2:
-                        {
-                            GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "B", "No Box");
+                            case 0:
+                            {
+                                GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "C", "No Box");
+                                break;
+                            }
+                            case 1:
+                            {
+                                GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "V", "No Box");
+                                break;
+                            }
+                            case 2:
+                            {
+                                GUI.Label(new Rect(0 + (80 * i), 820, 80, 80), "B", "No Box");
                             break;
                         }
                     }
+                }
                 }
             }
         }

@@ -107,7 +107,6 @@ public class EnemySpawnManagerScript : MonoBehaviour
     
 
     #region getset
-
     public bool GetShouldStart()
     {
         return m_shouldStart;

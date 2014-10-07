@@ -38,6 +38,7 @@ GameObject:
   - 114: {fileID: 11400022}
   - 114: {fileID: 11400036}
   - 114: {fileID: 11400042}
+  - 135: {fileID: 13500000}
   m_Layer: 11
   m_Name: EnemyHeavy
   m_TagString: Enemy
@@ -56,6 +57,8 @@ GameObject:
   - 33: {fileID: 3300004}
   - 23: {fileID: 2300004}
   - 114: {fileID: 11400006}
+  - 114: {fileID: 11400048}
+  - 148: {fileID: 14800004}
   m_Layer: 11
   m_Name: Rear Turret
   m_TagString: EnemyTurret
@@ -108,6 +111,8 @@ GameObject:
   - 33: {fileID: 3300010}
   - 23: {fileID: 2300010}
   - 114: {fileID: 11400008}
+  - 114: {fileID: 11400046}
+  - 148: {fileID: 14800002}
   m_Layer: 11
   m_Name: Front Turret
   m_TagString: EnemyTurret
@@ -471,7 +476,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 52.3518028, y: 144.368973, z: 10}
+  m_LocalPosition: {x: -249.458786, y: 24.1528931, z: 10}
   m_LocalScale: {x: 6, y: 6, z: 1}
   m_Children:
   - {fileID: 400010}
@@ -1302,12 +1307,14 @@ MonoBehaviour:
   m_ownerSt: 
   m_shipWidth: 6
   m_shipHeight: 6
-  m_ramDamageMultiplier: 3
+  m_ramDamageMultiplier: 1
   m_manuallySetWidthAndHeight: 0
   m_special: 0
   m_pathToShieldObject: Composite Collider/Shield
   m_currentOrder: 0
   m_showMovementWaypoints: 0
+  m_genericWorldSpaceAugment: {fileID: 100000, guid: b5ab0e5034097544a93202347ea02001,
+    type: 2}
   m_maxShipSpeed: 240
   m_rotateSpeed: 60
   m_strafeSpeed: 0
@@ -1318,6 +1325,7 @@ MonoBehaviour:
   m_currentAfterburnerTime: 0
   m_currentAfterburnerRechargeTime: 0
   m_currentShipSpeed: 0
+  m_debuffs: []
   shipID: -1
   m_bountyAmount: 40
   m_allowedAttacksForShip: []
@@ -1350,10 +1358,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a7f7358585a6e4c98b65894080448e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_recoilTime: .75
-  m_shotsPerVolley: 1
-  m_spreadFactor: 0
-  m_evenSpread: 0
   m_rotateSpeed: 4
   m_bulletRef: {fileID: 100000, guid: 8e81e4265a8ac3f408fb9a2c54ef4a40, type: 2}
 --- !u!114 &11400008
@@ -1367,10 +1371,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11a7f7358585a6e4c98b65894080448e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_recoilTime: .600000024
-  m_shotsPerVolley: 3
-  m_spreadFactor: 2.5
-  m_evenSpread: 1
   m_rotateSpeed: 2
   m_bulletRef: {fileID: 100000, guid: 303458eecf11e2c44a6887f4db349cd0, type: 2}
 --- !u!114 &11400010
@@ -1629,7 +1629,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6b12c091bf20d14d8c226574162d1e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_numAugments: 1
+  m_numAugments: 2
   m_augmentSlots: []
   m_augmentItemSlots: []
   m_baseStats:
@@ -1698,6 +1698,196 @@ MonoBehaviour:
     hasLongTeleport: 0
     longTeleRange: 50
     longTeleCooldown: 60
+--- !u!114 &11400046
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ca482cb06ddf747a26439e47b56da0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 2
+  m_augmentSlots: []
+  m_augmentItemSlots: []
+  m_fireBulletMat: {fileID: 2100000, guid: 1aeb4bcb580717d48bd690e2a909fea5, type: 2}
+  m_iceBulletMat: {fileID: 2100000, guid: 2c678626dc2f68f4bbea62d53923abad, type: 2}
+  m_earthBulletMat: {fileID: 2100000, guid: 18d1b68d7d4b07e46888cf093b0116fe, type: 2}
+  m_lightningBulletMat: {fileID: 2100000, guid: a35ee163dc26c2b45bcc774f61c4e2cc,
+    type: 2}
+  m_lightBulletMat: {fileID: 2100000, guid: 6dae19961b9ddc84295bbac026ea07a0, type: 2}
+  m_darkBulletMat: {fileID: 2100000, guid: 980084def3ecfae4192c5784f677658d, type: 2}
+  m_spiritBulletMat: {fileID: 2100000, guid: 52cd4f91e0fbf6c4886e4417e1921612, type: 2}
+  m_gravityBulletMat: {fileID: 2100000, guid: 3bfcb8daa91b95d40ae236605d76fc3e, type: 2}
+  m_airBulletMat: {fileID: 2100000, guid: 966f691a1c17d9447b352dc5e7143967, type: 2}
+  m_organicBulletMat: {fileID: 2100000, guid: 09dd47b4870c3a542b8235f8ca9c3493, type: 2}
+  m_bulletRef: {fileID: 100000, guid: 46575fa12edd2e6439c25e3d44d27e1b, type: 2}
+  m_bulletOffsets: []
+  m_baseBulletStats:
+    damage: 10
+    reach: 18
+    lifetime: 2.5
+    isBeam: 0
+    beamRechargeDelay: .150000006
+    aoe:
+      isAOE: 0
+      aoeRange: 0
+      aoeMaxDamageRange: 0
+      aoeExplosiveForce: 0
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 10
+      homingTurnRate: 5
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 0
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
+  m_baseWeaponReloadTime: .300000012
+  m_currentBulletStats:
+    damage: 0
+    reach: 0
+    lifetime: 1
+    isBeam: 0
+    beamRechargeDelay: .150000006
+    aoe:
+      isAOE: 0
+      aoeRange: 0
+      aoeMaxDamageRange: 0
+      aoeExplosiveForce: 0
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 0
+      homingTurnRate: 0
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 0
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
+  m_currentWeaponReloadTime: 0
+--- !u!114 &11400048
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ca482cb06ddf747a26439e47b56da0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_numAugments: 2
+  m_augmentSlots: []
+  m_augmentItemSlots: []
+  m_fireBulletMat: {fileID: 2100000, guid: 1aeb4bcb580717d48bd690e2a909fea5, type: 2}
+  m_iceBulletMat: {fileID: 2100000, guid: 2c678626dc2f68f4bbea62d53923abad, type: 2}
+  m_earthBulletMat: {fileID: 2100000, guid: 18d1b68d7d4b07e46888cf093b0116fe, type: 2}
+  m_lightningBulletMat: {fileID: 2100000, guid: a35ee163dc26c2b45bcc774f61c4e2cc,
+    type: 2}
+  m_lightBulletMat: {fileID: 2100000, guid: 6dae19961b9ddc84295bbac026ea07a0, type: 2}
+  m_darkBulletMat: {fileID: 2100000, guid: 980084def3ecfae4192c5784f677658d, type: 2}
+  m_spiritBulletMat: {fileID: 2100000, guid: 52cd4f91e0fbf6c4886e4417e1921612, type: 2}
+  m_gravityBulletMat: {fileID: 2100000, guid: 3bfcb8daa91b95d40ae236605d76fc3e, type: 2}
+  m_airBulletMat: {fileID: 2100000, guid: 966f691a1c17d9447b352dc5e7143967, type: 2}
+  m_organicBulletMat: {fileID: 2100000, guid: 09dd47b4870c3a542b8235f8ca9c3493, type: 2}
+  m_bulletRef: {fileID: 100000, guid: 46575fa12edd2e6439c25e3d44d27e1b, type: 2}
+  m_bulletOffsets: []
+  m_baseBulletStats:
+    damage: 30
+    reach: 21
+    lifetime: 3.5
+    isBeam: 0
+    beamRechargeDelay: .150000006
+    aoe:
+      isAOE: 0
+      aoeRange: 0
+      aoeMaxDamageRange: 0
+      aoeExplosiveForce: 0
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 10
+      homingTurnRate: 5
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 0
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
+  m_baseWeaponReloadTime: .699999988
+  m_currentBulletStats:
+    damage: 0
+    reach: 0
+    lifetime: 1
+    isBeam: 0
+    beamRechargeDelay: .150000006
+    aoe:
+      isAOE: 0
+      aoeRange: 0
+      aoeMaxDamageRange: 0
+      aoeExplosiveForce: 0
+      aoeMaxFalloff: .00100000005
+    homing:
+      isHoming: 0
+      homingRange: 0
+      homingTurnRate: 0
+      target: {fileID: 0}
+    piercing:
+      isPiercing: 0
+      maxPiercings: 0
+      pierceModifier: 0
+    special:
+      chanceToJump: 0
+      chanceToDisable: 0
+      disableDuration: 0
+      slowDuration: 0
+      dotDuration: 0
+      dotEffect: 0
+    firer: {fileID: 0}
+    appliedElements: 
+  m_currentWeaponReloadTime: 0
+--- !u!135 &13500000
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100002}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 4
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -1720,6 +1910,30 @@ NetworkView:
   m_Enabled: 1
   m_StateSynchronization: 1
   m_Observed: {fileID: 11400002}
+  m_ViewID:
+    m_ID: 0
+    m_Type: 0
+--- !u!148 &14800002
+NetworkView:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100010}
+  m_Enabled: 1
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 400010}
+  m_ViewID:
+    m_ID: 0
+    m_Type: 0
+--- !u!148 &14800004
+NetworkView:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100004}
+  m_Enabled: 1
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 400004}
   m_ViewID:
     m_ID: 0
     m_Type: 0

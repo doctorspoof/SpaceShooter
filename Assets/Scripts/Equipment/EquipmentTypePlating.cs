@@ -52,7 +52,7 @@ public sealed class EquipmentTypePlating : BaseEquipment
     [SerializeField]    PlatingProperties   m_baseStats     = null;                     //!< The base stats of the plating.
     [SerializeField]    PlatingProperties   m_currentStats  = new PlatingProperties();  //!< The current stats of the plating.
 
-                        int                 m_currentHP     = 0;                        //!< The current amount of HP in the plating.
+    [SerializeField]    int                 m_currentHP     = 0;                        //!< The current amount of HP in the plating.
                         float               m_regenFloatCatch = 0.0f;
                         
     Element m_cachedMajorElement = Element.NULL;

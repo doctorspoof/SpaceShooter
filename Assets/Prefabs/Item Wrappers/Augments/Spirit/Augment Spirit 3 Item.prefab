@@ -43,6 +43,7 @@ MonoBehaviour:
   m_baseCost: 0
   m_itemName: Spirit Cluster
   m_itemIcon: {fileID: 2800000, guid: 917188fea7e894a4987e359292ff8408, type: 3}
+  m_inGameTexture: {fileID: 2100000, guid: 496fbcc250811c647a064a36b568e6d8, type: 2}
   m_itemPrefab: {fileID: 100000, guid: 485c8a9f459c14845a4b2bf9a1661540, type: 2}
 --- !u!1001 &100100000
 Prefab:

@@ -60,6 +60,8 @@ public class Inventory : MonoBehaviour
         }
         
         m_inventory[index] = item;
+        int itemID = item.GetItemID();
+        networkView.RPC ("AddItemAtLocation", RPCMode.Others, itemID, index);
         return true;
     }
     public bool SetItemIntoInventory(ItemWrapper item)
@@ -69,7 +71,9 @@ public class Inventory : MonoBehaviour
             if(m_inventory[i] == null)
             {
                 m_inventory[i] = item;
-                Debug.Log ("Successfully placed object at index " + i);
+                //Debug.Log ("Successfully placed object at index " + i);
+                int itemID = item.GetItemID();
+                networkView.RPC ("NewItemAtLocation", RPCMode.Others, itemID, i);
                 return true;
             }
         }
@@ -85,6 +89,7 @@ public class Inventory : MonoBehaviour
             {
                 m_inventory[i] = null;
                 Debug.Log ("Removed item " + item.GetItemName());
+                networkView.RPC ("RemoveItemAtLocation", RPCMode.Others, i);
                 return true;
             }
         }
@@ -178,6 +183,15 @@ public class Inventory : MonoBehaviour
     [RPC] void PropagateCashAmount(int amount)
     {
         m_cash = amount;
+    }
+    [RPC] void NewItemAtLocation(int itemID, int position)
+    {
+        ItemWrapper item = GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID);
+        m_inventory[position] = item;
+    }
+    [RPC] void RemoveItemAtLocation(int position)
+    {
+        m_inventory[position] = null;
     }
     #endregion
     

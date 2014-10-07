@@ -121,9 +121,6 @@ public class HealthScript : MonoBehaviour
         
         if(!m_platingCache)
             Debug.LogError ("Object with health script '" + gameObject.name + "' has no attached plating!");
-            
-        if(!m_shieldCache)
-            Debug.LogError ("Object with health script '" + gameObject.name + "' has no attached shield!");
 	}
 	
 	// Update is called once per frame
@@ -180,7 +177,7 @@ public class HealthScript : MonoBehaviour
 
                     float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
                     int PCdamage = (int)(magnitude * shipComponent.GetRamDam() * 10);
-                    Debug.Log("Applying " + PCdamage + " damage to PC.");
+                    //Debug.Log("Applying " + PCdamage + " damage to PC.");
                     HealthScript health = collision.gameObject.GetComponent<HealthScript>();
                     health.DamageMob(PCdamage, this.gameObject);
                 }

@@ -43,6 +43,7 @@ MonoBehaviour:
   m_baseCost: 0
   m_itemName: Dark Gem
   m_itemIcon: {fileID: 2800000, guid: ccb42af386eee4644913dd6f378af8e8, type: 3}
+  m_inGameTexture: {fileID: 2100000, guid: 3568c4619d581bb48828fc9ca0d5037c, type: 2}
   m_itemPrefab: {fileID: 100000, guid: 6dcb67769d6997147a919ea2dcc85873, type: 2}
 --- !u!1001 &100100000
 Prefab:

@@ -19,7 +19,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     [SerializeField]                        Material            m_organicBulletMat;
 
     [SerializeField]                        GameObject          m_bulletRef;
-    [SerializeField]                        Vector3             m_bulletOffset;
+    //[SerializeField]                        Vector3             m_bulletOffset;
+    [SerializeField]                        Vector3[]           m_bulletOffsets;
 
     // Base stats to reset to and start from
     [SerializeField]                        BulletProperties    m_baseBulletStats = null;
@@ -33,6 +34,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
 
 
     // Internal usage members
+    int m_currentFirePoint = 0;
     Element m_cachedMajorElement = Element.NULL;
     GameObject m_currentHomingTarget = null;
     GameObject m_currentBeam = null;
@@ -215,6 +217,14 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     #endregion
 
     #region Weapon Interaction functions
+    public float GetBulletRange()
+    {
+        return m_currentBulletStats.reach;
+    }
+    public float GetBulletSpeed()
+    {
+        return m_currentBulletStats.reach / m_currentBulletStats.lifetime;
+    }
     public Element GetMajorityElement()
     {
         if(m_cachedMajorElement == Element.NULL)
@@ -365,8 +375,10 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             GameObject bullet = Network.Instantiate(m_bulletRef, this.transform.position, this.transform.rotation, 0) as GameObject;
             bullet.transform.parent = this.transform;
             bullet.transform.localScale = new Vector3(bullet.transform.localScale.x, 0f, bullet.transform.localScale.z);
-            bullet.GetComponent<BeamBulletScript>().SetOffset(m_bulletOffset);
+            bullet.GetComponent<BeamBulletScript>().SetOffset(m_bulletOffsets[m_currentFirePoint]);
             bullet.GetComponent<BeamBulletScript>().SetFirer(gameObject);
+            
+            IncrementFirePos();
             
             bullet.GetComponent<BeamBulletScript>().ParentBeamToFirer(gscCache.GetNameFromNetworkPlayer(gameObject.GetComponent<PlayerControlScript>().GetOwner()));
             m_currentBeam = bullet;
@@ -384,14 +396,24 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         m_currentReloadCounter = 0.0f;
     }
     
+    void IncrementFirePos()
+    {
+        ++m_currentFirePoint;
+        
+        if(m_currentFirePoint >= m_bulletOffsets.Length)
+            m_currentFirePoint = 0;
+    }
+    
     [RPC] void SpawnBasicBullet(NetworkViewID id)
     {
-        GameObject bullet = Instantiate(m_bulletRef, transform.position + (transform.rotation * m_bulletOffset), transform.rotation) as GameObject;
+        GameObject bullet = Instantiate(m_bulletRef, transform.position + (transform.rotation * m_bulletOffsets[m_currentFirePoint]), transform.rotation) as GameObject;
         bullet.networkView.viewID = id;
         Bullet bbs = bullet.GetComponent<Bullet>();
         bbs.SetHomingTarget(m_currentHomingTarget);
         bbs.SetFirer(gameObject);
         bbs.CloneProperties(m_currentBulletStats);
+        
+        IncrementFirePos();
         
         if(transform.rigidbody)
         {
@@ -456,7 +478,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
             }
         }
         
-        Debug.Log ("Applying material: " + matToSet);
+        //Debug.Log ("Applying material: " + matToSet);
         bullet.renderer.material = matToSet;
     }
     

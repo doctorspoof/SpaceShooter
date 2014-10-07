@@ -43,6 +43,7 @@ MonoBehaviour:
   m_baseCost: 0
   m_itemName: Lightning Cluster
   m_itemIcon: {fileID: 2800000, guid: bc2db2e77b5498147b1c727b597c1746, type: 3}
+  m_inGameTexture: {fileID: 2100000, guid: 9b56846104c340941b8425cf92761a6c, type: 2}
   m_itemPrefab: {fileID: 100000, guid: f5ed1983b476a6c4f8ae5f51ff28df3d, type: 2}
 --- !u!1001 &100100000
 Prefab:

@@ -6,11 +6,11 @@ public class AttackStrafeLeft : IAttack
 
     public override void Attack(ShipEnemy ship, GameObject target)
     {
-		float timeTakenToTravel = Vector3.Distance(target.transform.position, ship.transform.position) / ship.GetComponent<EnemyWeaponScript>().GetBulletSpeed();
+        float timeTakenToTravel = Vector3.Distance(target.transform.position, ship.transform.position) / ship.GetComponent<EquipmentTypeWeapon>().GetBulletSpeed();
 		Vector3 predictedTargetPos = target.transform.position + (target.rigidbody.velocity * timeTakenToTravel);
 		ship.RotateTowards(predictedTargetPos);
 
-        EnemyWeaponScript weaponScript = ship.GetComponent<EnemyWeaponScript>();
+        EquipmentTypeWeapon weaponScript = ship.GetComponent<EquipmentTypeWeapon>();
 
         float weaponRange = ship.GetMinimumWeaponRange();
 

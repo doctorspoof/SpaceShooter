@@ -43,6 +43,7 @@ MonoBehaviour:
   m_baseCost: 0
   m_itemName: Organic Orb
   m_itemIcon: {fileID: 2800000, guid: 0acffe6abcdf05c49b6ae4f719c41734, type: 3}
+  m_inGameTexture: {fileID: 2100000, guid: 8551147160ca8a04fbf3155d8859be8e, type: 2}
   m_itemPrefab: {fileID: 100000, guid: b77ecfcf0624c99409b32df478cb8abb, type: 2}
 --- !u!1001 &100100000
 Prefab:

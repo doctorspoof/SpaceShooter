@@ -36,7 +36,11 @@ public abstract class BaseEquipment : MonoBehaviour
         }
         catch (System.Exception ex) 
         {
-            Debug.Log ("Exception caught: " + ex.Message);
+            string output = "Exception caught: " + ex.Message;
+            if(index > m_augmentItemSlots.Length)
+                output += " " + index + " > " + m_augmentItemSlots.Length;    
+                
+            Debug.Log (output);
         }
         
         Debug.Log ("Couldn't access item at index " + index);
@@ -110,7 +114,7 @@ public abstract class BaseEquipment : MonoBehaviour
         {
             ResizeAugments (m_numAugments);
         }
-        
+ 
         m_augmentItemSlots = new ItemWrapper[m_numAugments];
 
         ResetToBaseStats();

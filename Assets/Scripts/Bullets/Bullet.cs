@@ -631,7 +631,7 @@ public sealed class Bullet : MonoBehaviour
     GameObject FindClosestTarget()
     {
         Collider[] enemyCollidersInRange = Physics.OverlapSphere(transform.position, m_properties.homing.homingRange, m_homingMask);
-        Debug.Log ("Found " + enemyCollidersInRange.Length + " objects in range");
+        //Debug.Log ("Found " + enemyCollidersInRange.Length + " objects in range");
         Rigidbody[] enemiesInRange = enemyCollidersInRange.GetAttachedRigidbodies();
         
         GameObject enemy = null;
@@ -641,7 +641,7 @@ public sealed class Bullet : MonoBehaviour
         {
             for(int i = 0; i < enemiesInRange.Length; i++)
             {
-                Debug.Log ("Trying to access enemy #" + i);
+                //Debug.Log ("Trying to access enemy #" + i);
                 float dist = Vector3.Distance(transform.position, enemiesInRange[i].transform.position);
                 if(dist < shortestDistance)
                 {

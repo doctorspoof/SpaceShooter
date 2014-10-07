@@ -102,7 +102,7 @@
 public sealed class EquipmentTypeShield : BaseEquipment 
 {
     [SerializeField]    ShieldProperties    m_baseStats     = null;
-                        ShieldProperties    m_currentStats  = new ShieldProperties();
+    [SerializeField]    ShieldProperties    m_currentStats  = new ShieldProperties();
                         
     // Current shield stats
                         int                 m_currentShieldValue = 100;
@@ -111,7 +111,16 @@ public sealed class EquipmentTypeShield : BaseEquipment
                         bool                m_shieldStatus = true;
                         
     Element m_cachedMajorElement = Element.NULL;
+    Abilities           m_abilities = null;                         //!< A reference to the abilities component of the ship.
+    Ship                m_ship = null;
     
+    void Awake()
+    {
+        m_abilities = GetComponent<Abilities>();
+        m_ship = GetComponent<Ship>();
+        
+        base.Awake();
+    }
 
     protected override void ResetToBaseStats ()
     {
@@ -193,7 +202,76 @@ public sealed class EquipmentTypeShield : BaseEquipment
         }
         
         //After all is done, update current stats
+        UpdateAbilities();
         m_currentShieldValue = m_currentStats.baseMaxShield;
+    }
+    
+    
+    void UpdateAbilities()
+    {
+        if (m_abilities != null)
+        {
+            UpdateShieldFirestormCollapse();
+            UpdateShieldFlashbangCollapse();
+            UpdateShieldSlipawayCollapse();
+        }
+    }
+    
+    void UpdateShieldFirestormCollapse()
+    {
+        if(m_currentStats.shouldFireBurst)
+        {
+            AbilityShieldCollapseExplode firestorm = m_abilities.Unlock<AbilityShieldCollapseExplode>();
+            
+            firestorm.SetEffectRange(m_currentStats.burstRange);
+            int mask = Layers.GetLayerMask (Layers.player, MaskType.AoE);
+            Debug.LogWarning ("Set mask " + mask);
+            firestorm.SetAoEMask(mask);
+            firestorm.SetDamage(m_currentStats.burstDamage);
+            firestorm.SetMaxDamRange(m_currentStats.burstMaxDamageRange);
+            
+            firestorm.SetMaxCooldown(99999f);
+            firestorm.ImmediatelyCool();
+        }
+        else
+        {
+            m_abilities.Lock<AbilityShieldCollapseExplode>(true);
+        }
+    }
+    void UpdateShieldFlashbangCollapse()
+    {
+        if(m_currentStats.canFlashbang)
+        {
+            AbilityShieldCollapseFlash flash = m_abilities.Unlock<AbilityShieldCollapseFlash>();
+            
+            flash.SetDuration(m_currentStats.flashRange);
+            int mask = Layers.GetLayerMask (Layers.player, MaskType.AoE);
+            Debug.LogWarning ("Set mask " + mask);
+            flash.SetAoeMask(mask);
+            
+            flash.SetMaxCooldown(99999f);
+            flash.ImmediatelyCool();
+        }
+        else
+        {
+            m_abilities.Lock<AbilityShieldCollapseFlash>(true);
+        }
+    }
+    void UpdateShieldSlipawayCollapse()
+    {
+        if(m_currentStats.invisChance > 0.0f)
+        {
+            AbilityShieldCollapseInvisible invis = m_abilities.Unlock<AbilityShieldCollapseInvisible>();
+            
+            invis.SetDuration(m_currentStats.invisDuration);
+            
+            invis.SetMaxCooldown(99999f);
+            invis.ImmediatelyCool();
+        }
+        else
+        {
+            m_abilities.Lock<AbilityShieldCollapseInvisible>(true);
+        }
     }
     
     #region Shield Value Interaction
@@ -228,6 +306,7 @@ public sealed class EquipmentTypeShield : BaseEquipment
                 if(m_currentShieldValue >= m_currentStats.baseMaxShield)
                 {
                     m_currentShieldValue = m_currentStats.baseMaxShield;
+                    OnShieldRaise();
                 }
             }
             else
@@ -301,7 +380,39 @@ public sealed class EquipmentTypeShield : BaseEquipment
         GetComponent<HealthScript>().ShieldOnOff(false);
         m_shieldStatus = false;
         
+        if(m_currentStats.shouldFireBurst)
+        {
+            m_abilities.ActivateAbility<AbilityShieldCollapseExplode>(gameObject);
+        }
         
+        if(m_currentStats.canFlashbang)
+        {
+            float chance = Random.Range(0.0f, 1.0f);
+            
+            if(chance < m_currentStats.flashChance)
+            {
+                m_abilities.ActivateAbility<AbilityShieldCollapseFlash>(gameObject);
+            }
+        }
+        
+        if(m_currentStats.invisChance > 0.0f)
+        {
+            float chance = Random.Range(0.0f, 1.0f);
+            
+            if(chance < m_currentStats.invisChance)
+            {
+                m_abilities.ActivateAbility<AbilityShieldCollapseInvisible>(gameObject);
+            }
+        }
+    }
+    void OnShieldRaise()
+    {
+        if(m_abilities)
+        {
+            m_abilities.CoolImmediately<AbilityShieldCollapseExplode>();
+            m_abilities.CoolImmediately<AbilityShieldCollapseFlash>();
+            m_abilities.CoolImmediately<AbilityShieldCollapseInvisible>();
+        }
     }
     
     Element DetermineMajorityElement()
