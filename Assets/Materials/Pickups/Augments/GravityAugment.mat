@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: GravityAugment
-  m_Shader: {fileID: 30, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: a84ee9b8f41e4444480cd45b4652d822, type: 3}
   m_ShaderKeywords: []
   m_CustomRenderQueue: -1
   m_SavedProperties:
@@ -17,10 +17,34 @@ Material:
         first:
           name: _MainTex
         second:
-          m_Texture: {fileID: 2800000, guid: fe409f7fb26d6784fb13b0b933fcd45a, type: 3}
+          m_Texture: {fileID: 2800000, guid: f9fd233e92089cc43ba09b7bc0df6be6, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
-    m_Floats: {}
+    m_Floats:
+      data:
+        first:
+          name: _FrameNumX
+        second: 4
+      data:
+        first:
+          name: _FrameNumY
+        second: 8
+      data:
+        first:
+          name: _FPS
+        second: 30
+      data:
+        first:
+          name: _StoredDeltaTime
+        second: 0
+      data:
+        first:
+          name: _CurrentFrame
+        second: 0
+      data:
+        first:
+          name: _TESTOUTPUT
+        second: 0
     m_Colors:
       data:
         first:

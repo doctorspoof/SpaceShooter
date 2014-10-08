@@ -423,8 +423,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         if(m_cachedMajorElement == Element.NULL)
             DetermineMajorityElement();
             
-        Material matToSet = null;
-        switch(m_cachedMajorElement)
+        //Material matToSet = null;
+        /*switch(m_cachedMajorElement)
         {
             case Element.Fire:
             {
@@ -476,10 +476,13 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
                 matToSet = m_iceBulletMat;
                 break;
             }
-        }
+        }*/
         
         //Debug.Log ("Applying material: " + matToSet);
-        bullet.renderer.material = matToSet;
+        //bullet.renderer.material = matToSet;
+        
+        if(m_currentBulletStats.appliedElements.Count > 0)
+            bullet.renderer.enabled = false;
     }
     
     [RPC] void PropagateTarget(NetworkViewID id, bool unset)

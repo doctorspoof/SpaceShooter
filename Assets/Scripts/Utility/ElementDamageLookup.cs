@@ -23,7 +23,11 @@ public static class ElementDamageLookup
         if(firer == Element.NULL || victim == Element.NULL)
             return 1f;
         else
-            return m_percentageTable[(int)firer, (int)victim];
+        {
+            //Debug.Log ("Attempting to match element " + firer + "F vs element " + victim + "V");
+        
+            return m_percentageTable[(int)firer - 1, (int)victim - 1];
+        }
     }
     public static float GetDamagePercentage(int firer, int victim)
     {

@@ -225,7 +225,6 @@ public sealed class EquipmentTypeShield : BaseEquipment
             
             firestorm.SetEffectRange(m_currentStats.burstRange);
             int mask = Layers.GetLayerMask (Layers.player, MaskType.AoE);
-            Debug.LogWarning ("Set mask " + mask);
             firestorm.SetAoEMask(mask);
             firestorm.SetDamage(m_currentStats.burstDamage);
             firestorm.SetMaxDamRange(m_currentStats.burstMaxDamageRange);
@@ -246,7 +245,6 @@ public sealed class EquipmentTypeShield : BaseEquipment
             
             flash.SetDuration(m_currentStats.flashRange);
             int mask = Layers.GetLayerMask (Layers.player, MaskType.AoE);
-            Debug.LogWarning ("Set mask " + mask);
             flash.SetAoeMask(mask);
             
             flash.SetMaxCooldown(99999f);

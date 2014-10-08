@@ -213,6 +213,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!148 &61916494
 NetworkView:
   m_ObjectHideFlags: 0
@@ -529,6 +531,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!23 &249488144
 Renderer:
   m_ObjectHideFlags: 0
@@ -696,6 +700,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!23 &283628326
 Renderer:
   m_ObjectHideFlags: 0
@@ -2197,6 +2203,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!148 &800427923
 NetworkView:
   m_ObjectHideFlags: 0
@@ -3017,15 +3025,15 @@ Prefab:
     m_Modifications:
     - target: {fileID: 400008, guid: b72db0eaec746f14c9563be6201d881e, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -120.446724
+      value: -98.8475647
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: b72db0eaec746f14c9563be6201d881e, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 17.4511662
+      value: 33.2351646
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: b72db0eaec746f14c9563be6201d881e, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 150.000046
+      value: 150.000031
       objectReference: {fileID: 0}
     - target: {fileID: 400008, guid: b72db0eaec746f14c9563be6201d881e, type: 2}
       propertyPath: m_LocalRotation.x
@@ -4086,6 +4094,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &1337935901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4235,6 +4245,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &1339814091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4686,6 +4698,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!23 &1406026652
 Renderer:
   m_ObjectHideFlags: 0
@@ -4974,7 +4988,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1470631183}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -107.686523, y: 16.726387, z: -54}
+  m_LocalPosition: {x: -104.819504, y: 33.4793587, z: -54}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5673,6 +5687,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!23 &1754092239
 Renderer:
   m_ObjectHideFlags: 0
@@ -5876,6 +5892,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!23 &1799796571
 Renderer:
   m_ObjectHideFlags: 0
@@ -6215,7 +6233,7 @@ Transform:
   m_PrefabInternal: {fileID: 1013841732}
   m_GameObject: {fileID: 1974935422}
   m_LocalRotation: {x: 5.30253487e-07, y: -.707106769, z: .707106829, w: -5.490201e-08}
-  m_LocalPosition: {x: -120.446724, y: 17.4511662, z: 150.000046}
+  m_LocalPosition: {x: -98.8475647, y: 33.2351646, z: 150.000031}
   m_LocalScale: {x: 10, y: 1, z: 10}
   m_Children:
   - {fileID: 1241016}
@@ -6242,6 +6260,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!1 &1993208353
 GameObject:
   m_ObjectHideFlags: 0

@@ -294,7 +294,7 @@ public sealed class Abilities : MonoBehaviour
                 }
             }
 
-            Debug.Log (name + ".m_abilities: " + output);
+            //Debug.Log (name + ".m_abilities: " + output);
 
             yield return new WaitForSeconds (5f);
         }

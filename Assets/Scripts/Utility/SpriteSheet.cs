@@ -19,13 +19,14 @@ public sealed class SpriteSheet : MonoBehaviour
     [SerializeField]                    bool m_isForwards = true;               //!< Is the sprite sheet supposed to work its way forwards?
     [SerializeField]                    bool m_shouldReverse = false;           //!< Whether the sprite should go back to its starting point in reverse.
     [SerializeField]                    bool m_shouldDieAfterFirstRun = false;  //!< Will destroy the object upon completion of the first sequence.
+    [SerializeField]                    bool m_shouldUseSmoothAnimationShader = false;
 
     #endregion Unity modifiable variables
 
 
     #region Internal data
     
-    int m_currentIndex = 0;         //!< The current index of the sprite sheet.
+    [SerializeField] int m_currentIndex = 0;         //!< The current index of the sprite sheet.
     int m_totalTiles = 0;           //!< The total number of tiles in the sprite sheet.
 
     float m_currentTime = 0f;       //!< The current time.
@@ -91,44 +92,49 @@ public sealed class SpriteSheet : MonoBehaviour
     /// </summary>
     void Update()
     {
-        // Update the time
-        m_currentTime += Time.deltaTime;
-
-        if (m_currentTime >= m_frameTime)
+        if(m_shouldUseSmoothAnimationShader)
         {
-            m_currentTime -= m_frameTime;
-
-            // Update the index
-            IncrementCurrentIndex();
-
-            // Update the material
-            UpdateMaterialToCurrentIndex();
-
-            // Make sure the sprite is moving in the correct direction along the sequence
-            if (m_currentIndex == m_totalTiles - 1)
+            renderer.material.SetFloat("_StoredDeltaTime", renderer.material.GetFloat("_StoredDeltaTime") + Time.deltaTime);
+        }
+        else
+        {
+            // Update the time
+            m_currentTime += Time.deltaTime;
+    
+            if (m_currentTime >= m_frameTime)
             {
-                if (m_shouldReverse)
+                m_currentTime -= m_frameTime;
+    
+                // Update the index
+                IncrementCurrentIndex();
+    
+                // Update the material
+                UpdateMaterialToCurrentIndex();
+    
+                // Make sure the sprite is moving in the correct direction along the sequence
+                if (m_currentIndex == m_totalTiles - 1)
                 {
-                    m_isForwards = false;
+                    if (m_shouldReverse)
+                    {
+                        m_isForwards = false;
+                    }
+    
+                    if (m_shouldDieAfterFirstRun)
+                    {
+                        Destroy (gameObject);
+                    }
                 }
-
-                if (m_shouldDieAfterFirstRun)
+    
+                else if (m_currentIndex == 0)
                 {
-                    Debug.Log ("Spritesheet destroyed: " + gameObject.name);
+                    m_isForwards = true;
+    
+                    if (m_shouldDieAfterFirstRun)
+                {
                     Destroy (gameObject);
                 }
             }
-
-            else if (m_currentIndex == 0)
-            {
-                m_isForwards = true;
-
-                if (m_shouldDieAfterFirstRun)
-                {
-                    Debug.Log ("Spritesheet destroyed: " + gameObject.name);
-                    Destroy (gameObject);
-                }
-            }
+        }
         }
     }
 

@@ -98,6 +98,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffc1ac03e4d720549bf58e433e2a8aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_elementalEffects:
+  - {fileID: 100000, guid: ef16eaed6020de846a2234b3c89985dc, type: 2}
+  - {fileID: 100002, guid: e2dac61c009f3c34fbbeec1344302d20, type: 2}
+  - {fileID: 100000, guid: b9a7f54258065b04badcc3d0bd688d35, type: 2}
+  - {fileID: 100000, guid: 2a0e4d0bf9e1bff4da6db561cca349b7, type: 2}
+  - {fileID: 100002, guid: 649b11c0664d12b45abf44b7db995826, type: 2}
+  - {fileID: 100002, guid: 4b7d8fedf544d4b439094e090e065cc5, type: 2}
+  - {fileID: 100006, guid: de347e1b0bab74d45845e30db2267688, type: 2}
+  - {fileID: 100002, guid: 3f6c0b67cb71a5d40b611a46d0998035, type: 2}
+  - {fileID: 100000, guid: 661b994519b6165489f95de554d9f023, type: 2}
+  - {fileID: 100000, guid: 95d9815b99bba5b4686dc7ef4298a63c, type: 2}
   m_currentLifetime: 0
   m_speed: 0
   m_properties:

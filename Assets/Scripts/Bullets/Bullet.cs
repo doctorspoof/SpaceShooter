@@ -12,6 +12,10 @@ using System.Collections.Generic;
 [RequireComponent (typeof (Rigidbody))]
 public sealed class Bullet : MonoBehaviour 
 {
+    #region SerializableStuff
+    [SerializeField]    GameObject[]    m_elementalEffects;
+    #endregion
+
     #region Internal data
 
     public float               m_currentLifetime = 0.0f;
@@ -195,6 +199,21 @@ public sealed class Bullet : MonoBehaviour
         }
     }
     
+    List<Element> GetListOfElementEffectsToSpawn()
+    {
+        List<Element> output = new List<Element>();
+    
+        for(int i = 0; i < m_properties.appliedElements.Count; i++)
+        {
+            if(!output.Contains(m_properties.appliedElements[i]))
+            {
+                output.Add(m_properties.appliedElements[i]);
+            }
+        }
+        
+        return output;
+    }
+    
 
     /// <summary>
     /// Sets the reach modifier, this will directly increase or decrease the bullet speed.
@@ -274,8 +293,6 @@ public sealed class Bullet : MonoBehaviour
 
         else
         {
-            // TODO: Add elemental visual changes
-
             rigidbody.isKinematic = true;
 
             // Ensure layer masks are valid
@@ -294,6 +311,18 @@ public sealed class Bullet : MonoBehaviour
             {
                 StartCoroutine (BulletUpdate());
             }
+        }
+    }
+    
+    void Start()
+    {
+        List<Element> elements = GetListOfElementEffectsToSpawn();
+        for(int i = 0; i < elements.Count; i++)
+        {
+            GameObject effect = Instantiate(m_elementalEffects[(int)elements[i] - 1]) as GameObject;
+            effect.transform.parent = transform;
+            effect.transform.localPosition = new Vector3(0, 0, 0.5f);
+            effect.transform.localRotation = Quaternion.identity;
         }
     }
 
@@ -461,6 +490,11 @@ public sealed class Bullet : MonoBehaviour
         {
             Debug.LogError ("Unable to find Explode component on: " + name);
         }
+        
+        if(m_properties.piercing == null || !m_properties.piercing.isPiercing)
+        {
+            Network.Destroy(gameObject);
+        }
     }
 
     #endregion
@@ -523,14 +557,14 @@ public sealed class Bullet : MonoBehaviour
                         }
                     }
                     
-                    if(m_properties.piercing != null)
+                    if(m_properties.piercing != null && m_properties.piercing.isPiercing)
                     {
-                        m_properties.piercing.isPiercing = m_properties.piercing.isPiercing && health.GetCurrShield() == 0 ? true : false;
+                        m_properties.piercing.isPiercing = health.GetCurrShield() == 0 ? true : false;
                         
                         if(m_properties.piercing.isPiercing)
                         {
                             m_pastHits.Add(mob);
-                            networkView.RPC ("ApplyPierceModifiers", RPCMode.All);
+                            networkView.RPC ("ApplyPierceModifier", RPCMode.All);
                         }
                     }
                 }

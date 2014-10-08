@@ -260,7 +260,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
             teleport.SetRange (m_currentStats.shortTeleRange);
             teleport.SetMaxCooldown (m_currentStats.shortTeleCooldown);
             
-            Debug.Log (teleport.GetGUIName() + ": " + teleport.GetRange() + " range, " + teleport.GetMaxCooldown() + " cooldown.");
+            //Debug.Log (teleport.GetGUIName() + ": " + teleport.GetRange() + " range, " + teleport.GetMaxCooldown() + " cooldown.");
         }
 
         else

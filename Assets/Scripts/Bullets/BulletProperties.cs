@@ -179,7 +179,7 @@ using System.Collections.Generic;
 
     // Hidden members
     [HideInInspector]       public GameObject           firer = null;                           //!< The GameObject of the weapon that fired the bullet.
-    [HideInInspector]       public List<Element>        appliedElements = new List<Element>(0); //!< What elements have been applied to the bullet.
+           public List<Element>        appliedElements = new List<Element>(0); //!< What elements have been applied to the bullet.
 
     #endregion
 
@@ -234,6 +234,11 @@ using System.Collections.Generic;
             if (copy.special != null)
             {
                 special = new SpecialAttributes (copy.special);
+            }
+            
+            if(copy.appliedElements.Count > 0)
+            {
+                appliedElements = new List<Element>(copy.appliedElements);
             }
         }
     }

@@ -362,8 +362,6 @@ public class ShipEnemy : Ship
                 AttachItemToSelfAndSubjectsEngine(i, engine[i]);
             }
         }
-        
-        Debug.LogWarning ("Assigned augments to group leader.");
     }
     
     void AttachItemToSelfAndSubjectsWeapon(int attachPoint, ItemWrapper item)
@@ -387,7 +385,6 @@ public class ShipEnemy : Ship
             
         if(weap.GetMaxAugmentNum() >= attachPoint)
         {
-            Debug.Log ("Attempting to equip augment: " + item.GetItemName() + " in slot " + attachPoint);
             weap.SetAugmentItemIntoSlot(attachPoint, item);
         }
     }

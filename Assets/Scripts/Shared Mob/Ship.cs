@@ -779,7 +779,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
             if(allHeldAugs[i] != null)
             {
                 float rand = Random.Range(0f, 1f);
-                if(rand < 0.33f)
+                if(rand < 0.15f)
                 {
                     Vector2 offset = Random.insideUnitCircle * 2.0f;
                     GameObject item = (GameObject)Network.Instantiate(m_genericWorldSpaceAugment, transform.position + new Vector3(offset.x, offset.y, 0), Quaternion.identity, 0);

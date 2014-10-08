@@ -77,7 +77,10 @@ public class HealthScript : MonoBehaviour
     }
     public int GetCurrShield()
     {
-        return m_shieldCache.GetShieldCurrent();
+        if(m_shieldCache != null)
+            return m_shieldCache.GetShieldCurrent();
+        else
+            return 0;
     }
 
     #endregion
