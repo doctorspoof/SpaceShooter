@@ -18,6 +18,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     GameObject[] m_pingedEnemies = null;
     GameObject[] m_pingedMissiles = null;
     GameObject[] m_shops = null;
+    GameObject m_exit = null;
     bool m_isBigMap = false;
     bool m_isFollowMap = false;
     
@@ -48,9 +49,10 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     {
         m_furthestExtent = extent;
     }
-    public void ToggleBigMap()
+    public bool ToggleBigMap()
     {
         m_isBigMap = !m_isBigMap;
+        return m_isBigMap;
     }
     public void ToggleSmallMap()
     {
@@ -83,6 +85,7 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     public void UpdateShopList()
     {
         m_shops = GameObject.FindGameObjectsWithTag("Shop");
+        m_exit = GameObject.FindGameObjectWithTag("CSTarget");
     }
     #endregion
     
@@ -139,6 +142,10 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         
         //Map should be screen.height * screen.height, center on 1/2 screen.width
         GUI.DrawTexture(new Rect((Screen.width * 0.5f) - Screen.height * 0.5f, 0, Screen.height, Screen.height), m_mapOverlay);
+        
+        //Exit portal
+        Vector2 exitPos = WorldToMapPos(m_exit.transform.position);
+        GUI.DrawTexture(new Rect(exitPos.x - (m_blobSize * 0.5f), exitPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_otherPBlob);
         
         //Draw the 'drawables'
         for(int i = 0; i < m_drawables.Count; i++)
@@ -212,9 +219,36 @@ public class GUIMapOverlayScreen : BaseGUIScreen
         {
             Vector2 cshipPos = WorldToMapPos(m_cshipCache.transform.position);
             GUI.DrawTexture(new Rect(cshipPos.x - (m_blobSize * 0.5f), cshipPos.y - (m_blobSize * 0.5f), m_blobSize, m_blobSize), m_cShipBlob);
+            
+            // Now, draw the CShip's waypoints on the map
+            List<Vector2> waypoints = m_cshipCache.GetWaypoints();
+            
+            for(int i = 0; i < waypoints.Count; i++)
+            {
+                Vector2 mapPos = WorldToMapPos(new Vector3(waypoints[i].x, waypoints[i].y, 0));
+                GUI.DrawTexture(new Rect(mapPos.x - (m_blobSize * 0.25f), mapPos.y - (m_blobSize * 0.25f), m_blobSize * 0.5f, m_blobSize * 0.5f), m_cShipBlob);
+            }
+            
+            // Listen for input, check for waypoint requests
+            if (Event.current.type == EventType.MouseDown)
+            {
+                Rect mapArea = new Rect((Screen.width * 0.5f) - Screen.height * 0.5f, 0, Screen.height, Screen.height);
+                if(mapArea.Contains(Event.current.mousePosition))
+                {
+                    Vector2 worldPos = MapToWorldPos(Event.current.mousePosition);
+                    
+                    if(!Input.GetKey(KeyCode.LeftControl))
+                        m_cshipCache.ClearMoveWaypoints();
+                    
+                    
+                    m_cshipCache.AddMoveWaypoint(worldPos);
+                }
+            }
         }
         else
+        {
             m_cshipCache = GameObject.FindGameObjectWithTag("Capital").GetComponent<CapitalShipScript>();
+        }
         
         //Enemies?
         if (m_pingedEnemies != null)
@@ -585,6 +619,20 @@ public class GUIMapOverlayScreen : BaseGUIScreen
     #endregion
     
     #region MapCoordFuncs
+    Vector2 MapToWorldPos(Vector2 mapPos)
+    {
+        float pixelGapPercent = 53.0f / (Screen.height);
+        Vector2 output = Vector2.zero;
+        mapPos.y = -mapPos.y;
+        
+        //output.x = (((mapPos.x - (Screen.height)) / (Screen.height)) * (m_furthestExtent));
+        //output.y = (((mapPos.y + (Screen.height * 0.5f)) / (Screen.height)) * (m_furthestExtent * 0.5f));
+        
+        output.x = (((mapPos.x) - (Screen.width * 0.5f)) / (Screen.height * (0.5f - pixelGapPercent))) * (m_furthestExtent );
+        output.y = (((mapPos.y) + (Screen.height * 0.5f)) / (Screen.height * (0.5f - pixelGapPercent))) * (m_furthestExtent );
+        
+        return output;
+    }
     Vector2 WorldToMapPos(Vector3 worldPos)
     {
         //gap is 24px, this as a percentage of the screen changes dependant upon screen size

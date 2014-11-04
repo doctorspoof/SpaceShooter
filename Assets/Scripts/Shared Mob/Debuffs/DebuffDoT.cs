@@ -13,8 +13,6 @@ public class DebuffDoT : Debuff
         m_damageCatch = 0.0f;
         m_currentDuration = duration;
         m_targetMob = victim;
-        
-        ApplyEffect();
     }
     
     protected override void Update (float deltaTime)

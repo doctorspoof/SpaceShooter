@@ -293,7 +293,7 @@ public sealed class AsteroidScript : MonoBehaviour
 								(transform.position - hitter.position).normalized :
 								Vector3.forward;
 			
-			impactForce = hitter && hitter.rigidbody ? 
+			impactForce = hitter != null && hitter.rigidbody ? 
 								shotDirection * hitter.rigidbody.velocity.magnitude :
 								shotDirection * m_fragmentSplitForce;
 

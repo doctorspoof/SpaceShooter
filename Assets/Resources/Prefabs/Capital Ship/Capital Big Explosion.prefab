@@ -71,11 +71,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_tilesX: 17
   m_tilesY: 17
-  m_fps: 10
+  m_fps: 30
   m_startingIndex: 0
   m_isForwards: 1
   m_shouldReverse: 0
-  m_shouldDieAfterFirstRun: 0
+  m_shouldDieAfterFirstRun: 1
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400002
 MonoBehaviour:
   m_ObjectHideFlags: 1

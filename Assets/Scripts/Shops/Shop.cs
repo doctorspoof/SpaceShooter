@@ -62,10 +62,16 @@ public sealed class Shop : MonoBehaviour
 
     public Vector3 GetDockPoint()
     {
-        if(m_dockPoint != null)
-            return m_dockPoint.position;
+        Transform dockPoint = transform.FindChild("DockPoint");
+        
+        if(dockPoint != null)
+        {
+            return dockPoint.position;
+        }
         else
-            return Vector3.zero;
+        {
+            return transform.position;
+        }
     }
 
 

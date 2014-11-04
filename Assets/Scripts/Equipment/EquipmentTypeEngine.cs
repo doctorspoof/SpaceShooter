@@ -71,7 +71,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
     #region Data members
 
     [SerializeField]    EngineProperties    m_baseStats = null;                         //!< Contains the base stats of the engine.
-                        EngineProperties    m_currentStats = new EngineProperties();    //!< Contains the current calculated stats of the engine.
+    [SerializeField]    EngineProperties    m_currentStats = new EngineProperties();    //!< Contains the current calculated stats of the engine.
     
                         Abilities           m_abilities = null;                         //!< A reference to the abilities component of the ship.
                         Ship                m_ship = null;                              //!< A reference to the ship used in updating the speeds available.
@@ -218,7 +218,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
             // Set the maximum change attribute
             gravity.SetMaxChange (m_currentStats.maxGravityChange);
             
-            Debug.Log (gravity.GetGUIName() + ": " + gravity.GetMaxChange() + " max change, " + gravity.GetMaxCooldown() + " cooldown.");
+            //Debug.Log (gravity.GetGUIName() + ": " + gravity.GetMaxChange() + " max change, " + gravity.GetMaxCooldown() + " cooldown.");
         }
 
         else
@@ -239,7 +239,7 @@ public sealed class EquipmentTypeEngine : BaseEquipment
             teleport.SetRange (m_currentStats.longTeleRange);
             teleport.SetMaxCooldown (m_currentStats.longTeleCooldown);
             
-            Debug.Log (teleport.GetGUIName() + ": " + teleport.GetRange() + " range, " + teleport.GetMaxCooldown() + " cooldown.");
+            //Debug.Log (teleport.GetGUIName() + ": " + teleport.GetRange() + " range, " + teleport.GetMaxCooldown() + " cooldown.");
         }
 
         else

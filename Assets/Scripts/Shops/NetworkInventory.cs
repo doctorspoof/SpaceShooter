@@ -110,6 +110,15 @@ public sealed class NetworkInventory : MonoBehaviour
             return -1;
         }
     }
+    
+    public void ForceAddItem(ItemWrapper item)
+    {
+        m_inventory.Add(item);
+    }
+    public void ForceRemoveItem(ItemWrapper item)
+    {
+        m_inventory.Remove(item);
+    }
 
 
     public int GetCapacity()

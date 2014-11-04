@@ -6,19 +6,19 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
 {
 
     #region Serializable Properties
-    
-    [SerializeField]                        Material            m_fireBulletMat;
-    [SerializeField]                        Material            m_iceBulletMat;
-    [SerializeField]                        Material            m_earthBulletMat;
-    [SerializeField]                        Material            m_lightningBulletMat;
-    [SerializeField]                        Material            m_lightBulletMat;
-    [SerializeField]                        Material            m_darkBulletMat;
-    [SerializeField]                        Material            m_spiritBulletMat;
-    [SerializeField]                        Material            m_gravityBulletMat;
-    [SerializeField]                        Material            m_airBulletMat;
-    [SerializeField]                        Material            m_organicBulletMat;
+    [SerializeField]                        Material            m_fireBeamMat;
+    [SerializeField]                        Material            m_iceBeamMat;
+    [SerializeField]                        Material            m_earthBeamMat;
+    [SerializeField]                        Material            m_lightningBeamMat;
+    [SerializeField]                        Material            m_lightBeamMat;
+    [SerializeField]                        Material            m_darkBeamMat;
+    [SerializeField]                        Material            m_spiritBeamMat;
+    [SerializeField]                        Material            m_gravityBeamMat;
+    [SerializeField]                        Material            m_airBeamMat;
+    [SerializeField]                        Material            m_organicBeamMat;
 
     [SerializeField]                        GameObject          m_bulletRef;
+    [SerializeField]                        GameObject          m_beamRef;
     //[SerializeField]                        Vector3             m_bulletOffset;
     [SerializeField]                        Vector3[]           m_bulletOffsets;
 
@@ -38,8 +38,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     Element m_cachedMajorElement = Element.NULL;
     GameObject m_currentHomingTarget = null;
     GameObject m_currentBeam = null;
-    float m_currentReloadCounter = 0.0f;
-    float m_currentRechargeDelay = 0.0f;
+    [SerializeField]    float m_currentReloadCounter = 0.0f;
+    [SerializeField]    float m_currentRechargeDelay = 0.0f;
     bool m_isBeaming = false;
     
     // Cached vars
@@ -56,7 +56,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         if(m_isBeaming)
         {
             m_currentReloadCounter -= Time.deltaTime;
-            if(m_currentReloadCounter < 0.0f)
+            if(m_currentReloadCounter <= 0.0f)
             {
                 //Stop beaming
                 networkView.RPC ("StopFiringBeamAcrossNetwork", RPCMode.All);
@@ -282,12 +282,15 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     
     public void AlertBeamWeaponNotFiring()
     {
-        m_isBeaming = false;
-        
-        Network.Destroy(m_currentBeam);
-        m_currentBeam = null;
-        
-        m_currentRechargeDelay = 0.0f;
+        if(m_currentBulletStats.isBeam)
+        {
+            m_isBeaming = false;
+            
+            Network.Destroy(m_currentBeam);
+            m_currentBeam = null;
+            
+            m_currentRechargeDelay = 0.0f;
+        }
     }
     
     public void MobRequestsFire()
@@ -333,7 +336,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         if(m_currentBulletStats.isBeam)
         {
-            if(m_currentReloadCounter > 1.0f)
+            if(m_currentReloadCounter > (m_currentWeaponReloadTime * 0.25f))
             {
                 ShootBeam();
             }
@@ -372,15 +375,23 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         if(!m_isBeaming && m_currentBeam == null)
         {
-            GameObject bullet = Network.Instantiate(m_bulletRef, this.transform.position, this.transform.rotation, 0) as GameObject;
+            GameObject bullet = Network.Instantiate(m_beamRef, transform.position + (transform.rotation * m_bulletOffsets[m_currentFirePoint]), this.transform.rotation, 0) as GameObject;
+            Bullet bbs = bullet.GetComponent<Bullet>();
+            bbs.CloneProperties(m_currentBulletStats);
+            bbs.SetReachModifier(1.0f);
+            bbs.SetFirer(gameObject);
+            if(m_currentHomingTarget != null)
+                bbs.SetHomingTarget(m_currentHomingTarget);
+            bbs.SetUpBeam(Vector3.zero, transform.up);
             bullet.transform.parent = this.transform;
-            bullet.transform.localScale = new Vector3(bullet.transform.localScale.x, 0f, bullet.transform.localScale.z);
-            bullet.GetComponent<BeamBulletScript>().SetOffset(m_bulletOffsets[m_currentFirePoint]);
-            bullet.GetComponent<BeamBulletScript>().SetFirer(gameObject);
+            //bullet.transform.parent = this.transform;
+            //bullet.transform.localScale = new Vector3(bullet.transform.localScale.x, 0f, bullet.transform.localScale.z);
+            //bullet.GetComponent<BeamBulletScript>().SetOffset(m_bulletOffsets[m_currentFirePoint]);
+            //bullet.GetComponent<BeamBulletScript>().SetFirer(gameObject);
             
             IncrementFirePos();
             
-            bullet.GetComponent<BeamBulletScript>().ParentBeamToFirer(gscCache.GetNameFromNetworkPlayer(gameObject.GetComponent<PlayerControlScript>().GetOwner()));
+            //bullet.GetComponent<BeamBulletScript>().ParentBeamToFirer(gscCache.GetNameFromNetworkPlayer(gameObject.GetComponent<PlayerControlScript>().GetOwner()));
             m_currentBeam = bullet;
             m_isBeaming = true;
         }
@@ -423,63 +434,67 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         if(m_cachedMajorElement == Element.NULL)
             DetermineMajorityElement();
             
-        //Material matToSet = null;
-        /*switch(m_cachedMajorElement)
+        if(m_currentBulletStats.isBeam)
         {
-            case Element.Fire:
+            Material matToSet = null;
+            switch(m_cachedMajorElement)
             {
-                matToSet = m_fireBulletMat;
-                break;
+                case Element.Fire:
+                {
+                    matToSet = m_fireBeamMat;
+                    break;
+                }
+                case Element.Earth:
+                {
+                    matToSet = m_earthBeamMat;
+                    break;
+                }
+                case Element.Lightning:
+                {
+                    matToSet = m_lightningBeamMat;
+                    break;
+                }
+                case Element.Light:
+                {
+                    matToSet = m_lightBeamMat;
+                    break;
+                }
+                case Element.Dark:
+                {
+                    matToSet = m_darkBeamMat;
+                    break;
+                }
+                case Element.Spirit:
+                {
+                    matToSet = m_spiritBeamMat;
+                    break;
+                }
+                case Element.Gravity:
+                {
+                    matToSet = m_gravityBeamMat;
+                    break;
+                }
+                case Element.Air:
+                {
+                    matToSet = m_airBeamMat;
+                    break;
+                }
+                case Element.Organic:
+                {
+                    matToSet = m_organicBeamMat;
+                    break;
+                }
+                default:
+                {
+                    matToSet = m_iceBeamMat;
+                    break;
+                }
             }
-            case Element.Earth:
-            {
-                matToSet = m_earthBulletMat;
-                break;
-            }
-            case Element.Lightning:
-            {
-                matToSet = m_lightningBulletMat;
-                break;
-            }
-            case Element.Light:
-            {
-                matToSet = m_lightBulletMat;
-                break;
-            }
-            case Element.Dark:
-            {
-                matToSet = m_darkBulletMat;
-                break;
-            }
-            case Element.Spirit:
-            {
-                matToSet = m_spiritBulletMat;
-                break;
-            }
-            case Element.Gravity:
-            {
-                matToSet = m_gravityBulletMat;
-                break;
-            }
-            case Element.Air:
-            {
-                matToSet = m_airBulletMat;
-                break;
-            }
-            case Element.Organic:
-            {
-                matToSet = m_organicBulletMat;
-                break;
-            }
-            default:
-            {
-                matToSet = m_iceBulletMat;
-                break;
-            }
-        }*/
-        
-        //Debug.Log ("Applying material: " + matToSet);
-        //bullet.renderer.material = matToSet;
+            
+            //Debug.Log ("Applying material: " + matToSet);
+            //bullet.renderer.material = matToSet;
+            bullet.renderer.material = matToSet;
+        }
         
         if(m_currentBulletStats.appliedElements.Count > 0)
             bullet.renderer.enabled = false;
@@ -509,6 +524,7 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     protected override void ResetToBaseStats()
     {
         m_currentBulletStats.CloneProperties (m_baseBulletStats);
+        m_currentBulletStats.appliedElements = new System.Collections.Generic.List<Element>();
         m_currentWeaponReloadTime = m_baseWeaponReloadTime;
         m_cachedMajorElement = Element.NULL;
     }
@@ -599,7 +615,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         // Change base effectiveness
         m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Fire.damageMulti * scalar);
-        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Fire.reloadTimeMulti * scalar;
+        //m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Fire.reloadTimeMulti * scalar;
+        AlterReloadTime(m_baseWeaponReloadTime * ElementalValuesWeapon.Fire.reloadTimeMulti * scalar);
 
         // AoE effectiveness
         m_currentBulletStats.aoe.isAOE                  = ElementalValuesWeapon.Fire.isAOE;
@@ -614,7 +631,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         // Change base effectiveness
         m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Ice.damageMulti * scalar);
-        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Ice.reloadTimeMulti * scalar;
+        //m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Ice.reloadTimeMulti * scalar;
+        AlterReloadTime(m_baseWeaponReloadTime * ElementalValuesWeapon.Ice.reloadTimeMulti * scalar);
 
         // Special effects
         m_currentBulletStats.special.slowDuration       += ElementalValuesWeapon.Ice.slowDurationInc * scalar;
@@ -627,7 +645,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Earth.damageMulti * scalar);
         m_currentBulletStats.reach                      += m_baseBulletStats.reach * ElementalValuesWeapon.Earth.reachMulti * scalar;
         m_currentBulletStats.lifetime                   += m_baseBulletStats.lifetime * ElementalValuesWeapon.Earth.lifetimeMulti * scalar;
-        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Earth.reloadTimeMulti * scalar;       
+        //m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Earth.reloadTimeMulti * scalar;       
+        AlterReloadTime(m_baseWeaponReloadTime * ElementalValuesWeapon.Earth.reloadTimeMulti * scalar);
     }
 
 
@@ -645,10 +664,23 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         // Change base effectiveness
         m_currentBulletStats.damage                     += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Light.damageMulti * scalar);
-        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Light.reloadTimeMulti * scalar;
+        //m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Light.reloadTimeMulti * scalar;
         
         // Enable beam effectiveness
         m_currentBulletStats.isBeam                     = ElementalValuesWeapon.Light.isBeam;
+        
+        //Turn any bullet reload 'upgrades' into beam reload upgrades
+        float diff = m_baseWeaponReloadTime - m_currentWeaponReloadTime;
+        m_currentWeaponReloadTime = m_baseWeaponReloadTime + diff;
+        
+        //Change this
+        m_currentWeaponReloadTime += 2.0f;
+        m_currentBulletStats.reach += (m_baseBulletStats.reach * ElementalValuesWeapon.Light.reachMulti * scalar);
+        
+        float amounttoAdd = m_baseWeaponReloadTime * ElementalValuesWeapon.Light.reloadTimeMulti * scalar;
+        AlterReloadTime(amounttoAdd);
+        
+        m_currentBulletStats.lifetime = m_currentWeaponReloadTime * 0.2f;
     }
 
 
@@ -691,7 +723,8 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
     {
         // Change base effectiveness
         m_currentBulletStats.reach                      += m_baseBulletStats.reach * ElementalValuesWeapon.Air.reachMulti * scalar;
-        m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Air.reloadTimeMulti * scalar;
+        //m_currentWeaponReloadTime                       += m_baseWeaponReloadTime * ElementalValuesWeapon.Air.reloadTimeMulti * scalar;
+        AlterReloadTime(m_baseWeaponReloadTime * ElementalValuesWeapon.Air.reloadTimeMulti * scalar);
     }
 
 
@@ -700,6 +733,19 @@ public sealed class EquipmentTypeWeapon : BaseEquipment
         // DoT effectiveness
         m_currentBulletStats.special.dotDuration        += ElementalValuesWeapon.Organic.dotDurationInc * scalar;
         m_currentBulletStats.special.dotEffect          += (int) (m_baseBulletStats.damage * ElementalValuesWeapon.Organic.dotEffectInc * scalar);
+    }
+    
+    void AlterReloadTime(float valueToAdd)
+    {
+        //Note: valuetoadd will 90% of the time be negative
+        if(m_currentBulletStats.isBeam)
+        {
+            m_currentWeaponReloadTime -= valueToAdd;
+        }
+        else
+        {
+            m_currentWeaponReloadTime += valueToAdd;
+        }
     }
     
     #endregion

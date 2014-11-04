@@ -94,7 +94,8 @@ public sealed class SpriteSheet : MonoBehaviour
     {
         if(m_shouldUseSmoothAnimationShader)
         {
-            renderer.material.SetFloat("_StoredDeltaTime", renderer.material.GetFloat("_StoredDeltaTime") + Time.deltaTime);
+            //renderer.material.SetFloat("_StoredDeltaTime", renderer.material.GetFloat("_StoredDeltaTime") + Time.deltaTime);
+            //You get nothing
         }
         else
         {

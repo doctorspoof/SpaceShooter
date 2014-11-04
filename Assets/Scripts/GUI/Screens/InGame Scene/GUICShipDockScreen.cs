@@ -15,6 +15,7 @@ public class GUICShipDockScreen : BaseGUIScreen
     [SerializeField]        Texture m_dockCShipImage;
 
     /* Internal Members */
+    bool        m_isOnEquipmentScreen                   = true;
     bool        m_cshipIsTransitionJumping              = false;
     bool        m_cshipCanSectorJump                    = false;
     bool        m_awaitTransitionConfirm                = false;
@@ -27,12 +28,22 @@ public class GUICShipDockScreen : BaseGUIScreen
     Vector2     m_playerScrollPosition                  = Vector2.zero;
     Vector2     m_cShipScrollPosition                   = Vector2.zero;
     
+    // Crafting vars
+    bool        m_leftItemFromPlayer                    = false;
+    bool        m_rightItemFromPlayer                   = false;
+    ItemWrapper m_leftCraftingItem                      = null;
+    ItemWrapper m_rightCraftingItem                     = null;
+    ItemWrapper m_craftingResultItem                    = null;
+    Rect        m_craftingLeftRect                      = new Rect(500, 390, 50, 50);
+    Rect        m_craftingRightRect                     = new Rect(600, 390, 50, 50);
+    Rect        m_craftingResultRect                    = new Rect(565, 490, 50, 50);
+    
     // Animatables
     int         m_playerPanelXWidth                     = 408;
     int         m_cShipPanelXPos                        = 796;
     
     // Dragged Item Members
-    BaseEquipment augmentTakenFrom                      = null;
+    BaseEquipment m_equipmentAugmentTakenFrom           = null;
     ItemWrapper  m_currentDraggedItem                   = null;
     int         m_currentDraggedItemInventoryId         = -1;
     bool        m_currentDraggedItemIsFromPlayerInv     = false;
@@ -114,6 +125,12 @@ public class GUICShipDockScreen : BaseGUIScreen
         m_previousMouseZero = m_mouseZero;
         m_mouseZero = Input.GetMouseButton(0);
         
+        m_drawnItems.Clear();
+        m_augmentWeaponSlotRects.Clear();
+        m_augmentShieldSlotRects.Clear();
+        m_augmentPlatingSlotRects.Clear();
+        m_augmentEngineSlotRects.Clear();
+        
         GUI.DrawTexture(new Rect(396, 86, 807, 727), m_dockBackground);
         
         if(m_transferFailed)
@@ -129,22 +146,337 @@ public class GUICShipDockScreen : BaseGUIScreen
         {
             if (GUI.Button(new Rect(1038, 180, 84, 33), "", "label"))
             {
-                Inventory playerInv = m_playerCache.GetComponent<Inventory>();
-                int cashAmount = playerInv.GetCurrentCash();
+                Inventory playerInven = m_playerCache.GetComponent<Inventory>();
+                int cashAmount = playerInven.GetCurrentCash();
                 //m_playerCache.RemoveCash(cashAmount);
-                playerInv.SetCash(0);
+                playerInven.SetCash(0);
                 m_cshipCache.AlterCash(cashAmount);
             }
         }
         
-        m_drawnItems.Clear();
-        m_augmentWeaponSlotRects.Clear();
-        m_augmentShieldSlotRects.Clear();
-        m_augmentPlatingSlotRects.Clear();
-        m_augmentEngineSlotRects.Clear();
+        //New tabs
+        if(m_isOnEquipmentScreen)
+        {
+            GUI.Label(new Rect(698,180, 100, 45), "Equipment", "Highlight");
+            if(GUI.Button(new Rect(802, 180, 100, 45), "Crafting", "Shared"))
+            {
+                m_isOnEquipmentScreen = false;
+            }
+        }
+        else
+        {
+            if(GUI.Button(new Rect(698,180, 100, 45), "Equipment", "Shared"))
+            {
+                m_isOnEquipmentScreen = true;
+                ClearCraftingSlots();
+            }
+            GUI.Label(new Rect(802, 180, 100, 45), "Crafting", "Highlight");
+        }
         
-        //Do screen specific stuff here:
-        switch (m_currentCShipPanel)
+        //Draw stuff present on both screens
+        GUI.Label(new Rect(816, 270, 164, 40), "Player:", "No Box");
+        ItemWrapper[] playerInv = m_playerCache.GetComponent<Inventory>().GetFullInventory();
+        
+        Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
+        m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Length));
+        for (int i = 0; i < playerInv.Length; i++)
+        {
+            if(playerInv[i] != null)
+            {
+                GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetIcon());
+                Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+                GUI.Label(lastR, playerInv[i].GetItemName(), "Small No Box");
+                Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - m_playerScrollPosition.y, lastR.width, lastR.height);
+                Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+                
+                if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                    m_drawnItems.Add(finalRect, playerInv[i]);
+                
+                if (shouldRecieveInput && currentEvent.type == EventType.MouseDown)
+                {
+                    //bool insideModR = modR.Contains(mousePos);
+                    if (finalRect.Contains(mousePos) && !m_isRequestingItem)
+                    {
+                        //Begin drag & drop
+                        m_currentDraggedItem = playerInv[i];
+                        m_currentDraggedItemInventoryId = i;
+                        m_currentDraggedItemIsFromPlayerInv = true;
+                    }
+                }
+            }
+        }
+        GUI.EndScrollView();
+        
+        GUI.Label(new Rect(1020, 270, 164, 40), "Capital:", "No Box");
+        NetworkInventory cshipInv = m_cshipCache.GetComponent<NetworkInventory>();
+        Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
+        m_cShipScrollPosition = GUI.BeginScrollView(scrollAreaRect, m_cShipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
+        for (int i = 0; i < cshipInv.GetCount(); i++)
+        {
+            GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemWrapper>().GetIcon());
+            Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
+            GUI.Label(lastR, cshipInv[i].GetComponent<ItemWrapper>().GetItemName(), "Small No Box");
+            Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - m_cShipScrollPosition.y, lastR.width, lastR.height);
+            Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
+            
+            if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
+                m_drawnItems.Add(finalRect, cshipInv[i].GetComponent<ItemWrapper>());
+            
+            if (shouldRecieveInput && currentEvent.type == EventType.MouseDown)
+            {
+                //bool insideModR = modR.Contains(mousePos);
+                if (finalRect.Contains(mousePos) && !m_isRequestingItem)
+                {
+                    //Begin drag & drop
+                    m_currentDraggedItem = cshipInv[i];
+                    m_currentDraggedItemInventoryId = i;
+                    m_currentDraggedItemIsFromPlayerInv = false;
+                    cshipInv.RequestServerCancel(m_currentTicket);
+                    cshipInv.RequestServerItem(cshipInv[i].GetItemID(), i);
+                    StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
+                }
+            }
+        }
+        GUI.EndScrollView();
+        
+        if(m_isOnEquipmentScreen)
+        {
+            #region newstuff
+            GUI.Label(new Rect(396, 250, 350, 100), "", "Shared");
+            GUI.Label(new Rect(396, 350, 350, 100), "", "Shared");
+            GUI.Label(new Rect(396, 450, 350, 100), "", "Shared");
+            GUI.Label(new Rect(396, 550, 350, 100), "", "Shared");
+            
+            if(m_playerCache != null)
+            {
+                
+                /* Weapons */
+                GUI.Label(new Rect(405, 260, 125, 40), "Weapon Slots:", "No Box");
+                EquipmentTypeWeapon weaponEquip = m_playerCache.GetComponent<EquipmentTypeWeapon>();
+                int numSlotsW = weaponEquip.GetMaxAugmentNum();
+                
+                for(int i = 0; i < numSlotsW; i++)
+                {
+                    Rect rect = new Rect(540 + (70 * i), 290, 50, 50);
+                    ItemWrapper slotAug = weaponEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentWeaponSlotRects, i, slotAug, weaponEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                }
+                
+                /* Shields */
+                GUI.Label (new Rect(405, 360, 125, 40), "Shield slots:", "No Box");
+                EquipmentTypeShield shieldEquip = m_playerCache.GetComponent<EquipmentTypeShield>();
+                int numSlotsS = shieldEquip.GetMaxAugmentNum();
+                
+                for(int i = 0; i < numSlotsS; i++)
+                {
+                    Rect rect = new Rect(540 + (70 * i), 390, 50, 50);
+                    ItemWrapper slotAug = shieldEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentShieldSlotRects, i, slotAug, shieldEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                }
+                
+                /* Plating */
+                GUI.Label (new Rect(405, 460, 125, 40), "Plating slots:", "No Box");
+                EquipmentTypePlating platingEquip = m_playerCache.GetComponent<EquipmentTypePlating>();
+                int numSlotsP = platingEquip.GetMaxAugmentNum();
+                
+                for(int i = 0; i < numSlotsP; i++)
+                {
+                    Rect rect = new Rect(540 + (70 * i), 490, 50, 50);
+                    ItemWrapper slotAug = platingEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentPlatingSlotRects, i, slotAug, platingEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                }
+                
+                /* Engines */
+                GUI.Label(new Rect(405, 560, 125, 40), "Engine slots:", "No Box");
+                EquipmentTypeEngine engineEquip = m_playerCache.GetComponent<EquipmentTypeEngine>();
+                int numSlotsE = engineEquip.GetMaxAugmentNum();
+                
+                for(int i = 0; i < numSlotsE; i++)
+                {
+                    Rect rect = new Rect(540 + (70 * i), 590, 50, 50);
+                    ItemWrapper slotAug = engineEquip.GetItemWrapperInSlot(i);
+                    DrawAugmentSlot(rect, m_augmentEngineSlotRects, i, slotAug, engineEquip, shouldRecieveInput, mousePos, currentEvent.type);
+                }
+                
+            }
+            #endregion
+            
+            
+        }
+        else
+        {
+            GUI.Label(new Rect(396, 250, 350, 400), "", "Shared");
+            GUI.Label (new Rect(525, 270, 100, 50), "Crafting", "No Box");
+            
+            if(m_leftCraftingItem == null)
+                GUI.Button(m_craftingLeftRect, "");
+            else 
+                GUI.Button (m_craftingLeftRect, m_leftCraftingItem.GetIcon());
+            m_drawnItems.Add(m_craftingLeftRect, m_leftCraftingItem);
+            
+            GUI.Label(new Rect(565, 390, 20, 50), "+", "No Box");
+            
+            if(m_rightCraftingItem == null)
+                GUI.Button(m_craftingRightRect, "");
+            else
+                GUI.Button(m_craftingRightRect, m_rightCraftingItem.GetIcon());
+            m_drawnItems.Add(m_craftingRightRect, m_rightCraftingItem);
+            
+            GUI.Label (new Rect(520, 490, 20, 50), "=", "No Box");
+            
+            if(m_craftingResultItem == null)
+                GUI.Button (m_craftingResultRect, "");
+            else
+            {
+                if(GUI.Button (m_craftingResultRect, m_craftingResultItem.GetIcon()))
+                {
+                    if(m_leftItemFromPlayer || m_rightItemFromPlayer)
+                    {
+                        m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(m_craftingResultItem);
+                    }
+                    else
+                    {
+                        //Bad, change this
+                        m_cshipCache.GetComponent<NetworkInventory>().ForceAddItem(m_craftingResultItem);
+                    }
+                    
+                    m_craftingResultItem = null;
+                    m_leftCraftingItem = null;
+                    m_rightCraftingItem = null;
+                    
+                    m_leftItemFromPlayer = false;
+                    m_rightItemFromPlayer = false;
+                }
+            }
+            m_drawnItems.Add(m_craftingResultRect, m_craftingResultItem);
+        }
+
+        //Handle mouse up if item is selected
+        if (shouldRecieveInput && m_currentDraggedItem != null)
+        {
+            if (IsMouseUpZero() && !m_isRequestingItem)
+            {
+                Debug.Log("Mouse button released, drop the item");
+                //HandleItemDrop(true, mousePos);
+                
+                if(m_isOnEquipmentScreen)
+                {
+                    //Temp stuff for testing augments
+                    for(int i = 0; i < m_augmentWeaponSlotRects.Count; i++)
+                    {   
+                        //Check weapons
+                        CheckMouseUpIsWithinEquipmentSlotRect(m_augmentWeaponSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeWeapon>(), mousePos);
+                    }
+                    
+                    for(int i = 0; i < m_augmentShieldSlotRects.Count; i++)
+                    {
+                        //Check shields
+                        CheckMouseUpIsWithinEquipmentSlotRect(m_augmentShieldSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeShield>(), mousePos);
+                    }
+                    
+                    for(int i = 0; i < m_augmentPlatingSlotRects.Count; i++)
+                    {
+                        //Check plating
+                        CheckMouseUpIsWithinEquipmentSlotRect(m_augmentPlatingSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypePlating>(), mousePos);
+                    }
+                    
+                    for(int i = 0; i < m_augmentEngineSlotRects.Count; i++)
+                    {
+                        //Check engine
+                        CheckMouseUpIsWithinEquipmentSlotRect(m_augmentEngineSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeEngine>(), mousePos);
+                    }
+                    
+                    if(m_currentDraggedItem != null)
+                    {
+                        if(scrollAreaRectPl.Contains(mousePos))
+                        {
+                            if(m_equipmentAugmentTakenFrom != null && !m_playerCache.GetComponent<Inventory>().IsInventoryFull() && m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(m_currentDraggedItem))
+                            {
+                                m_equipmentAugmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if(m_craftingLeftRect.Contains(mousePos))
+                    {
+                        if(m_currentDraggedItemIsFromPlayerInv)
+                            m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
+                        else
+                        {
+                            //Bad, change this
+                            m_cshipCache.GetComponent<NetworkInventory>().ForceRemoveItem(m_currentDraggedItem);
+                        }
+                    
+                        if(m_leftCraftingItem != null)
+                        {
+                            if(m_leftItemFromPlayer)
+                                m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(m_leftCraftingItem);
+                            else
+                            {
+                                //Bad, change this
+                                m_cshipCache.GetComponent<NetworkInventory>().ForceAddItem(m_leftCraftingItem);
+                            }
+                            
+                            m_leftCraftingItem = null;
+                        }
+                        
+                        //Fill left slot with new item, store where it came from
+                        m_leftItemFromPlayer = m_currentDraggedItemIsFromPlayerInv;
+                        m_leftCraftingItem = m_currentDraggedItem;
+                        CheckCraftingResult();
+                    }
+                    else if(m_craftingRightRect.Contains(mousePos))
+                    {
+                        if(m_currentDraggedItemIsFromPlayerInv)
+                            m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(m_currentDraggedItem);
+                        else
+                        {
+                            //Bad, change this
+                            m_cshipCache.GetComponent<NetworkInventory>().ForceRemoveItem(m_currentDraggedItem);
+                        }
+                    
+                        if(m_rightCraftingItem != null)
+                        {
+                            if(m_rightItemFromPlayer)
+                                m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(m_rightCraftingItem);
+                            else
+                            {
+                                //Bad, change this
+                                m_cshipCache.GetComponent<NetworkInventory>().ForceAddItem(m_rightCraftingItem);
+                            }
+                                
+                            m_rightCraftingItem = null;
+                        }
+                        
+                        //Fill right slot with new item, store where it came from
+                        m_rightItemFromPlayer = m_currentDraggedItemIsFromPlayerInv;
+                        m_rightCraftingItem = m_currentDraggedItem;
+                        CheckCraftingResult();
+                    }
+                }
+                
+                m_currentDraggedItem = null;
+                m_currentDraggedItemInventoryId = -1;
+                m_currentDraggedItemIsFromPlayerInv = false;
+                m_equipmentAugmentTakenFrom = null;
+            }
+            
+            //If we still have an item selected by this point, draw it next to the cursor
+            if (m_currentDraggedItem != null)
+            {
+                GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemWrapper>().GetIcon());
+            }
+        }
+        else if(shouldRecieveInput)
+        {
+            //Hovers
+            
+        }
+        
+        //Old 'screen' system
+        /*switch (m_currentCShipPanel)
         {
             case CShipScreen.DualPanel:
             {
@@ -289,242 +621,15 @@ public class GUICShipDockScreen : BaseGUIScreen
                 //DrawLeftPanel();
                 
                 //Here is where we'll do the augment slots for each equipment type - eventually this will be in a function
-                #region newstuff
-                GUI.Label(new Rect(396, 250, 350, 100), "", "Shared");
-                GUI.Label(new Rect(396, 350, 350, 100), "", "Shared");
-                GUI.Label(new Rect(396, 450, 350, 100), "", "Shared");
-                GUI.Label(new Rect(396, 550, 350, 100), "", "Shared");
                 
-                if(m_playerCache != null)
-                {
-                
-                    /* Weapons */
-                    GUI.Label(new Rect(405, 260, 125, 40), "Weapon Slots:", "No Box");
-                    EquipmentTypeWeapon weaponEquip = m_playerCache.GetComponent<EquipmentTypeWeapon>();
-                    int numSlotsW = weaponEquip.GetMaxAugmentNum();
-                    
-                    for(int i = 0; i < numSlotsW; i++)
-                    {
-                        Rect rect = new Rect(540 + (70 * i), 290, 50, 50);
-                        ItemWrapper slotAug = weaponEquip.GetItemWrapperInSlot(i);
-                        DrawAugmentSlot(rect, m_augmentWeaponSlotRects, i, slotAug, weaponEquip, shouldRecieveInput, mousePos, currentEvent.type);
-                    }
-                    
-                    /* Shields */
-                    GUI.Label (new Rect(405, 360, 125, 40), "Shield slots:", "No Box");
-                    EquipmentTypeShield shieldEquip = m_playerCache.GetComponent<EquipmentTypeShield>();
-                    int numSlotsS = shieldEquip.GetMaxAugmentNum();
-                    
-                    for(int i = 0; i < numSlotsS; i++)
-                    {
-                        Rect rect = new Rect(540 + (70 * i), 390, 50, 50);
-                        ItemWrapper slotAug = shieldEquip.GetItemWrapperInSlot(i);
-                        DrawAugmentSlot(rect, m_augmentShieldSlotRects, i, slotAug, shieldEquip, shouldRecieveInput, mousePos, currentEvent.type);
-                    }
-                    
-                    /* Plating */
-                    GUI.Label (new Rect(405, 460, 125, 40), "Plating slots:", "No Box");
-                    EquipmentTypePlating platingEquip = m_playerCache.GetComponent<EquipmentTypePlating>();
-                    int numSlotsP = platingEquip.GetMaxAugmentNum();
-                    
-                    for(int i = 0; i < numSlotsP; i++)
-                    {
-                        Rect rect = new Rect(540 + (70 * i), 490, 50, 50);
-                        ItemWrapper slotAug = platingEquip.GetItemWrapperInSlot(i);
-                        DrawAugmentSlot(rect, m_augmentPlatingSlotRects, i, slotAug, platingEquip, shouldRecieveInput, mousePos, currentEvent.type);
-                    }
-                    
-                    /* Engines */
-                    GUI.Label(new Rect(405, 560, 125, 40), "Engine slots:", "No Box");
-                    EquipmentTypeEngine engineEquip = m_playerCache.GetComponent<EquipmentTypeEngine>();
-                    int numSlotsE = engineEquip.GetMaxAugmentNum();
-                    
-                    for(int i = 0; i < numSlotsE; i++)
-                    {
-                        Rect rect = new Rect(540 + (70 * i), 590, 50, 50);
-                        ItemWrapper slotAug = engineEquip.GetItemWrapperInSlot(i);
-                        DrawAugmentSlot(rect, m_augmentEngineSlotRects, i, slotAug, engineEquip, shouldRecieveInput, mousePos, currentEvent.type);
-                    }
-                
-                }
-                #endregion
-                
-                GUI.Label(new Rect(816, 270, 164, 40), "Player:", "No Box");
-                ItemWrapper[] playerInv = m_playerCache.GetComponent<Inventory>().GetFullInventory();
-                
-                Rect scrollAreaRectPl = new Rect(816, 330, 180, 320);
-                m_playerScrollPosition = GUI.BeginScrollView(new Rect(816, 330, 180, 320), m_playerScrollPosition, new Rect(0, 0, 150, 52 * playerInv.Length));
-                for (int i = 0; i < playerInv.Length; i++)
-                {
-                    if(playerInv[i] != null)
-                    {
-                        GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), playerInv[i].GetIcon());
-                        Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
-                        GUI.Label(lastR, playerInv[i].GetItemName(), "Small No Box");
-                        Rect modR = new Rect(lastR.x + scrollAreaRectPl.x, lastR.y + scrollAreaRectPl.y - m_playerScrollPosition.y, lastR.width, lastR.height);
-                        Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
                         
-                        if (scrollAreaRectPl.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRectPl.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-                            m_drawnItems.Add(finalRect, playerInv[i]);
-                        
-                        if (shouldRecieveInput && currentEvent.type == EventType.MouseDown)
-                        {
-                            //bool insideModR = modR.Contains(mousePos);
-                            if (finalRect.Contains(mousePos) && !m_isRequestingItem)
-                            {
-                                //Begin drag & drop
-                                m_currentDraggedItem = playerInv[i];
-                                m_currentDraggedItemInventoryId = i;
-                                m_currentDraggedItemIsFromPlayerInv = true;
-                            }
-                        }
-                    }
-                }
-                GUI.EndScrollView();
-                
-                GUI.Label(new Rect(1020, 270, 164, 40), "Capital:", "No Box");
-                NetworkInventory cshipInv = m_cshipCache.GetComponent<NetworkInventory>();
-                Rect scrollAreaRect = new Rect(1020, 330, 180, 320);
-                m_cShipScrollPosition = GUI.BeginScrollView(scrollAreaRect, m_cShipScrollPosition, new Rect(0, 0, 150, 52 * cshipInv.GetCount()));
-                for (int i = 0; i < cshipInv.GetCount(); i++)
-                {
-                    GUI.Label(new Rect(0, 5 + (i * 50), 50, 50), cshipInv[i].GetComponent<ItemWrapper>().GetIcon());
-                    Rect lastR = new Rect(60, 10 + (i * 50), 114, 40);
-                    GUI.Label(lastR, cshipInv[i].GetComponent<ItemWrapper>().GetItemName(), "Small No Box");
-                    Rect modR = new Rect(lastR.x + scrollAreaRect.x, lastR.y + scrollAreaRect.y - m_cShipScrollPosition.y, lastR.width, lastR.height);
-                    Rect finalRect = new Rect(modR.x - 50, modR.y, modR.width + 50, modR.height);
-                    
-                    if (scrollAreaRect.Contains(new Vector2(modR.x, modR.y)) && scrollAreaRect.Contains(new Vector2(modR.x + modR.width, modR.y + modR.height)))
-                        m_drawnItems.Add(finalRect, cshipInv[i].GetComponent<ItemWrapper>());
-                    
-                    if (shouldRecieveInput && currentEvent.type == EventType.MouseDown)
-                    {
-                        //bool insideModR = modR.Contains(mousePos);
-                        if (finalRect.Contains(mousePos) && !m_isRequestingItem)
-                        {
-                            //Begin drag & drop
-                            m_currentDraggedItem = cshipInv[i];
-                            m_currentDraggedItemInventoryId = i;
-                            m_currentDraggedItemIsFromPlayerInv = false;
-                            cshipInv.RequestServerCancel(m_currentTicket);
-                            cshipInv.RequestServerItem(cshipInv[i].GetItemID(), i);
-                            StartCoroutine(AwaitTicketRequestResponse(cshipInv, RequestType.ItemTake, ItemOwner.NetworkInventory));
-                        }
-                    }
-                }
-                GUI.EndScrollView();
-                
-                //DrawRightPanel();
-                
-                //Handle mouse up if item is selected
-                if (shouldRecieveInput && m_currentDraggedItem != null)
-                {
-                    if (IsMouseUpZero() && !m_isRequestingItem)
-                    {
-                        Debug.Log("Mouse button released, drop the item");
-                        //HandleItemDrop(true, mousePos);
-                        
-                        //Temp stuff for testing augments
-                        for(int i = 0; i < m_augmentWeaponSlotRects.Count; i++)
-                        {   
-                            //Check weapons
-                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentWeaponSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeWeapon>(), mousePos);
-                        }
-                        
-                        for(int i = 0; i < m_augmentShieldSlotRects.Count; i++)
-                        {
-                            //Check shields
-                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentShieldSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeShield>(), mousePos);
-                        }
-                        
-                        for(int i = 0; i < m_augmentPlatingSlotRects.Count; i++)
-                        {
-                            //Check plating
-                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentPlatingSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypePlating>(), mousePos);
-                        }
-                        
-                        for(int i = 0; i < m_augmentEngineSlotRects.Count; i++)
-                        {
-                            //Check engine
-                            CheckMouseUpIsWithinEquipmentSlotRect(m_augmentEngineSlotRects[i], i, m_playerCache.GetComponent<EquipmentTypeEngine>(), mousePos);
-                        }
-                        
-                        if(m_currentDraggedItem != null)
-                        {
-                            if(scrollAreaRectPl.Contains(mousePos))
-                            {
-                                if(augmentTakenFrom != null && !m_playerCache.GetComponent<Inventory>().IsInventoryFull() && m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(m_currentDraggedItem))
-                                {
-                                    augmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
-                                }
-                            }
-                        }
-                        
-                        m_currentDraggedItem = null;
-                        m_currentDraggedItemInventoryId = -1;
-                        m_currentDraggedItemIsFromPlayerInv = false;
-                        augmentTakenFrom = null;
-                    }
-                    
-                    //If we still have an item selected by this point, draw it next to the cursor
-                    if (m_currentDraggedItem != null)
-                    {
-                        GUI.Label(new Rect(mousePos.x - 20, mousePos.y - 20, 40, 40), m_currentDraggedItem.GetComponent<ItemWrapper>().GetIcon());
-                    }
-                }
-                else if(shouldRecieveInput)
-                {
-                    //Hovers
-                    if (m_LeftPanelWeaponRect.Contains(mousePos))
-                    {
-                        //string text = m_playerCache.GetEquipedWeaponItem().GetComponent<ItemWrapper>().GetHoverText();
-                        //DrawHoverText(text, mousePos);
-                    }
-                    
-                    if (m_LeftPanelShieldRect.Contains(mousePos))
-                    {
-                        //string text = m_playerCache.GetEquipedShieldItem().GetComponent<ItemWrapper>().GetHoverText();
-                        //DrawHoverText(text, mousePos);
-                    }
-                    
-                    if (m_LeftPanelPlatingRect.Contains(mousePos))
-                    {
-                        //string text = m_playerCache.GetEquipedPlatingItem().GetComponent<ItemWrapper>().GetHoverText();
-                        //DrawHoverText(text, mousePos);
-                    }
-                    
-                    if (m_LeftPanelEngineRect.Contains(mousePos))
-                    {
-                        //string text = m_playerCache.GetEquipedEngineItem().GetComponent<ItemWrapper>().GetHoverText();
-                        //DrawHoverText(text, mousePos);
-                    }
-                }
-                
-                if(m_cshipCanSectorJump)
-                {
-                    if(GUI.Button (new Rect(700, 170, 200, 65), "Jump", "Shared"))
-                    {
-                        m_gscCache.BuildUpToTransition();
-                        m_cshipCanSectorJump = false;
-                        m_gscCache.SetCShipJumpBegan();
-                    }
-                }
-                else if(m_awaitTransitionConfirm)
-                {
-                    if(GUI.Button (new Rect(700, 170, 200, 65), "Done", "Shared"))
-                    {
-                        m_gscCache.RequestTransitionEnd();
-                        m_awaitTransitionConfirm = false;
-                    }
-                }
-                        
-                /*if (GUI.Button(new Rect(394, 250, 408, 400), "", "label"))
-                {
+                //if (GUI.Button(new Rect(394, 250, 408, 400), "", "label"))
+                //{
                     //Change back to dual panel
-                    m_currentDraggedItem = null;
-                    StartCoroutine(AnimateCShipPanel(796));
-                    m_currentCShipPanel = CShipScreen.PanelsAnimating;
-                }*/
+                //    m_currentDraggedItem = null;
+                //    StartCoroutine(AnimateCShipPanel(796));
+                //    m_currentCShipPanel = CShipScreen.PanelsAnimating;
+                //}
                 break;
             }
             case CShipScreen.PanelsAnimating:
@@ -534,18 +639,37 @@ public class GUICShipDockScreen : BaseGUIScreen
                 DrawRightPanel();
                 break;
             }
-        }
+        }*/
         
         //Hover text
         if (shouldRecieveInput && m_currentDraggedItem == null)
         {
             foreach (Rect key in m_drawnItems.Keys)
             {
-                if (key.Contains(mousePos))
+                if (key.Contains(mousePos) && m_drawnItems[key] != null)
                 {
                     string text = m_drawnItems[key].GetHoverText();
                     DrawHoverText(text, mousePos);
                 }
+            }
+        }
+        
+        //Jumping
+        if(m_cshipCanSectorJump)
+        {
+            if(GUI.Button (new Rect(700, 170, 200, 65), "Jump", "Shared"))
+            {
+                m_gscCache.BuildUpToTransition();
+                m_cshipCanSectorJump = false;
+                m_gscCache.SetCShipJumpBegan();
+            }
+        }
+        else if(m_awaitTransitionConfirm)
+        {
+            if(GUI.Button (new Rect(700, 170, 200, 65), "Done", "Shared"))
+            {
+                m_gscCache.RequestTransitionEnd();
+                m_awaitTransitionConfirm = false;
             }
         }
         
@@ -635,18 +759,49 @@ public class GUICShipDockScreen : BaseGUIScreen
             Screen.showCursor = false;
             m_thisPlayerHP.gameObject.GetComponent<PlayerControlScript>().TellPlayerStopDocking();
             m_currentCShipPanel = CShipScreen.LeftPanelActive;
-            StartCoroutine(AnimateCShipPanel(796));
-            StartCoroutine(AnimatePlayerPanel(408));
+            //StartCoroutine(AnimateCShipPanel(796));
+            //StartCoroutine(AnimatePlayerPanel(408));
             
             //Clear dragged item
             m_currentDraggedItem = null;
             m_currentDraggedItemInventoryId = -1;
             m_currentDraggedItemIsFromPlayerInv = false;
-            m_cshipCache.GetComponent<NetworkInventory>().RequestServerCancel(m_currentTicket);
+            
+            if(m_currentTicket != null)
+                m_cshipCache.GetComponent<NetworkInventory>().RequestServerCancel(m_currentTicket);
             
             //m_cshipIsTransitionJumping = true;
         }
     }
+    
+    #region Crafting Funcs
+    void ClearCraftingSlots()
+    {
+        if(m_leftCraftingItem != null)
+        {
+            if(m_leftItemFromPlayer)
+                m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(m_leftCraftingItem);
+            else
+                m_cshipCache.GetComponent<NetworkInventory>().ForceAddItem(m_leftCraftingItem);
+                
+            m_leftCraftingItem = null;
+        }
+        
+        if(m_rightCraftingItem != null)
+        {
+            if(m_rightItemFromPlayer)
+                m_playerCache.GetComponent<Inventory>().SetItemIntoInventory(m_rightCraftingItem);
+            else
+                m_cshipCache.GetComponent<NetworkInventory>().ForceAddItem(m_rightCraftingItem);
+        
+            m_rightCraftingItem = null;
+        }
+    }
+    void CheckCraftingResult()
+    {
+        m_craftingResultItem = CraftingLookup.QueryCraftingResult(m_leftCraftingItem, m_rightCraftingItem);
+    }   
+    #endregion
     
     void DrawLeftPanel()
     {
@@ -758,12 +913,14 @@ public class GUICShipDockScreen : BaseGUIScreen
         {
             if(rect.Contains(mousePos))
             {
-                augmentTakenFrom = equipType;
+                m_equipmentAugmentTakenFrom = equipType;
                 m_currentDraggedItem = augment;
                 m_currentDraggedItemIsFromPlayerInv = false;
                 m_currentDraggedItemInventoryId = index;
             }
         }
+        
+        m_drawnItems.Add(rect, augment);
     }
     #endregion
     
@@ -876,7 +1033,7 @@ public class GUICShipDockScreen : BaseGUIScreen
                     }
                 }
             }
-            else
+            else if(m_equipmentAugmentTakenFrom != null)
             {
                 if(augInSlot != null)
                 {
@@ -885,13 +1042,17 @@ public class GUICShipDockScreen : BaseGUIScreen
                     equipmentType.SetAugmentItemIntoSlot(index, m_currentDraggedItem);
                     
                     //Put old item into old slot
-                    augmentTakenFrom.SetAugmentItemIntoSlot(m_currentDraggedItemInventoryId, augInSlot);
+                    m_equipmentAugmentTakenFrom.SetAugmentItemIntoSlot(m_currentDraggedItemInventoryId, augInSlot);
                 }
                 else
                 {
-                    augmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
+                    m_equipmentAugmentTakenFrom.RemoveAugmentItemFromSlot(m_currentDraggedItemInventoryId, m_currentDraggedItem);
                     equipmentType.SetAugmentItemIntoSlot(index, m_currentDraggedItem);
                 }
+            }
+            else
+            {
+                //Means the item is from the CShip - TODO
             }
         }
     }
@@ -1103,7 +1264,6 @@ public class GUICShipDockScreen : BaseGUIScreen
         
         while (!inventory.HasServerResponded())
         {
-            Debug.Log("Server has not yet responded <color=yellow>:(</color>");
             yield return null;
         }
         
@@ -1118,6 +1278,11 @@ public class GUICShipDockScreen : BaseGUIScreen
                     if (from == ItemOwner.PlayerInventory)
                     {
                         //m_playerCache.RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
+                        m_playerCache.GetComponent<Inventory>().RemoveItemFromInventory(GameObject.FindGameObjectWithTag("ItemManager").GetComponent<ItemIDHolder>().GetItemWithID(itemID));
+                    }
+                    else
+                    {
+                        
                     }
                 }
                 else

@@ -139,6 +139,17 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         if(invis)
         {
             this.renderer.enabled = false;
+        }
+        else
+        {
+            this.renderer.enabled = true;
+        }
+    }
+    public void SetEthereal(bool ethereal)
+    {
+        if(ethereal)
+        {
+            this.renderer.enabled = false;
             m_invisCachedLayer = this.gameObject.layer;
             this.gameObject.layer = Layers.ignore;
         }
@@ -499,7 +510,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
         if (m_showMovementWaypoints)
         {
-            if(m_waypoints[0] != null)
+            if(m_waypoints.Count > 0)
                 Debug.DrawLine(transform.position, m_waypoints[0], Color.red);
 
             for (int i = 0; i < m_waypoints.Count - 1; ++i)
@@ -530,6 +541,11 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
             {
                 case (AIShipOrder.Attack):
                     {
+                        if(m_target != null && m_target.layer == Layers.ignore)
+                        {
+                            m_target = null;
+                        }
+                    
                         if (m_target == null)
                         {
                             m_currentOrder = AIShipOrder.Idle;
@@ -538,7 +554,7 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
 
                         MoveTowardTarget(m_target.transform.position, GetCurrentMomentum());
                         float distanceToTarget = Vector3.Distance(m_target.transform.position, transform.position);
-                        float weaponDistance = GetMinimumWeaponRange();
+                        float weaponDistance = GetThisShipsWeapon().GetBulletRange();
                         
                         if(distanceToTarget < weaponDistance)
                         {
@@ -589,8 +605,11 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                                     if(m_cshipRef == null)
                                         m_cshipRef = GameObject.FindGameObjectWithTag("Capital");
                                         
-                                    ClearMoveWaypoints();
-                                    AddMoveWaypoint(new Vector2(m_cshipRef.transform.position.x, m_cshipRef.transform.position.y));
+                                    if(m_cshipRef != null)
+                                    {
+                                        ClearMoveWaypoints();
+                                        AddMoveWaypoint(new Vector2(m_cshipRef.transform.position.x, m_cshipRef.transform.position.y));
+                                    }
                                     
                                     m_timeSinceLastCShipUpdate = 0.0f;
                                 }
@@ -654,6 +673,46 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         
         if(Network.isServer)
             DropHeldAugments();
+    }
+    
+    protected void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Bullet" && IncomingBulletShouldBeAffectedByGravity(other.gameObject))
+        {
+            float deflectChance = transform.root.GetComponent<EquipmentTypeShield>().GetDeflectChance();
+            if(deflectChance > 0)
+            {
+                float rand = Random.Range(0.0f, 1.0f);
+                if(rand < deflectChance)
+                {
+                    other.GetComponent<Bullet>().BeginDeflectCoroutine(transform.position);
+                }
+            }
+            
+            if(transform.root.GetComponent<EquipmentTypePlating>().CanGravityWell())
+            {
+                other.GetComponent<Bullet>().ModifyBulletSpeed(transform.root.GetComponent<EquipmentTypePlating>().GetGravityWellMagnitude());
+            }
+        }
+    }
+    bool IncomingBulletShouldBeAffectedByGravity (GameObject other)
+    {
+        if(this.gameObject.layer == Layers.player || this.gameObject.layer == Layers.capital)
+        {
+            if(other.layer == Layers.alldamageBullet || other.layer == Layers.enemyBullet || other.layer == Layers.enemyDestructibleBullet)
+            {
+                return true;
+            }
+        }
+        else if(this.gameObject.layer == Layers.enemy || this.gameObject.layer == Layers.enemyCollide)
+        {
+            if(other.layer == Layers.alldamageBullet || other.layer == Layers.playerBullet || other.layer == Layers.capitalBullet)
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
@@ -873,6 +932,12 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
     public void AddDebuff(Debuff debuff)
     {
         m_debuffs.Add(debuff);
+        
+        if(debuff.GetType() == typeof(DebuffDoT))
+        {
+            //Spawn a dot effect
+            GameObject.FindGameObjectWithTag("EffectManager").GetComponent<EffectsManager>().SpawnDotEffect(transform.position, debuff.m_currentDuration, this.gameObject);
+        }
     }
     void UpdateDebuffs()
     {
@@ -884,6 +949,15 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
                     m_debuffs.Remove(m_debuffs[i]);
             }
         }
+    }
+    public List<Debuff> GetListOfCurrentDebuffs()
+    {
+        if(m_debuffs != null)
+        {
+            return m_debuffs;
+        }
+        
+        return null;
     }
     #endregion
     
@@ -1479,6 +1553,17 @@ public class Ship : MonoBehaviour, IEntity, ICloneable
         }
 
         return turrets.ToArray();
+    }
+    EquipmentTypeWeapon GetThisShipsWeapon()
+    {
+        EquipmentTypeWeapon output = GetComponent<EquipmentTypeWeapon>();
+        
+        if(output == null)
+        {
+            output = GetAttachedTurrets()[0].GetComponent<EquipmentTypeWeapon>();
+        }
+        
+        return output;
     }
 
     /// <summary>

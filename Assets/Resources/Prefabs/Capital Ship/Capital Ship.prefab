@@ -882,7 +882,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100012}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -253.097641, y: 42.5555725, z: 10.5}
+  m_LocalPosition: {x: -229.028091, y: 49.2686195, z: 10.5}
   m_LocalScale: {x: 24, y: 24, z: 1}
   m_Children:
   - {fileID: 400100}
@@ -2389,7 +2389,7 @@ MonoBehaviour:
       dotEffect: 0
     firer: {fileID: 0}
     appliedElements: 
-  m_baseWeaponReloadTime: .200000003
+  m_baseWeaponReloadTime: .349999994
   m_currentBulletStats:
     damage: 0
     reach: 0
@@ -2480,7 +2480,7 @@ MonoBehaviour:
       dotEffect: 0
     firer: {fileID: 0}
     appliedElements: 
-  m_baseWeaponReloadTime: .200000003
+  m_baseWeaponReloadTime: .349999994
   m_currentBulletStats:
     damage: 0
     reach: 0
@@ -2698,7 +2698,7 @@ MonoBehaviour:
       dotEffect: 0
     firer: {fileID: 0}
     appliedElements: 
-  m_baseWeaponReloadTime: .200000003
+  m_baseWeaponReloadTime: .349999994
   m_currentBulletStats:
     damage: 0
     reach: 0
@@ -2792,6 +2792,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400038
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2810,6 +2812,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400040
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2828,6 +2832,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2846,6 +2852,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400044
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2864,6 +2872,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2882,6 +2892,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2900,6 +2912,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400050
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2918,6 +2932,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400052
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3031,6 +3047,7 @@ MonoBehaviour:
     etherealDuration: 2
     slowsIncoming: 0
     speedReduction: 0
+  m_currentHP: 0
 --- !u!114 &11400064
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3047,6 +3064,29 @@ MonoBehaviour:
   m_augmentItemSlots: []
   m_baseStats:
     baseMaxShield: 750
+    baseRechargeRate: 1
+    baseRechargeDelay: 1
+    shouldFireBurst: 0
+    burstDamage: 0
+    burstRange: 10
+    burstMaxDamageRange: .100000001
+    burstMaxFalloff: .00100000005
+    debuffModifier: 0
+    canStaticShock: 0
+    staticChance: 0
+    staticDamage: 100
+    staticRange: 10
+    staticCooldown: 2
+    canFlashbang: 0
+    flashChance: 0
+    flashRange: 10
+    flashStunDuration: 2
+    absorbChance: 0
+    invisChance: 0
+    invisDuration: 1
+    deflectChance: 0
+  m_currentStats:
+    baseMaxShield: 100
     baseRechargeRate: 1
     baseRechargeDelay: 1
     shouldFireBurst: 0
@@ -3129,7 +3169,7 @@ MonoBehaviour:
       dotEffect: 0
     firer: {fileID: 0}
     appliedElements: 
-  m_baseWeaponReloadTime: .200000003
+  m_baseWeaponReloadTime: .349999994
   m_currentBulletStats:
     damage: 0
     reach: 0

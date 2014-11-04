@@ -57,7 +57,7 @@ public abstract class BaseEquipment : MonoBehaviour
         }
         catch (System.Exception ex)
         {
-            Debug.Log ("Exception caught: " + ex.Message);
+            //Debug.Log ("Exception caught: " + ex.Message);
         }
         
         return false;
@@ -70,7 +70,7 @@ public abstract class BaseEquipment : MonoBehaviour
         }
         catch (System.Exception ex) 
         {
-            Debug.Log ("Exception caught: " + ex.Message);
+            //Debug.Log ("Exception caught: " + ex.Message);
         }
         
         ResetToBaseStats();

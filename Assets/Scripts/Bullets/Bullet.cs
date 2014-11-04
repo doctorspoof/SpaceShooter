@@ -18,11 +18,14 @@ public sealed class Bullet : MonoBehaviour
 
     #region Internal data
 
-    public float               m_currentLifetime = 0.0f;
+public float               m_currentLifetime = 0.0f;
     float               m_damageOverflow = 0f;                  //!< Tracks the float to int truncation caused by casting.
     float               m_reachModifier = 0f;                   //!< Used to change the velocity of the bullet based on the firers velocity.
     public float               m_speed = 0f;                           //!< Caches the speed that the bullet should travel at.
     float               m_bulletMinimumSpeed = 2.5f;
+    float               m_beamDamageOverflow = 0.0f;
+    bool                m_beamShouldExtend = true;
+    float               m_beamResetCounter = 0.0f;
 
     int                 m_pierceCount = 0;                      //!< How many times the bullet has actually pierced through an enemy.
     int                 m_damageMask = 0;                       //!< The layer mask for damagable enemies.
@@ -36,7 +39,11 @@ public sealed class Bullet : MonoBehaviour
     public BulletProperties    m_properties = null;                    //!< Contains all bullet specific information which is required for the bullet to operate.
                                                                 //!< This must be passed by the weapon when fired, preferably before the Awake() call.
     List<GameObject>    m_pastHits = new List<GameObject>(0);   //!< Prevents piercing from hitting the same enemy multiple times.
+    List<GameObject>    m_spawnedEffects = new List<GameObject>(0);
     Element             m_cachedMajorElement = Element.NULL;
+    
+    //Beam stuff
+    List<Vector3> lineRendererPositions;
 
     #endregion
 
@@ -69,7 +76,7 @@ public sealed class Bullet : MonoBehaviour
         
         for(int i = 0; i < m_properties.appliedElements.Count; i++)
         {
-            if(m_properties.appliedElements[i] != null)
+            if(m_properties.appliedElements[i] != Element.NULL)
             {
                 switch(m_properties.appliedElements[i])
                 {
@@ -141,61 +148,61 @@ public sealed class Bullet : MonoBehaviour
         
         switch(highestID)
         {
-        case 0:
-        {
-            m_cachedMajorElement = Element.Fire;
-            return Element.Fire;
-        }
-        case 1:
-        {
-            m_cachedMajorElement = Element.Ice;
-            return Element.Ice;
-        }
-        case 2:
-        {
-            m_cachedMajorElement = Element.Earth;
-            return Element.Earth;
-        }
-        case 3:
-        {
-            m_cachedMajorElement = Element.Lightning;
-            return Element.Lightning;
-        }
-        case 4:
-        {
-            m_cachedMajorElement = Element.Light;
-            return Element.Light;
-        }
-        case 5:
-        {
-            m_cachedMajorElement = Element.Dark;
-            return Element.Dark;
-        }
-        case 6:
-        {
-            m_cachedMajorElement = Element.Spirit;
-            return Element.Spirit;
-        }
-        case 7:
-        {
-            m_cachedMajorElement = Element.Gravity;
-            return Element.Gravity;
-        }
-        case 8:
-        {
-            m_cachedMajorElement = Element.Air;
-            return Element.Air;
-        }
-        case 9:
-        {
-            m_cachedMajorElement = Element.Organic;
-            return Element.Organic;
-        }
-        default:
-        {
-            m_cachedMajorElement = Element.NULL;
-            return Element.NULL;
-        }
+            case 0:
+            {
+                m_cachedMajorElement = Element.Fire;
+                return Element.Fire;
+            }
+            case 1:
+            {
+                m_cachedMajorElement = Element.Ice;
+                return Element.Ice;
+            }
+            case 2:
+            {
+                m_cachedMajorElement = Element.Earth;
+                return Element.Earth;
+            }
+            case 3:
+            {
+                m_cachedMajorElement = Element.Lightning;
+                return Element.Lightning;
+            }
+            case 4:
+            {
+                m_cachedMajorElement = Element.Light;
+                return Element.Light;
+            }
+            case 5:
+            {
+                m_cachedMajorElement = Element.Dark;
+                return Element.Dark;
+            }
+            case 6:
+            {
+                m_cachedMajorElement = Element.Spirit;
+                return Element.Spirit;
+            }
+            case 7:
+            {
+                m_cachedMajorElement = Element.Gravity;
+                return Element.Gravity;
+            }
+            case 8:
+            {
+                m_cachedMajorElement = Element.Air;
+                return Element.Air;
+            }
+            case 9:
+            {
+                m_cachedMajorElement = Element.Organic;
+                return Element.Organic;
+            }
+            default:
+            {
+                m_cachedMajorElement = Element.NULL;
+                return Element.NULL;
+            }
         }
     }
     
@@ -272,7 +279,29 @@ public sealed class Bullet : MonoBehaviour
         //Either way, cache the speed value for future use
         CalculateMovementSpeed();
     }
+    
+    public void ModifyBulletSpeed(float percentage)
+    {
+        m_speed *= (1.0f - percentage);
+    }
 
+
+    public void SetUpBeam(Vector3 pos1, Vector3 pos2)
+    {
+        lineRendererPositions = new List<Vector3>();
+        lineRendererPositions.Add(pos1);
+        lineRendererPositions.Add(pos2);
+        
+        LineRenderer line = GetComponent<LineRenderer>();
+        line.SetVertexCount(2);
+        line.SetPosition(0, pos1);
+        line.SetPosition(1, pos2);
+        
+        line.SetWidth(2.0f, 2.0f);
+        
+        StopCoroutine("BulletUpdate");
+        StartCoroutine(BeamUpdate());
+    }
     #endregion
 
 
@@ -309,7 +338,7 @@ public sealed class Bullet : MonoBehaviour
 
             else
             {
-                StartCoroutine (BulletUpdate());
+                StartCoroutine ("BulletUpdate");
             }
         }
     }
@@ -323,6 +352,8 @@ public sealed class Bullet : MonoBehaviour
             effect.transform.parent = transform;
             effect.transform.localPosition = new Vector3(0, 0, 0.5f);
             effect.transform.localRotation = Quaternion.identity;
+            
+            m_spawnedEffects.Add(effect);
         }
     }
 
@@ -335,39 +366,169 @@ public sealed class Bullet : MonoBehaviour
     {
         if (Network.isServer && (!other.isTrigger || other.gameObject.layer == Layers.enemyDestructibleBullet))
         {
-            //try
-            //{
-                //if (!m_properties.aoe.isAOE)
-                if(m_properties.aoe == null || !m_properties.aoe.isAOE)
+            if(!m_properties.isBeam)
+            {
+                //try
+                //{
+                    //if (!m_properties.aoe.isAOE)
+                    //if(m_properties.aoe == null || !m_properties.aoe.isAOE)
+                    //{
+                        // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
+                        //DamageMob(other.attachedRigidbody.gameObject, m_properties.damage);
+                    //}
+                //}
+                
+                if(m_properties.piercing != null && m_properties.piercing.isPiercing && m_pierceCount < m_properties.piercing.maxPiercings && m_properties.damage > 1)
                 {
-                    // Colliders may be part of a composite collider so we must use Collider.attachedRigidbody to get the HealthScript component
-                    DamageMob(other.attachedRigidbody.gameObject, m_properties.damage);
-                }
-            //}
-            
-            //catch (System.Exception error)
-            //{
-            //    Debug.LogError ("Exception Occurred in Bullet: " + error.Message + " at " + error.Source);
-            //    Debug.LogError ("Attempted to hit: " + other.transform.root.name);
-            //}
-            
-            //finally
-            //{
-                // Piercing bullets continue until the end of their lifetime.
-                if (m_properties.aoe != null && m_properties.aoe.isAOE || m_properties.piercing == null || m_properties.piercing.isPiercing || m_pierceCount > m_properties.piercing.maxPiercings || m_properties.damage < 1)
-                {
-                    DetonateBullet();
+                    if(m_properties.aoe != null && m_properties.aoe.isAOE)
+                    {
+                        DamageAOE();
+                    }
+                    else
+                    {
+                        DamageMob(other.attachedRigidbody.gameObject, m_properties.damage);
+                    }
                 }
                 else
                 {
-                    Debug.Log("Didn't destroy " + gameObject.name);
+                    if(m_properties.aoe != null && m_properties.aoe.isAOE)
+                    {
+                        DamageAOE();
+                    }
+                    else
+                    {
+                        DamageMob(other.attachedRigidbody.gameObject, m_properties.damage);
+                    }
+                    
+                    DetonateBullet();
                 }
-            //}
+                
+                //catch (System.Exception error)
+                //{
+                //    Debug.LogError ("Exception Occurred in Bullet: " + error.Message + " at " + error.Source);
+                //    Debug.LogError ("Attempted to hit: " + other.transform.root.name);
+                //}
+                
+                //finally
+                //{
+                    // Piercing bullets continue until the end of their lifetime.
+                    if (m_properties.aoe != null && m_properties.aoe.isAOE) //|| m_properties.piercing == null || m_properties.piercing.isPiercing || m_pierceCount > m_properties.piercing.maxPiercings || m_properties.damage < 1)
+                    {
+                        //If we're piercing and should keep going, then only damage aoE and continue onwards
+                        if(m_properties.piercing != null && m_properties.piercing.isPiercing && m_pierceCount < m_properties.piercing.maxPiercings && m_properties.damage > 1)
+                        {
+                            DamageAOE();
+                        }
+                        //Otherwise, destroy the bullet
+                        else
+                        {
+                            DetonateBullet();
+                        }
+                    }
+                    else
+                    {
+                        //Debug.Log("Didn't destroy " + gameObject.name);
+                    }
+                //}
+            }
+            else
+            {
+                if(m_properties.aoe != null && m_properties.aoe.isAOE)
+                {
+                    DamageAOE();
+                }
+            }
+        }
+    }
+    
+    void OnTriggerStay(Collider other)
+    {
+        if(!other.isTrigger)
+        {
+            if (Network.isServer && (!other.isTrigger || other.gameObject.layer == Layers.enemyDestructibleBullet))
+            {
+                if(m_properties.isBeam)
+                {
+                    //Debug.Log ("Beam trigger stay called");
+                    if(m_properties.piercing == null || !m_properties.piercing.isPiercing)
+                    {
+                        //Truncate the beam
+                        Vector3 direction = transform.rotation * (lineRendererPositions[1] - lineRendererPositions[0]);
+                        float distance = direction.magnitude;
+                        
+                        //RaycastHit info;
+                        //if(Physics.Raycast(transform.position, direction.normalized, out info, distance, m_damageMask))
+                        
+                        RaycastHit[] infos = Physics.RaycastAll(transform.position, direction.normalized, distance, m_damageMask);
+                        for(int i = 0; i < infos.Length; i++)
+                        {
+                            if(!infos[i].collider.isTrigger)
+                            {
+                                Vector3 pointToSet = (infos[i].point - transform.position) + (direction.normalized * 0.1f);
+                                lineRendererPositions[lineRendererPositions.Count - 1] = pointToSet;
+                                GetComponent<LineRenderer>().SetPosition(lineRendererPositions.Count - 1, pointToSet);
+                                m_beamShouldExtend = false;
+                            }
+                        }
+                    }
+                    
+                    //Damage whatever we hit
+                    float addition = (2.0f * m_properties.damage) * Time.deltaTime;
+                    m_beamDamageOverflow += addition;
+                    
+                    if(m_beamDamageOverflow > 1.0f)
+                    {
+                        int damageToApply = (int)m_beamDamageOverflow;
+                        m_beamDamageOverflow -= damageToApply;
+                        
+                        DamageMob(other.attachedRigidbody.gameObject, damageToApply);
+                        //Debug.Log ("Beam damaged " + other.attachedRigidbody.gameObject.name + ", for " + damageToApply + " damage.");
+                    }
+                }
+                    
+            }
+        }
+    }
+    
+    void Update()
+    {
+        if(!m_beamShouldExtend)
+        {
+            m_beamResetCounter += Time.deltaTime;
+            if(m_beamResetCounter > 0.5f)
+            {
+                m_beamShouldExtend = true;
+                m_beamResetCounter = 0.0f;
+            }
         }
     }
 
     #endregion
 
+    #region Beam Specific Methods
+    void CheckForHomingBeamTargets()
+    {
+        Rigidbody[] enemiesInRange = Physics.OverlapSphere(transform.root.position, m_properties.reach, m_homingMask).GetAttachedRigidbodies();
+        
+        if(enemiesInRange != null)
+        {
+            for(int i = 0; i < enemiesInRange.Length; i++)
+            {
+                if(enemiesInRange[i] != null)
+                {
+                    Vector3 direction = (enemiesInRange[i].position - lineRendererPositions[0]).normalized;
+                    
+                    float dotVal = Vector3.Dot(transform.root.up, direction);
+                    if(dotVal > 0.7f)
+                    {
+                        //Enemy is within the correct 'cone'
+                        m_properties.homing.target = enemiesInRange[i].gameObject;
+                    }
+                }
+            }
+        }
+    }
+    #endregion
 
     #region Update methods
 
@@ -380,6 +541,117 @@ public sealed class Bullet : MonoBehaviour
     {
         while (true)
         {
+            //Debug.Log ("Beam is updating...");
+            LineRenderer line = GetComponent<LineRenderer>();
+        
+            //If our total length is shorter than our intended length, try to increase it wrt time
+            
+            //If we're homing, update the last position
+            if(m_properties.homing != null && m_properties.homing.isHoming)
+            {
+                //If the current last point is too far away, spawn a new one and roate it towards to target a bit
+                
+                //Otherwise, just move the last point further in it's current direction
+                
+                
+                //New, easier system
+                float distance = Vector3.Distance(lineRendererPositions[0], lineRendererPositions[1]);
+                
+                if(m_beamShouldExtend)
+                {
+                    float addition = Time.deltaTime * m_speed;
+                    distance += addition;
+                }
+                
+                if(m_properties.homing.target != null)
+                {
+                    Vector3 direction = (m_properties.homing.target.transform.position - transform.position);
+                    
+                    float dotResult = Vector3.Dot(direction.normalized, transform.up);
+                    if(dotResult <= 0.7f || direction.magnitude > m_properties.reach)
+                    {
+                        m_properties.homing.target = null;
+                    }
+                }
+                
+                if(m_properties.homing.target == null)
+                    CheckForHomingBeamTargets();
+                
+                bool usedTarget = false;
+                Vector3 newDir = Vector3.up;
+                
+                if(m_properties.homing.target != null)
+                {
+                    Vector3 direction = (m_properties.homing.target.transform.position - (transform.position + lineRendererPositions[0])).normalized;
+                    float dotResult = Vector3.Dot(direction, transform.up);
+                    if(dotResult > 0.7f)
+                    {
+                        newDir = transform.InverseTransformDirection(direction);
+                        usedTarget = true;
+                    }
+                }
+                
+                //The beam should be rotated towards: (in order)
+                //      - The current homing target set through the cursor
+                //      - The first target found within the cone of sight
+                //      - The cursor, if in the cone
+                //      - Forward (up)
+                
+                if(distance < m_properties.reach || newDir != Vector3.up)
+                {
+                    Vector3 newSecondPos = Vector3.zero + (newDir * distance);
+                    
+                    lineRendererPositions[1] = newSecondPos;
+                    
+                    line.SetPosition(1, newSecondPos);
+                    foreach(GameObject effect in m_spawnedEffects)
+                    {
+                        effect.transform.position = transform.position + (transform.rotation * newSecondPos);
+                    }
+                }
+                
+                //Simple box collision
+                float length = Vector2.Distance(lineRendererPositions[0], lineRendererPositions[1]);
+                Vector3 worldSpaceDir = transform.TransformDirection((lineRendererPositions[1] - lineRendererPositions[0]).normalized);
+                //float angle = Mathf.Atan2(worldSpaceDir.y, worldSpaceDir.x);
+                BoxCollider collider = transform.GetChild(0).GetComponent<BoxCollider>();
+                collider.transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward, worldSpaceDir);
+                //collider.transform.rotation = Quaternion.Euler(0, 0, angle);
+                collider.size = new Vector3(1f, length, 0f);
+                collider.center = new Vector3(0f, length * 0.5f, 0f);
+            }
+            //Otherwise, update the second (ie, last and only other) linerender position
+            else
+            {
+                float distance = Vector3.Distance(lineRendererPositions[0], lineRendererPositions[1]);
+                    
+                if(m_beamShouldExtend)
+                {
+                    float addition = (Time.deltaTime * m_speed);
+                    distance += addition;
+                }
+                    
+                //Debug.Log ("Comparing new distance " + distance + " with reach " + m_properties.reach);
+                if(distance < m_properties.reach)
+                {
+                    Vector3 newSecondPos = Vector3.zero + (Vector3.up * distance);
+                    
+                    lineRendererPositions[1] = newSecondPos;
+                    
+                    line.SetPosition(1, newSecondPos);
+                    foreach(GameObject effect in m_spawnedEffects)
+                    {
+                        effect.transform.position = transform.position + (transform.rotation * newSecondPos);
+                    }
+                }
+                
+                //Simple box collision
+                float length = Vector2.Distance(lineRendererPositions[0], lineRendererPositions[1]);
+                BoxCollider collider = transform.GetChild(0).GetComponent<BoxCollider>();
+                collider.size = new Vector3(1f, length, 0f);
+                collider.center = new Vector3(0f, length * 0.5f, 0f);
+            }
+        
             yield return new WaitForFixedUpdate();
         }
     }
@@ -459,18 +731,12 @@ public sealed class Bullet : MonoBehaviour
     {
         if (m_properties.aoe != null && m_properties.aoe.isAOE)
         {  
-            if (Network.isServer && !m_bulletHasBeenDestroyed)
-            {
-                m_bulletHasBeenDestroyed = true;
-                networkView.RPC ("DetonateBullet", RPCMode.Others);
-            }  
-            
             DamageAOE();
-            ExplodeBullet();
+            //ExplodeBullet();
         }
         
         // Ensures bullet is completely destroyed
-        else if (Network.isServer && !m_bulletHasBeenDestroyed)
+        if (Network.isServer && !m_bulletHasBeenDestroyed)
         {
             m_bulletHasBeenDestroyed = true;
             Network.Destroy(gameObject);
@@ -521,7 +787,8 @@ public sealed class Bullet : MonoBehaviour
                             float rand = Random.Range(0.0f, 1.0f);
                             if(rand <= m_properties.special.chanceToJump)
                             {
-                                Rigidbody[] enemiesInRange = Physics.OverlapSphere(transform.position, 15.0f, 1 << Layers.enemy).GetAttachedRigidbodies();
+                                int layermask = Layers.GetLayerMask(gameObject.layer, MaskType.Targetting);
+                                Rigidbody[] enemiesInRange = Physics.OverlapSphere(transform.position, 15.0f, layermask).GetAttachedRigidbodies();
                                 
                                 if(enemiesInRange.Length > 1)
                                 {
@@ -531,9 +798,11 @@ public sealed class Bullet : MonoBehaviour
                                         id = Random.Range (0, enemiesInRange.Length);
                                     }
                                     DamageMob(enemiesInRange[id].gameObject, (int)(damage * 0.5f));
+                                    
+                                    GameObject.FindGameObjectWithTag("EffectManager").GetComponent<EffectsManager>().SpawnLightningEffect(transform.position, enemiesInRange[id].transform.position, LightningZapType.Big);
                                 }
                                 
-                                //TODO: Add visual effect here
+                                
                             }
                         }
                         
@@ -542,18 +811,18 @@ public sealed class Bullet : MonoBehaviour
                             float rand = Random.Range(0.0f, 1.0f);
                             if(rand <= m_properties.special.chanceToDisable)
                             {
-                                mob.GetComponent<Ship>().AddDebuff(new DebuffDisable(m_properties.special.disableDuration, mob));
+                                mob.GetComponent<Ship>().AddDebuff(new DebuffDisable(m_properties.special.disableDuration * mob.GetComponent<EquipmentTypeShield>().GetDebuffEffect(), mob));
                             }
                         }
                         
                         if(m_properties.special.slowDuration > 0f)
                         {
-                            mob.GetComponent<Ship>().AddDebuff(new DebuffSlow(m_properties.special.slowDuration, 0.6f, mob));
+                            mob.GetComponent<Ship>().AddDebuff(new DebuffSlow(m_properties.special.slowDuration * mob.GetComponent<EquipmentTypeShield>().GetDebuffEffect(), 0.6f, mob));
                         }
                         
                         if(m_properties.special.dotEffect > 0f)
                         {
-                            mob.GetComponent<Ship>().AddDebuff(new DebuffDoT(m_properties.special.dotDuration, m_properties.special.dotEffect, mob));
+                            mob.GetComponent<Ship>().AddDebuff(new DebuffDoT(m_properties.special.dotDuration * mob.GetComponent<EquipmentTypeShield>().GetDebuffEffect(), m_properties.special.dotEffect, mob));
                         }
                     }
                     
@@ -561,7 +830,7 @@ public sealed class Bullet : MonoBehaviour
                     {
                         m_properties.piercing.isPiercing = health.GetCurrShield() == 0 ? true : false;
                         
-                        if(m_properties.piercing.isPiercing)
+                        if(m_properties.piercing.isPiercing && !m_properties.isBeam)
                         {
                             m_pastHits.Add(mob);
                             networkView.RPC ("ApplyPierceModifier", RPCMode.All);
@@ -579,7 +848,11 @@ public sealed class Bullet : MonoBehaviour
 
     void DamageAOE()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, m_properties.aoe.aoeRange, m_aoeMask);
+        Vector3 posToUse = transform.position;
+        if(m_properties.isBeam)
+            posToUse = transform.position + (transform.rotation * lineRendererPositions[1]);
+    
+        Collider[] colliders = Physics.OverlapSphere(posToUse, m_properties.aoe.aoeRange * 0.5f, m_aoeMask);
         Rigidbody[] unique = colliders.GetAttachedRigidbodies().GetUniqueOnly();
         
         // Cache values for the sake of efficiency, also avoid Vector3.Distance by squaring ranges
@@ -589,13 +862,16 @@ public sealed class Bullet : MonoBehaviour
         foreach (Rigidbody mob in unique)
         {
             // Ensure the distance will equate to 0f - 1f for the Lerp function
-            distance = (transform.position - colliders.GetClosestPointFromRigidbody(mob, transform.position)).magnitude - m_properties.aoe.aoeMaxDamageRange;
+            distance = (transform.position - colliders.GetClosestPointFromRigidbody(mob, posToUse)).magnitude - m_properties.aoe.aoeMaxDamageRange;
             distance = Mathf.Clamp(distance, 0f, maxDistance);
             damage = Mathf.Lerp(m_properties.damage, 1, distance / maxDistance);
             
             DamageMob(mob.gameObject, (int)damage);
             AddExplosiveForce(mob);
         }
+        
+        //Todo: add the explosion effect here
+        GameObject.FindGameObjectWithTag("EffectManager").GetComponent<EffectsManager>().SpawnExplosionEffect(posToUse, m_properties.aoe.aoeRange);
     }
 
 
@@ -638,6 +914,35 @@ public sealed class Bullet : MonoBehaviour
     
     #endregion
 
+    #region Non-Ability Bullet Effects
+    public void BeginDeflectCoroutine(Vector3 victimPos)
+    {
+        //First, find the direction vector from the centre of the player to act as the deflection normal
+        Vector3 targetToBullet = (victimPos - transform.position).normalized;
+        this.gameObject.layer = Layers.alldamageBullet;
+        LayerMaskSetup();
+        
+        //Debug.Log ("Bullet begins deflecting towards: " + targetToBullet);
+        StartCoroutine(DeflectionCoroutine(targetToBullet));
+    }
+    
+    IEnumerator DeflectionCoroutine(Vector3 targetDir)
+    {
+        float dot = Vector3.Dot(transform.up, targetDir);
+        
+        while(dot < 1.0f)
+        {
+            //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(targetDir, Vector3.forward), Time.deltaTime * 2.0f);
+            Quaternion targetRot = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(targetDir, Vector3.forward), Time.deltaTime * 0.2f);
+            targetRot.x = 0;
+            targetRot.y = 0;
+            rigidbody.MoveRotation(targetRot);
+            dot = Vector3.Dot(transform.up, targetDir);
+            
+            yield return new WaitForFixedUpdate();
+        }
+    }
+    #endregion
 
     #region Utilities
 

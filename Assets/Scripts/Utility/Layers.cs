@@ -24,6 +24,7 @@ public sealed class Layers
     
     public const int    player = 8,
                         ignore = 9,
+                        alldamageBullet = 10,
                         enemy = 11,
                         objective = 12,
                         capital = 13,
@@ -60,11 +61,17 @@ public sealed class Layers
             case playerBullet: case player:
                 return GetPlayerBulletMask (type);
                 
-            case enemyBullet:
+            case enemyBullet: case enemy:
                 return GetEnemyBulletMask (type);
                 
             case capitalBullet:
                 return GetCapitalBulletMask (type);
+                
+            case alldamageBullet:
+                return GetAllDamageMask(type);
+                
+            case ignore:
+                return 0;
                 
             default:
                 Debug.LogError ("Can't determine LayerMask for layer: " + baseLayer + " (" + type + ")");
@@ -76,6 +83,21 @@ public sealed class Layers
     
     
     #region Get mask functions
+    
+    static int GetAllDamageMask(MaskType type)
+    {
+        switch(type)
+        {
+            case MaskType.Standard:
+                return (1 << asteroid) | (1 << enemy) | (1 << enemyDestructibleBullet) | (1 << enemyCollide) | (1 << enemySupportShield) | (1 << player) | (1 << capital);
+            case MaskType.Targetting:
+                return GetAllDamageMask (MaskType.Standard) & ~(1 << asteroid) & ~(1 << enemyDestructibleBullet);
+            case MaskType.AoE:
+                return GetAllDamageMask(MaskType.Standard);
+        }
+        
+        return -1;
+    }
     
     static int GetCapitalMask (MaskType type)
     {

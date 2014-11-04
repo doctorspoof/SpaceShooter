@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System.Collections.Generic;
 
 
 /// <summary>
@@ -56,6 +56,10 @@ public sealed class EquipmentTypePlating : BaseEquipment
                         float               m_regenFloatCatch = 0.0f;
                         
     Element m_cachedMajorElement = Element.NULL;
+    
+    //Internals
+    float m_cleanseCounter = 0.0f;
+    float m_arcCounter = 0.0f;
 
 
     #region BaseEquipment Overrides
@@ -174,6 +178,68 @@ public sealed class EquipmentTypePlating : BaseEquipment
             if(m_currentHP > m_currentStats.hp)
                 m_currentHP = m_currentStats.hp;
         }
+        
+        
+        if(this.GetComponent<Ship>() != null)
+        {
+            //Cleanse
+            if(m_cleanseCounter >= 1.0f)
+            {
+                m_cleanseCounter = 0.0f;
+                float rand = Random.Range(0.0f, 1.0f);
+                if(rand < m_currentStats.chanceToCleanse)
+                {
+                    GetComponent<Ship>().ResetDebuffs();
+                }
+            }
+            else
+            {
+                m_cleanseCounter += Time.deltaTime;
+            }
+            
+            //Arc
+            if(m_arcCounter >= 1.0f)
+            {
+                List<Debuff> debuffs = this.GetComponent<Ship>().GetListOfCurrentDebuffs();
+                
+                if(debuffs != null && debuffs.Count > 0)
+                {
+                    if(m_currentStats.chanceToJump > 0.0f)
+                    {
+                        m_arcCounter = 0.0f;
+                        float rand = Random.Range(0.0f, 1.0f);
+                        if(rand < m_currentStats.chanceToJump)
+                        {
+                            FireArcBolt(debuffs);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                m_arcCounter += Time.deltaTime;
+            }
+        }
+    }
+    
+    void FireArcBolt(List<Debuff> debuffsToApply)
+    {
+        int layermask = Layers.GetLayerMask(gameObject.layer, MaskType.Targetting);
+        Rigidbody[] targets = Physics.OverlapSphere(transform.position, 7.5f, layermask).GetAttachedRigidbodies();
+        
+        if(targets.Length > 0)
+        {
+            int rand = Random.Range(0, targets.Length);
+            
+            GameObject target = targets[rand].gameObject;
+            for(int i = 0; i < debuffsToApply.Count; i++)
+            {
+                target.GetComponent<Ship>().AddDebuff(debuffsToApply[i]);
+            }
+            
+            //Spawn the effect
+            GameObject.FindGameObjectWithTag("EffectManager").GetComponent<EffectsManager>().SpawnLightningEffect(transform.position, target.transform.position, LightningZapType.Small);
+        }
     }
     
     /// <summary>
@@ -194,6 +260,12 @@ public sealed class EquipmentTypePlating : BaseEquipment
         }
         else
         {
+            float rand = Random.Range(0.0f, 1.0f);
+            if(rand < m_currentStats.chanceToEthereal)
+            {
+                GetComponent<Ship>().AddDebuff(new DebuffEthereal(m_currentStats.etherealDuration, this.gameObject));
+            }
+        
             return true;
         }
     }
@@ -218,6 +290,26 @@ public sealed class EquipmentTypePlating : BaseEquipment
     public int GetHealthMax()
     {
         return m_currentStats.hp;
+    }
+    public int GetDamageToReturn(int damageDoneToUs)
+    {
+        return Mathf.RoundToInt(damageDoneToUs * m_currentStats.returnDamage);
+    }
+    public bool CanGravityWell()
+    {
+        return m_currentStats.slowsIncoming;
+    }
+    public float GetGravityWellMagnitude()
+    {
+        return m_currentStats.speedReduction;
+    }
+    public float GetVampirePercentage()
+    {
+        return m_currentStats.lifesteal;
+    }
+    public float GetSlowOnRam()
+    {
+        return m_currentStats.slowDuration;
     }
     
     [RPC] void PropagateHealthValue(int value)

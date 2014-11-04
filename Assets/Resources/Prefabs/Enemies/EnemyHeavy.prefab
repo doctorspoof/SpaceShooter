@@ -1328,7 +1328,9 @@ MonoBehaviour:
   m_debuffs: []
   shipID: -1
   m_bountyAmount: 40
-  m_allowedAttacksForShip: []
+  m_allowedAttacksForShip:
+  - AttackCircleClockwise
+  - AttackCircleAntiClockwise
 --- !u!114 &11400004
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1347,6 +1349,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 1
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400006
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1391,6 +1395,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400012
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1409,6 +1415,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400014
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1427,6 +1435,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400016
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1445,6 +1455,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1463,6 +1475,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400020
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1481,6 +1495,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400022
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1616,6 +1632,29 @@ MonoBehaviour:
     invisChance: 0
     invisDuration: 1
     deflectChance: 0
+  m_currentStats:
+    baseMaxShield: 100
+    baseRechargeRate: 1
+    baseRechargeDelay: 1
+    shouldFireBurst: 0
+    burstDamage: 0
+    burstRange: 10
+    burstMaxDamageRange: .100000001
+    burstMaxFalloff: .00100000005
+    debuffModifier: 0
+    canStaticShock: 0
+    staticChance: 0
+    staticDamage: 100
+    staticRange: 10
+    staticCooldown: 2
+    canFlashbang: 0
+    flashChance: 0
+    flashRange: 10
+    flashStunDuration: 2
+    absorbChance: 0
+    invisChance: 0
+    invisDuration: 1
+    deflectChance: 0
   m_currentRechargeDelay: 0
   m_currentRechargeFloatCatch: 0
 --- !u!114 &11400040
@@ -1658,6 +1697,7 @@ MonoBehaviour:
     etherealDuration: 2
     slowsIncoming: 0
     speedReduction: 0
+  m_currentHP: 0
 --- !u!114 &11400042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1698,6 +1738,21 @@ MonoBehaviour:
     hasLongTeleport: 0
     longTeleRange: 50
     longTeleCooldown: 60
+  m_currentStats:
+    forwardSpeed: 250
+    turnSpeed: 250
+    strafeSpeed: 250
+    burnerSpeed: 250
+    burnerLength: 2.5
+    burnerRechargeTime: 5
+    hasGravityControl: 0
+    maxGravityChange: 0
+    hasShortTeleport: 0
+    shortTeleRange: 5
+    shortTeleCooldown: 60
+    hasLongTeleport: 0
+    longTeleRange: 50
+    longTeleCooldown: 60
 --- !u!114 &11400046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1712,19 +1767,20 @@ MonoBehaviour:
   m_numAugments: 2
   m_augmentSlots: []
   m_augmentItemSlots: []
-  m_fireBulletMat: {fileID: 2100000, guid: 1aeb4bcb580717d48bd690e2a909fea5, type: 2}
-  m_iceBulletMat: {fileID: 2100000, guid: 2c678626dc2f68f4bbea62d53923abad, type: 2}
-  m_earthBulletMat: {fileID: 2100000, guid: 18d1b68d7d4b07e46888cf093b0116fe, type: 2}
-  m_lightningBulletMat: {fileID: 2100000, guid: a35ee163dc26c2b45bcc774f61c4e2cc,
-    type: 2}
-  m_lightBulletMat: {fileID: 2100000, guid: 6dae19961b9ddc84295bbac026ea07a0, type: 2}
-  m_darkBulletMat: {fileID: 2100000, guid: 980084def3ecfae4192c5784f677658d, type: 2}
-  m_spiritBulletMat: {fileID: 2100000, guid: 52cd4f91e0fbf6c4886e4417e1921612, type: 2}
-  m_gravityBulletMat: {fileID: 2100000, guid: 3bfcb8daa91b95d40ae236605d76fc3e, type: 2}
-  m_airBulletMat: {fileID: 2100000, guid: 966f691a1c17d9447b352dc5e7143967, type: 2}
-  m_organicBulletMat: {fileID: 2100000, guid: 09dd47b4870c3a542b8235f8ca9c3493, type: 2}
+  m_fireBeamMat: {fileID: 2100000, guid: 76ef2c89c00fdf347ac61ef54dd3e7cc, type: 2}
+  m_iceBeamMat: {fileID: 2100000, guid: d05ef5118faa7c84194f4d3bb64621ce, type: 2}
+  m_earthBeamMat: {fileID: 2100000, guid: 64f0a9b6309b1234cbcaa73e3750a546, type: 2}
+  m_lightningBeamMat: {fileID: 2100000, guid: 26fef03796763bb41b02cb2153ffff18, type: 2}
+  m_lightBeamMat: {fileID: 2100000, guid: d6fffdecb7da2544f94c5b7ec6d68bfe, type: 2}
+  m_darkBeamMat: {fileID: 2100000, guid: 93c0eb7c610074b4f9c4c96686f4ad01, type: 2}
+  m_spiritBeamMat: {fileID: 2100000, guid: 42207a0361a6c5a41ae6241722987fd1, type: 2}
+  m_gravityBeamMat: {fileID: 2100000, guid: 51a15061f4a15f74080e35e4e05ece90, type: 2}
+  m_airBeamMat: {fileID: 2100000, guid: 8e88818a5ee0aea4d9b5a565e3f95468, type: 2}
+  m_organicBeamMat: {fileID: 2100000, guid: 27bf8fdaf2934b84faa32074cf7e03e0, type: 2}
   m_bulletRef: {fileID: 100000, guid: 46575fa12edd2e6439c25e3d44d27e1b, type: 2}
-  m_bulletOffsets: []
+  m_beamRef: {fileID: 100000, guid: 7bde69b14ebc21d45a194f88b893e99c, type: 2}
+  m_bulletOffsets:
+  - {x: 0, y: 0, z: 0}
   m_baseBulletStats:
     damage: 10
     reach: 18
@@ -1787,6 +1843,8 @@ MonoBehaviour:
     firer: {fileID: 0}
     appliedElements: 
   m_currentWeaponReloadTime: 0
+  m_currentReloadCounter: 0
+  m_currentRechargeDelay: 0
 --- !u!114 &11400048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1801,19 +1859,20 @@ MonoBehaviour:
   m_numAugments: 2
   m_augmentSlots: []
   m_augmentItemSlots: []
-  m_fireBulletMat: {fileID: 2100000, guid: 1aeb4bcb580717d48bd690e2a909fea5, type: 2}
-  m_iceBulletMat: {fileID: 2100000, guid: 2c678626dc2f68f4bbea62d53923abad, type: 2}
-  m_earthBulletMat: {fileID: 2100000, guid: 18d1b68d7d4b07e46888cf093b0116fe, type: 2}
-  m_lightningBulletMat: {fileID: 2100000, guid: a35ee163dc26c2b45bcc774f61c4e2cc,
-    type: 2}
-  m_lightBulletMat: {fileID: 2100000, guid: 6dae19961b9ddc84295bbac026ea07a0, type: 2}
-  m_darkBulletMat: {fileID: 2100000, guid: 980084def3ecfae4192c5784f677658d, type: 2}
-  m_spiritBulletMat: {fileID: 2100000, guid: 52cd4f91e0fbf6c4886e4417e1921612, type: 2}
-  m_gravityBulletMat: {fileID: 2100000, guid: 3bfcb8daa91b95d40ae236605d76fc3e, type: 2}
-  m_airBulletMat: {fileID: 2100000, guid: 966f691a1c17d9447b352dc5e7143967, type: 2}
-  m_organicBulletMat: {fileID: 2100000, guid: 09dd47b4870c3a542b8235f8ca9c3493, type: 2}
+  m_fireBeamMat: {fileID: 2100000, guid: 76ef2c89c00fdf347ac61ef54dd3e7cc, type: 2}
+  m_iceBeamMat: {fileID: 2100000, guid: d05ef5118faa7c84194f4d3bb64621ce, type: 2}
+  m_earthBeamMat: {fileID: 2100000, guid: 64f0a9b6309b1234cbcaa73e3750a546, type: 2}
+  m_lightningBeamMat: {fileID: 2100000, guid: 26fef03796763bb41b02cb2153ffff18, type: 2}
+  m_lightBeamMat: {fileID: 2100000, guid: d6fffdecb7da2544f94c5b7ec6d68bfe, type: 2}
+  m_darkBeamMat: {fileID: 2100000, guid: 93c0eb7c610074b4f9c4c96686f4ad01, type: 2}
+  m_spiritBeamMat: {fileID: 2100000, guid: 42207a0361a6c5a41ae6241722987fd1, type: 2}
+  m_gravityBeamMat: {fileID: 2100000, guid: 51a15061f4a15f74080e35e4e05ece90, type: 2}
+  m_airBeamMat: {fileID: 2100000, guid: 8e88818a5ee0aea4d9b5a565e3f95468, type: 2}
+  m_organicBeamMat: {fileID: 2100000, guid: 27bf8fdaf2934b84faa32074cf7e03e0, type: 2}
   m_bulletRef: {fileID: 100000, guid: 46575fa12edd2e6439c25e3d44d27e1b, type: 2}
-  m_bulletOffsets: []
+  m_beamRef: {fileID: 100000, guid: 7bde69b14ebc21d45a194f88b893e99c, type: 2}
+  m_bulletOffsets:
+  - {x: 0, y: 0, z: 0}
   m_baseBulletStats:
     damage: 30
     reach: 21
@@ -1876,6 +1935,8 @@ MonoBehaviour:
     firer: {fileID: 0}
     appliedElements: 
   m_currentWeaponReloadTime: 0
+  m_currentReloadCounter: 0
+  m_currentRechargeDelay: 0
 --- !u!135 &13500000
 SphereCollider:
   m_ObjectHideFlags: 1

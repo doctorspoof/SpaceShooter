@@ -21,7 +21,7 @@ public class AbilityShieldCollapseInvisible : AbilityShieldCollapse
     {
         if(HasCooled())
         {
-            caster.GetComponent<Ship>().AddDebuff(new DebuffInvis(m_invisDuration, caster));
+            caster.GetComponent<Ship>().AddDebuff(new DebuffEthereal(m_invisDuration, caster));
             
             ResetCooldown();
         }

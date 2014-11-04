@@ -28,6 +28,7 @@ public class PlayerControlScript : Ship
     bool m_useController = false;
     Quaternion m_targetAngle;
     bool m_playerIsOutOfBounds = false;
+    bool m_localGUIMapCache = false;
 
     // Docking Stuff
     float m_dockingTime = 0.0f;                 //Used to determine if the player should continue the docking attempt
@@ -256,6 +257,11 @@ public class PlayerControlScript : Ship
         if (Network.player == m_owner)
             Screen.showCursor = true;
     }
+    
+    void OnTriggerEnter(Collider other)
+    {
+        base.OnTriggerEnter(other);
+    }
 
     /* Custom Functions */
     #region Dock-related functions
@@ -281,7 +287,10 @@ public class PlayerControlScript : Ship
         {
             GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtShop(m_nearbyShop);
             transform.parent = m_nearbyShop.transform;
-            rigidbody.isKinematic = true;
+            //rigidbody.isKinematic = true;
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+            
             m_shouldRecieveInput = false;
 
         }
@@ -326,7 +335,7 @@ public class PlayerControlScript : Ship
                 //We shouln't even BE here!
                 m_isAnimating = false;
                 networkView.RPC("PropagateInvincibility", RPCMode.All, false);
-                rigidbody.isKinematic = false;
+                //rigidbody.isKinematic = false;
                 break;
             }
             case DockingState.OnApproach:
@@ -350,10 +359,13 @@ public class PlayerControlScript : Ship
                         m_dockingTime = 0f;
                         
                         // Kill our speed temporarily
-                        rigidbody.isKinematic = true;
+                        //rigidbody.isKinematic = true;
+                        rigidbody.velocity = Vector3.zero;
+                        rigidbody.angularVelocity = Vector3.zero;
+                        
                         m_currentDockingState = DockingState.OnEntry;
                         m_targetPoint = m_cShipCache.transform.position + (m_cShipCache.transform.up * 1.5f);
-                        rigidbody.isKinematic = false;
+                        //rigidbody.isKinematic = false;
                         this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.75f);
                     }
                 }
@@ -399,7 +411,10 @@ public class PlayerControlScript : Ship
                         transform.rotation = m_cShipCache.transform.rotation;
                         GameObject.FindGameObjectWithTag("GameController").GetComponent<GameStateController>().NotifyLocalPlayerHasDockedAtCShip();
                         transform.parent = m_cShipCache.transform;
-                        rigidbody.isKinematic = true;
+                        //rigidbody.isKinematic = true;
+                        rigidbody.velocity = Vector3.zero;
+                        rigidbody.angularVelocity = Vector3.zero;
+                        
                         networkView.RPC("PropagateInvincibility", RPCMode.All, true);
                     }
                 }
@@ -453,7 +468,7 @@ public class PlayerControlScript : Ship
                     m_isAnimating = false;
                     this.transform.position = new Vector3(this.transform.position.x, this.transform.position.y, 10.0f);
                     networkView.RPC("PropagateInvincibility", RPCMode.All, false);
-                    rigidbody.isKinematic = false;
+                    //rigidbody.isKinematic = false;
                 }
                 break;
             }
@@ -471,7 +486,7 @@ public class PlayerControlScript : Ship
         //Reinstate movement (although input should never be cut anyway)
         m_shouldRecieveInput = true;
         networkView.RPC ("PropagateInvincibility", RPCMode.All, false);
-        rigidbody.isKinematic = false;
+        //rigidbody.isKinematic = false;
         
         //Alert animation it needs to leave
         m_currentDockingState = DockingState.Exiting;
@@ -533,19 +548,26 @@ public class PlayerControlScript : Ship
     #region Input/Update Functions
     void RotateTowardsMouse()
     {
-        var objectPos = Camera.main.WorldToScreenPoint(transform.position);
-        var dir = Input.mousePosition - objectPos;
-        
-        RotateTowards(transform.position + dir);
-        
-        if (Input.GetMouseButton(0))
+        if(!m_localGUIMapCache)
         {
-            this.GetComponent<EquipmentTypeWeapon>().PlayerRequestsFire();
-        }
+            Vector2 rawMousePos = Input.mousePosition;
+            Vector2 sendOffMousePos = new Vector2((rawMousePos.x - (Screen.width * 0.5f)) / Screen.width, (rawMousePos.y - (Screen.height * 0.5f)) / Screen.height);
+            Camera.main.GetComponent<CameraScript>().SetTargetStretchOffset(sendOffMousePos);
         
-        if (Input.GetMouseButtonUp(0))
-        {
-            this.GetComponent<EquipmentTypeWeapon>().PlayerReleaseFire();
+            var objectPos = Camera.main.WorldToScreenPoint(transform.position);
+            var dir = Input.mousePosition - objectPos;
+            
+            RotateTowards(transform.position + dir);
+            
+            if (Input.GetMouseButton(0))
+            {
+                this.GetComponent<EquipmentTypeWeapon>().PlayerRequestsFire();
+            }
+            
+            if (Input.GetMouseButtonUp(0))
+            {
+                this.GetComponent<EquipmentTypeWeapon>().PlayerReleaseFire();
+            }
         }
     }
     
@@ -859,7 +881,7 @@ public class PlayerControlScript : Ship
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            m_gscCache.ToggleBigMapState();
+            m_localGUIMapCache = m_gscCache.ToggleBigMapState();
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
@@ -1040,7 +1062,9 @@ public class PlayerControlScript : Ship
 		m_targetPoint = CShip.transform.position;
 
 		networkView.RPC ("PropagateInvincibility", RPCMode.All, true);
-		rigidbody.isKinematic = true;
+		//rigidbody.isKinematic = true;
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
 
 		m_isAnimating = true;
 		m_currentDockingState = DockingState.Docked;

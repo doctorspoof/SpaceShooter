@@ -313,7 +313,7 @@ public class GUIShopDockScreen : BaseGUIScreen
                 m_playerCache.gameObject.GetComponent<PlayerControlScript>().SetNearbyShop(null);
                 m_playerCache.transform.parent = null;
                 m_playerCache.gameObject.GetComponent<PlayerControlScript>().TellShipStartRecievingInput();
-                m_playerCache.rigidbody.isKinematic = false;
+                //m_playerCache.rigidbody.isKinematic = false;
                 Screen.showCursor = false;
             }
         }

@@ -20,7 +20,19 @@ Material:
           m_Texture: {fileID: 2800000, guid: 9b57fd51938fb22478c7934ee8a03dc1, type: 3}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
-    m_Floats: {}
+    m_Floats:
+      data:
+        first:
+          name: _FrameNumX
+        second: 1
+      data:
+        first:
+          name: _FrameNumY
+        second: 1
+      data:
+        first:
+          name: _FPS
+        second: 30
     m_Colors:
       data:
         first:

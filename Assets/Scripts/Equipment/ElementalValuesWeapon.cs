@@ -61,7 +61,8 @@ namespace ElementalValuesWeapon
 		public const bool   isBeam                  = true;     //!< Enable beam functionality
 		
 		public const float  damageMulti             = 0.1f,     //!< Increase base bullet damage slightly.
-							reloadTimeMulti         = 0.1f;     //!< Increase the reload time (negative).
+							reloadTimeMulti         = 0.1f,     //!< Increase the reload time (negative).
+                            reachMulti              = 0.05f;
 	}
 	
 	

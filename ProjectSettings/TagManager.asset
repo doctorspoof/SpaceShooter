@@ -36,6 +36,8 @@ TagManager:
   - ProcGen
   - Background
   - Planet
+  - EffectManager
+  - Pickup
   - 
   Builtin Layer 0: Default
   Builtin Layer 1: TransparentFX
@@ -47,7 +49,7 @@ TagManager:
   Builtin Layer 7: 
   User Layer 8: Player
   User Layer 9: Ignore
-  User Layer 10: Bullets
+  User Layer 10: AllDamageBullet
   User Layer 11: Enemy
   User Layer 12: Objective
   User Layer 13: Capital

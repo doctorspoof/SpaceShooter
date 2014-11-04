@@ -173,16 +173,58 @@ public class HealthScript : MonoBehaviour
                     //Debug.Log("Applying " + PCdamage + " damage to PC.");
                     HealthScript health = collision.gameObject.GetComponent<HealthScript>();
                     health.DamageMob(PCdamage, this.gameObject);
+                    
+                    //Check if the target had fire thorns
+                    EquipmentTypePlating plating = collision.gameObject.GetComponent<EquipmentTypePlating>();
+                    if(plating != null)
+                    {
+                        int damage = plating.GetDamageToReturn(PCdamage);
+                        DamageMob(damage, collision.gameObject);
+                    }
+                    
+                    //Check if we have vampire
+                    EquipmentTypePlating ourPlating = this.GetComponent<EquipmentTypePlating>();
+                    if(ourPlating.GetVampirePercentage() > 0.0f)
+                    {
+                        ourPlating.RepairPlating(Mathf.RoundToInt(PCdamage * ourPlating.GetVampirePercentage()));
+                    }
+                    
+                    //Check for slow ram
+                    if(ourPlating.GetSlowOnRam() > 0.0f)
+                    {
+                        collision.gameObject.GetComponent<Ship>().AddDebuff(new DebuffSlow(ourPlating.GetSlowOnRam(), 0.3f, collision.gameObject));
+                    }
                 }
                 else if(collision.gameObject.tag == "Player")
                 {
                     Ship shipComponent = GetComponent<Ship>();
 
                     float magnitude = collision.relativeVelocity.magnitude * collision.rigidbody.mass;
-                    int PCdamage = (int)(magnitude * shipComponent.GetRamDam() * 10);
+                    int PCdamage = (int)(magnitude * shipComponent.GetRamDam());
                     //Debug.Log("Applying " + PCdamage + " damage to PC.");
                     HealthScript health = collision.gameObject.GetComponent<HealthScript>();
                     health.DamageMob(PCdamage, this.gameObject);
+                    
+                    //Check if the target had fire thorns
+                    EquipmentTypePlating plating = collision.gameObject.GetComponent<EquipmentTypePlating>();
+                    if(plating != null)
+                    {
+                        int damage = plating.GetDamageToReturn(PCdamage);
+                        DamageMob(damage, collision.gameObject);
+                    }
+                    
+                    //Check if we have vampire
+                    EquipmentTypePlating ourPlating = this.GetComponent<EquipmentTypePlating>();
+                    if(ourPlating.GetVampirePercentage() > 0.0f)
+                    {
+                        ourPlating.RepairPlating(Mathf.RoundToInt(PCdamage * ourPlating.GetVampirePercentage()));
+                    }
+                    
+                    //Check for slow ram
+                    if(ourPlating.GetSlowOnRam() > 0.0f)
+                    {
+                        collision.gameObject.GetComponent<Ship>().AddDebuff(new DebuffSlow(ourPlating.GetSlowOnRam(), 0.3f, collision.gameObject));
+                    }
                 }
                 else if(collision.gameObject.tag == "Asteroid")
                 {
@@ -208,12 +250,33 @@ public class HealthScript : MonoBehaviour
                     else
                     {
                         //TODO: Maybe parametise capital ship ram damage? (the 1.0f)
-                        NMdamage = (int)(magnitude * 5.0f);
+                        NMdamage = (int)(magnitude);
                     }
                     //Debug.Log ("Applying " + NMdamage + " damage to enemy.");
 
                     HealthScript health = collision.gameObject.GetComponent<HealthScript>();
                     health.DamageMob(NMdamage, this.gameObject);
+                    
+                    //Check if the target had fire thorns
+                    EquipmentTypePlating plating = collision.gameObject.GetComponent<EquipmentTypePlating>();
+                    if(plating != null)
+                    {
+                        int damage = plating.GetDamageToReturn(NMdamage);
+                        DamageMob(damage, collision.gameObject);
+                    }
+                    
+                    //Check if we have vampire
+                    EquipmentTypePlating ourPlating = this.GetComponent<EquipmentTypePlating>();
+                    if(ourPlating.GetVampirePercentage() > 0.0f)
+                    {
+                        ourPlating.RepairPlating(Mathf.RoundToInt(NMdamage * ourPlating.GetVampirePercentage()));
+                    }
+                    
+                    //Check for slow ram
+                    if(ourPlating.GetSlowOnRam() > 0.0f)
+                    {
+                        collision.gameObject.GetComponent<Ship>().AddDebuff(new DebuffSlow(ourPlating.GetSlowOnRam(), 0.3f, collision.gameObject));
+                    }
                 }
                 else if(collision.gameObject.tag == "Asteroid")
                 {
@@ -271,7 +334,11 @@ public class HealthScript : MonoBehaviour
 		if(Network.isServer && !m_isInvincible)
 		{
 			m_platingCache.DamagePlating(damage, null);
-            m_shieldCache.ResetRechargeDelay();
+            
+            if(m_shieldCache != null)
+            {
+                m_shieldCache.ResetRechargeDelay();
+            }
 			
 			//Tell gamecontroller the capital ship is under attack
 			if(this.tag == "Capital")
@@ -299,42 +366,61 @@ public class HealthScript : MonoBehaviour
             Element firerElem = Element.NULL;
             if(hitter)
                 firerElem = hitter.GetComponent<Bullet>().GetMajorElement(); 
-            else if(firer.GetComponent<EquipmentTypeWeapon>())
-                firer.GetComponent<EquipmentTypeWeapon>().GetMajorityElement();
+            else if(firer != null && firer.GetComponent<EquipmentTypeWeapon>())
+                firerElem = firer.GetComponent<EquipmentTypeWeapon>().GetMajorityElement();
         
             if(m_shieldCache && m_shieldCache.GetIsShieldUp())
             {
-                bool shouldAlsoHitHP = false;
-                int overflowAmount = m_shieldCache.GetShieldCurrent() - damage;
-                
-                if(overflowAmount < 0)
+                bool shouldDamage = true;
+            
+                if(hitter != null && m_shieldCache != null && m_shieldCache.GetAbsorbChance() > 0.0f)
                 {
-                    shouldAlsoHitHP = true;
-                }
-                
-                float newDam = (float)damage * ElementDamageLookup.GetDamagePercentage(firerElem, GetComponent<EquipmentTypeShield>().GetMajorityElement());
-                m_shieldCache.DamageShield((int)newDam);
-                
-                if(shouldAlsoHitHP)
-                {
-                    float newOverflow = (float)overflowAmount * ElementDamageLookup.GetDamagePercentage(firerElem, GetComponent<EquipmentTypePlating>().GetMajorityElement());
-                    m_platingCache.DamagePlating((int)newOverflow, firer, hitter);
-                }
-                else if(hitter != null)
-                {
-                    BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
+                    //Check absorb chance
+                    float chance = Random.Range(0.0f, 1.0f);
                     
-                    Vector3 position = beam ? beam.GetBeamHit().point : hitter.transform.position;
-                    int dType = beam ? (int)beam.GetDamageType() : (int)hitter.GetComponent<Bullet>().GetMajorElement();
-                    float magnitude = beam ? beam.GetDamage() : hitter.GetComponent<Bullet>().GetDamage();
-                    
-                    networkView.RPC ("PropagateShieldWibble", RPCMode.All, position, dType, magnitude);
+                    if(chance < m_shieldCache.GetAbsorbChance())
+                    {
+                        shouldDamage = false;
+                        m_shieldCache.HealShield(damage);
+                    }
                 }
-                else
+            
+                if(shouldDamage)
                 {
-                    //No bullet, still shield plz
-                    Vector3 position = (transform.position + firer.transform.position) * 0.5f;
-                    networkView.RPC ("PropagateShieldWibblePosOnly", RPCMode.All, position);
+                    bool shouldAlsoHitHP = false;
+                    int overflowAmount = m_shieldCache.GetShieldCurrent() - damage;
+                    
+                    if(overflowAmount < 0)
+                    {
+                        shouldAlsoHitHP = true;
+                    }
+                    
+                    float newDam = (float)damage * ElementDamageLookup.GetDamagePercentage(firerElem, GetComponent<EquipmentTypeShield>().GetMajorityElement());
+                    m_shieldCache.DamageShield((int)newDam);
+                    
+                    if(shouldAlsoHitHP)
+                    {
+                        float newOverflow = (float)overflowAmount * ElementDamageLookup.GetDamagePercentage(firerElem, GetComponent<EquipmentTypePlating>().GetMajorityElement());
+                        m_platingCache.DamagePlating((int)newOverflow, firer, hitter);
+                    }
+                    else if(hitter != null)
+                    {
+                        BeamBulletScript beam = hitter.GetComponent<BeamBulletScript>();
+                        
+                        Vector3 position = beam != null ? beam.GetBeamHit().point : hitter.transform.position;
+                        int dType = beam ? (int)beam.GetDamageType() : (int)hitter.GetComponent<Bullet>().GetMajorElement();
+                        float magnitude = beam ? beam.GetDamage() : hitter.GetComponent<Bullet>().GetDamage();
+                        
+                        networkView.RPC ("PropagateShieldWibble", RPCMode.All, position, dType, magnitude);
+                    }
+                    else
+                    {
+                        //No bullet, still shield plz
+                        Vector3 position = transform.position;
+                        if(firer != null && firer.transform != null)
+                            position = (transform.position + firer.transform.position) * 0.5f;
+                        networkView.RPC ("PropagateShieldWibblePosOnly", RPCMode.All, position);
+                    }
                 }
             }
             else

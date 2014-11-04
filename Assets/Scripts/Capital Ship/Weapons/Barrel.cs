@@ -43,12 +43,12 @@ public class Barrel : MonoBehaviour
             // Output the correct error message
             if (m_firePoint == null)
             {
-                Debug.LogError (name + ".Barrel.m_firePoint == null");
+                //Debug.LogError (name + ".Barrel.m_firePoint == null");
             }
 
             else
             {
-                Debug.LogWarning (name + ".Barrel.m_firePoint found on Awake()");
+                //Debug.LogWarning (name + ".Barrel.m_firePoint found on Awake()");
             }
         }
     }

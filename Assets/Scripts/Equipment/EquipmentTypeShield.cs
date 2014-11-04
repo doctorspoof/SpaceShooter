@@ -114,6 +114,8 @@ public sealed class EquipmentTypeShield : BaseEquipment
     Abilities           m_abilities = null;                         //!< A reference to the abilities component of the ship.
     Ship                m_ship = null;
     
+    public float m_zapCounter = 0.0f;
+    
     void Awake()
     {
         m_abilities = GetComponent<Abilities>();
@@ -312,6 +314,43 @@ public sealed class EquipmentTypeShield : BaseEquipment
                 m_currentRechargeDelay += Time.deltaTime;
             }
         }
+        
+        //Zap
+        if(m_zapCounter >= 0.0f)
+        {
+            if(m_currentStats.canStaticShock)
+            {
+                float rand = Random.Range (0.0f, 1.0f);
+                if(rand < m_currentStats.staticChance)
+                {
+                    FireZapBolt();
+                }
+                
+                m_zapCounter = -m_currentStats.staticCooldown;
+            }
+        }
+        else
+        {
+            m_zapCounter += Time.deltaTime;
+        }
+    }
+    
+    void FireZapBolt()
+    {
+        int layermask = Layers.GetLayerMask(gameObject.layer, MaskType.Targetting);
+        Rigidbody[] targets = Physics.OverlapSphere(transform.position, m_currentStats.staticRange, layermask).GetAttachedRigidbodies();
+        
+        if(targets != null && targets.Length > 0)
+        {
+            int rand = Random.Range(0, targets.Length);
+            GameObject target = targets[rand].gameObject;
+            
+            if(target != null)
+            {
+                target.GetComponent<HealthScript>().DamageMob(m_currentStats.staticDamage, this.gameObject);
+                GameObject.FindGameObjectWithTag("EffectManager").GetComponent<EffectsManager>().SpawnLightningEffect(transform.position, target.transform.position, LightningZapType.Big);
+            }
+        }
     }
     
     /// <summary>
@@ -336,6 +375,17 @@ public sealed class EquipmentTypeShield : BaseEquipment
         {
             m_currentRechargeDelay = 0.0f;
             return true;
+        }
+    }
+    
+    public void HealShield(int healing)
+    {
+        m_currentShieldValue += healing;
+        
+        if(m_currentShieldValue >= m_currentStats.baseMaxShield)
+        {
+            m_currentShieldValue = m_currentStats.baseMaxShield;
+            OnShieldRaise();
         }
     }
     
@@ -366,6 +416,18 @@ public sealed class EquipmentTypeShield : BaseEquipment
     {
         m_currentRechargeDelay = 0.0f;
     }
+    public float GetDebuffEffect()
+    {
+        return 1.0f - m_currentStats.debuffModifier;
+    }
+    public float GetDeflectChance()
+    {
+        return m_currentStats.deflectChance;
+    }
+    public float GetAbsorbChance()
+    {
+        return m_currentStats.absorbChance;
+    } 
     
     [RPC] void PropagateShieldValue(int value)
     {

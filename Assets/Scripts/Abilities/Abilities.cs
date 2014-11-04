@@ -151,10 +151,11 @@ public sealed class Abilities : MonoBehaviour
     /// <typeparam name="T">The ability type to be locked.</typeparam>
     public T Lock<T> (bool deleteObject = false) where T : Ability, new()
     {
+    
         // Find the ability
         T ability = FindAbilityOfType<T>();
         
-        // Ensure that what we are locking actually exists
+        // Ensure that what we are locking for actually exists
         if (ability != null)
         {
             ability.SetLockState(true);

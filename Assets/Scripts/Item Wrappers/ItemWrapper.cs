@@ -73,6 +73,18 @@ public class ItemWrapper : MonoBehaviour
             return -1;
         }
     }
+    public int GetAugmentElementID()
+    {
+        if(m_itemType == ItemType.Augment)
+        {
+            return (int)m_itemPrefab.GetComponent<Augment>().GetElement();
+        }
+        else
+        {
+            Debug.Log ("Requested element of non-augment item");
+            return -1;
+        }
+    }
 
 
     public int GetBaseCost()

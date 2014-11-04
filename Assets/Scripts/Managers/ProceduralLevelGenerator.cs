@@ -91,7 +91,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         #region Star
         int star = rand.Next(0, m_starPrefabs.Length);
-        Debug.Log ("Spawning star #" + star + "...");
+        //Debug.Log ("Spawning star #" + star + "...");
         float randomZ = Random.Range(0, 360);
         //NOTE: Change the z position if stars become 3D
         Network.Instantiate(m_starPrefabs[star], new Vector3(0f, 0f, 15.0f), Quaternion.Euler(0, 0, randomZ), 0);
@@ -120,7 +120,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         
         orbitObjectNum = 4 + Mathf.RoundToInt((13.0f - oldestAge) * 0.6f);
         expectedDistance = 560.0f + (totalMass * 2.0f);
-        Debug.Log ("System is expected to hold approximately " + orbitObjectNum + " natural objects, within a projected distance of " + expectedDistance + ".");
+        //Debug.Log ("System is expected to hold approximately " + orbitObjectNum + " natural objects, within a projected distance of " + expectedDistance + ".");
         #endregion
         
         
@@ -140,7 +140,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         int planetRingCounter = 0;
         int spawnedMoonCounter = 0;
         
-        Debug.Log("Spawning " + numPlanets + " planets...");
+        //Debug.Log("Spawning " + numPlanets + " planets...");
         for(int i = 0; i < numPlanets; i++)
         {
             int ringLevel = rand.Next(0, 2) + i;
@@ -164,7 +164,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             //Position
             Vector2 tempPos = Vector2.zero + (direction * distance);
             float scale = Random.Range(planetSizeModLower, planetSizeModUpper);
-            Debug.Log ("Planet " + i + ") Spawning planet #" + planet + " with direction: " + direction + " at distance: " + distance + ", and scale: " + scale);
+            //Debug.Log ("Planet " + i + ") Spawning planet #" + planet + " with direction: " + direction + " at distance: " + distance + ", and scale: " + scale);
             
             GameObject planetObject = Network.Instantiate(m_planetsPrefabs[planet], new Vector3(tempPos.x, tempPos.y, 100.0f), Random.rotation, 0) as GameObject;
             m_spawnedPlanets.Add(planetObject);
@@ -177,7 +177,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
                 scale *= Random.Range(0.75f, 0.95f);
             
             float checkDist = Vector2.Distance(new Vector2(tempPos.x, tempPos.y), Vector2.zero);
-            Debug.Log("Testing new extent of: " + checkDist);
+            //Debug.Log("Testing new extent of: " + checkDist);
             if(checkDist > furthestExtent)
                 furthestExtent = checkDist;
             
@@ -194,7 +194,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             if(baseRingChance >= 6.2f)
             {
                 int ringType = Random.Range(0, m_ringObjects.Length);
-                Debug.Log ("Planet " + i + ") Spawning a ring of type " + ringType + "...");
+                //Debug.Log ("Planet " + i + ") Spawning a ring of type " + ringType + "...");
                 GameObject ring = Network.Instantiate(m_ringObjects[ringType], tempPos, Quaternion.identity, 0) as GameObject;
                 
                 ring.GetComponent<PlanetRing>().SetParentAndScale(planetObject.transform, new Vector3(50.0f, 50.0f, 50.0f));
@@ -217,7 +217,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
                 float moonChance = Random.Range (-1.5f, 3.0f);
                 int numMoonsToSpawn = (int)(scale - moonChance);
                 
-                Debug.Log ("Planet " + i + ") Spawning " + numMoonsToSpawn + " moons...");
+                //Debug.Log ("Planet " + i + ") Spawning " + numMoonsToSpawn + " moons...");
                 for(int j = 0; j < numMoonsToSpawn; j++)
                 {
                     ++spawnedMoonCounter;
@@ -239,7 +239,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
                     //Position
                     Vector2 moonTempPos = tempPos + (moonDirection * moonDist);
                     float moonScale = Random.Range(0.2f * scale, 0.3f * scale);
-                    Debug.Log ("Planet " + i + ") Moon " + j + ") Spawning moon #" + moonType + " with direction: " + direction + " at distance: " + distance + ", and scale: " + moonScale);
+                    //Debug.Log ("Planet " + i + ") Moon " + j + ") Spawning moon #" + moonType + " with direction: " + direction + " at distance: " + distance + ", and scale: " + moonScale);
                     
                     GameObject moonObject = Network.Instantiate(m_planetsPrefabs[moonType], new Vector3(moonTempPos.x, moonTempPos.y, 100.0f), Random.rotation, 0) as GameObject;
                     m_spawnedPlanets.Add(moonObject);
@@ -253,7 +253,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
                         moonScale *= Random.Range(0.75f, 0.95f);
                     
                     float checkMoonDist = Vector2.Distance(new Vector2(moonTempPos.x, moonTempPos.y), Vector2.zero);
-                    Debug.Log("Testing new extent of: " + checkMoonDist);
+                    //Debug.Log("Testing new extent of: " + checkMoonDist);
                     if(checkMoonDist > furthestExtent)
                         furthestExtent = checkMoonDist;
                     
@@ -272,7 +272,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         #region Asteroids
         int asteroidRingCounter = 0;
         
-        Debug.Log ("Spawning " + numBelts + " asteroid belts...");
+        //Debug.Log ("Spawning " + numBelts + " asteroid belts...");
         for(int i = 0; i < numBelts; i++)
         {
             GameObject asteroidMan = Network.Instantiate(m_asteroidManager, Vector3.zero, Quaternion.identity, 0) as GameObject;
@@ -300,15 +300,17 @@ public class ProceduralLevelGenerator : MonoBehaviour
             asManSc.SetThickness(thickness);
             
             //Number
-            int numAster = (int)(range * 0.5f); 
+            int numAster = (int)(range * 0.35f); 
             asManSc.SetAsteroidNum(numAster);
             
             //Ensure ring
             asManSc.SetIsRing(true);
             
             //Test
-            Debug.Log ("Spawning asteroid belt with a range of " + range + " (ring level: " + ringLevel + ")....");
+            //Debug.Log ("Spawning asteroid belt with a range of " + range + " (ring level: " + ringLevel + ")....");
             //asManSc.ForceSpawnAsteroidsTestSP();
+            
+            
             asManSc.SpawnAsteroids();
         }
         
@@ -330,11 +332,13 @@ public class ProceduralLevelGenerator : MonoBehaviour
             asManSc.SetRange(range);
             asteroidMan.transform.position = fieldPos;
             float asteroidDensity = Random.Range (1.25f, 2.0f);
-            int numAster = (int)(range * asteroidDensity);
+            int numAster = (int)(range * asteroidDensity * 0.75f);
             asManSc.SetAsteroidNum(numAster);
             
             //Test
-            Debug.Log ("Spawning asteroid field with a range of " + range + ", centered on position " + fieldPos + ", with " + numAster + " asteroids.");
+            //Debug.Log ("Spawning asteroid field with a range of " + range + ", centered on position " + fieldPos + ", with " + numAster + " asteroids.");
+            
+            
             asManSc.SpawnAsteroids();
         }
         #endregion
@@ -343,7 +347,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
         #region Shops/Shipyards
         int numShops = rand.Next(3, 7);
         
-        Debug.Log ("Spawning " + numShops + " shops...");
+        //Debug.Log ("Spawning " + numShops + " shops...");
         for(int i = 0;i < numShops; i++)
         {
             //Type
@@ -491,7 +495,11 @@ public class ProceduralLevelGenerator : MonoBehaviour
         spawnMan.GetComponent<EnemySpawnManagerScript>().InitSpawnPoints();
         
         GameStateController.Instance().UpdateAttachedSpawnManager(spawnMan);
+        
         GameObject.FindGameObjectWithTag("GUIManager").GetComponent<GUIInGameMaster>().SetFurthestExtent(furthestExtent);
+        
+        // Expected time formula is: expTime = furthestExtent * 0.8
+        GameStateController.Instance().SetExpectedSectorTime(furthestExtent * 0.8f);
         
         //Spawn + Exit points
         Network.Instantiate(m_startMarker, new Vector3(-(furthestExtent + 50.0f), 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
@@ -995,7 +1003,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             asManSc.SetThickness(thickness);
             
             //Number
-            int numAster = (int)(range * 0.5f); 
+            int numAster = (int)(range * 0.35f); 
             asManSc.SetAsteroidNum(numAster);
             
             //Ensure ring
@@ -1025,7 +1033,7 @@ public class ProceduralLevelGenerator : MonoBehaviour
             asManSc.SetRange(range);
             asteroidMan.transform.position = fieldPos;
             float asteroidDensity = Random.Range (1.25f, 2.0f);
-            int numAster = (int)(range * asteroidDensity);
+            int numAster = (int)(range * asteroidDensity * 0.75f);
             asManSc.SetAsteroidNum(numAster);
             
             //Test
@@ -1187,6 +1195,8 @@ public class ProceduralLevelGenerator : MonoBehaviour
         float testY4 = furthestExtent * Mathf.Sin(315.0f * Mathf.PI / 180f);
         Network.Instantiate(m_spawnPoint, new Vector3(testX4, testY4, 10.5f), Quaternion.Euler(0, 0, 45), 0);
         
+        GameObject.FindGameObjectWithTag("SpawnManager").GetComponent<EnemySpawnManagerScript>().InitSpawnPoints();
+        
         //Spawn + Exit points
         Network.Instantiate(m_startMarker, new Vector3(-(furthestExtent + 50.0f), 0, 10.5f), Quaternion.Euler(0, 0, -90), 0);
         
@@ -1262,6 +1272,13 @@ public class ProceduralLevelGenerator : MonoBehaviour
         for(int i = 0; i < points.Length; i++)
         {
             Destroy(points[i]);
+        }
+        
+        Debug.Log ("Destroying pickups...");
+        GameObject[] pickups = GameObject.FindGameObjectsWithTag("Pickup");
+        for(int i = 0; i < pickups.Length; i++)
+        {
+            Destroy (pickups[i]);
         }
         
         Debug.Log ("Done. Scene should now be empty!");

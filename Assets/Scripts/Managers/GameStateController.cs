@@ -112,6 +112,10 @@ public class GameStateController : MonoBehaviour
     List<SceneLoadingConfirmation> m_sceneLoadedConfirmList;
 
     float m_gameTimer = 0;
+    float m_sectorStartTime = 0f;
+    float m_sectorExpectedTime = 0f;
+    float m_storedSpawnCatchUp = 0.0f;
+    
     bool m_lossTimerBegin = false;
     float m_lossTimer = 0.0f;
     bool m_cshipIsDying = false;
@@ -135,6 +139,10 @@ public class GameStateController : MonoBehaviour
     public float GetGameTimer()
     {
         return m_gameTimer;
+    }
+    public void SetExpectedSectorTime(float expectedTime)
+    {
+        m_sectorExpectedTime = expectedTime;
     }
     
     public void SetGameTimer(float gameTimer_)
@@ -369,18 +377,20 @@ public class GameStateController : MonoBehaviour
                             {
                                 Debug.Log("Host respawned themselves.");
                                 SpawnAShip(Network.player);
-                                ChangeToInGame();
+                                //ChangeToInGame();
+                                SwitchToDockedAtCShip();
                             }
                             else
                             {
                                 Debug.Log("Telling remote player to respawn themselves.");
                                 networkView.RPC("SpawnAShip", m_deadPlayers[i].m_playerObject.m_netPlayer, m_deadPlayers[i].m_playerObject.m_netPlayer);
-                                networkView.RPC("ChangeToInGame", m_deadPlayers[i].m_playerObject.m_netPlayer);
+                                networkView.RPC("SwitchToDockedAtCShip", m_deadPlayers[i].m_playerObject.m_netPlayer);
                             }
 
                             //Remove them from the deadList
                             networkView.RPC("PropagateNonDeadPlayer", RPCMode.Others, m_deadPlayers[i].m_playerObject.m_netPlayer);
-                            m_deadPlayers.RemoveAt(i--);
+                            DeadPlayer toRemove = m_deadPlayers[i--];
+                            m_deadPlayers.Remove(toRemove);
                         }
                         else
                         {
@@ -435,6 +445,19 @@ public class GameStateController : MonoBehaviour
         m_cShipFinishedRotating = false;
         StartCoroutine(AwaitRotationCompleted());
         m_ingameCapitalShip.GetComponent<CapitalShipScript>().OrderRotateTo(Quaternion.Euler(0, 0, -90));
+        
+        if(Network.isServer)
+        {
+            //If we're the host, work out how far off the predicted time we were
+            float timeTaken = m_gameTimer - m_sectorStartTime;
+            float timeDiff = m_sectorExpectedTime - timeTaken;
+            
+            if(timeDiff < 0.0f)
+                timeDiff = 0;
+                
+            m_storedSpawnCatchUp += timeDiff;
+            Debug.Log ("Stored spawn catch up time is now: " + m_storedSpawnCatchUp);
+        }
     }
     IEnumerator AwaitRotationCompleted()
     {
@@ -463,8 +486,11 @@ public class GameStateController : MonoBehaviour
         //Reset CShip orders + destroy enemies/neutrals
         m_ingameCapitalShip.GetComponent<CapitalShipScript>().ClearMoveWaypoints();
         m_ingameCapitalShip.GetComponent<CapitalShipScript>().CancelOrder();
-        m_ingameCapitalShip.rigidbody.isKinematic = true;
-        m_ingameCapitalShip.rigidbody.isKinematic = false;
+        
+        //m_ingameCapitalShip.rigidbody.isKinematic = true;
+        //m_ingameCapitalShip.rigidbody.isKinematic = false;
+        m_ingameCapitalShip.rigidbody.velocity = Vector3.zero;
+        m_ingameCapitalShip.rigidbody.angularVelocity = Vector3.zero;
         
         //Destroy old sector (coroutine)
         ProceduralLevelGenerator procGen = GameObject.FindGameObjectWithTag("ProcGen").GetComponent<ProceduralLevelGenerator>();
@@ -509,6 +535,9 @@ public class GameStateController : MonoBehaviour
         
         m_GUIManager.GetComponent<GUIInGameMaster>().AlertTransitionNeedsInput(false);
         networkView.RPC ("PropagateBackgroundChangeToNormal", RPCMode.All);
+        
+        //Set sector start as time
+        m_sectorStartTime = m_gameTimer;
         
         //Tell the CShip to start moving
         GameObject target = GameObject.FindGameObjectWithTag("CSTarget");
@@ -649,7 +678,7 @@ public class GameStateController : MonoBehaviour
     {
         if(Network.isServer)
         {
-            while(Application.loadedLevel != 1)
+            while(Application.loadedLevel == 0)
                 yield return 0;
     
         
@@ -776,6 +805,8 @@ public class GameStateController : MonoBehaviour
         //Generate the scene and send the seed to other clients
         ProceduralLevelGenerator script = GameObject.FindGameObjectWithTag("ProcGen").GetComponent<ProceduralLevelGenerator>();
         int seed = script.ResetSeed();
+        //int seed = 1064167186;
+        //script.SetSeed(seed);
         //networkView.RPC ("TellClientGenerateLevel", RPCMode.Others, seed);
         script.RequestGenerateLevel(false);
     
@@ -869,6 +900,7 @@ public class GameStateController : MonoBehaviour
     public void UpdateAttachedSpawnManager(GameObject manager)
     {
         m_SpawnManager = manager;
+        m_SpawnManager.GetComponent<EnemySpawnManagerScript>().SetUpTimeCatchup(m_storedSpawnCatchUp);
     }
     void UpdateAttachedAsteroidManagers()
     {
@@ -885,6 +917,7 @@ public class GameStateController : MonoBehaviour
     {
         if (Network.isServer && m_shouldSpawnRoids)
         {
+            Debug.Log ("GSC demands asteroid spawnage");
             foreach (GameObject am in m_AsteroidManagers)
             {
                 am.GetComponent<AsteroidManager>().SpawnAsteroids();
@@ -1088,9 +1121,9 @@ public class GameStateController : MonoBehaviour
     #endregion
 
     #region Value Passing To GUI
-    public void ToggleBigMapState()
+    public bool ToggleBigMapState()
     {
-        m_GUIManager.GetComponent<GUIInGameMaster>().ToggleBigMapState();
+        return m_GUIManager.GetComponent<GUIInGameMaster>().ToggleBigMapState();
     }
     public void ToggleSmallMapState()
     {
@@ -1180,10 +1213,12 @@ public class GameStateController : MonoBehaviour
         ChangeGameState(GameState.InGameConnectionLost);
     }
     
-    public void SwitchToDockedAtCShip()
+    [RPC] public void SwitchToDockedAtCShip()
     {
         m_localPlayer.GetComponent<HealthScript>().SetInvincible(true);
+        m_localPlayer.layer = Layers.ignore;
         ChangeGameState(GameState.InGameCShipDock);
+        m_GUIManager.GetComponent<GUIInGameMaster>().SetPlayerDead(false);
     }
     
     public void SwitchToDockedAtShop()
@@ -1308,6 +1343,7 @@ public class GameStateController : MonoBehaviour
         {
             if (m_deadPlayers[i].m_playerObject.m_name == name)
             {
+            
                 m_deadPlayers.RemoveAt(i);
                 break;
             }
@@ -1431,38 +1467,8 @@ public class GameStateController : MonoBehaviour
 
     [RPC] void CapitalShipHasBeenDestroyed()
     {
-        //TODO:
-        //Add loss state
-        //On loss:
-
-
-        //Stop all enemies
-        /*if(Network.isServer)
-        {
-            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-            foreach(GameObject enemy in enemies)
-            {
-                enemy.GetComponent<ShipEnemy>().OnPlayerLoss();
-            }
-        }*/
-
-        //CShip is gone, don't worry about that
-
-        //Stop player input
-        /*GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach(GameObject player in players)
-            player.GetComponent<PlayerControlScript>().TellShipStopRecievingInput();*/
-
-        //Tell GUI to show loss splash
-        //m_GUIManager.GetComponent<GUIManager>().ShowLossSplash();
-
-        //New CShip death procedure:
-
-        //Tell the gui what's happening.
-        //This will handle freezing all enemies, stopping input, and alerting the camera
-        //TODO: Make the GSC handle all this
-        //m_GUIManager.GetComponent<GUIManager>().AlertGUIDeathSequenceBegins();
-
+        Camera.main.GetComponent<CameraScript>().TellCameraBeginDeathSequence();
+     
         if (Network.isServer)
         {
             HostConfirmsGameOver();

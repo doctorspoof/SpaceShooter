@@ -173,9 +173,9 @@ public class GUIInGameMaster : GUIBaseMaster
     {
         GetComponent<GUIInGameHUDScreen>().SetWeaponReference(weapon.GetComponent<EquipmentWeapon>());
     }
-    public void ToggleBigMapState()
+    public bool ToggleBigMapState()
     {
-        GetComponent<GUIMapOverlayScreen>().ToggleBigMap();
+        return GetComponent<GUIMapOverlayScreen>().ToggleBigMap();
     }
     
     public void ToggleSmallMapState()

@@ -1,0 +1,175 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &100000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400000}
+  - 148: {fileID: 14800000}
+  - 114: {fileID: 11400012}
+  - 114: {fileID: 11400010}
+  - 114: {fileID: 11400008}
+  - 114: {fileID: 11400006}
+  - 114: {fileID: 11400004}
+  - 114: {fileID: 11400002}
+  - 114: {fileID: 11400000}
+  m_Layer: 0
+  m_Name: InGameGUIMaster
+  m_TagString: GUIManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &400000
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ef84b823e81ea349af6b31b679cda2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_priorityValue: 0
+  m_menuBackground: {fileID: 2800000, guid: 162597ee9b314254d960d0501e6f6d6a, type: 3}
+--- !u!114 &11400002
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50225746aa23ff944bf5eb6a7e45115b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_priorityValue: 0
+  m_menuBackground: {fileID: 2800000, guid: 162597ee9b314254d960d0501e6f6d6a, type: 3}
+--- !u!114 &11400004
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 396e8ea7bddab1241bafbdb11ce50005, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_priorityValue: 0
+  m_mapOverlay: {fileID: 2800000, guid: 3d949cc67cbce174cbb4d136e4837ac3, type: 3}
+  m_selfPBlob: {fileID: 2800000, guid: c7f183f0398bb5a41a901bae350820d9, type: 3}
+  m_otherPBlob: {fileID: 2800000, guid: 09202667be749984cb4cc9a180a146a6, type: 3}
+  m_cShipBlob: {fileID: 2800000, guid: 9ef8ea4bc5ff88046a08a7b1ee9e4425, type: 3}
+  m_enemyBlob: {fileID: 2800000, guid: 213588710bea7e24882fbcc0456f6382, type: 3}
+  m_specEnemyBlob: {fileID: 2800000, guid: a40a7992ab2e50d4c97d3a682856deb9, type: 3}
+--- !u!114 &11400006
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30bb88d4f9b299747bc9244c752dd82f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_priorityValue: 0
+  m_menuBackground: {fileID: 2800000, guid: 162597ee9b314254d960d0501e6f6d6a, type: 3}
+  m_shopBaseTexture: {fileID: 2800000, guid: 225c214fb08635948a187813c1f8ec6f, type: 3}
+  m_smallShopTexture: {fileID: 2800000, guid: 48917559ca6eef74abb7ce749d568413, type: 3}
+  m_dockInventoryBorder: {fileID: 2800000, guid: eaaec054f7677414cadcb67f70ef7750,
+    type: 3}
+  m_dockPlayerImage: {fileID: 2800000, guid: feb0f331ada19a74fa3d1967ac03cfdd, type: 3}
+--- !u!114 &11400008
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fca55db84a90647459a2da4de2661173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_priorityValue: 0
+  m_dockBackground: {fileID: 2800000, guid: 424eb3d04c4f3244e89e336d2342ba24, type: 3}
+  m_dockInventoryBorder: {fileID: 2800000, guid: eaaec054f7677414cadcb67f70ef7750,
+    type: 3}
+  m_dockPlayerImage: {fileID: 2800000, guid: feb0f331ada19a74fa3d1967ac03cfdd, type: 3}
+  m_dockCShipImage: {fileID: 2800000, guid: f490e46c7242c304694d17245238a820, type: 3}
+--- !u!114 &11400010
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89635e15bad22f14e9d162db97e34e8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_priorityValue: 0
+  m_barEnd: {fileID: 2800000, guid: 046bbc3d73d12bc40b569dfc9223a913, type: 3}
+  m_barMid: {fileID: 2800000, guid: 0165ac27eb57f0449948f42e7446a8c8, type: 3}
+  m_healthBackground: {fileID: 2800000, guid: 32ecd07adc5adb4468d14e30b65bbddb, type: 3}
+  m_healthBar: {fileID: 2800000, guid: e92e5681b59f9b94384cc3db09871619, type: 3}
+  m_shieldBar: {fileID: 2800000, guid: e85631113a5a8ca44945a6a360fcb887, type: 3}
+  m_iconBorder: {fileID: 2800000, guid: c953a9ac0db0001438898a6a6a57334d, type: 3}
+  m_playerIcon: {fileID: 2800000, guid: 176eed51fc418c342b148a4388c9cb3b, type: 3}
+  m_cShipIcon: {fileID: 2800000, guid: 7b524ea7ec7fccb4488398977ecfa0cc, type: 3}
+--- !u!114 &11400012
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15170f2ac83dfbd4bba5037a825bdd5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_listOfScreensToDraw: []
+  m_highestPriority: -1
+  m_nativeWidth: 1600
+  m_nativeHeight: 900
+  m_mainMenuSkin: {fileID: 11400000, guid: 69f00061d3c008344826d16a76ca6cf3, type: 2}
+--- !u!148 &14800000
+NetworkView:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100000}
+  m_Enabled: 1
+  m_StateSynchronization: 0
+  m_Observed: {fileID: 400000}
+  m_ViewID:
+    m_ID: 0
+    m_Type: 0
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 100000}
+  m_IsPrefabParent: 1
+  m_IsExploded: 1

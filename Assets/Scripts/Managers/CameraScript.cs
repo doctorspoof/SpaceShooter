@@ -20,6 +20,8 @@ public class CameraScript : MonoBehaviour
     GameObject[] m_players;
     
     // Camera vars
+    Vector2 m_localStretchOffset = Vector2.zero;
+    Vector2 m_targetStretchOffset = Vector2.zero;
     float m_currentOrthoSize;
     bool m_playerIsDocked = false;
     bool m_shouldAllowInput = true;
@@ -235,7 +237,7 @@ public class CameraScript : MonoBehaviour
                 {
                     Vector3 pos = m_currentPlayer.transform.position;
                     pos.z = -10;
-                    this.transform.position = pos;
+                    this.transform.position = pos + new Vector3(m_localStretchOffset.x, m_localStretchOffset.y, 0.0f);
                 }
                 else
                 {
@@ -297,6 +299,9 @@ public class CameraScript : MonoBehaviour
                     }
                 }
                 camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, m_currentOrthoSize, Time.deltaTime);
+                
+                //Do stretchy-cam
+                m_localStretchOffset = Vector2.Lerp(m_localStretchOffset, m_targetStretchOffset, Time.deltaTime);
             }
         }
         else
@@ -332,7 +337,10 @@ public class CameraScript : MonoBehaviour
     }
 
     /* Custom functions */
-
+    public void SetTargetStretchOffset(Vector2 offset)
+    {
+        m_targetStretchOffset = offset * camera.orthographicSize;
+    }
     public void InitPlayer(GameObject player)
     {
         m_currentPlayer = player;

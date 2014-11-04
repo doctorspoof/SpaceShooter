@@ -326,6 +326,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &100036
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 400036}
+  - 135: {fileID: 13500000}
+  - 114: {fileID: 11400042}
+  m_Layer: 8
+  m_Name: DeflectObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &400000
 Transform:
   m_ObjectHideFlags: 1
@@ -333,12 +350,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100000}
   m_LocalRotation: {x: 0, y: 0, z: .00109656586, w: .999999464}
-  m_LocalPosition: {x: 119.684853, y: -171.554718, z: 10}
+  m_LocalPosition: {x: -276.880981, y: 15.296051, z: 10}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children:
   - {fileID: 400004}
   - {fileID: 400034}
   - {fileID: 400022}
+  - {fileID: 400036}
   m_Father: {fileID: 0}
 --- !u!4 &400002
 Transform:
@@ -536,6 +554,17 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 100034}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 400000}
+--- !u!4 &400036
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100036}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -1050,20 +1079,20 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   m_augmentItemSlots: []
-  m_fireBulletMat: {fileID: 2100000, guid: 603eda3c26685a44eafbf76e4f9f4956, type: 2}
-  m_iceBulletMat: {fileID: 2100000, guid: 2135ff3f5c2f6ce438b3f2a0ba5c4d0b, type: 2}
-  m_earthBulletMat: {fileID: 2100000, guid: c20ba418ad02243469a45b2ac3c7a43b, type: 2}
-  m_lightningBulletMat: {fileID: 2100000, guid: 1e4299935344aea4b856601ceef0a69b,
-    type: 2}
-  m_lightBulletMat: {fileID: 2100000, guid: 2a73cc813e9b04544aa06f336784e4cb, type: 2}
-  m_darkBulletMat: {fileID: 2100000, guid: ee818c1dc5a111745909b5289273051b, type: 2}
-  m_spiritBulletMat: {fileID: 2100000, guid: 55f15cdd4b7fba4429ba77ca5ed1acd3, type: 2}
-  m_gravityBulletMat: {fileID: 2100000, guid: a173c6b55da036b4ca4d6fa2fa59d4f5, type: 2}
-  m_airBulletMat: {fileID: 2100000, guid: fa2cdc06b976c9f4086bb7433d3297d3, type: 2}
-  m_organicBulletMat: {fileID: 2100000, guid: 61fcc58a9807b6f42b4362cf845fc8b8, type: 2}
+  m_fireBeamMat: {fileID: 2100000, guid: 76ef2c89c00fdf347ac61ef54dd3e7cc, type: 2}
+  m_iceBeamMat: {fileID: 2100000, guid: d05ef5118faa7c84194f4d3bb64621ce, type: 2}
+  m_earthBeamMat: {fileID: 2100000, guid: 64f0a9b6309b1234cbcaa73e3750a546, type: 2}
+  m_lightningBeamMat: {fileID: 2100000, guid: 26fef03796763bb41b02cb2153ffff18, type: 2}
+  m_lightBeamMat: {fileID: 2100000, guid: d6fffdecb7da2544f94c5b7ec6d68bfe, type: 2}
+  m_darkBeamMat: {fileID: 2100000, guid: 93c0eb7c610074b4f9c4c96686f4ad01, type: 2}
+  m_spiritBeamMat: {fileID: 2100000, guid: 42207a0361a6c5a41ae6241722987fd1, type: 2}
+  m_gravityBeamMat: {fileID: 2100000, guid: 51a15061f4a15f74080e35e4e05ece90, type: 2}
+  m_airBeamMat: {fileID: 2100000, guid: 8e88818a5ee0aea4d9b5a565e3f95468, type: 2}
+  m_organicBeamMat: {fileID: 2100000, guid: 27bf8fdaf2934b84faa32074cf7e03e0, type: 2}
   m_bulletRef: {fileID: 100000, guid: 39578d176d49f2e45b90bf2ec2d9eaad, type: 2}
+  m_beamRef: {fileID: 100000, guid: 181895d91db359e4899d955fa8874302, type: 2}
   m_bulletOffsets:
-  - {x: 0, y: 0, z: 0}
+  - {x: -.0599999987, y: .449999988, z: 0}
   m_baseBulletStats:
     damage: 20
     reach: 25
@@ -1100,7 +1129,7 @@ MonoBehaviour:
     reach: 0
     lifetime: 1
     isBeam: 0
-    beamRechargeDelay: .150000006
+    beamRechargeDelay: .300000012
     aoe:
       isAOE: 0
       aoeRange: 0
@@ -1126,6 +1155,8 @@ MonoBehaviour:
     firer: {fileID: 0}
     appliedElements: 
   m_currentWeaponReloadTime: 0
+  m_currentReloadCounter: 0
+  m_currentRechargeDelay: 0
 --- !u!114 &11400006
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1159,6 +1190,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400010
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1201,6 +1234,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400016
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1219,6 +1254,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1261,6 +1298,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400024
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1291,6 +1330,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400028
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1309,6 +1350,8 @@ MonoBehaviour:
   m_isForwards: 1
   m_shouldReverse: 0
   m_shouldDieAfterFirstRun: 0
+  m_shouldUseSmoothAnimationShader: 0
+  m_currentIndex: 0
 --- !u!114 &11400030
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1340,6 +1383,21 @@ MonoBehaviour:
   m_baseStats:
     forwardSpeed: 500
     turnSpeed: 45
+    strafeSpeed: 250
+    burnerSpeed: 250
+    burnerLength: 2.5
+    burnerRechargeTime: 5
+    hasGravityControl: 0
+    maxGravityChange: 0
+    hasShortTeleport: 0
+    shortTeleRange: 5
+    shortTeleCooldown: 60
+    hasLongTeleport: 0
+    longTeleRange: 50
+    longTeleCooldown: 60
+  m_currentStats:
+    forwardSpeed: 250
+    turnSpeed: 250
     strafeSpeed: 250
     burnerSpeed: 250
     burnerLength: 2.5
@@ -1491,6 +1549,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
   - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
   - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
+  - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
+  - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
+  - {fileID: 11400000, guid: 93f7b6e2439738549bd8be8b761da27e, type: 2}
 --- !u!114 &11400040
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1502,6 +1563,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86cd7214967092a4084065999f8b1058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &11400042
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51debe6de31b0ee4988219840acf3d77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!135 &13500000
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 100036}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 1

@@ -128,7 +128,6 @@ public sealed class BeamBulletScript : MonoBehaviour
                 // Increase the overflow by deltaTime to ensure correct damage is being applied
                 m_overflow += m_beamDamage * Time.deltaTime;
 
-
 				// Reset the distance according to the RaycastHit
 				ResetOffset (m_beamHit.distance);
 
